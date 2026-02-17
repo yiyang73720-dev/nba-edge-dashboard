@@ -172,17 +172,54 @@
   @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
   @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; pointer-events: none; } }
 
-  /* EDGE SUMMARY BANNER */
-  .edge-summary { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; border-radius: 10px; padding: 14px 20px; margin-bottom: 14px; display: none; }
-  .edge-summary.active { display: block; }
-  .edge-summary-title { font-size: 13px; font-weight: 800; margin-bottom: 8px; color: #ffd700; }
-  .edge-items { display: flex; flex-wrap: wrap; gap: 8px; }
-  .edge-item { background: rgba(255,255,255,0.1); border-radius: 8px; padding: 8px 12px; font-size: 11px; border-left: 3px solid; }
-  .edge-item.edge-3pt { border-color: var(--purple); }
-  .edge-item.edge-star { border-color: var(--orange); }
-  .edge-item.edge-paint { border-color: var(--teal); }
-  .edge-item.edge-foul { border-color: var(--yellow); }
-  .edge-item strong { display: block; font-size: 12px; margin-bottom: 2px; }
+  /* EDGE THESIS PANEL */
+  .edge-thesis-container { margin-bottom: 14px; display: none; }
+  .edge-thesis-container.active { display: block; }
+  .edge-thesis-header { background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 50%, #16213e 100%); color: white; border-radius: 12px 12px 0 0; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+  .edge-thesis-header h2 { font-size: 15px; font-weight: 800; color: #ffd700; letter-spacing: 0.5px; }
+  .edge-thesis-header .thesis-count { background: var(--red); color: white; border-radius: 20px; padding: 3px 12px; font-size: 12px; font-weight: 800; animation: pulse 1.5s infinite; }
+
+  .thesis-card { background: linear-gradient(135deg, #0f1923 0%, #162333 100%); border: 1px solid #2a3f55; border-radius: 0 0 12px 12px; margin-bottom: 12px; overflow: hidden; }
+  .thesis-card + .thesis-card { border-radius: 12px; }
+  .thesis-game-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; background: rgba(255,255,255,0.03); border-bottom: 1px solid #2a3f55; }
+  .thesis-game-label { font-size: 16px; font-weight: 900; color: #e0e0e0; letter-spacing: 0.5px; }
+  .thesis-game-score { font-size: 14px; font-weight: 700; color: #90caf9; }
+  .thesis-game-period { font-size: 11px; color: var(--orange); font-weight: 700; }
+  .thesis-confidence { display: flex; align-items: center; gap: 8px; }
+  .conf-meter { display: flex; gap: 3px; }
+  .conf-dot { width: 10px; height: 10px; border-radius: 50%; background: #2a3f55; border: 1px solid #3a5570; }
+  .conf-dot.lit { background: #ffd700; border-color: #ffd700; box-shadow: 0 0 6px rgba(255,215,0,0.5); }
+  .conf-dot.lit-red { background: var(--red); border-color: var(--red); box-shadow: 0 0 6px rgba(220,53,69,0.5); }
+  .conf-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+  .conf-label.high { color: #ffd700; }
+  .conf-label.medium { color: var(--orange); }
+  .conf-label.low { color: var(--gray); }
+
+  .thesis-body { padding: 14px 18px; color: #ccc; }
+  .thesis-bet-line { background: linear-gradient(135deg, rgba(255,215,0,0.12) 0%, rgba(255,165,0,0.08) 100%); border: 1px solid rgba(255,215,0,0.3); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+  .thesis-bet-action { font-size: 14px; font-weight: 900; color: #ffd700; }
+  .thesis-bet-side { font-size: 12px; color: #e0e0e0; }
+  .thesis-bet-why { font-size: 10px; color: #999; font-style: italic; }
+
+  .thesis-criteria { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  @media (max-width: 768px) { .thesis-criteria { grid-template-columns: 1fr; } }
+  .criteria-item { display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; border-radius: 6px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); }
+  .criteria-item.met { background: rgba(40,167,69,0.12); border-color: rgba(40,167,69,0.3); }
+  .criteria-item.not-met { background: rgba(108,117,125,0.08); border-color: rgba(108,117,125,0.15); opacity: 0.6; }
+  .criteria-check { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+  .criteria-text { flex: 1; }
+  .criteria-label { font-size: 11px; font-weight: 700; color: #e0e0e0; display: block; }
+  .criteria-detail { font-size: 10px; color: #999; line-height: 1.4; display: block; margin-top: 2px; }
+  .criteria-value { font-size: 10px; font-weight: 700; color: var(--green); display: block; margin-top: 1px; }
+  .criteria-value.warn { color: var(--orange); }
+  .criteria-value.neg { color: var(--gray); }
+
+  .thesis-logic { background: rgba(255,255,255,0.03); border-radius: 8px; padding: 10px 14px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 10px; }
+  .thesis-logic-title { font-size: 10px; font-weight: 800; color: #90caf9; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .thesis-logic-text { font-size: 11px; color: #bbb; line-height: 1.6; }
+
+  .thesis-actions { display: flex; gap: 8px; align-items: center; justify-content: space-between; padding-top: 8px; border-top: 1px solid #2a3f55; }
+  .thesis-actions .btn { font-size: 12px; padding: 6px 18px; }
 
   @media (max-width: 768px) {
     .header { flex-direction: column; gap: 6px; }
@@ -223,10 +260,13 @@
 
   <!-- ==================== LIVE GAMES TAB ==================== -->
   <div class="tab-content active" id="content-live">
-    <!-- EDGE SUMMARY BANNER -->
-    <div class="edge-summary" id="edgeSummary">
-      <div class="edge-summary-title">ACTIVE EDGE SIGNALS</div>
-      <div class="edge-items" id="edgeItems"></div>
+    <!-- EDGE THESIS PANEL -->
+    <div class="edge-thesis-container" id="edgeThesisContainer">
+      <div class="edge-thesis-header">
+        <h2>LIVE EDGE OPPORTUNITIES</h2>
+        <span class="thesis-count" id="thesisCount">0</span>
+      </div>
+      <div id="edgeThesisCards"></div>
     </div>
 
     <div class="auto-refresh-bar">
@@ -574,12 +614,12 @@ async function fetchESPNScoreboard() {
     if (liveEvents.length === 0) {
       grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">&#x1F3C0;</div><p>No live or upcoming NBA games right now.</p></div>`;
       tpGrid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">&#x1F3AF;</div><p>No live games.</p></div>`;
-      document.getElementById('edgeSummary').classList.remove('active');
+      document.getElementById('edgeThesisContainer').classList.remove('active');
       return;
     }
 
     let sig3=0, sigStar=0, sigCombined=0, sigFragile=0, hotTeams=0, warmTeams=0;
-    let cards='', tpCards='', edgeItems=[];
+    let cards='', tpCards='', gameTheses=[];
 
     for (const event of liveEvents) {
       const comp = event.competitions?.[0]; if (!comp) continue;
@@ -622,32 +662,48 @@ async function fetchESPNScoreboard() {
       });
 
       let signals=[], signalLevel=0;
+      let thesis = { game: gLabel, aTeam: aA, hTeam: hA, aScore: aS, hScore: hS, per, clk, detail, criteria: {}, betSide: '', betLogic: '', signals: [] };
 
       if (isLive) {
         // 3PT CHECK
-        const chk3 = (p,m,a,t) => {
+        const chk3 = (p,m,a,t,side) => {
           const pn=parseFloat(p), an=parseInt(a), mn=parseInt(m);
-          if (pn>=50&&an>=8) { signals.push({type:'3pt',text:`${t} ${pn.toFixed(0)}% from 3 (${mn}/${an}) - UNSUSTAINABLE`,level:2}); sig3++; hotTeams++; return true; }
-          else if (pn>=45&&an>=6) { signals.push({type:'3pt',text:`${t} ${pn.toFixed(0)}% from 3 (${mn}/${an}) - elevated`,level:1}); warmTeams++; }
+          if (pn>=50&&an>=8) {
+            signals.push({type:'3pt',text:`${t} ${pn.toFixed(0)}% from 3 (${mn}/${an}) - UNSUSTAINABLE`,level:2});
+            sig3++; hotTeams++;
+            thesis.criteria[`3pt_${side}`] = {met:true, strong:true, label:`${t} 3PT: ${pn.toFixed(0)}% (${mn}/${an})`, detail:`NBA avg is 36.5%. Shooting ${pn.toFixed(0)}% on ${an} attempts is 2+ std deviations above mean. This rate will regress â teams shooting 50%+ from 3 in a half sustain it only ~12% of games. The lead they built on 3PT scoring is inflated.`, value:`${pn.toFixed(0)}% on ${an} att`};
+            return true;
+          } else if (pn>=45&&an>=6) {
+            signals.push({type:'3pt',text:`${t} ${pn.toFixed(0)}% from 3 (${mn}/${an}) - elevated`,level:1});
+            warmTeams++;
+            thesis.criteria[`3pt_${side}`] = {met:true, strong:false, label:`${t} 3PT: ${pn.toFixed(0)}% (${mn}/${an})`, detail:`Elevated but not extreme. Watch for further increase.`, value:`${pn.toFixed(0)}% on ${an} att`, warn:true};
+          } else {
+            thesis.criteria[`3pt_${side}`] = {met:false, label:`${t} 3PT: ${pn?pn.toFixed(0):'0'}%`, detail:`Normal shooting range, no 3PT regression signal.`, value:'Normal'};
+          }
           return false;
         };
-        const a3Hot = chk3(a3P,a3M,a3A,aA), h3Hot = chk3(h3P,h3M,h3A,hA);
+        const a3Hot = chk3(a3P,a3M,a3A,aA,'away'), h3Hot = chk3(h3P,h3M,h3A,hA,'home');
 
         // STAR PACE CHECK (60% threshold)
         const cM = parseFloat(clk?.split(':')[0]||12), cS = parseFloat(clk?.split(':')[1]||0);
         const gMins = (per-1)*12 + (12-cM-cS/60), gPct = Math.min(gMins/48,1);
+        let starColdTeams = {};
         [...aLeaders,...hLeaders].forEach(leader => {
           const star = state.stars.find(s => leader.name.toLowerCase().includes(s.name.split(' ').pop().toLowerCase()) && s.team===leader.team);
           if (star) {
             const exp = getExpectedByTime(star.ppg, gMins);
             const pr = exp>0 ? leader.pts/exp : 1;
+            const side = leader.team===aA?'away':'home';
+            const oppSide = side==='away'?'home':'away';
             if (pr<0.6 && gPct>=0.2 && per<=3) {
               let ctx = per===1?` Q1 exp: ${getQ1Expected(star.ppg).toFixed(0)}`:per===2?` Half exp: ${getHalfExpected(star.ppg).toFixed(0)}`:'';
               signals.push({type:'star',text:`${leader.name} ${leader.pts}pts (exp ~${exp.toFixed(0)}, threshold ${(exp*0.6).toFixed(0)}).${ctx} MR candidate.`,level:2});
               sigStar++;
-              edgeItems.push({type:'star',game:gLabel,text:`${leader.name} at ${leader.pts}pts vs ${exp.toFixed(0)} expected`});
+              starColdTeams[leader.team] = leader.name;
+              thesis.criteria[`star_${oppSide}`] = {met:true, strong:true, label:`Opponent Star Cold: ${leader.name}`, detail:`${leader.name} averages ${star.ppg} PPG. At Q${per} ${clk}, expected ~${exp.toFixed(0)} pts but only has ${leader.pts}. That's ${(pr*100).toFixed(0)}% of pace (<60% threshold). Stars at this pace typically score 4-8 pts above current rate by game end â the market hasn't priced this bounce-back yet. Live ML is too favorable to the OTHER side.`, value:`${leader.pts}/${exp.toFixed(0)} pts (${(pr*100).toFixed(0)}%)`};
             } else if (pr<0.75 && gPct>=0.2) {
               signals.push({type:'star',text:`${leader.name} ${leader.pts}pts, behind ${star.ppg} PPG pace (exp ~${exp.toFixed(0)})`,level:1});
+              thesis.criteria[`star_${oppSide}`] = {met:true, strong:false, label:`Opponent Star Below Pace: ${leader.name}`, detail:`${leader.name} (${star.ppg} PPG) has ${leader.pts} pts vs ${exp.toFixed(0)} expected. Below pace but not at critical 60% threshold yet.`, value:`${(pr*100).toFixed(0)}% pace`, warn:true};
             }
           }
         });
@@ -658,12 +714,16 @@ async function fetchESPNScoreboard() {
         if (aDur.fragile) {
           signals.push({type:'paint',text:`${aA} lead built on 3PT (${aDur.pct3.toFixed(0)}% of pts from 3). Fragile - expect regression.`,level:2});
           sigFragile++;
-          edgeItems.push({type:'paint',game:gLabel,text:`${aA} fragile lead: ${aDur.pct3.toFixed(0)}% scoring from 3PT`});
+          thesis.criteria['paint_away'] = {met:true, strong:true, label:`${aA} Lead Built on 3PT`, detail:`${aDur.pct3.toFixed(0)}% of ${aA}'s scoring is from 3-pointers (threshold: 42%). Leads built on 3PT shooting are fragile because 3PT% regresses toward 36.5%. If those 3s stop falling, their lead evaporates. Paint-heavy scoring is far more sustainable â paint points convert at ~60% vs 3PT at ~36%.`, value:`${aDur.pct3.toFixed(0)}% from 3PT`};
+        } else {
+          thesis.criteria['paint_away'] = {met:false, label:`${aA} Scoring Balance`, detail:`${aA} scoring is balanced or paint-heavy. Lead is durable.`, value: aS>0?`${aDur.pct3.toFixed(0)}% from 3PT`:'N/A'};
         }
         if (hDur.fragile) {
           signals.push({type:'paint',text:`${hA} lead built on 3PT (${hDur.pct3.toFixed(0)}% of pts from 3). Fragile - expect regression.`,level:2});
           sigFragile++;
-          edgeItems.push({type:'paint',game:gLabel,text:`${hA} fragile lead: ${hDur.pct3.toFixed(0)}% scoring from 3PT`});
+          thesis.criteria['paint_home'] = {met:true, strong:true, label:`${hA} Lead Built on 3PT`, detail:`${hDur.pct3.toFixed(0)}% of ${hA}'s scoring is from 3-pointers (threshold: 42%). Same logic â 3PT-dependent leads are fragile. Market often overweights the current scoreboard without considering HOW the points were scored.`, value:`${hDur.pct3.toFixed(0)}% from 3PT`};
+        } else {
+          thesis.criteria['paint_home'] = {met:false, label:`${hA} Scoring Balance`, detail:`${hA} scoring is balanced or paint-heavy. Lead is durable.`, value: hS>0?`${hDur.pct3.toFixed(0)}% from 3PT`:'N/A'};
         }
 
         // FOUL ANALYSIS
@@ -671,19 +731,65 @@ async function fetchESPNScoreboard() {
         const hFoul = analyzeTeamFouls(hFouls, per, clk);
         if (aFoul.highFouls) {
           signals.push({type:'foul',text:`${aA} high foul rate (${aFoul.fouls} fouls, ${aFoul.perQtr}/qtr). Opponent getting bonus FTs - inflated scoring.`,level:1});
-          edgeItems.push({type:'foul',game:gLabel,text:`${aA} fouling at ${aFoul.perQtr}/qtr rate - opponent FT inflation`});
+          thesis.criteria['foul_away'] = {met:true, strong:false, label:`${aA} High Foul Rate`, detail:`${aA} fouling at ${aFoul.perQtr}/qtr (${aFoul.fouls} total). This sends ${hA} to the FT line more â inflating ${hA}'s score with easy points. But fouls regress as coaches adjust. ${hA}'s lead may be partly built on FT volume that won't sustain.`, value:`${aFoul.perQtr}/qtr`, warn:true};
         }
         if (hFoul.highFouls) {
           signals.push({type:'foul',text:`${hA} high foul rate (${hFoul.fouls} fouls, ${hFoul.perQtr}/qtr). Opponent getting bonus FTs - inflated scoring.`,level:1});
-          edgeItems.push({type:'foul',game:gLabel,text:`${hA} fouling at ${hFoul.perQtr}/qtr rate - opponent FT inflation`});
+          thesis.criteria['foul_home'] = {met:true, strong:false, label:`${hA} High Foul Rate`, detail:`${hA} fouling at ${hFoul.perQtr}/qtr (${hFoul.fouls} total). ${aA} getting bonus FT trips that inflate their scoring. Foul rates typically normalize as game progresses.`, value:`${hFoul.perQtr}/qtr`, warn:true};
         }
 
-        // COMBINED
+        // COMBINED - build thesis per side
         const has3=signals.some(s=>s.type==='3pt'&&s.level===2);
         const hasStar=signals.some(s=>s.type==='star'&&s.level===2);
         const hasPaint=signals.some(s=>s.type==='paint'&&s.level===2);
         if ((has3&&hasStar)||(has3&&hasPaint)||(hasStar&&hasPaint)) { signalLevel=2; sigCombined++; }
         else if (has3||hasStar||hasPaint) signalLevel=1;
+
+        // Determine bet side and build thesis logic
+        if (signalLevel >= 1) {
+          // Figure out which team to bet ON (the one that benefits from regression)
+          let betTeam = '', fadeTeam = '', reasons = [];
+          const a3Data = thesis.criteria['3pt_away'], h3Data = thesis.criteria['3pt_home'];
+          const aPaint = thesis.criteria['paint_away'], hPaint = thesis.criteria['paint_home'];
+
+          // Score each side: who has unsustainable advantages?
+          let awayFade=0, homeFade=0;
+          if (a3Data?.met && a3Data?.strong) awayFade++;  // away shooting too hot = fade away
+          if (h3Data?.met && h3Data?.strong) homeFade++;  // home shooting too hot = fade home
+          if (aPaint?.met && aPaint?.strong && aS > hS) awayFade++;  // away lead is fragile
+          if (hPaint?.met && hPaint?.strong && hS > aS) homeFade++;  // home lead is fragile
+          // Star cold on a team = bet ON that team (star will regress up)
+          if (starColdTeams[aA]) homeFade++;  // away star cold = away bounces back = fade home
+          if (starColdTeams[hA]) awayFade++;  // home star cold = home bounces back = fade away
+
+          if (awayFade > homeFade) { betTeam = hA; fadeTeam = aA; }
+          else if (homeFade > awayFade) { betTeam = aA; fadeTeam = hA; }
+          else if (awayFade > 0) { betTeam = hA; fadeTeam = aA; }
+          else { betTeam = aS < hS ? aA : hA; fadeTeam = aS < hS ? hA : aA; }
+
+          // Build the narrative
+          if (a3Data?.met && a3Data?.strong) reasons.push(`${aA} is shooting an unsustainable ${a3Data.value} from 3 â this will cool off`);
+          if (h3Data?.met && h3Data?.strong) reasons.push(`${hA} is shooting an unsustainable ${h3Data.value} from 3 â this will cool off`);
+          if (starColdTeams[aA]) reasons.push(`${starColdTeams[aA]} (${aA}) is ice cold â star players at <60% pace bounce back ~78% of the time`);
+          if (starColdTeams[hA]) reasons.push(`${starColdTeams[hA]} (${hA}) is ice cold â star players at <60% pace bounce back ~78% of the time`);
+          if (aPaint?.met && aPaint?.strong && aS > hS) reasons.push(`${aA}'s lead is fragile â ${aPaint.value} scoring from 3PT`);
+          if (hPaint?.met && hPaint?.strong && hS > aS) reasons.push(`${hA}'s lead is fragile â ${hPaint.value} scoring from 3PT`);
+          if (thesis.criteria['foul_away']?.met) reasons.push(`${aA} fouling heavy (${thesis.criteria['foul_away'].value}) â opponent FT inflation`);
+          if (thesis.criteria['foul_home']?.met) reasons.push(`${hA} fouling heavy (${thesis.criteria['foul_home'].value}) â opponent FT inflation`);
+
+          const strongCriteria = Object.values(thesis.criteria).filter(c => c.met && c.strong).length;
+          const allCriteria = Object.values(thesis.criteria).filter(c => c.met).length;
+
+          thesis.betSide = betTeam;
+          thesis.fadeSide = fadeTeam;
+          thesis.betLogic = reasons.join('. ') + '.';
+          thesis.confidence = strongCriteria >= 3 ? 'high' : strongCriteria >= 2 ? 'high' : allCriteria >= 2 ? 'medium' : 'low';
+          thesis.strongCount = strongCriteria;
+          thesis.totalMet = allCriteria;
+          thesis.signals = signals;
+          thesis.signalLevel = signalLevel;
+          gameTheses.push(thesis);
+        }
       }
 
       const cc = signalLevel===2?'signal-fire':signalLevel===1?'signal-warn':'';
@@ -755,17 +861,75 @@ async function fetchESPNScoreboard() {
     else document.getElementById('live-badge').style.display='none';
     if (hotTeams>0) { document.getElementById('threept-badge').style.display='inline'; document.getElementById('threept-badge').textContent=hotTeams; }
 
-    // EDGE SUMMARY BANNER
-    const es = document.getElementById('edgeSummary');
-    const ei = document.getElementById('edgeItems');
-    if (edgeItems.length > 0) {
-      es.classList.add('active');
-      ei.innerHTML = edgeItems.map(e => {
-        const cls = e.type==='3pt'?'edge-3pt':e.type==='star'?'edge-star':e.type==='paint'?'edge-paint':'edge-foul';
-        const lbl = e.type==='3pt'?'3PT':e.type==='star'?'STAR COLD':e.type==='paint'?'FRAGILE LEAD':'FOUL RATE';
-        return `<div class="edge-item ${cls}"><strong>${lbl}: ${e.game}</strong>${e.text}</div>`;
+    // EDGE THESIS PANEL
+    const etc = document.getElementById('edgeThesisContainer');
+    const etCards = document.getElementById('edgeThesisCards');
+    if (gameTheses.length > 0) {
+      etc.classList.add('active');
+      document.getElementById('thesisCount').textContent = gameTheses.length + ' LIVE';
+      // Sort by confidence (high first)
+      gameTheses.sort((a,b) => (b.strongCount||0) - (a.strongCount||0));
+      etCards.innerHTML = gameTheses.map(t => {
+        const confDots = Array.from({length:5}, (_,i) => {
+          if (i < t.strongCount) return `<div class="conf-dot lit-red"></div>`;
+          if (i < t.totalMet) return `<div class="conf-dot lit"></div>`;
+          return `<div class="conf-dot"></div>`;
+        }).join('');
+        const confCls = t.confidence==='high'?'high':t.confidence==='medium'?'medium':'low';
+        const scoreDiff = Math.abs(t.aScore - t.hScore);
+        const leading = t.aScore > t.hScore ? t.aTeam : t.hScore > t.aScore ? t.hTeam : 'TIE';
+        const trailing = t.aScore > t.hScore ? t.hTeam : t.hScore > t.aScore ? t.aTeam : '';
+
+        // Build criteria cards
+        const criteriaKeys = ['3pt_away','3pt_home','star_away','star_home','paint_away','paint_home','foul_away','foul_home'];
+        const criteriaHTML = criteriaKeys.map(k => {
+          const c = t.criteria[k];
+          if (!c) return '';
+          const cls = c.met ? (c.strong ? 'met' : 'met') : 'not-met';
+          const icon = c.met ? (c.strong ? '&#x1F525;' : '&#x26A0;&#xFE0F;') : '&#x2796;';
+          const valCls = c.met ? (c.strong ? '' : 'warn') : 'neg';
+          return `<div class="criteria-item ${cls}">
+            <span class="criteria-check">${icon}</span>
+            <div class="criteria-text">
+              <span class="criteria-label">${c.label}</span>
+              <span class="criteria-value ${valCls}">${c.value}</span>
+              <span class="criteria-detail">${c.detail}</span>
+            </div>
+          </div>`;
+        }).filter(Boolean).join('');
+
+        return `<div class="thesis-card">
+          <div class="thesis-game-bar">
+            <div>
+              <div class="thesis-game-label">${t.game}</div>
+              <div class="thesis-game-period">Q${t.per} ${t.clk} ${leading!=='TIE'?`| ${leading} leads by ${scoreDiff}`:'| Tied'}</div>
+            </div>
+            <div class="thesis-confidence">
+              <div class="conf-meter">${confDots}</div>
+              <span class="conf-label ${confCls}">${t.totalMet} criteria met</span>
+            </div>
+          </div>
+          <div class="thesis-body">
+            <div class="thesis-bet-line">
+              <div>
+                <div class="thesis-bet-action">BET ${t.betSide} ML</div>
+                <div class="thesis-bet-side">Fade ${t.fadeSide} â ${t.confidence.toUpperCase()} confidence</div>
+              </div>
+              <button class="btn btn-orange btn-sm" onclick="openLogModal('${t.game}','Live ML','Mean Reversion')">Log This Bet</button>
+            </div>
+            <div class="thesis-logic">
+              <div class="thesis-logic-title">Why This Is an Edge</div>
+              <div class="thesis-logic-text">${t.betLogic} The live moneyline is priced on the current score, but the current score is built on unsustainable conditions. When those conditions normalize (3PT% drops, star heats up, paint scoring returns to mean), the true probability shifts toward ${t.betSide}. The market is slow to reprice these temporary swings â that's the edge.</div>
+            </div>
+            <div class="thesis-criteria">${criteriaHTML}</div>
+            <div class="thesis-actions">
+              <span style="font-size:10px;color:#666;">${t.aTeam} ${t.aScore} - ${t.hScore} ${t.hTeam} | ${t.detail}</span>
+              <button class="btn btn-green btn-sm" onclick="openLogModal('${t.game}','Live ML','Mean Reversion')">Log Bet</button>
+            </div>
+          </div>
+        </div>`;
       }).join('');
-    } else es.classList.remove('active');
+    } else { etc.classList.remove('active'); etCards.innerHTML = ''; }
 
     updateStarTracker(events);
 
@@ -897,3 +1061,4 @@ document.getElementById('logModal').addEventListener('click',function(e){if(e.ta
 </script>
 </body>
 </html>
+
