@@ -5,232 +5,250 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NBA Edge System Dashboard</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  
   :root {
-    --navy: #1B3A5C; --blue: #2E75B6; --light-blue: #E8F0FE; --green: #28A745;
-    --red: #DC3545; --orange: #FD7E14; --yellow: #FFC107; --gray: #6C757D;
-    --light-gray: #F8F9FA; --border: #DEE2E6; --white: #FFFFFF; --dark: #212529;
-    --shadow: 0 2px 8px rgba(0,0,0,0.08); --purple: #6F42C1; --teal: #20C997;
+    --navy: #0a0e27; --blue: #1a1f4e; --light-blue: #1e2454; --green: #00d4aa;
+    --red: #ff4757; --orange: #ff8c42; --yellow: #ffd93d; --gray: #6c7293;
+    --light-gray: #1a1f3a; --border: rgba(255,255,255,0.08); --white: #e8eaf6; --dark: #0d1117;
+    --shadow: 0 8px 32px rgba(0,0,0,0.3); --purple: #a855f7; --teal: #00d4aa;
+    --glass-bg: rgba(255,255,255,0.03); --glass-border: rgba(255,255,255,0.08);
+    --glass-hover: rgba(255,255,255,0.06); --gradient-primary: linear-gradient(135deg, #00d4aa, #00b894);
+    --gradient-accent: linear-gradient(135deg, #a855f7, #6366f1);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #F0F2F5; color: var(--dark); line-height: 1.5; }
+  body { 
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
+    background: linear-gradient(135deg, #0a0e27 0%, #131833 50%, #0d1117 100%);
+    color: #e8eaf6; line-height: 1.6; min-height: 100vh;
+  }
+  body::before {
+    content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 20% 50%, rgba(0,212,170,0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(168,85,247,0.05) 0%, transparent 50%);
+    pointer-events: none; z-index: 0;
+  }
 
-  .header { background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%); color: white; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.15); }
-  .header h1 { font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
-  .header-sub { font-size: 11px; opacity: 0.7; margin-top: 2px; }
+  .header {
+    background: linear-gradient(135deg, rgba(10,14,39,0.95), rgba(26,31,78,0.95));
+    backdrop-filter: blur(20px); color: white; padding: 18px 28px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid rgba(0,212,170,0.15); position: relative; z-index: 10;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+  }
+  .header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; background: linear-gradient(135deg, #00d4aa, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .header-sub { font-size: 11px; opacity: 0.5; margin-top: 2px; font-weight: 400; }
   .header-right { display: flex; align-items: center; gap: 12px; }
 
-  .btn { padding: 6px 16px; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-  .btn-green { background: var(--green); color: white; } .btn-green:hover { background: #218838; }
-  .btn-red { background: var(--red); color: white; } .btn-red:hover { background: #c82333; }
-  .btn-orange { background: var(--orange); color: white; } .btn-orange:hover { background: #e8690b; }
-  .btn-purple { background: var(--purple); color: white; } .btn-purple:hover { background: #5a32a3; }
-  .btn-teal { background: var(--teal); color: white; } .btn-teal:hover { background: #1aae84; }
-  .btn-sm { padding: 4px 10px; font-size: 11px; }
-  .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--gray); } .btn-outline:hover { background: var(--light-gray); }
+  .btn { padding: 8px 18px; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); font-family: 'Inter', sans-serif; position: relative; overflow: hidden; }
+  .btn-green { background: var(--gradient-primary); color: #0a0e27; box-shadow: 0 4px 15px rgba(0,212,170,0.25); }
+  .btn-green:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(0,212,170,0.4); }
+  .btn-red { background: linear-gradient(135deg, #ff4757, #ff3742); color: white; box-shadow: 0 4px 15px rgba(255,71,87,0.25); }
+  .btn-red:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(255,71,87,0.4); }
+  .btn-orange { background: linear-gradient(135deg, #ff8c42, #ff7b2e); color: white; box-shadow: 0 4px 15px rgba(255,140,66,0.25); }
+  .btn-orange:hover { transform: translateY(-2px); }
+  .btn-blue { background: var(--gradient-accent); color: white; box-shadow: 0 4px 15px rgba(168,85,247,0.25); }
+  .btn-blue:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(168,85,247,0.4); }
+  .btn:active { transform: translateY(0); }
 
-  .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
-  .status-dot.live { background: var(--green); animation: pulse 1.5s infinite; }
-  .status-dot.off { background: var(--gray); }
-  .status-dot.error { background: var(--red); }
-  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; animation: pulse-glow 2s infinite; }
+  .status-dot.green { background: #00d4aa; box-shadow: 0 0 10px rgba(0,212,170,0.5); }
+  .status-dot.red { background: #ff4757; box-shadow: 0 0 10px rgba(255,71,87,0.5); }
+  @keyframes pulse-glow { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+  .connection-status { font-size: 12px; color: #6c7293; display: flex; align-items: center; font-weight: 500; }
 
-  .tab-bar { display: flex; background: var(--white); border-bottom: 2px solid var(--border); padding: 0 24px; box-shadow: var(--shadow); flex-wrap: wrap; }
-  .tab { padding: 12px 18px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--gray); border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
-  .tab:hover { color: var(--navy); }
-  .tab.active { color: var(--navy); border-bottom-color: var(--blue); }
-  .tab .badge { background: var(--red); color: white; border-radius: 10px; padding: 1px 7px; font-size: 11px; margin-left: 6px; }
-  .tab .badge-purple { background: var(--purple); }
-  .tab .badge-teal { background: var(--teal); }
-
-  .container { max-width: 1400px; margin: 0 auto; padding: 16px 24px; }
-  .tab-content { display: none; } .tab-content.active { display: block; }
-
-  .card { background: var(--white); border-radius: 10px; box-shadow: var(--shadow); margin-bottom: 16px; overflow: hidden; }
-  .card-header { padding: 12px 20px; font-weight: 700; font-size: 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
-  .card-body { padding: 14px 20px; }
-
-  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 14px; }
-  .stat-card { background: var(--white); border-radius: 10px; padding: 14px 16px; box-shadow: var(--shadow); text-align: center; }
-  .stat-label { font-size: 10px; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px; }
-  .stat-value { font-size: 26px; font-weight: 800; color: var(--navy); }
-  .stat-value.green { color: var(--green); } .stat-value.red { color: var(--red); }
-  .stat-value.orange { color: var(--orange); } .stat-value.purple { color: var(--purple); }
-  .stat-value.teal { color: var(--teal); }
-  .stat-sub { font-size: 11px; color: var(--gray); margin-top: 2px; }
-
-  table { width: 100%; border-collapse: collapse; }
-  th { background: var(--navy); color: white; padding: 8px 10px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
-  td { padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 12px; }
-  tr:nth-child(even) { background: var(--light-gray); } tr:hover { background: var(--light-blue); }
-
-  .signal-badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; }
-  .signal-strong { background: #d4edda; color: #155724; } .signal-moderate { background: #fff3cd; color: #856404; }
-  .signal-none { background: #f8f9fa; color: #6c757d; } .signal-fire { background: #f8d7da; color: #842029; }
-  .signal-purple { background: #e8daef; color: #4a235a; } .signal-teal { background: #d1f2eb; color: #0e6251; }
-
-  .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px; }
-  .form-group { display: flex; flex-direction: column; }
-  .form-group label { font-size: 10px; font-weight: 600; color: var(--gray); margin-bottom: 3px; text-transform: uppercase; }
-  .form-group input, .form-group select { padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; }
-  .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(46,117,182,0.15); }
-
-  .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); gap: 14px; }
-  .game-card { background: var(--white); border-radius: 10px; box-shadow: var(--shadow); overflow: hidden; border: 2px solid transparent; transition: all 0.3s; }
-  .game-card.signal-fire { border-color: var(--red); box-shadow: 0 0 16px rgba(220,53,69,0.25); }
-  .game-card.signal-warn { border-color: var(--orange); box-shadow: 0 0 12px rgba(253,126,20,0.2); }
-  .game-card-header { padding: 8px 14px; background: var(--navy); color: white; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
-  .game-card-header.live-pulse { background: linear-gradient(135deg, #1a5c3a 0%, #28a745 100%); }
-  .game-card-body { padding: 12px 14px; }
-  .game-teams { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-  .team-block { text-align: center; flex: 1; }
-  .team-name { font-size: 15px; font-weight: 800; color: var(--navy); }
-  .team-record { font-size: 10px; color: var(--gray); }
-  .team-score { font-size: 32px; font-weight: 900; color: var(--dark); margin: 2px 0; }
-  .vs-block { text-align: center; padding: 0 8px; }
-  .vs-text { font-size: 11px; color: var(--gray); font-weight: 700; }
-  .game-period { font-size: 11px; color: var(--orange); font-weight: 800; }
-
-  .stat-bars { padding-top: 8px; border-top: 1px solid var(--border); }
-  .stat-bar-row { display: flex; align-items: center; margin-bottom: 5px; font-size: 11px; }
-  .stat-bar-label { width: 85px; font-weight: 600; color: var(--gray); flex-shrink: 0; }
-  .stat-bar-track { flex: 1; height: 18px; background: #eee; border-radius: 10px; overflow: hidden; position: relative; }
-  .stat-bar-fill { height: 100%; border-radius: 10px; transition: width 0.5s; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; color: white; min-width: 28px; }
-  .stat-bar-fill.hot { background: linear-gradient(90deg, var(--orange), var(--red)); }
-  .stat-bar-fill.normal { background: var(--blue); }
-  .stat-bar-fill.cold { background: var(--gray); }
-  .stat-bar-fill.teal { background: var(--teal); }
-  .stat-bar-avg { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--dark); z-index: 1; }
-  .stat-bar-avg::after { content: attr(data-label); position: absolute; top: -13px; left: -10px; font-size: 8px; color: var(--gray); white-space: nowrap; }
-  .stat-bar-value { width: 60px; text-align: right; font-weight: 700; flex-shrink: 0; margin-left: 5px; font-size: 11px; }
-
-  .signal-panel { margin-top: 8px; padding: 8px 12px; border-radius: 8px; background: #fff8e1; border: 1px solid #ffe082; }
-  .signal-panel.strong { background: #fce4ec; border-color: #ef9a9a; }
-  .signal-panel.fire { background: #ffebee; border-color: #ef5350; animation: glow 2s infinite; }
-  @keyframes glow { 0%, 100% { box-shadow: 0 0 5px rgba(239,83,80,0.2); } 50% { box-shadow: 0 0 15px rgba(239,83,80,0.4); } }
-  .signal-title { font-size: 11px; font-weight: 800; margin-bottom: 3px; }
-  .signal-title.fire { color: var(--red); } .signal-title.warn { color: #e65100; }
-  .signal-detail { font-size: 10px; color: #555; line-height: 1.5; }
-
-  /* LEAD DURABILITY BAR */
-  .durability-bar { margin-top: 6px; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; gap: 8px; font-size: 10px; font-weight: 600; }
-  .durability-bar.fragile { background: #fff3cd; color: #856404; border: 1px solid #ffc107; }
-  .durability-bar.durable { background: #d1f2eb; color: #0e6251; border: 1px solid var(--teal); }
-  .durability-bar.neutral { background: var(--light-gray); color: var(--gray); border: 1px solid var(--border); }
-  .durability-meter { width: 60px; height: 6px; background: #ddd; border-radius: 3px; overflow: hidden; }
-  .durability-meter-fill { height: 100%; border-radius: 3px; }
-
-  /* 3PT TRACKER */
-  .three-pt-card { background: var(--white); border-radius: 10px; box-shadow: var(--shadow); overflow: hidden; border: 2px solid transparent; transition: all 0.3s; }
-  .three-pt-card.hot-card { border-color: var(--red); box-shadow: 0 0 16px rgba(220,53,69,0.3); }
-  .three-pt-card.warm-card { border-color: var(--orange); box-shadow: 0 0 12px rgba(253,126,20,0.2); }
-  .three-pt-card-header { padding: 8px 14px; background: var(--purple); color: white; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
-  .three-pt-card-body { padding: 12px 14px; }
-  .qtr-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; }
-  .qtr-box { text-align: center; padding: 6px; border-radius: 6px; background: var(--light-gray); }
-  .qtr-box.active-q { border: 2px solid var(--blue); background: var(--light-blue); }
-  .qtr-box.hot-q { background: #ffebee; border: 2px solid var(--red); }
-  .qtr-label { font-size: 9px; font-weight: 700; color: var(--gray); text-transform: uppercase; }
-  .qtr-value { font-size: 16px; font-weight: 900; }
-  .qtr-detail { font-size: 9px; color: var(--gray); }
-  .qtr-value.hot-val { color: var(--red); } .qtr-value.normal-val { color: var(--navy); }
-
-  .star-row td { vertical-align: middle; }
-  .pace-indicator { display: inline-block; width: 50px; height: 7px; background: #eee; border-radius: 4px; overflow: hidden; vertical-align: middle; }
-  .pace-fill { height: 100%; border-radius: 4px; }
-
-  .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center; }
-  .modal-overlay.active { display: flex; }
-  .modal { background: white; border-radius: 12px; padding: 24px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-  .modal h3 { margin-bottom: 16px; color: var(--navy); }
-
-  .empty-state { text-align: center; padding: 30px 20px; color: var(--gray); }
-  .empty-state .icon { font-size: 40px; margin-bottom: 10px; }
-  .empty-state p { font-size: 13px; }
-
-  .auto-refresh-bar { display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--light-gray); border-radius: 8px; margin-bottom: 10px; font-size: 11px; flex-wrap: wrap; }
-  .auto-refresh-bar .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
-  .auto-refresh-bar .dot.off { background: var(--gray); }
-  .countdown-bar { width: 80px; height: 4px; background: #ddd; border-radius: 2px; overflow: hidden; }
-  .countdown-fill { height: 100%; background: var(--blue); transition: width 1s linear; }
-
-  /* CONNECTION STATUS */
-  .conn-status { font-size: 10px; padding: 2px 8px; border-radius: 10px; }
-  .conn-ok { background: #d4edda; color: #155724; }
-  .conn-err { background: #f8d7da; color: #842029; }
-  .conn-loading { background: #fff3cd; color: #856404; }
-
-  /* TOAST */
-  .quarter-alert-toast {
-    background: linear-gradient(135deg, #4a235a 0%, #6f42c1 100%);
-    color: white; padding: 14px 18px; border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(111,66,193,0.4);
-    max-width: 360px; animation: slideIn 0.4s ease-out, fadeOut 0.5s 10s forwards;
-    cursor: pointer; margin-bottom: 8px;
+  .tabs {
+    display: flex; background: rgba(10,14,39,0.8); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--glass-border); padding: 0 20px;
+    position: sticky; top: 0; z-index: 100;
   }
-  .quarter-alert-toast .toast-title { font-weight: 800; font-size: 13px; margin-bottom: 3px; }
-  .quarter-alert-toast .toast-body { font-size: 11px; opacity: 0.9; }
-  @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-  @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; pointer-events: none; } }
+  .tab {
+    padding: 14px 22px; cursor: pointer; font-weight: 500; font-size: 13px;
+    color: #6c7293; border-bottom: 2px solid transparent;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1); position: relative;
+    letter-spacing: 0.3px;
+  }
+  .tab:hover { color: #e8eaf6; background: rgba(255,255,255,0.03); }
+  .tab.active { color: #00d4aa; border-bottom-color: #00d4aa; font-weight: 600; }
+  .tab.active::after { content: ''; position: absolute; bottom: -1px; left: 20%; right: 20%; height: 2px; background: var(--gradient-primary); border-radius: 2px; filter: blur(4px); }
+  .tab-badge { background: var(--gradient-primary); color: #0a0e27; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; margin-left: 6px; }
 
-  /* EDGE THESIS PANEL */
-  .edge-thesis-container { margin-bottom: 14px; display: none; }
-  .edge-thesis-container.active { display: block; }
-  .edge-thesis-header { background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 50%, #16213e 100%); color: white; border-radius: 12px 12px 0 0; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
-  .edge-thesis-header h2 { font-size: 15px; font-weight: 800; color: #ffd700; letter-spacing: 0.5px; }
-  .edge-thesis-header .thesis-count { background: var(--red); color: white; border-radius: 20px; padding: 3px 12px; font-size: 12px; font-weight: 800; animation: pulse 1.5s infinite; }
+  .content { padding: 24px; position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-  .thesis-card { background: linear-gradient(135deg, #0f1923 0%, #162333 100%); border: 1px solid #2a3f55; border-radius: 0 0 12px 12px; margin-bottom: 12px; overflow: hidden; }
-  .thesis-card + .thesis-card { border-radius: 12px; }
-  .thesis-game-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; background: rgba(255,255,255,0.03); border-bottom: 1px solid #2a3f55; }
-  .thesis-game-label { font-size: 16px; font-weight: 900; color: #e0e0e0; letter-spacing: 0.5px; }
-  .thesis-game-score { font-size: 14px; font-weight: 700; color: #90caf9; }
-  .thesis-game-period { font-size: 11px; color: var(--orange); font-weight: 700; }
-  .thesis-confidence { display: flex; align-items: center; gap: 8px; }
-  .conf-meter { display: flex; gap: 3px; }
-  .conf-dot { width: 10px; height: 10px; border-radius: 50%; background: #2a3f55; border: 1px solid #3a5570; }
-  .conf-dot.lit { background: #ffd700; border-color: #ffd700; box-shadow: 0 0 6px rgba(255,215,0,0.5); }
-  .conf-dot.lit-red { background: var(--red); border-color: var(--red); box-shadow: 0 0 6px rgba(220,53,69,0.5); }
-  .conf-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
-  .conf-label.high { color: #ffd700; }
-  .conf-label.medium { color: var(--orange); }
-  .conf-label.low { color: var(--gray); }
+  .stat-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .stat-card {
+    background: var(--glass-bg); backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border); border-radius: 16px;
+    padding: 20px; text-align: center;
+    transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+    position: relative; overflow: hidden;
+  }
+  .stat-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--gradient-primary); opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .stat-card:hover { transform: translateY(-4px); border-color: rgba(0,212,170,0.2); background: var(--glass-hover); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+  .stat-card:hover::before { opacity: 1; }
+  .stat-card .label { font-size: 11px; color: #6c7293; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; }
+  .stat-card .value { font-size: 28px; font-weight: 800; margin-top: 6px; background: linear-gradient(135deg, #e8eaf6, #ffffff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-  .thesis-body { padding: 14px 18px; color: #ccc; }
-  .thesis-bet-line { background: linear-gradient(135deg, rgba(255,215,0,0.12) 0%, rgba(255,165,0,0.08) 100%); border: 1px solid rgba(255,215,0,0.3); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-  .thesis-bet-action { font-size: 14px; font-weight: 900; color: #ffd700; }
-  .thesis-bet-side { font-size: 12px; color: #e0e0e0; }
-  .thesis-bet-why { font-size: 10px; color: #999; font-style: italic; }
+  .game-card {
+    background: var(--glass-bg); backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border); border-radius: 16px;
+    padding: 18px; margin-bottom: 14px;
+    transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+    position: relative;
+  }
+  .game-card:hover { border-color: rgba(0,212,170,0.15); background: var(--glass-hover); transform: translateX(4px); box-shadow: 0 8px 30px rgba(0,0,0,0.2); }
+  .game-card .game-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .game-card .teams { font-weight: 700; font-size: 15px; letter-spacing: -0.2px; }
+  .game-card .score { font-size: 14px; color: #00d4aa; font-weight: 700; }
+  .game-card .status { font-size: 12px; color: #a855f7; font-weight: 600; }
+  .game-card .signals { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
 
-  .thesis-criteria { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-  @media (max-width: 768px) { .thesis-criteria { grid-template-columns: 1fr; } }
-  .criteria-item { display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; border-radius: 6px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); }
-  .criteria-item.met { background: rgba(40,167,69,0.12); border-color: rgba(40,167,69,0.3); }
-  .criteria-item.not-met { background: rgba(108,117,125,0.08); border-color: rgba(108,117,125,0.15); opacity: 0.6; }
-  .criteria-check { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
-  .criteria-text { flex: 1; }
-  .criteria-label { font-size: 11px; font-weight: 700; color: #e0e0e0; display: block; }
-  .criteria-detail { font-size: 10px; color: #999; line-height: 1.4; display: block; margin-top: 2px; }
-  .criteria-value { font-size: 10px; font-weight: 700; color: var(--green); display: block; margin-top: 1px; }
-  .criteria-value.warn { color: var(--orange); }
-  .criteria-value.neg { color: var(--gray); }
+  .signal-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 600;
+    background: rgba(0,212,170,0.1); color: #00d4aa; border: 1px solid rgba(0,212,170,0.2);
+    transition: all 0.3s ease;
+  }
+  .signal-badge:hover { background: rgba(0,212,170,0.2); transform: scale(1.05); }
+  .signal-badge.hot { background: rgba(255,71,87,0.1); color: #ff4757; border-color: rgba(255,71,87,0.2); }
+  .signal-badge.hot:hover { background: rgba(255,71,87,0.2); }
 
-  .thesis-logic { background: rgba(255,255,255,0.03); border-radius: 8px; padding: 10px 14px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 10px; }
-  .thesis-logic-title { font-size: 10px; font-weight: 800; color: #90caf9; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-  .thesis-logic-text { font-size: 11px; color: #bbb; line-height: 1.6; }
+  .signal-panel {
+    background: var(--glass-bg); backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border); border-radius: 16px;
+    padding: 20px; margin-bottom: 20px;
+  }
+  .signal-panel h3 { font-size: 14px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .signal-list { display: flex; flex-direction: column; gap: 8px; }
+  .signal-item { padding: 10px 14px; background: rgba(255,255,255,0.02); border-radius: 10px; font-size: 13px; border: 1px solid transparent; transition: all 0.3s ease; }
+  .signal-item:hover { border-color: var(--glass-border); background: rgba(255,255,255,0.04); }
 
-  .thesis-actions { display: flex; gap: 8px; align-items: center; justify-content: space-between; padding-top: 8px; border-top: 1px solid #2a3f55; }
-  .thesis-actions .btn { font-size: 12px; padding: 6px 18px; }
+  table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 16px; overflow: hidden; }
+  th { background: linear-gradient(135deg, rgba(0,212,170,0.08), rgba(168,85,247,0.05)); color: #00d4aa; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--glass-border); }
+  td { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 13px; color: #c8cad8; transition: background 0.2s ease; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  tr:last-child td { border-bottom: none; }
+
+  .three-pt-card {
+    background: var(--glass-bg); backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border); border-radius: 16px;
+    padding: 18px; margin-bottom: 14px;
+    transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  .three-pt-card:hover { border-color: rgba(0,212,170,0.15); background: var(--glass-hover); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.2); }
+  .three-pt-card .team-name { font-weight: 700; font-size: 15px; }
+  .three-pt-card .pct { font-size: 22px; font-weight: 800; color: #00d4aa; }
+  .three-pt-card .details { font-size: 12px; color: #6c7293; margin-top: 4px; }
+
+  .quarter-box {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 600;
+    background: rgba(0,212,170,0.08); color: #00d4aa; border: 1px solid rgba(0,212,170,0.15);
+    margin: 2px 4px; transition: all 0.3s ease;
+  }
+  .quarter-box:hover { background: rgba(0,212,170,0.15); }
+
+  .thesis-card, .edge-card {
+    background: var(--glass-bg); backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border); border-radius: 16px;
+    padding: 20px; margin-bottom: 16px;
+    transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  .thesis-card:hover, .edge-card:hover { border-color: rgba(168,85,247,0.2); background: var(--glass-hover); }
+  .thesis-card h3, .edge-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 10px; color: #e8eaf6; }
+
+  .modal-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(10,14,39,0.85); backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000; animation: fadeIn 0.3s ease;
+  }
+  .modal {
+    background: linear-gradient(135deg, #131833, #1a1f4e);
+    border: 1px solid var(--glass-border); border-radius: 20px;
+    padding: 28px; max-width: 500px; width: 90%;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+  }
+  .modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 16px; background: linear-gradient(135deg, #00d4aa, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+  input[type="text"], input[type="number"], input[type="date"], select, textarea {
+    background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+    color: #e8eaf6; padding: 10px 14px; border-radius: 10px; font-size: 13px;
+    font-family: 'Inter', sans-serif; transition: all 0.3s ease; width: 100%;
+  }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: rgba(0,212,170,0.4); box-shadow: 0 0 20px rgba(0,212,170,0.1); background: rgba(255,255,255,0.08); }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+  .bankroll-section { background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 24px; margin-bottom: 20px; }
+  .bankroll-section h3 { font-size: 15px; font-weight: 700; margin-bottom: 14px; }
+  .bankroll-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
+
+  #demo-btn {
+    background: linear-gradient(135deg, #a855f7, #6366f1) !important;
+    color: white !important; border-radius: 8px !important;
+    font-weight: 600 !important; box-shadow: 0 4px 15px rgba(168,85,247,0.3);
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1) !important;
+  }
+  #demo-btn:hover { transform: translateY(-2px) !important; box-shadow: 0 6px 25px rgba(168,85,247,0.5) !important; }
+  #sound-toggle {
+    background: rgba(255,255,255,0.05) !important;
+    border: 1px solid var(--glass-border) !important; border-radius: 8px !important;
+    color: #e8eaf6 !important; font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+  }
+  #sound-toggle:hover { background: rgba(255,255,255,0.1) !important; }
+
+  .toast-container { position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 8px; }
+  .toast {
+    padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 500;
+    animation: slideInRight 0.4s cubic-bezier(0.4,0,0.2,1);
+    backdrop-filter: blur(12px); border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  }
+  .toast.green { background: rgba(0,212,170,0.15); color: #00d4aa; border-color: rgba(0,212,170,0.2); }
+  .toast.red { background: rgba(255,71,87,0.15); color: #ff4757; border-color: rgba(255,71,87,0.2); }
+  .toast.orange { background: rgba(255,140,66,0.15); color: #ff8c42; border-color: rgba(255,140,66,0.2); }
+  @keyframes slideInRight { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  .no-games { text-align: center; padding: 60px 20px; color: #6c7293; font-size: 15px; }
+  .refresh-timer { font-size: 11px; color: #6c7293; font-weight: 500; }
+  .game-grid { display: grid; gap: 14px; }
+
+  .edge-analysis { background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 18px; margin-top: 10px; }
+  .edge-analysis h4 { font-size: 13px; font-weight: 700; color: #a855f7; margin-bottom: 8px; }
+  .verdict { padding: 10px 14px; border-radius: 10px; font-weight: 600; font-size: 13px; margin-top: 8px; background: rgba(0,212,170,0.08); border: 1px solid rgba(0,212,170,0.15); color: #00d4aa; }
+  .verdict.negative { background: rgba(255,71,87,0.08); border-color: rgba(255,71,87,0.15); color: #ff4757; }
+
+  .star-card { background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 18px; margin-bottom: 14px; transition: all 0.4s cubic-bezier(0.4,0,0.2,1); }
+  .star-card:hover { border-color: rgba(168,85,247,0.2); background: var(--glass-hover); transform: translateY(-2px); }
+  .star-name { font-weight: 700; font-size: 16px; }
+  .star-ppg { color: #a855f7; font-weight: 700; }
+  .pace-bar { height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; margin-top: 8px; }
+  .pace-fill { height: 100%; border-radius: 3px; background: var(--gradient-primary); transition: width 0.6s cubic-bezier(0.4,0,0.2,1); }
+
+  .bet-log-table { margin-top: 16px; }
+  .export-btn { margin-top: 12px; }
 
   @media (max-width: 768px) {
-    .header { flex-direction: column; gap: 6px; }
-    .stats-row { grid-template-columns: repeat(2, 1fr); }
-    .games-grid { grid-template-columns: 1fr; }
-    .form-grid { grid-template-columns: 1fr 1fr; }
-    .qtr-grid { grid-template-columns: repeat(2, 1fr); }
-    .tab { padding: 10px 12px; font-size: 12px; }
+    .content { padding: 16px; }
+    .stat-cards { grid-template-columns: 1fr 1fr; }
+    .tabs { overflow-x: auto; }
+    .tab { padding: 12px 16px; font-size: 12px; white-space: nowrap; }
   }
 
-    /* ==================== LIVE SCENARIO ALERTS ==================== */
+
+  /* ==================== LIVE SCENARIO ALERTS ==================== */
     .scenario-alert-panel { position: fixed; top: 80px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; max-width: 420px; pointer-events: none; }
     .scenario-alert { pointer-events: all; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border: 2px solid var(--orange); border-radius: 12px; padding: 16px; color: white; box-shadow: 0 8px 32px rgba(253, 126, 20, 0.3); animation: alertSlideIn 0.5s ease-out, alertPulse 2s ease-in-out 0.5s; position: relative; overflow: hidden; }
     .scenario-alert::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--orange), var(--red), var(--orange)); animation: alertGlow 1.5s ease-in-out infinite; }
@@ -710,7 +728,7 @@ async function fetchESPNScoreboard() {
             signals.push({type:'3pt',text:`${t} ${pn.toFixed(0)}% from 3 (${mn}/${an}) - UNSUSTAINABLE`,level:2});
             sig3++;
                   fire3PTAlert(t, pn.toFixed(0), mn, an, gLabel, per, clk); hotTeams++;
-            thesis.criteria[`3pt_${side}`] = {met:true, strong:true, label:`${t} 3PT: ${pn.toFixed(0)}% (${mn}/${an})`, detail:`NBA avg is 36.5%. Shooting ${pn.toFixed(0)}% on ${an} attempts is 2+ std deviations above mean. This rate will regress â teams shooting 50%+ from 3 in a half sustain it only ~12% of games. The lead they built on 3PT scoring is inflated.`, value:`${pn.toFixed(0)}% on ${an} att`};
+            thesis.criteria[`3pt_${side}`] = {met:true, strong:true, label:`${t} 3PT: ${pn.toFixed(0)}% (${mn}/${an})`, detail:`NBA avg is 36.5%. Shooting ${pn.toFixed(0)}% on ${an} attempts is 2+ std deviations above mean. This rate will regress Ã¢ÂÂ teams shooting 50%+ from 3 in a half sustain it only ~12% of games. The lead they built on 3PT scoring is inflated.`, value:`${pn.toFixed(0)}% on ${an} att`};
             return true;
           } else if (pn>=45&&an>=6) {
             signals.push({type:'3pt',text:`${t} ${pn.toFixed(0)}% from 3 (${mn}/${an}) - elevated`,level:1});
@@ -740,7 +758,7 @@ async function fetchESPNScoreboard() {
               sigStar++;
                 fireStarColdAlert(leader, star, gMins, per, clk, gLabel, pr);
               starColdTeams[leader.team] = leader.name;
-              thesis.criteria[`star_${oppSide}`] = {met:true, strong:true, label:`Opponent Star Cold: ${leader.name}`, detail:`${leader.name} averages ${star.ppg} PPG. At Q${per} ${clk}, expected ~${exp.toFixed(0)} pts but only has ${leader.pts}. That's ${(pr*100).toFixed(0)}% of pace (<60% threshold). Stars at this pace typically score 4-8 pts above current rate by game end â the market hasn't priced this bounce-back yet. Live ML is too favorable to the OTHER side.`, value:`${leader.pts}/${exp.toFixed(0)} pts (${(pr*100).toFixed(0)}%)`};
+              thesis.criteria[`star_${oppSide}`] = {met:true, strong:true, label:`Opponent Star Cold: ${leader.name}`, detail:`${leader.name} averages ${star.ppg} PPG. At Q${per} ${clk}, expected ~${exp.toFixed(0)} pts but only has ${leader.pts}. That's ${(pr*100).toFixed(0)}% of pace (<60% threshold). Stars at this pace typically score 4-8 pts above current rate by game end Ã¢ÂÂ the market hasn't priced this bounce-back yet. Live ML is too favorable to the OTHER side.`, value:`${leader.pts}/${exp.toFixed(0)} pts (${(pr*100).toFixed(0)}%)`};
             } else if (pr<0.75 && gPct>=0.2) {
               signals.push({type:'star',text:`${leader.name} ${leader.pts}pts, behind ${star.ppg} PPG pace (exp ~${exp.toFixed(0)})`,level:1});
               thesis.criteria[`star_${oppSide}`] = {met:true, strong:false, label:`Opponent Star Below Pace: ${leader.name}`, detail:`${leader.name} (${star.ppg} PPG) has ${leader.pts} pts vs ${exp.toFixed(0)} expected. Below pace but not at critical 60% threshold yet.`, value:`${(pr*100).toFixed(0)}% pace`, warn:true};
@@ -754,14 +772,14 @@ async function fetchESPNScoreboard() {
         if (aDur.fragile) {
           signals.push({type:'paint',text:`${aA} lead built on 3PT (${aDur.pct3.toFixed(0)}% of pts from 3). Fragile - expect regression.`,level:2});
           sigFragile++;
-          thesis.criteria['paint_away'] = {met:true, strong:true, label:`${aA} Lead Built on 3PT`, detail:`${aDur.pct3.toFixed(0)}% of ${aA}'s scoring is from 3-pointers (threshold: 42%). Leads built on 3PT shooting are fragile because 3PT% regresses toward 36.5%. If those 3s stop falling, their lead evaporates. Paint-heavy scoring is far more sustainable â paint points convert at ~60% vs 3PT at ~36%.`, value:`${aDur.pct3.toFixed(0)}% from 3PT`};
+          thesis.criteria['paint_away'] = {met:true, strong:true, label:`${aA} Lead Built on 3PT`, detail:`${aDur.pct3.toFixed(0)}% of ${aA}'s scoring is from 3-pointers (threshold: 42%). Leads built on 3PT shooting are fragile because 3PT% regresses toward 36.5%. If those 3s stop falling, their lead evaporates. Paint-heavy scoring is far more sustainable Ã¢ÂÂ paint points convert at ~60% vs 3PT at ~36%.`, value:`${aDur.pct3.toFixed(0)}% from 3PT`};
         } else {
           thesis.criteria['paint_away'] = {met:false, label:`${aA} Scoring Balance`, detail:`${aA} scoring is balanced or paint-heavy. Lead is durable.`, value: aS>0?`${aDur.pct3.toFixed(0)}% from 3PT`:'N/A'};
         }
         if (hDur.fragile) {
           signals.push({type:'paint',text:`${hA} lead built on 3PT (${hDur.pct3.toFixed(0)}% of pts from 3). Fragile - expect regression.`,level:2});
           sigFragile++;
-          thesis.criteria['paint_home'] = {met:true, strong:true, label:`${hA} Lead Built on 3PT`, detail:`${hDur.pct3.toFixed(0)}% of ${hA}'s scoring is from 3-pointers (threshold: 42%). Same logic â 3PT-dependent leads are fragile. Market often overweights the current scoreboard without considering HOW the points were scored.`, value:`${hDur.pct3.toFixed(0)}% from 3PT`};
+          thesis.criteria['paint_home'] = {met:true, strong:true, label:`${hA} Lead Built on 3PT`, detail:`${hDur.pct3.toFixed(0)}% of ${hA}'s scoring is from 3-pointers (threshold: 42%). Same logic Ã¢ÂÂ 3PT-dependent leads are fragile. Market often overweights the current scoreboard without considering HOW the points were scored.`, value:`${hDur.pct3.toFixed(0)}% from 3PT`};
         } else {
           thesis.criteria['paint_home'] = {met:false, label:`${hA} Scoring Balance`, detail:`${hA} scoring is balanced or paint-heavy. Lead is durable.`, value: hS>0?`${hDur.pct3.toFixed(0)}% from 3PT`:'N/A'};
         }
@@ -771,7 +789,7 @@ async function fetchESPNScoreboard() {
         const hFoul = analyzeTeamFouls(hFouls, per, clk);
         if (aFoul.highFouls) {
           signals.push({type:'foul',text:`${aA} high foul rate (${aFoul.fouls} fouls, ${aFoul.perQtr}/qtr). Opponent getting bonus FTs - inflated scoring.`,level:1});
-          thesis.criteria['foul_away'] = {met:true, strong:false, label:`${aA} High Foul Rate`, detail:`${aA} fouling at ${aFoul.perQtr}/qtr (${aFoul.fouls} total). This sends ${hA} to the FT line more â inflating ${hA}'s score with easy points. But fouls regress as coaches adjust. ${hA}'s lead may be partly built on FT volume that won't sustain.`, value:`${aFoul.perQtr}/qtr`, warn:true};
+          thesis.criteria['foul_away'] = {met:true, strong:false, label:`${aA} High Foul Rate`, detail:`${aA} fouling at ${aFoul.perQtr}/qtr (${aFoul.fouls} total). This sends ${hA} to the FT line more Ã¢ÂÂ inflating ${hA}'s score with easy points. But fouls regress as coaches adjust. ${hA}'s lead may be partly built on FT volume that won't sustain.`, value:`${aFoul.perQtr}/qtr`, warn:true};
         }
         if (hFoul.highFouls) {
           signals.push({type:'foul',text:`${hA} high foul rate (${hFoul.fouls} fouls, ${hFoul.perQtr}/qtr). Opponent getting bonus FTs - inflated scoring.`,level:1});
@@ -808,14 +826,14 @@ async function fetchESPNScoreboard() {
           else { betTeam = aS < hS ? aA : hA; fadeTeam = aS < hS ? hA : aA; }
 
           // Build the narrative
-          if (a3Data?.met && a3Data?.strong) reasons.push(`${aA} is shooting an unsustainable ${a3Data.value} from 3 â this will cool off`);
-          if (h3Data?.met && h3Data?.strong) reasons.push(`${hA} is shooting an unsustainable ${h3Data.value} from 3 â this will cool off`);
-          if (starColdTeams[aA]) reasons.push(`${starColdTeams[aA]} (${aA}) is ice cold â star players at <60% pace bounce back ~78% of the time`);
-          if (starColdTeams[hA]) reasons.push(`${starColdTeams[hA]} (${hA}) is ice cold â star players at <60% pace bounce back ~78% of the time`);
-          if (aPaint?.met && aPaint?.strong && aS > hS) reasons.push(`${aA}'s lead is fragile â ${aPaint.value} scoring from 3PT`);
-          if (hPaint?.met && hPaint?.strong && hS > aS) reasons.push(`${hA}'s lead is fragile â ${hPaint.value} scoring from 3PT`);
-          if (thesis.criteria['foul_away']?.met) reasons.push(`${aA} fouling heavy (${thesis.criteria['foul_away'].value}) â opponent FT inflation`);
-          if (thesis.criteria['foul_home']?.met) reasons.push(`${hA} fouling heavy (${thesis.criteria['foul_home'].value}) â opponent FT inflation`);
+          if (a3Data?.met && a3Data?.strong) reasons.push(`${aA} is shooting an unsustainable ${a3Data.value} from 3 Ã¢ÂÂ this will cool off`);
+          if (h3Data?.met && h3Data?.strong) reasons.push(`${hA} is shooting an unsustainable ${h3Data.value} from 3 Ã¢ÂÂ this will cool off`);
+          if (starColdTeams[aA]) reasons.push(`${starColdTeams[aA]} (${aA}) is ice cold Ã¢ÂÂ star players at <60% pace bounce back ~78% of the time`);
+          if (starColdTeams[hA]) reasons.push(`${starColdTeams[hA]} (${hA}) is ice cold Ã¢ÂÂ star players at <60% pace bounce back ~78% of the time`);
+          if (aPaint?.met && aPaint?.strong && aS > hS) reasons.push(`${aA}'s lead is fragile Ã¢ÂÂ ${aPaint.value} scoring from 3PT`);
+          if (hPaint?.met && hPaint?.strong && hS > aS) reasons.push(`${hA}'s lead is fragile Ã¢ÂÂ ${hPaint.value} scoring from 3PT`);
+          if (thesis.criteria['foul_away']?.met) reasons.push(`${aA} fouling heavy (${thesis.criteria['foul_away'].value}) Ã¢ÂÂ opponent FT inflation`);
+          if (thesis.criteria['foul_home']?.met) reasons.push(`${hA} fouling heavy (${thesis.criteria['foul_home'].value}) Ã¢ÂÂ opponent FT inflation`);
 
           const strongCriteria = Object.values(thesis.criteria).filter(c => c.met && c.strong).length;
           const allCriteria = Object.values(thesis.criteria).filter(c => c.met).length;
@@ -953,13 +971,13 @@ async function fetchESPNScoreboard() {
             <div class="thesis-bet-line">
               <div>
                 <div class="thesis-bet-action">BET ${t.betSide} ML</div>
-                <div class="thesis-bet-side">Fade ${t.fadeSide} â ${t.confidence.toUpperCase()} confidence</div>
+                <div class="thesis-bet-side">Fade ${t.fadeSide} Ã¢ÂÂ ${t.confidence.toUpperCase()} confidence</div>
               </div>
               <button class="btn btn-orange btn-sm" onclick="openLogModal('${t.game}','Live ML','Mean Reversion')">Log This Bet</button>
             </div>
             <div class="thesis-logic">
               <div class="thesis-logic-title">Why This Is an Edge</div>
-              <div class="thesis-logic-text">${t.betLogic} The live moneyline is priced on the current score, but the current score is built on unsustainable conditions. When those conditions normalize (3PT% drops, star heats up, paint scoring returns to mean), the true probability shifts toward ${t.betSide}. The market is slow to reprice these temporary swings â that's the edge.</div>
+              <div class="thesis-logic-text">${t.betLogic} The live moneyline is priced on the current score, but the current score is built on unsustainable conditions. When those conditions normalize (3PT% drops, star heats up, paint scoring returns to mean), the true probability shifts toward ${t.betSide}. The market is slow to reprice these temporary swings Ã¢ÂÂ that's the edge.</div>
             </div>
             <div class="thesis-criteria">${criteriaHTML}</div>
             <div class="thesis-actions">
@@ -1233,7 +1251,7 @@ function showScenarioAlert(data) {
     <div class="alert-verdict">
       <strong>${deficitText}</strong> expected pace at ${periodLabel} ${data.clock}. 
       Stars below 60% pace at this point bounce back ~78% of the time. 
-      <strong>Mean reversion candidate — live ML is mispriced.</strong>
+      <strong>Mean reversion candidate â live ML is mispriced.</strong>
     </div>
     <div class="alert-action">
       <button class="btn btn-orange btn-sm" onclick="openLogModal('${data.game}','Live ML','Mean Reversion')">Log Bet</button>
@@ -1272,19 +1290,19 @@ function runDemoScenario() {
   
   const scenarios = [
     {
-      player: 'Jalen Brunson', team: 'NYK • New York Knicks', game: 'NYK @ BOS',
+      player: 'Jalen Brunson', team: 'NYK â¢ New York Knicks', game: 'NYK @ BOS',
       quarter: 2, clock: '1:01', currentPts: 3, ppg: 26.3,
       expectedPts: 14.5, pacePercent: 20.7, type: 'cold',
       signals: ['Star at 21% pace', 'Mean reversion candidate']
     },
     {
-      player: 'Shai Gilgeous-Alexander', team: 'OKC • Oklahoma City Thunder', game: 'OKC @ LAL',
+      player: 'Shai Gilgeous-Alexander', team: 'OKC â¢ Oklahoma City Thunder', game: 'OKC @ LAL',
       quarter: 1, clock: '2:30', currentPts: 2, ppg: 32.2,
       expectedPts: 7.7, pacePercent: 26.0, type: 'cold',
       signals: ['Star at 26% Q1 pace', 'Below 60% threshold']
     },
     {
-      player: 'Luka Doncic', team: 'DAL • Dallas Mavericks', game: 'DAL @ MIA',
+      player: 'Luka Doncic', team: 'DAL â¢ Dallas Mavericks', game: 'DAL @ MIA',
       quarter: 2, clock: '5:45', currentPts: 4, ppg: 28.1,
       expectedPts: 11.7, pacePercent: 34.2, type: 'combined',
       signals: ['Star cold + MIA shooting 55% from 3', 'Multi-signal edge']
