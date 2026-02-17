@@ -71,6 +71,27 @@
         .stat-label{font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px}
         .stat-value{font-size:28px;font-weight:800;letter-spacing:-1px}
         .empty-state{text-align:center;padding:40px 20px;color:var(--text-muted);font-size:14px}
+.info-icon{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:var(--border);color:var(--text-muted);font-size:9px;font-weight:700;cursor:help;margin-left:4px;vertical-align:middle;transition:all .2s}
+.info-icon:hover{background:var(--accent);color:#fff}
+.tooltip-wrap{position:relative;display:inline}
+.tooltip-wrap .tip{visibility:hidden;opacity:0;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:8px 12px;border-radius:8px;font-size:11px;line-height:1.5;white-space:normal;width:220px;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.15);transition:all .2s;pointer-events:none;font-weight:400;letter-spacing:0;text-transform:none}
+.tooltip-wrap .tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#1e293b}
+.tooltip-wrap:hover .tip{visibility:visible;opacity:1}
+.guide-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-top:16px}
+.guide-card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:20px;transition:all .2s}
+.guide-card:hover{box-shadow:var(--shadow-md);border-color:var(--accent)}
+.guide-card h3{font-size:15px;font-weight:700;color:var(--text-primary);margin:0 0 4px;display:flex;align-items:center;gap:8px}
+.guide-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.guide-card .edge-label{font-size:12px;color:var(--accent);font-weight:600;margin:8px 0 4px}
+.guide-card p{font-size:13px;color:var(--text-secondary);line-height:1.6;margin:0}
+.guide-card .threshold{margin-top:10px;padding:8px 12px;background:var(--bg);border-radius:8px;font-size:11px;color:var(--text-muted)}
+.badge-3pt{background:#dbeafe;color:#1d4ed8}
+.badge-star{background:#fef3c7;color:#92400e}
+.badge-fragile{background:#fee2e2;color:#991b1b}
+.badge-paint{background:#d1fae5;color:#065f46}
+.badge-foul{background:#ede9fe;color:#5b21b6}
+.badge-combined{background:#f0f9ff;color:#0c4a6e}
+.guide-intro{font-size:14px;color:var(--text-secondary);line-height:1.7;max-width:700px;margin-bottom:8px}
     .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
     .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); font-size: 14px; }
     .signal-badge, .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: 0.3px; }
@@ -142,6 +163,7 @@
   <div class="tab" onclick="switchTab('stars')" id="tab-stars">Star Tracker</div>
   <div class="tab" onclick="switchTab('log')" id="tab-log">Bet Log</div>
   <div class="tab" onclick="switchTab('bankroll')" id="tab-bankroll">Bankroll</div>
+<div class="tab" onclick="switchTab('guide')" id="tab-guide">Signal Guide</div>
 </div>
 
 <div class="container">
@@ -174,10 +196,10 @@
 
     <div class="stats-row">
       <div class="stat-card"><div class="stat-label">Live Games</div><div class="stat-value" id="live-games-count">-</div></div>
-      <div class="stat-card"><div class="stat-label">3PT Signals</div><div class="stat-value orange" id="live-3pt-signals">0</div></div>
-      <div class="stat-card"><div class="stat-label">Star Cold</div><div class="stat-value orange" id="live-star-signals">0</div></div>
-      <div class="stat-card"><div class="stat-label">Fragile Leads</div><div class="stat-value teal" id="live-fragile-leads">0</div></div>
-      <div class="stat-card"><div class="stat-label">Combined</div><div class="stat-value red" id="live-combined-signals">0</div></div>
+      <div class="stat-card"><div class="stat-label">3PT Signals <span class="tooltip-wrap"><span class="info-icon">i</span><span class="tip">Teams shooting unsustainably hot from 3PT range (50%+ on 8 attempts or 45%+ on 6). Fade the hot shooter before regression hits.</span></span></div><div class="stat-value orange" id="live-3pt-signals">0</div></div>
+      <div class="stat-card"><div class="stat-label">Star Cold <span class="tooltip-wrap"><span class="info-icon">i</span><span class="tip">Star players performing well below their average (scoring pace &lt;60%, FG% 20%+ below avg). Expect bounce-back regression upward.</span></span></div><div class="stat-value orange" id="live-star-signals">0</div></div>
+      <div class="stat-card"><div class="stat-label">Fragile Leads <span class="tooltip-wrap"><span class="info-icon">i</span><span class="tip">Teams whose lead is built on unsustainable 3PT shooting (42%+ of points from 3, 20+ attempts). These leads are fragile and likely to shrink.</span></span></div><div class="stat-value teal" id="live-fragile-leads">0</div></div>
+      <div class="stat-card"><div class="stat-label">Combined <span class="tooltip-wrap"><span class="info-icon">i</span><span class="tip">Stacks all individual signals per side to identify the team most likely to benefit from regression. More signals = stronger edge.</span></span></div><div class="stat-value red" id="live-combined-signals">0</div></div>
     </div>
 
     <div class="card">
@@ -312,6 +334,49 @@
 
   <div id="toast-container" style="position:fixed;top:70px;right:20px;z-index:150;display:flex;flex-direction:column;gap:6px;"></div>
 
+
+<div id="content-guide" class="tab-content" style="display:none">
+<h2>Signal Guide</h2>
+<p class="guide-intro">Each signal detects a specific in-game inefficiency where public perception lags behind statistical reality. When multiple signals align, the edge compounds.</p>
+<div class="guide-grid">
+<div class="guide-card">
+<h3><span class="guide-badge badge-3pt">3PT</span> 3PT Regression</h3>
+<div class="edge-label">The Edge: Fade the Hot Shooter</div>
+<p>Teams shooting far above league-average from three are due to regress. A 50%+ clip on 8+ attempts (or 45%+ on 6+) is unsustainable in-game. Live lines overvalue the hot streak; the math says it cools.</p>
+<div class="threshold">Thresholds: ≥50% on ≥8 attempts, or ≥45% on ≥6 attempts</div>
+</div>
+<div class="guide-card">
+<h3><span class="guide-badge badge-star">STAR</span> Star Player Cold</h3>
+<div class="edge-label">The Edge: Star Regresses Upward</div>
+<p>When a star player is cold (scoring pace &lt;60% of expected, FG% 20%+ below average), the market overreacts to their poor stretch. Stars tend to regress toward their mean — bet on the bounce-back.</p>
+<div class="threshold">Thresholds: Pace &lt;60% expected, FG% ≥20% below avg, ≤3 FGM, &lt;75% FG</div>
+</div>
+<div class="guide-card">
+<h3><span class="guide-badge badge-fragile">FRAGILE</span> Fragile Lead</h3>
+<div class="edge-label">The Edge: Fragile Leads Are Overvalued</div>
+<p>A team leading primarily because of hot 3PT shooting (≥42% of points from threes, 20+ attempts) holds a fragile advantage. If the opponent has solid non-3PT scoring (≥20 pts), the lead is built on sand.</p>
+<div class="threshold">Thresholds: 3PT pts ≥42% of total, ≥20 3PT attempts, currently leading, opponent ≥20 non-3PT pts</div>
+</div>
+<div class="guide-card">
+<h3><span class="guide-badge badge-paint">PAINT</span> Paint Durability</h3>
+<div class="edge-label">The Edge: Paint Points Are Stable</div>
+<p>Teams scoring heavily in the paint rely on high-percentage, sustainable offense. Unlike 3PT shooting, paint scoring doesn’t regress as sharply — it signals a durable advantage that live lines may undervalue.</p>
+<div class="threshold">Thresholds: Tracked via points in the paint percentage and volume</div>
+</div>
+<div class="guide-card">
+<h3><span class="guide-badge badge-foul">FOUL</span> Foul Trouble</h3>
+<div class="edge-label">The Edge: Foul Rate Predicts Disruption</div>
+<p>A team fouling at ≥6.5 per 12 minutes (or ≥10 total) is in structural trouble. High foul rates lead to bonus free throws for opponents and force rotation changes that compound disadvantage.</p>
+<div class="threshold">Thresholds: ≥6.5 fouls per 12 min, or ≥10 total fouls</div>
+</div>
+<div class="guide-card">
+<h3><span class="guide-badge badge-combined">COMBINED</span> Combined Edge Thesis</h3>
+<div class="edge-label">The Edge: Stacked Signals Compound</div>
+<p>Each side is scored by stacking individual signals. When one team has multiple regression signals pointing the same direction, the combined edge is stronger than any single signal alone.</p>
+<div class="threshold">Scoring: +1 per signal per side. The side with more signals is the regression beneficiary.</div>
+</div>
+</div>
+</div>
 <script>
 // ==================== STAR DATABASE (23+ PPG) ====================
 const DEFAULT_STARS = [
