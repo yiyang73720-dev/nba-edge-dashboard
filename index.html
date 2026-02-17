@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NBA Edge System Dashboard</title>
+<style>
+  :root {
+    --navy: #1B3A5C; --blue: #2E75B6; --light-blue: #E8F0FE; --green: #28A745;
+    --red: #DC3545; --orange: #FD7E14; --yellow: #FFC107; --gray: #6C757D;
+    --light-gray: #F8F9FA; --border: #DEE2E6; --white: #FFFFFF; --dark: #212529;
+    --shadow: 0 2px 8px rgba(0,0,0,0.08); --purple: #6F42C1; --teal: #20C997;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #F0F2F5; color: var(--dark); line-height: 1.5; }
+
+  .header { background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%); color: white; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.15); }
+  .header h1 { font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
+  .header-sub { font-size: 11px; opacity: 0.7; margin-top: 2px; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+
+  .btn { padding: 6px 16px; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .btn-green { background: var(--green); color: white; } .btn-green:hover { background: #218838; }
+  .btn-red { background: var(--red); color: white; } .btn-red:hover { background: #c82333; }
+  .btn-orange { background: var(--orange); color: white; } .btn-orange:hover { background: #e8690b; }
+  .btn-purple { background: var(--purple); color: white; } .btn-purple:hover { background: #5a32a3; }
+  .btn-teal { background: var(--teal); color: white; } .btn-teal:hover { background: #1aae84; }
+  .btn-sm { padding: 4px 10px; font-size: 11px; }
+  .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--gray); } .btn-outline:hover { background: var(--light-gray); }
+
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+  .status-dot.live { background: var(--green); animation: pulse 1.5s infinite; }
+  .status-dot.off { background: var(--gray); }
+  .status-dot.error { background: var(--red); }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+  .tab-bar { display: flex; background: var(--white); border-bottom: 2px solid var(--border); padding: 0 24px; box-shadow: var(--shadow); flex-wrap: wrap; }
+  .tab { padding: 12px 18px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--gray); border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+  .tab:hover { color: var(--navy); }
+  .tab.active { color: var(--navy); border-bottom-color: var(--blue); }
+  .tab .badge { background: var(--red); color: white; border-radius: 10px; padding: 1px 7px; font-size: 11px; margin-left: 6px; }
+  .tab .badge-purple { background: var(--purple); }
+  .tab .badge-teal { background: var(--teal); }
+
+  .container { max-width: 1400px; margin: 0 auto; padding: 16px 24px; }
+  .tab-content { display: none; } .tab-content.active { display: block; }
+
+  .card { background: var(--white); border-radius: 10px; box-shadow: var(--shadow); margin-bottom: 16px; overflow: hidden; }
+  .card-header { padding: 12px 20px; font-weight: 700; font-size: 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+  .card-body { padding: 14px 20px; }
+
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 14px; }
+  .stat-card { background: var(--white); border-radius: 10px; padding: 14px 16px; box-shadow: var(--shadow); text-align: center; }
+  .stat-label { font-size: 10px; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px; }
+  .stat-value { font-size: 26px; font-weight: 800; color: var(--navy); }
+  .stat-value.green { color: var(--green); } .stat-value.red { color: var(--red); }
+  .stat-value.orange { color: var(--orange); } .stat-value.purple { color: var(--purple); }
+  .stat-value.teal { color: var(--teal); }
+  .stat-sub { font-size: 11px; color: var(--gray); margin-top: 2px; }
+
+  table { width: 100%; border-collapse: collapse; }
+  th { background: var(--navy); color: white; padding: 8px 10px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+  td { padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 12px; }
+  tr:nth-child(even) { background: var(--light-gray); } tr:hover { background: var(--light-blue); }
+
+  .signal-badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; }
+  .signal-strong { background: #d4edda; color: #155724; } .signal-moderate { background: #fff3cd; color: #856404; }
+  .signal-none { background: #f8f9fa; color: #6c757d; } .signal-fire { background: #f8d7da; color: #842029; }
+  .signal-purple { background: #e8daef; color: #4a235a; } .signal-teal { background: #d1f2eb; color: #0e6251; }
+
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .form-group { display: flex; flex-direction: column; }
+  .form-group label { font-size: 10px; font-weight: 600; color: var(--gray); margin-bottom: 3px; text-transform: uppercase; }
+  .form-group input, .form-group select { padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; }
+  .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(46,117,182,0.15); }
+
+  .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); gap: 14px; }
+  .game-card { background: var(--white); border-radius: 10px; box-shadow: var(--shadow); overflow: hidden; border: 2px solid transparent; transition: all 0.3s; }
+  .game-card.signal-fire { border-color: var(--red); box-shadow: 0 0 16px rgba(220,53,69,0.25); }
+  .game-card.signal-warn { border-color: var(--orange); box-shadow: 0 0 12px rgba(253,126,20,0.2); }
+  .game-card-header { padding: 8px 14px; background: var(--navy); color: white; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+  .game-card-header.live-pulse { background: linear-gradient(135deg, #1a5c3a 0%, #28a745 100%); }
+  .game-card-body { padding: 12px 14px; }
+  .game-teams { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .team-block { text-align: center; flex: 1; }
+  .team-name { font-size: 15px; font-weight: 800; color: var(--navy); }
+  .team-record { font-size: 10px; color: var(--gray); }
+  .team-score { font-size: 32px; font-weight: 900; color: var(--dark); margin: 2px 0; }
+  .vs-block { text-align: center; padding: 0 8px; }
+  .vs-text { font-size: 11px; color: var(--gray); font-weight: 700; }
+  .game-period { font-size: 11px; color: var(--orange); font-weight: 800; }
+
+  .stat-bars { padding-top: 8px; border-top: 1px solid var(--border); }
+  .stat-bar-row { display: flex; align-items: center; margin-bottom: 5px; font-size: 11px; }
+  .stat-bar-label { width: 85px; font-weight: 600; color: var(--gray); flex-shrink: 0; }
+  .stat-bar-track { flex: 1; height: 18px; background: #eee; border-radius: 10px; overflow: hidden; position: relative; }
+  .stat-bar-fill { height: 100%; border-radius: 10px; transition: width 0.5s; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; color: white; min-width: 28px; }
+  .stat-bar-fill.hot { background: linear-gradient(90deg, var(--orange), var(--red)); }
+  .stat-bar-fill.normal { background: var(--blue); }
+  .stat-bar-fill.cold { background: var(--gray); }
+  .stat-bar-fill.teal { background: var(--teal); }
+  .stat-bar-avg { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--dark); z-index: 1; }
+  .stat-bar-avg::after { content: attr(data-label); position: absolute; top: -13px; left: -10px; font-size: 8px; color: var(--gray); white-space: nowrap; }
+  .stat-bar-value { width: 60px; text-align: right; font-weight: 700; flex-shrink: 0; margin-left: 5px; font-size: 11px; }
+
+  .signal-panel { margin-top: 8px; padding: 8px 12px; border-radius: 8px; background: #fff8e1; border: 1px solid #ffe082; }
+  .signal-panel.strong { background: #fce4ec; border-color: #ef9a9a; }
+  .signal-panel.fire { background: #ffebee; border-color: #ef5350; animation: glow 2s infinite; }
+  @keyframes glow { 0%, 100% { box-shadow: 0 0 5px rgba(239,83,80,0.2); } 50% { box-shadow: 0 0 15px rgba(239,83,80,0.4); } }
+  .signal-title { font-size: 11px; font-weight: 800; margin-bottom: 3px; }
+  .signal-title.fire { color: var(--red); } .signal-title.warn { color: #e65100; }
+  .signal-detail { font-size: 10px; color: #555; line-height: 1.5; }
+
+  /* LEAD DURABILITY BAR */
+  .durability-bar { margin-top: 6px; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; gap: 8px; font-size: 10px; font-weight: 600; }
+  .durability-bar.fragile { background: #fff3cd; color: #856404; border: 1px solid #ffc107; }
+  .durability-bar.durable { background: #d1f2eb; color: #0e6251; border: 1px solid var(--teal); }
+  .durability-bar.neutral { background: var(--light-gray); color: var(--gray); border: 1px solid var(--border); }
+  .durability-meter { width: 60px; height: 6px; background: #ddd; border-radius: 3px; overflow: hidden; }
+  .durability-meter-fill { height: 100%; border-radius: 3px; }
+
+  /* 3PT TRACKER */
+  .three-pt-card { background: var(--white); border-radius: 10px; box-shadow: var(--shadow); overflow: hidden; border: 2px solid transparent; transition: all 0.3s; }
+  .three-pt-card.hot-card { border-color: var(--red); box-shadow: 0 0 16px rgba(220,53,69,0.3); }
+  .three-pt-card.warm-card { border-color: var(--orange); box-shadow: 0 0 12px rgba(253,126,20,0.2); }
+  .three-pt-card-header { padding: 8px 14px; background: var(--purple); color: white; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+  .three-pt-card-body { padding: 12px 14px; }
+  .qtr-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; }
+  .qtr-box { text-align: center; padding: 6px; border-radius: 6px; background: var(--light-gray); }
+  .qtr-box.active-q { border: 2px solid var(--blue); background: var(--light-blue); }
+  .qtr-box.hot-q { background: #ffebee; border: 2px solid var(--red); }
+  .qtr-label { font-size: 9px; font-weight: 700; color: var(--gray); text-transform: uppercase; }
+  .qtr-value { font-size: 16px; font-weight: 900; }
+  .qtr-detail { font-size: 9px; color: var(--gray); }
+  .qtr-value.hot-val { color: var(--red); } .qtr-value.normal-val { color: var(--navy); }
+
+  .star-row td { vertical-align: middle; }
+  .pace-indicator { display: inline-block; width: 50px; height: 7px; background: #eee; border-radius: 4px; overflow: hidden; vertical-align: middle; }
+  .pace-fill { height: 100%; border-radius: 4px; }
+
+  .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center; }
+  .modal-overlay.active { display: flex; }
+  .modal { background: white; border-radius: 12px; padding: 24px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+  .modal h3 { margin-bottom: 16px; color: var(--navy); }
+
+  .empty-state { text-align: center; padding: 30px 20px; color: var(--gray); }
+  .empty-state .icon { font-size: 40px; margin-bottom: 10px; }
+  .empty-state p { font-size: 13px; }
+
+  .auto-refresh-bar { display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--light-gray); border-radius: 8px; margin-bottom: 10px; font-size: 11px; flex-wrap: wrap; }
+  .auto-refresh-bar .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+  .auto-refresh-bar .dot.off { background: var(--gray); }
+  .countdown-bar { width: 80px; height: 4px; background: #ddd; border-radius: 2px; overflow: hidden; }
+  .countdown-fill { height: 100%; background: var(--blue); transition: width 1s linear; }
+
+  /* CONNECTION STATUS */
+  .conn-status { font-size: 10px; padding: 2px 8px; border-radius: 10px; }
+  .conn-ok { background: #d4edda; color: #155724; }
+  .conn-err { background: #f8d7da; color: #842029; }
+  .conn-loading { background: #fff3cd; color: #856404; }
+
+  /* TOAST */
+  .quarter-alert-toast {
+    background: linear-gradient(135deg, #4a235a 0%, #6f42c1 100%);
+    color: white; padding: 14px 18px; border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(111,66,193,0.4);
+    max-width: 360px; animation: slideIn 0.4s ease-out, fadeOut 0.5s 10s forwards;
+    cursor: pointer; margin-bottom: 8px;
+  }
+  .quarter-alert-toast .toast-title { font-weight: 800; font-size: 13px; margin-bottom: 3px; }
+  .quarter-alert-toast .toast-body { font-size: 11px; opacity: 0.9; }
+  @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; pointer-events: none; } }
+
+  /* EDGE SUMMARY BANNER */
+  .edge-summary { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; border-radius: 10px; padding: 14px 20px; margin-bottom: 14px; display: none; }
+  .edge-summary.active { display: block; }
+  .edge-summary-title { font-size: 13px; font-weight: 800; margin-bottom: 8px; color: #ffd700; }
+  .edge-items { display: flex; flex-wrap: wrap; gap: 8px; }
+  .edge-item { background: rgba(255,255,255,0.1); border-radius: 8px; padding: 8px 12px; font-size: 11px; border-left: 3px solid; }
+  .edge-item.edge-3pt { border-color: var(--purple); }
+  .edge-item.edge-star { border-color: var(--orange); }
+  .edge-item.edge-paint { border-color: var(--teal); }
+  .edge-item.edge-foul { border-color: var(--yellow); }
+  .edge-item strong { display: block; font-size: 12px; margin-bottom: 2px; }
+
+  @media (max-width: 768px) {
+    .header { flex-direction: column; gap: 6px; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .games-grid { grid-template-columns: 1fr; }
+    .form-grid { grid-template-columns: 1fr 1fr; }
+    .qtr-grid { grid-template-columns: repeat(2, 1fr); }
+    .tab { padding: 10px 12px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>NBA EDGE SYSTEM</h1>
+    <div class="header-sub">Live ML Edge Finder &bull; 3PT / Star Pace / Paint Durability / Fouls &bull; Auto-Updating</div>
+  </div>
+  <div class="header-right">
+    <span class="conn-status conn-ok" id="connStatus" style="display:none;">Connected</span>
+    <div>
+      <span class="status-dot off" id="statusDot"></span>
+      <span id="statusText" style="font-size:11px;">ESPN Feed</span>
+    </div>
+  </div>
+</div>
+
+<div class="tab-bar">
+  <div class="tab active" onclick="switchTab('live')" id="tab-live">Live Games <span class="badge" id="live-badge" style="display:none;">0</span></div>
+  <div class="tab" onclick="switchTab('threept')" id="tab-threept">3PT Tracker <span class="badge badge-purple" id="threept-badge" style="display:none;">0</span></div>
+  <div class="tab" onclick="switchTab('stars')" id="tab-stars">Star Tracker</div>
+  <div class="tab" onclick="switchTab('log')" id="tab-log">Bet Log</div>
+  <div class="tab" onclick="switchTab('bankroll')" id="tab-bankroll">Bankroll</div>
+</div>
+
+<div class="container">
+  <div id="quarter-alerts"></div>
+
+  <!-- ==================== LIVE GAMES TAB ==================== -->
+  <div class="tab-content active" id="content-live">
+    <!-- EDGE SUMMARY BANNER -->
+    <div class="edge-summary" id="edgeSummary">
+      <div class="edge-summary-title">ACTIVE EDGE SIGNALS</div>
+      <div class="edge-items" id="edgeItems"></div>
+    </div>
+
+    <div class="auto-refresh-bar">
+      <span class="dot" id="autoRefreshDot"></span>
+      <span>Auto-refresh: <strong id="autoRefreshLabel">OFF</strong></span>
+      <button class="btn btn-sm btn-green" id="autoRefreshBtn" onclick="toggleAutoRefresh()">Start</button>
+      <span style="margin-left:6px;">Every:</span>
+      <select id="refreshInterval" style="padding:2px 6px;font-size:11px;border-radius:4px;border:1px solid var(--border);" onchange="updateRefreshInterval()">
+        <option value="30">30s</option>
+        <option value="60" selected>60s</option>
+        <option value="120">2min</option>
+      </select>
+      <div class="countdown-bar"><div class="countdown-fill" id="countdownFill" style="width:100%;"></div></div>
+      <span style="margin-left:auto;color:var(--gray);font-size:10px;">Last: <span id="live-last-update">-</span> | Errors: <span id="errorCount">0</span></span>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">Live Games</div><div class="stat-value" id="live-games-count">-</div></div>
+      <div class="stat-card"><div class="stat-label">3PT Signals</div><div class="stat-value orange" id="live-3pt-signals">0</div></div>
+      <div class="stat-card"><div class="stat-label">Star Cold</div><div class="stat-value orange" id="live-star-signals">0</div></div>
+      <div class="stat-card"><div class="stat-label">Fragile Leads</div><div class="stat-value teal" id="live-fragile-leads">0</div></div>
+      <div class="stat-card"><div class="stat-label">Combined</div><div class="stat-value red" id="live-combined-signals">0</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span>Live Game Monitor</span>
+        <button class="btn btn-green btn-sm" onclick="fetchESPNScoreboard()">Refresh Now</button>
+      </div>
+      <div class="card-body">
+        <div class="games-grid" id="live-games-grid">
+          <div class="empty-state" style="grid-column:1/-1;"><div class="icon">&#x1F3C0;</div><p>Click "Refresh Now" or start auto-refresh to load live games.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 3PT TRACKER TAB ==================== -->
+  <div class="tab-content" id="content-threept">
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">Teams 50%+ 3PT</div><div class="stat-value red" id="threept-hot-count">0</div></div>
+      <div class="stat-card"><div class="stat-label">Teams 45-50%</div><div class="stat-value orange" id="threept-warm-count">0</div></div>
+      <div class="stat-card"><div class="stat-label">Qtr Alerts</div><div class="stat-value purple" id="threept-qtr-alerts">0</div></div>
+      <div class="stat-card"><div class="stat-label">League Avg</div><div class="stat-value" style="color:var(--blue);">36.5%</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span>3-Point Shooting Tracker - Live</span><span style="font-size:10px;color:var(--gray);">Alert: 50%+ on 8+ att</span></div>
+      <div class="card-body"><div class="games-grid" id="threept-grid"><div class="empty-state" style="grid-column:1/-1;"><div class="icon">&#x1F3AF;</div><p>3PT tracking populates when live games run.</p></div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span>Quarter-End Alerts</span><button class="btn btn-sm btn-outline" onclick="clearQtrAlerts()">Clear</button></div>
+      <div class="card-body">
+        <table><thead><tr><th>Time</th><th>Team</th><th>Qtr</th><th>3PT%</th><th>Made/Att</th><th>Game</th><th>Action</th></tr></thead>
+        <tbody id="qtr-alerts-body"><tr><td colspan="7" class="empty-state">No quarter-end alerts yet.</td></tr></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== STAR TRACKER TAB ==================== -->
+  <div class="tab-content" id="content-stars">
+    <div class="card">
+      <div class="card-header"><span>Star Player Database (23+ PPG)</span><span style="font-size:10px;color:var(--gray);">Signal: &lt;60% of expected pace</span></div>
+      <div class="card-body" style="font-size:12px;">
+        <p style="margin-bottom:10px;color:var(--gray);">Players tracked automatically in live games. Signal fires when scoring falls below 60% of expected pace. Tracks Q1 and halftime pace separately.</p>
+        <table>
+          <thead><tr><th>Player</th><th>Team</th><th>PPG</th><th>Q1 Exp</th><th>Half Exp</th><th>Signal (&lt;60%)</th><th></th></tr></thead>
+          <tbody id="star-db-body"></tbody>
+        </table>
+        <div style="margin-top:10px;">
+          <div class="form-grid" style="max-width:700px;">
+            <div class="form-group"><label>Player Name</label><input type="text" id="add-star-name" placeholder="e.g., LeBron James" /></div>
+            <div class="form-group"><label>Team</label><input type="text" id="add-star-team" placeholder="e.g., LAL" /></div>
+            <div class="form-group"><label>PPG</label><input type="number" id="add-star-ppg" placeholder="e.g., 28.5" step="0.1" /></div>
+            <div class="form-group" style="justify-content:flex-end;"><button class="btn btn-green" onclick="addStar()">Add</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">Live Star Status</div>
+      <div class="card-body">
+        <table><thead><tr><th>Player</th><th>Game</th><th>Pts</th><th>Q1 Pace</th><th>Half Pace</th><th>Overall %</th><th>Period</th><th>Signal</th></tr></thead>
+        <tbody id="live-star-status"><tr><td colspan="8" class="empty-state">Star stats populate when live games are running.</td></tr></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== BET LOG TAB ==================== -->
+  <div class="tab-content" id="content-log">
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">Total Bets</div><div class="stat-value" id="log-total">0</div></div>
+      <div class="stat-card"><div class="stat-label">Win Rate</div><div class="stat-value" id="log-winrate">-</div></div>
+      <div class="stat-card"><div class="stat-label">Net Units</div><div class="stat-value" id="log-net-units">0</div></div>
+      <div class="stat-card"><div class="stat-label">ROI</div><div class="stat-value" id="log-roi">-</div></div>
+      <div class="stat-card"><div class="stat-label">Streak</div><div class="stat-value" id="log-streak">-</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span>All Bets</span><div><button class="btn btn-outline btn-sm" onclick="exportLog()">Export CSV</button> <button class="btn btn-red btn-sm" onclick="clearLog()">Clear All</button></div></div>
+      <div class="card-body">
+        <table><thead><tr><th>Date</th><th>Strategy</th><th>Game</th><th>Side</th><th>Line</th><th>Units</th><th>Result</th><th>Profit</th><th>Actions</th></tr></thead>
+        <tbody id="bet-log-body"><tr><td colspan="9" class="empty-state">No bets logged yet.</td></tr></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== BANKROLL TAB ==================== -->
+  <div class="tab-content" id="content-bankroll">
+    <div class="card">
+      <div class="card-header">Bankroll Settings</div>
+      <div class="card-body">
+        <div class="form-grid" style="max-width:500px;">
+          <div class="form-group"><label>Starting ($)</label><input type="number" id="bankroll-start" placeholder="1000" onchange="updateBankroll()" /></div>
+          <div class="form-group"><label>Current ($)</label><input type="number" id="bankroll-current" placeholder="1050" onchange="updateBankroll()" /></div>
+        </div>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">1 Unit (1%)</div><div class="stat-value" id="br-unit">-</div></div>
+      <div class="stat-card"><div class="stat-label">Max (2%)</div><div class="stat-value" id="br-max">-</div></div>
+      <div class="stat-card"><div class="stat-label">Daily (5u)</div><div class="stat-value" id="br-daily">-</div></div>
+      <div class="stat-card"><div class="stat-label">P/L</div><div class="stat-value" id="br-pl">-</div></div>
+      <div class="stat-card"><div class="stat-label">P/L %</div><div class="stat-value" id="br-pl-pct">-</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header">Rules</div>
+      <div class="card-body" style="font-size:13px;line-height:1.8;">
+        <p><strong>Standard:</strong> 1u &bull; <strong>High conviction:</strong> 1.5u &bull; <strong>Max:</strong> 2u</p>
+        <p style="margin-top:6px;padding:8px;background:#fff3cd;border-radius:6px;font-size:12px;"><strong>Stop-loss:</strong> 3 straight L = 1 day off. 20% drawdown = cut to 0.5% units.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOG BET MODAL -->
+<div class="modal-overlay" id="logModal">
+  <div class="modal">
+    <h3>Log This Bet</h3>
+    <div class="form-grid">
+      <div class="form-group"><label>Game</label><input type="text" id="modal-game" /></div>
+      <div class="form-group"><label>Side</label><input type="text" id="modal-side" /></div>
+      <div class="form-group"><label>Strategy</label><select id="modal-strategy"><option>Mean Reversion</option><option>3PT Regression</option><option>Paint Durability</option><option>Foul Trouble</option></select></div>
+      <div class="form-group"><label>Line / Price</label><input type="text" id="modal-price" /></div>
+      <div class="form-group"><label>Units</label><input type="number" id="modal-units" value="1" step="0.5" min="0.5" max="2" /></div>
+      <div class="form-group"><label>Notes</label><input type="text" id="modal-notes" /></div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-green" onclick="confirmLogBet()">Log Bet</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container" style="position:fixed;top:70px;right:20px;z-index:150;display:flex;flex-direction:column;gap:6px;"></div>
+
+<script>
+// ==================== STAR DATABASE (23+ PPG) ====================
+const DEFAULT_STARS = [
+  { name: "Shai Gilgeous-Alexander", team: "OKC", ppg: 32.2 },
+  { name: "Giannis Antetokounmpo", team: "MIL", ppg: 31.5 },
+  { name: "Nikola Jokic", team: "DEN", ppg: 29.0 },
+  { name: "Luka Doncic", team: "DAL", ppg: 28.1 },
+  { name: "Jayson Tatum", team: "BOS", ppg: 27.8 },
+  { name: "Joel Embiid", team: "PHI", ppg: 27.6 },
+  { name: "Kevin Durant", team: "PHX", ppg: 27.3 },
+  { name: "Devin Booker", team: "PHX", ppg: 27.2 },
+  { name: "Anthony Edwards", team: "MIN", ppg: 27.0 },
+  { name: "De'Aaron Fox", team: "SAC", ppg: 26.8 },
+  { name: "Donovan Mitchell", team: "CLE", ppg: 26.5 },
+  { name: "Jalen Brunson", team: "NYK", ppg: 26.3 },
+  { name: "Anthony Davis", team: "LAL", ppg: 25.7 },
+  { name: "Tyrese Maxey", team: "PHI", ppg: 25.5 },
+  { name: "Karl-Anthony Towns", team: "NYK", ppg: 25.3 },
+  { name: "Cade Cunningham", team: "DET", ppg: 24.8 },
+  { name: "Trae Young", team: "ATL", ppg: 24.3 },
+  { name: "Damian Lillard", team: "MIL", ppg: 24.0 },
+  { name: "Jaylen Brown", team: "BOS", ppg: 23.8 },
+  { name: "LeBron James", team: "LAL", ppg: 23.5 },
+  { name: "Jaren Jackson Jr.", team: "MEM", ppg: 23.3 },
+  { name: "Tyrese Haliburton", team: "IND", ppg: 23.2 },
+  { name: "Zion Williamson", team: "NOP", ppg: 23.0 },
+];
+
+const TEAM_MAP = {
+  'Atlanta Hawks':'ATL','Boston Celtics':'BOS','Brooklyn Nets':'BKN','Charlotte Hornets':'CHA',
+  'Chicago Bulls':'CHI','Cleveland Cavaliers':'CLE','Dallas Mavericks':'DAL','Denver Nuggets':'DEN',
+  'Detroit Pistons':'DET','Golden State Warriors':'GSW','Houston Rockets':'HOU','Indiana Pacers':'IND',
+  'LA Clippers':'LAC','Los Angeles Clippers':'LAC','Los Angeles Lakers':'LAL','Memphis Grizzlies':'MEM',
+  'Miami Heat':'MIA','Milwaukee Bucks':'MIL','Minnesota Timberwolves':'MIN','New Orleans Pelicans':'NOP',
+  'New York Knicks':'NYK','Oklahoma City Thunder':'OKC','Orlando Magic':'ORL','Philadelphia 76ers':'PHI',
+  'Phoenix Suns':'PHX','Portland Trail Blazers':'POR','Sacramento Kings':'SAC','San Antonio Spurs':'SAS',
+  'Toronto Raptors':'TOR','Utah Jazz':'UTA','Washington Wizards':'WAS',
+};
+function shortName(n) { return TEAM_MAP[n] || n.split(' ').pop().substring(0,3).toUpperCase(); }
+
+// ==================== STATE ====================
+let state = {
+  betLog: JSON.parse(localStorage.getItem('betLog') || '[]'),
+  bankroll: JSON.parse(localStorage.getItem('bankroll') || '{"start":0,"current":0}'),
+  stars: JSON.parse(localStorage.getItem('starPlayers') || 'null') || DEFAULT_STARS,
+  autoRefresh: false, refreshTimer: null, countdownTimer: null,
+  quarterAlerts: JSON.parse(localStorage.getItem('quarterAlerts') || '[]'),
+  lastKnownPeriods: {}, prevTeamData: {},
+  errorCount: 0, consecutiveErrors: 0,
+};
+
+// ==================== INIT ====================
+document.getElementById('bankroll-start').value = state.bankroll.start || '';
+document.getElementById('bankroll-current').value = state.bankroll.current || '';
+updateBankroll(); renderBetLog(); renderStarDB(); renderQtrAlerts();
+
+// ==================== TABS ====================
+function switchTab(t) {
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  document.getElementById('content-'+t).classList.add('active');
+}
+
+// ==================== AUTO REFRESH ====================
+function toggleAutoRefresh() {
+  state.autoRefresh = !state.autoRefresh;
+  const btn = document.getElementById('autoRefreshBtn'), dot = document.getElementById('autoRefreshDot'), lbl = document.getElementById('autoRefreshLabel');
+  if (state.autoRefresh) {
+    btn.textContent = 'Stop'; btn.className = 'btn btn-sm btn-red'; dot.className = 'dot'; lbl.textContent = 'ON';
+    fetchESPNScoreboard(); startCountdown();
+  } else {
+    btn.textContent = 'Start'; btn.className = 'btn btn-sm btn-green'; dot.className = 'dot off'; lbl.textContent = 'OFF';
+    clearInterval(state.refreshTimer); clearInterval(state.countdownTimer);
+    document.getElementById('countdownFill').style.width = '100%';
+  }
+}
+function startCountdown() {
+  const iv = parseInt(document.getElementById('refreshInterval').value) * 1000;
+  let rem = iv;
+  clearInterval(state.refreshTimer); clearInterval(state.countdownTimer);
+  state.refreshTimer = setInterval(() => { if (state.autoRefresh) { fetchESPNScoreboard(); rem = iv; } }, iv);
+  state.countdownTimer = setInterval(() => { rem -= 1000; document.getElementById('countdownFill').style.width = Math.max(0, rem/iv*100)+'%'; }, 1000);
+}
+function updateRefreshInterval() { if (state.autoRefresh) startCountdown(); }
+
+// ==================== PACE HELPERS ====================
+function getQ1Expected(ppg) { return ppg * 0.25; }
+function getHalfExpected(ppg) { return ppg * 0.5; }
+function getExpectedByTime(ppg, mins) { return ppg * (mins / 48); }
+
+// ==================== CONNECTION STATUS ====================
+function setConnStatus(status) {
+  const el = document.getElementById('connStatus');
+  const dot = document.getElementById('statusDot');
+  el.style.display = 'inline';
+  if (status === 'ok') { el.textContent = 'Connected'; el.className = 'conn-status conn-ok'; dot.className = 'status-dot live'; state.consecutiveErrors = 0; }
+  else if (status === 'error') { el.textContent = 'Error'; el.className = 'conn-status conn-err'; dot.className = 'status-dot error'; state.consecutiveErrors++; state.errorCount++; }
+  else { el.textContent = 'Loading...'; el.className = 'conn-status conn-loading'; }
+  document.getElementById('errorCount').textContent = state.errorCount;
+}
+
+// ==================== QUARTER-END DETECTION ====================
+function checkQuarterEnd(gameId, teamAbbr, currentPeriod, pct, made, att, gameLabel) {
+  const key = `${gameId}_${teamAbbr}`;
+  const prev = state.lastKnownPeriods[key] || 0;
+  if (currentPeriod > prev && prev > 0) {
+    const p = state.prevTeamData[key];
+    if (p) {
+      const qM = (parseInt(made)||0) - (p.made||0), qA = (parseInt(att)||0) - (p.att||0);
+      const qP = qA > 0 ? (qM/qA*100) : 0;
+      if (qP >= 50 && qA >= 4) {
+        const a = { id: Date.now()+Math.random(), time: new Date().toLocaleTimeString(), team: teamAbbr, quarter: prev, pct: qP.toFixed(1), made: qM, att: qA, game: gameLabel };
+        state.quarterAlerts.unshift(a); localStorage.setItem('quarterAlerts', JSON.stringify(state.quarterAlerts));
+        renderQtrAlerts(); showQuarterToast(a);
+      }
+    }
+  }
+  state.lastKnownPeriods[key] = currentPeriod;
+  state.prevTeamData[key] = { made: parseInt(made)||0, att: parseInt(att)||0, period: currentPeriod };
+}
+
+function showQuarterToast(a) {
+  const c = document.getElementById('toast-container'), t = document.createElement('div');
+  t.className = 'quarter-alert-toast';
+  t.innerHTML = `<div class="toast-title">Q${a.quarter} END - ${a.team}</div><div class="toast-body">${a.team} shot ${a.pct}% from 3 (${a.made}/${a.att}) in Q${a.quarter}! ${a.game}</div>`;
+  t.onclick = () => t.remove(); c.appendChild(t);
+  setTimeout(() => { if (t.parentNode) t.remove(); }, 11000);
+  const badge = document.getElementById('threept-badge');
+  if (state.quarterAlerts.length > 0) { badge.style.display = 'inline'; badge.textContent = state.quarterAlerts.length; }
+}
+
+function renderQtrAlerts() {
+  const tb = document.getElementById('qtr-alerts-body');
+  if (!state.quarterAlerts.length) { tb.innerHTML = '<tr><td colspan="7" class="empty-state">No quarter-end alerts yet.</td></tr>'; document.getElementById('threept-qtr-alerts').textContent = '0'; return; }
+  tb.innerHTML = state.quarterAlerts.map(a => `<tr><td>${a.time}</td><td><strong>${a.team}</strong></td><td>Q${a.quarter}</td><td style="color:var(--red);font-weight:800;">${a.pct}%</td><td>${a.made}/${a.att}</td><td>${a.game}</td><td><button class="btn btn-purple btn-sm" onclick="openLogModal('${a.game}','3PT Q${a.quarter}','3PT Regression')">Log</button></td></tr>`).join('');
+  document.getElementById('threept-qtr-alerts').textContent = state.quarterAlerts.length;
+}
+function clearQtrAlerts() { if(confirm('Clear all?')) { state.quarterAlerts=[]; localStorage.setItem('quarterAlerts','[]'); renderQtrAlerts(); document.getElementById('threept-badge').style.display='none'; } }
+
+// ==================== LEAD DURABILITY (PAINT vs 3PT) ====================
+function analyzeScoringDurability(teamAbbr, score, fg3Made, opponentScore) {
+  const s = parseInt(score) || 0;
+  const m3 = parseInt(fg3Made) || 0;
+  if (s <= 0) return { pct3: 0, durability: 'neutral', label: '-', fragile: false };
+  const pts3 = m3 * 3;
+  const pct3 = (pts3 / s * 100);
+  const nonThreePts = s - pts3;
+  // League average: ~35% of points come from 3PT. Above 42% is fragile, below 28% is durable
+  const isLeading = s > (parseInt(opponentScore) || 0);
+  const fragile = pct3 >= 42 && isLeading && s >= 20;
+  const durable = pct3 <= 28 && isLeading && s >= 20;
+  let label = `${pct3.toFixed(0)}% from 3`;
+  let durability = 'neutral';
+  if (fragile) { durability = 'fragile'; label = `${pct3.toFixed(0)}% from 3 - FRAGILE lead`; }
+  else if (durable) { durability = 'durable'; label = `${pct3.toFixed(0)}% from 3 - DURABLE lead`; }
+  return { pct3, durability, label, fragile, durable, pts3, nonThreePts };
+}
+
+// ==================== FOUL TRACKING ====================
+function analyzeTeamFouls(fouls, period, clock) {
+  const f = parseInt(fouls) || 0;
+  const clockMin = parseFloat(clock?.split(':')[0] || 12);
+  const minsPlayed = (period - 1) * 12 + (12 - clockMin);
+  const foulRate = minsPlayed > 0 ? (f / minsPlayed * 12) : 0; // fouls per quarter rate
+  // NBA average: ~5 fouls per quarter. High foul rate = bonus free throws = inflated scoring
+  const highFouls = foulRate >= 6.5 && f >= 10;
+  return { fouls: f, foulRate: foulRate.toFixed(1), highFouls, perQtr: foulRate.toFixed(1) };
+}
+
+// ==================== ESPN SCOREBOARD ====================
+async function fetchESPNScoreboard() {
+  const grid = document.getElementById('live-games-grid');
+  const tpGrid = document.getElementById('threept-grid');
+  setConnStatus('loading');
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
+    const res = await fetch('https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard', { signal: controller.signal });
+    clearTimeout(timeout);
+    if (!res.ok) throw new Error('ESPN ' + res.status);
+    const data = await res.json();
+    setConnStatus('ok');
+    const events = data.events || [];
+    document.getElementById('live-last-update').textContent = new Date().toLocaleTimeString();
+
+    const liveEvents = events.filter(e => { const s = e.status?.type?.state; return s === 'in' || s === 'pre'; });
+    const inProgress = events.filter(e => e.status?.type?.state === 'in');
+    document.getElementById('live-games-count').textContent = inProgress.length;
+
+    if (liveEvents.length === 0) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">&#x1F3C0;</div><p>No live or upcoming NBA games right now.</p></div>`;
+      tpGrid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">&#x1F3AF;</div><p>No live games.</p></div>`;
+      document.getElementById('edgeSummary').classList.remove('active');
+      return;
+    }
+
+    let sig3=0, sigStar=0, sigCombined=0, sigFragile=0, hotTeams=0, warmTeams=0;
+    let cards='', tpCards='', edgeItems=[];
+
+    for (const event of liveEvents) {
+      const comp = event.competitions?.[0]; if (!comp) continue;
+      const away = comp.competitors?.find(c => c.homeAway==='away');
+      const home = comp.competitors?.find(c => c.homeAway==='home');
+      if (!away || !home) continue;
+
+      const gid = event.id;
+      const aA = away.team?.abbreviation || shortName(away.team?.displayName||'');
+      const hA = home.team?.abbreviation || shortName(home.team?.displayName||'');
+      const aS = parseInt(away.score)||0, hS = parseInt(home.score)||0;
+      const isLive = event.status?.type?.state === 'in';
+      const per = event.status?.period||0, clk = event.status?.displayClock||'';
+      const detail = event.status?.type?.shortDetail||'';
+      const gLabel = `${aA} @ ${hA}`;
+      const aRec = away.records?.[0]?.summary||'', hRec = home.records?.[0]?.summary||'';
+
+      let aStats={}, hStats={};
+      (away.statistics||[]).forEach(s => { aStats[s.name]=s.displayValue; });
+      (home.statistics||[]).forEach(s => { hStats[s.name]=s.displayValue; });
+
+      let a3P=aStats.threePointFieldGoalPct||aStats.threePointPct||'-';
+      let h3P=hStats.threePointFieldGoalPct||hStats.threePointPct||'-';
+      let a3M=aStats.threePointFieldGoalsMade||'-', a3A=aStats.threePointFieldGoalsAttempted||'-';
+      let h3M=hStats.threePointFieldGoalsMade||'-', h3A=hStats.threePointFieldGoalsAttempted||'-';
+      let aFouls=aStats.fouls||aStats.totalFouls||'0', hFouls=hStats.fouls||hStats.totalFouls||'0';
+
+      if (isLive) { checkQuarterEnd(gid, aA, per, a3P, a3M, a3A, gLabel); checkQuarterEnd(gid, hA, per, h3P, h3M, h3A, gLabel); }
+
+      let aLeaders=[], hLeaders=[];
+      (comp.competitors||[]).forEach(c => {
+        (c.leaders||[]).forEach(cat => {
+          if (cat.name==='points'||cat.displayName==='Points') {
+            (cat.leaders||[]).forEach(l => {
+              const e = { name: l.athlete?.shortName||l.athlete?.displayName||'?', pts: parseFloat(l.value)||0, team: c.homeAway==='away'?aA:hA };
+              if (c.homeAway==='away') aLeaders.push(e); else hLeaders.push(e);
+            });
+          }
+        });
+      });
+
+      let signals=[], signalLevel=0;
+
+      if (isLive) {
+        // 3PT CHECK
+        const chk3 = (p,m,a,t) => {
+          const pn=parseFloat(p), an=parseInt(a), mn=parseInt(m);
+          if (pn>=50&&an>=8) { signals.push({type:'3pt',text:`${t} ${pn.toFixed(0)}% from 3 (${mn}/${an}) - UNSUSTAINABLE`,level:2}); sig3++; hotTeams++; return true; }
+          else if (pn>=45&&an>=6) { signals.push({type:'3pt',text:`${t} ${pn.toFixed(0)}% from 3 (${mn}/${an}) - elevated`,level:1}); warmTeams++; }
+          return false;
+        };
+        const a3Hot = chk3(a3P,a3M,a3A,aA), h3Hot = chk3(h3P,h3M,h3A,hA);
+
+        // STAR PACE CHECK (60% threshold)
+        const cM = parseFloat(clk?.split(':')[0]||12), cS = parseFloat(clk?.split(':')[1]||0);
+        const gMins = (per-1)*12 + (12-cM-cS/60), gPct = Math.min(gMins/48,1);
+        [...aLeaders,...hLeaders].forEach(leader => {
+          const star = state.stars.find(s => leader.name.toLowerCase().includes(s.name.split(' ').pop().toLowerCase()) && s.team===leader.team);
+          if (star) {
+            const exp = getExpectedByTime(star.ppg, gMins);
+            const pr = exp>0 ? leader.pts/exp : 1;
+            if (pr<0.6 && gPct>=0.2 && per<=3) {
+              let ctx = per===1?` Q1 exp: ${getQ1Expected(star.ppg).toFixed(0)}`:per===2?` Half exp: ${getHalfExpected(star.ppg).toFixed(0)}`:'';
+              signals.push({type:'star',text:`${leader.name} ${leader.pts}pts (exp ~${exp.toFixed(0)}, threshold ${(exp*0.6).toFixed(0)}).${ctx} MR candidate.`,level:2});
+              sigStar++;
+              edgeItems.push({type:'star',game:gLabel,text:`${leader.name} at ${leader.pts}pts vs ${exp.toFixed(0)} expected`});
+            } else if (pr<0.75 && gPct>=0.2) {
+              signals.push({type:'star',text:`${leader.name} ${leader.pts}pts, behind ${star.ppg} PPG pace (exp ~${exp.toFixed(0)})`,level:1});
+            }
+          }
+        });
+
+        // LEAD DURABILITY (PAINT vs 3PT)
+        const aDur = analyzeScoringDurability(aA, aS, a3M, hS);
+        const hDur = analyzeScoringDurability(hA, hS, h3M, aS);
+        if (aDur.fragile) {
+          signals.push({type:'paint',text:`${aA} lead built on 3PT (${aDur.pct3.toFixed(0)}% of pts from 3). Fragile - expect regression.`,level:2});
+          sigFragile++;
+          edgeItems.push({type:'paint',game:gLabel,text:`${aA} fragile lead: ${aDur.pct3.toFixed(0)}% scoring from 3PT`});
+        }
+        if (hDur.fragile) {
+          signals.push({type:'paint',text:`${hA} lead built on 3PT (${hDur.pct3.toFixed(0)}% of pts from 3). Fragile - expect regression.`,level:2});
+          sigFragile++;
+          edgeItems.push({type:'paint',game:gLabel,text:`${hA} fragile lead: ${hDur.pct3.toFixed(0)}% scoring from 3PT`});
+        }
+
+        // FOUL ANALYSIS
+        const aFoul = analyzeTeamFouls(aFouls, per, clk);
+        const hFoul = analyzeTeamFouls(hFouls, per, clk);
+        if (aFoul.highFouls) {
+          signals.push({type:'foul',text:`${aA} high foul rate (${aFoul.fouls} fouls, ${aFoul.perQtr}/qtr). Opponent getting bonus FTs - inflated scoring.`,level:1});
+          edgeItems.push({type:'foul',game:gLabel,text:`${aA} fouling at ${aFoul.perQtr}/qtr rate - opponent FT inflation`});
+        }
+        if (hFoul.highFouls) {
+          signals.push({type:'foul',text:`${hA} high foul rate (${hFoul.fouls} fouls, ${hFoul.perQtr}/qtr). Opponent getting bonus FTs - inflated scoring.`,level:1});
+          edgeItems.push({type:'foul',game:gLabel,text:`${hA} fouling at ${hFoul.perQtr}/qtr rate - opponent FT inflation`});
+        }
+
+        // COMBINED
+        const has3=signals.some(s=>s.type==='3pt'&&s.level===2);
+        const hasStar=signals.some(s=>s.type==='star'&&s.level===2);
+        const hasPaint=signals.some(s=>s.type==='paint'&&s.level===2);
+        if ((has3&&hasStar)||(has3&&hasPaint)||(hasStar&&hasPaint)) { signalLevel=2; sigCombined++; }
+        else if (has3||hasStar||hasPaint) signalLevel=1;
+      }
+
+      const cc = signalLevel===2?'signal-fire':signalLevel===1?'signal-warn':'';
+      const hc = isLive?'game-card-header live-pulse':'game-card-header';
+
+      const bar3 = (p,m,a,t) => {
+        const v=parseFloat(p)||0, bc=v>=50?'hot':v>=36.5?'normal':'cold';
+        return `<div class="stat-bar-row"><span class="stat-bar-label">${t} 3PT%</span><div class="stat-bar-track"><div class="stat-bar-fill ${bc}" style="width:${Math.min(v,100)}%">${v.toFixed(0)}%</div><div class="stat-bar-avg" style="left:36.5%" data-label="36.5%"></div></div><span class="stat-bar-value">${m||'-'}/${a||'-'}</span></div>`;
+      };
+
+      // Durability bars
+      let durabilityHTML = '';
+      if (isLive && (aS > 0 || hS > 0)) {
+        const aDur = analyzeScoringDurability(aA, aS, a3M, hS);
+        const hDur = analyzeScoringDurability(hA, hS, h3M, aS);
+        const durBar = (team, dur) => {
+          if (dur.pct3 <= 0) return '';
+          const cls = dur.durability;
+          const w = Math.min(dur.pct3, 100);
+          const col = dur.fragile ? 'var(--red)' : dur.durable ? 'var(--teal)' : 'var(--blue)';
+          return `<div class="durability-bar ${cls}"><span>${team}</span><div class="durability-meter"><div class="durability-meter-fill" style="width:${w}%;background:${col};"></div></div><span>${dur.label}</span></div>`;
+        };
+        durabilityHTML = durBar(aA, aDur) + durBar(hA, hDur);
+      }
+
+      // Foul info
+      let foulHTML = '';
+      if (isLive) {
+        const aF = analyzeTeamFouls(aFouls, per, clk);
+        const hF = analyzeTeamFouls(hFouls, per, clk);
+        if (parseInt(aFouls) > 0 || parseInt(hFouls) > 0) {
+          foulHTML = `<div class="stat-bar-row"><span class="stat-bar-label">Fouls</span><span style="flex:1;font-size:11px;">${aA}: ${aFouls}${aF.highFouls?' &#x26A0;':''} | ${hA}: ${hFouls}${hF.highFouls?' &#x26A0;':''}</span></div>`;
+        }
+      }
+
+      cards += `<div class="game-card ${cc}"><div class="${hc}"><span>${isLive?'LIVE':'UPCOMING'} ${detail}</span><span>${new Date(event.date).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div>
+        <div class="game-card-body">
+          <div class="game-teams"><div class="team-block"><div class="team-name">${aA}</div><div class="team-record">${aRec}</div><div class="team-score">${isLive?aS:'-'}</div></div><div class="vs-block"><div class="vs-text">@</div>${isLive?`<div class="game-period">Q${per} ${clk}</div>`:''}</div><div class="team-block"><div class="team-name">${hA}</div><div class="team-record">${hRec}</div><div class="team-score">${isLive?hS:'-'}</div></div></div>
+          ${isLive?`<div class="stat-bars">${bar3(a3P,a3M,a3A,aA)}${bar3(h3P,h3M,h3A,hA)}${foulHTML}${aLeaders.length?`<div class="stat-bar-row"><span class="stat-bar-label">${aA} pts</span><span style="flex:1;font-weight:700;font-size:11px;">${aLeaders[0]?.name}: ${aLeaders[0]?.pts}</span></div>`:''}${hLeaders.length?`<div class="stat-bar-row"><span class="stat-bar-label">${hA} pts</span><span style="flex:1;font-weight:700;font-size:11px;">${hLeaders[0]?.name}: ${hLeaders[0]?.pts}</span></div>`:''}</div>${durabilityHTML}`:''}
+          ${signals.length?`<div class="signal-panel ${signalLevel===2?'fire':signalLevel===1?'strong':''}"><div class="signal-title ${signalLevel===2?'fire':'warn'}">${signalLevel===2?'STRONG EDGE SIGNAL':'DEVELOPING SIGNAL'}</div>${signals.map(s=>`<div class="signal-detail">${s.level===2?'&#x1F525;':'&#x26A0;&#xFE0F;'} ${s.text}</div>`).join('')}${signalLevel===2?`<div style="margin-top:5px;"><button class="btn btn-orange btn-sm" onclick="openLogModal('${gLabel}','Live ML','Mean Reversion')">Log Bet</button></div>`:''}</div>`:''}
+          ${isLive&&!signals.length?`<div style="text-align:center;padding:4px;font-size:10px;color:var(--gray);">No signals</div>`:''}
+        </div></div>`;
+
+      // 3PT TRACKER CARD
+      if (isLive) {
+        const ap=parseFloat(a3P)||0, hp=parseFloat(h3P)||0;
+        const aHot=ap>=50&&parseInt(a3A)>=8, hHot=hp>=50&&parseInt(h3A)>=8;
+        const aWarm=ap>=45&&parseInt(a3A)>=6&&!aHot, hWarm=hp>=45&&parseInt(h3A)>=6&&!hHot;
+        const cb=(aHot||hHot)?'hot-card':(aWarm||hWarm)?'warm-card':'';
+        const qBoxes=(t,p,m,a)=>{const pv=parseFloat(p)||0,mv=parseInt(m)||0,av=parseInt(a)||0;let b='';for(let q=1;q<=4;q++){const act=q===per,past=q<per;if(past||act){const hc2=pv>=50&&av>=8&&act?'hot-q':act?'active-q':'';b+=`<div class="qtr-box ${hc2}"><div class="qtr-label">Q${q}${act?' *':''}</div><div class="qtr-value ${act&&pv>=50?'hot-val':'normal-val'}">${act?pv.toFixed(0)+'%':'-'}</div><div class="qtr-detail">${act?mv+'/'+av:'done'}</div></div>`;}else b+=`<div class="qtr-box"><div class="qtr-label">Q${q}</div><div class="qtr-value normal-val">-</div><div class="qtr-detail">-</div></div>`;}return b;};
+        const tRow=(t,p,m,a,hot,warm)=>{const badge=hot?'<span class="signal-badge signal-fire">UNSUSTAINABLE</span>':warm?'<span class="signal-badge signal-moderate">ELEVATED</span>':'<span class="signal-badge signal-none">Normal</span>';return `<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><span style="font-weight:800;font-size:14px;color:var(--navy);">${t}</span>${badge}</div>${bar3(p,m,a,t)}<div class="qtr-grid">${qBoxes(t,p,m,a)}</div></div>`;};
+        tpCards+=`<div class="three-pt-card ${cb}"><div class="three-pt-card-header"><span>${gLabel}</span><span>Q${per} ${clk}</span></div><div class="three-pt-card-body">${tRow(aA,a3P,a3M,a3A,aHot,aWarm)}${tRow(hA,h3P,h3M,h3A,hHot,hWarm)}${(aHot||hHot)?`<div style="text-align:center;margin-top:6px;"><button class="btn btn-purple btn-sm" onclick="openLogModal('${gLabel}','3PT Reg','3PT Regression')">Log 3PT Bet</button></div>`:''}</div></div>`;
+      }
+    }
+
+    grid.innerHTML = cards || `<div class="empty-state" style="grid-column:1/-1;"><p>No games.</p></div>`;
+    tpGrid.innerHTML = tpCards || `<div class="empty-state" style="grid-column:1/-1;"><p>No live games.</p></div>`;
+
+    // Update counts
+    document.getElementById('live-3pt-signals').textContent = sig3;
+    document.getElementById('live-star-signals').textContent = sigStar;
+    document.getElementById('live-combined-signals').textContent = sigCombined;
+    document.getElementById('live-fragile-leads').textContent = sigFragile;
+    document.getElementById('threept-hot-count').textContent = hotTeams;
+    document.getElementById('threept-warm-count').textContent = warmTeams;
+
+    const totalSigs = sig3+sigStar+sigFragile;
+    if (totalSigs>0) { document.getElementById('live-badge').style.display='inline'; document.getElementById('live-badge').textContent=totalSigs; }
+    else document.getElementById('live-badge').style.display='none';
+    if (hotTeams>0) { document.getElementById('threept-badge').style.display='inline'; document.getElementById('threept-badge').textContent=hotTeams; }
+
+    // EDGE SUMMARY BANNER
+    const es = document.getElementById('edgeSummary');
+    const ei = document.getElementById('edgeItems');
+    if (edgeItems.length > 0) {
+      es.classList.add('active');
+      ei.innerHTML = edgeItems.map(e => {
+        const cls = e.type==='3pt'?'edge-3pt':e.type==='star'?'edge-star':e.type==='paint'?'edge-paint':'edge-foul';
+        const lbl = e.type==='3pt'?'3PT':e.type==='star'?'STAR COLD':e.type==='paint'?'FRAGILE LEAD':'FOUL RATE';
+        return `<div class="edge-item ${cls}"><strong>${lbl}: ${e.game}</strong>${e.text}</div>`;
+      }).join('');
+    } else es.classList.remove('active');
+
+    updateStarTracker(events);
+
+  } catch (err) {
+    setConnStatus('error');
+    if (state.consecutiveErrors < 3) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><p style="color:var(--orange);">Connection issue (${err.message}). Retrying next cycle...</p></div>`;
+    } else {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><p style="color:var(--red);">Connection failed ${state.consecutiveErrors}x. ESPN may be rate-limiting. Wait 30s then try again.</p></div>`;
+    }
+  }
+}
+
+// ==================== STAR TRACKER ====================
+function updateStarTracker(events) {
+  const tb = document.getElementById('live-star-status');
+  let rows = '';
+  for (const ev of events) {
+    if (ev.status?.type?.state !== 'in') continue;
+    const comp = ev.competitions?.[0]; if (!comp) continue;
+    const per=ev.status?.period||1, clk=ev.status?.displayClock||'12:00';
+    const cM=parseFloat(clk?.split(':')[0]||12), cS=parseFloat(clk?.split(':')[1]||0);
+    const gMins=(per-1)*12+(12-cM-cS/60), gPct=Math.min(gMins/48,1);
+    for (const team of (comp.competitors||[])) {
+      const tA=team.team?.abbreviation||'';
+      const aT=comp.competitors?.find(c=>c.homeAway==='away'), hT=comp.competitors?.find(c=>c.homeAway==='home');
+      const gl=`${aT?.team?.abbreviation||''} @ ${hT?.team?.abbreviation||''}`;
+      for (const cat of (team.leaders||[])) {
+        if (cat.name!=='points') continue;
+        for (const l of (cat.leaders||[])) {
+          const nm=l.athlete?.shortName||l.athlete?.displayName||'';
+          const pts=parseFloat(l.value)||0;
+          const star=state.stars.find(s=>nm.toLowerCase().includes(s.name.split(' ').pop().toLowerCase())&&s.team===tA);
+          if (!star) continue;
+          const exp=getExpectedByTime(star.ppg,gMins), pr=exp>0?(pts/exp*100):100;
+          const q1E=getQ1Expected(star.ppg), hE=getHalfExpected(star.ppg);
+          let q1T='-';
+          if (per>=2) q1T=`${q1E.toFixed(1)} exp`;
+          else if (per===1) { const p=q1E>0?(pts/q1E*100):100; q1T=`<span style="color:${p<60?'var(--red)':p<80?'var(--orange)':'var(--green)'};font-weight:700;">${p.toFixed(0)}%</span> of ${q1E.toFixed(1)}`; }
+          let hT2='-';
+          if (per>=3) hT2=`${hE.toFixed(1)} exp`;
+          else if (per===2||(per===1&&gMins>0)) { const p=hE>0?(pts/hE*100):100; hT2=`<span style="color:${p<60?'var(--red)':p<80?'var(--orange)':'var(--green)'};font-weight:700;">${p.toFixed(0)}%</span> of ${hE.toFixed(1)}`; }
+          const fc=pr<60?'var(--red)':pr<80?'var(--orange)':'var(--green)';
+          const sig=pr<60&&gPct>=0.2&&per<=3?'<span class="signal-badge signal-fire">COLD - BET</span>':pr<75?'<span class="signal-badge signal-moderate">Below Pace</span>':'<span class="signal-badge signal-none">On Pace</span>';
+          rows+=`<tr class="star-row"><td><strong>${nm}</strong><br><span style="font-size:9px;color:var(--gray);">${star.ppg} PPG</span></td><td>${gl}</td><td style="font-size:16px;font-weight:800;">${pts}</td><td>${q1T}</td><td>${hT2}</td><td><div class="pace-indicator"><div class="pace-fill" style="width:${Math.min(pr,100)}%;background:${fc};"></div></div> ${pr.toFixed(0)}%</td><td>Q${per} ${clk}</td><td>${sig}</td></tr>`;
+        }
+      }
+    }
+  }
+  tb.innerHTML = rows || '<tr><td colspan="8" class="empty-state">No tracked stars in live games.</td></tr>';
+}
+
+// ==================== STAR DB ====================
+function renderStarDB() {
+  const tb = document.getElementById('star-db-body');
+  tb.innerHTML = state.stars.map((s,i) => {
+    const q1=getQ1Expected(s.ppg), h=getHalfExpected(s.ppg);
+    return `<tr><td><strong>${s.name}</strong></td><td>${s.team}</td><td>${s.ppg}</td><td>${q1.toFixed(1)}</td><td>${h.toFixed(1)}</td><td>&lt;${(q1*0.6).toFixed(0)} Q1, &lt;${(h*0.6).toFixed(0)} half</td><td><button class="btn btn-red btn-sm" onclick="removeStar(${i})">X</button></td></tr>`;
+  }).join('');
+}
+function addStar() {
+  const n=document.getElementById('add-star-name').value.trim(), t=document.getElementById('add-star-team').value.trim().toUpperCase(), p=parseFloat(document.getElementById('add-star-ppg').value);
+  if (!n||!t||isNaN(p)) { alert('Fill all fields'); return; }
+  state.stars.push({name:n,team:t,ppg:p}); localStorage.setItem('starPlayers',JSON.stringify(state.stars)); renderStarDB();
+  document.getElementById('add-star-name').value=''; document.getElementById('add-star-team').value=''; document.getElementById('add-star-ppg').value='';
+}
+function removeStar(i) { state.stars.splice(i,1); localStorage.setItem('starPlayers',JSON.stringify(state.stars)); renderStarDB(); }
+
+// ==================== BET LOG ====================
+function openLogModal(g,p,s) { document.getElementById('modal-game').value=g; document.getElementById('modal-price').value=p; document.getElementById('modal-strategy').value=s; document.getElementById('modal-side').value=''; document.getElementById('modal-notes').value=''; document.getElementById('logModal').classList.add('active'); }
+function closeModal() { document.getElementById('logModal').classList.remove('active'); }
+function confirmLogBet() {
+  state.betLog.push({date:new Date().toLocaleDateString(),strategy:document.getElementById('modal-strategy').value,game:document.getElementById('modal-game').value,side:document.getElementById('modal-side').value,price:document.getElementById('modal-price').value,units:parseFloat(document.getElementById('modal-units').value),result:'Pending',profit:0,notes:document.getElementById('modal-notes').value,id:Date.now()});
+  localStorage.setItem('betLog',JSON.stringify(state.betLog)); renderBetLog(); closeModal();
+}
+function renderBetLog() {
+  const tb=document.getElementById('bet-log-body');
+  if (!state.betLog.length) { tb.innerHTML='<tr><td colspan="9" class="empty-state">No bets logged.</td></tr>'; updateLogStats(); return; }
+  tb.innerHTML = state.betLog.slice().reverse().map(b => {
+    const rc=b.result==='W'?'move-up':b.result==='L'?'move-down':'';
+    const sb=b.strategy==='3PT Regression'?'signal-purple':b.strategy==='Paint Durability'?'signal-teal':b.strategy==='Foul Trouble'?'signal-moderate':'signal-strong';
+    return `<tr><td>${b.date}</td><td><span class="signal-badge ${sb}">${b.strategy}</span></td><td>${b.game}</td><td>${b.side}</td><td>${b.price}</td><td>${b.units}</td><td class="${rc}">${b.result}</td><td class="${b.profit>=0?'move-up':'move-down'}">${b.profit>0?'+':''}${b.profit.toFixed(2)}u</td><td>${b.result==='Pending'?`<button class="btn btn-green btn-sm" onclick="resolveBet(${b.id},'W')">W</button> <button class="btn btn-red btn-sm" onclick="resolveBet(${b.id},'L')">L</button> <button class="btn btn-outline btn-sm" onclick="resolveBet(${b.id},'Push')">P</button>`:''}</td></tr>`;
+  }).join('');
+  updateLogStats();
+}
+function resolveBet(id,r) {
+  const b=state.betLog.find(x=>x.id===id); if(!b) return; b.result=r;
+  if(r==='W'){const p=parseInt(b.price)||-110; b.profit=p>0?b.units*(p/100):b.units*(100/Math.abs(p));}
+  else if(r==='L') b.profit=-b.units; else b.profit=0;
+  localStorage.setItem('betLog',JSON.stringify(state.betLog)); renderBetLog();
+}
+function updateLogStats() {
+  const r=state.betLog.filter(b=>b.result!=='Pending'), w=r.filter(b=>b.result==='W').length, t=r.length;
+  const nu=r.reduce((s,b)=>s+b.profit,0), tr=r.reduce((s,b)=>s+b.units,0);
+  document.getElementById('log-total').textContent=state.betLog.length;
+  document.getElementById('log-winrate').textContent=t>0?(w/t*100).toFixed(1)+'%':'-';
+  document.getElementById('log-net-units').textContent=(nu>=0?'+':'')+nu.toFixed(2);
+  document.getElementById('log-net-units').className=`stat-value ${nu>=0?'green':'red'}`;
+  document.getElementById('log-roi').textContent=tr>0?(nu/tr*100).toFixed(1)+'%':'-';
+  let streak=0,st='';
+  for(let i=r.length-1;i>=0;i--){if(i===r.length-1){st=r[i].result;streak=1;}else if(r[i].result===st)streak++;else break;}
+  const se=document.getElementById('log-streak');
+  if(streak>0){se.textContent=streak+st;se.className=`stat-value ${st==='W'?'green':st==='L'?'red':''}`;}else se.textContent='-';
+}
+function clearLog(){if(confirm('Clear ALL?')){state.betLog=[];localStorage.setItem('betLog','[]');renderBetLog();}}
+function exportLog(){
+  if(!state.betLog.length){alert('No bets');return;}
+  const h='Date,Strategy,Game,Side,Price,Units,Result,Profit,Notes\n';
+  const r=state.betLog.map(b=>`${b.date},${b.strategy},"${b.game}",${b.side},${b.price},${b.units},${b.result},${b.profit.toFixed(2)},"${b.notes}"`).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([h+r],{type:'text/csv'}));a.download=`NBA_Edge_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+}
+
+// ==================== BANKROLL ====================
+function updateBankroll() {
+  const s=parseFloat(document.getElementById('bankroll-start').value)||0, c=parseFloat(document.getElementById('bankroll-current').value)||0;
+  state.bankroll={start:s,current:c}; localStorage.setItem('bankroll',JSON.stringify(state.bankroll));
+  const u=c*0.01;
+  document.getElementById('br-unit').textContent=u>0?'$'+u.toFixed(0):'-';
+  document.getElementById('br-max').textContent=u>0?'$'+(u*2).toFixed(0):'-';
+  document.getElementById('br-daily').textContent=u>0?'$'+(u*5).toFixed(0):'-';
+  const pl=c-s;
+  document.getElementById('br-pl').textContent=s>0?(pl>=0?'+':'')+`$${pl.toFixed(0)}`:'-';
+  document.getElementById('br-pl').className=`stat-value ${pl>=0?'green':'red'}`;
+  const pct=s>0?(pl/s*100):0;
+  document.getElementById('br-pl-pct').textContent=s>0?(pct>=0?'+':'')+pct.toFixed(1)+'%':'-';
+  document.getElementById('br-pl-pct').className=`stat-value ${pct>=0?'green':'red'}`;
+}
+document.getElementById('logModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+</script>
+</body>
+</html>
