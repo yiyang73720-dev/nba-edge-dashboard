@@ -229,7 +229,42 @@
     .qtr-grid { grid-template-columns: repeat(2, 1fr); }
     .tab { padding: 10px 12px; font-size: 12px; }
   }
-</style>
+
+    /* ==================== LIVE SCENARIO ALERTS ==================== */
+    .scenario-alert-panel { position: fixed; top: 80px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; max-width: 420px; pointer-events: none; }
+    .scenario-alert { pointer-events: all; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border: 2px solid var(--orange); border-radius: 12px; padding: 16px; color: white; box-shadow: 0 8px 32px rgba(253, 126, 20, 0.3); animation: alertSlideIn 0.5s ease-out, alertPulse 2s ease-in-out 0.5s; position: relative; overflow: hidden; }
+    .scenario-alert::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--orange), var(--red), var(--orange)); animation: alertGlow 1.5s ease-in-out infinite; }
+    .scenario-alert .alert-dismiss { position: absolute; top: 8px; right: 10px; background: none; border: none; color: rgba(255,255,255,0.5); cursor: pointer; font-size: 16px; padding: 2px 6px; }
+    .scenario-alert .alert-dismiss:hover { color: white; }
+    .scenario-alert .alert-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .scenario-alert .alert-badge { background: var(--red); color: white; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; animation: badgePulse 1s ease-in-out infinite; }
+    .scenario-alert .alert-game-time { font-size: 11px; color: rgba(255,255,255,0.6); }
+    .scenario-alert .alert-player { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+    .scenario-alert .alert-team { font-size: 12px; color: var(--orange); font-weight: 600; margin-bottom: 12px; }
+    .scenario-alert .alert-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+    .scenario-alert .alert-stat { background: rgba(255,255,255,0.08); border-radius: 8px; padding: 8px; text-align: center; }
+    .scenario-alert .alert-stat-label { font-size: 9px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.5px; }
+    .scenario-alert .alert-stat-value { font-size: 18px; font-weight: 800; margin-top: 2px; }
+    .scenario-alert .alert-stat-value.cold { color: #4fc3f7; }
+    .scenario-alert .alert-stat-value.hot { color: var(--red); }
+    .scenario-alert .alert-stat-value.neutral { color: var(--orange); }
+    .scenario-alert .alert-pace-bar { background: rgba(255,255,255,0.1); border-radius: 6px; height: 8px; margin-bottom: 8px; overflow: hidden; position: relative; }
+    .scenario-alert .alert-pace-fill { height: 100%; border-radius: 6px; transition: width 0.5s ease; }
+    .scenario-alert .alert-pace-marker { position: absolute; top: -2px; bottom: -2px; width: 2px; background: white; border-radius: 1px; }
+    .scenario-alert .alert-verdict { font-size: 12px; color: rgba(255,255,255,0.8); line-height: 1.5; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; }
+    .scenario-alert .alert-verdict strong { color: var(--orange); }
+    .scenario-alert .alert-action { margin-top: 8px; display: flex; gap: 8px; }
+    @keyframes alertSlideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes alertPulse { 0%, 100% { box-shadow: 0 8px 32px rgba(253, 126, 20, 0.3); } 50% { box-shadow: 0 8px 48px rgba(253, 126, 20, 0.5); } }
+    @keyframes alertGlow { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+    @keyframes badgePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+    .demo-btn { background: linear-gradient(135deg, var(--purple), var(--blue)); color: white; border: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+    .demo-btn:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(111, 66, 193, 0.4); }
+    .sound-toggle { background: none; border: 1px solid rgba(255,255,255,0.3); color: white; padding: 4px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; }
+    .sound-toggle:hover { border-color: white; }
+    .sound-toggle.active { background: var(--green); border-color: var(--green); }
+
+    </style>
 </head>
 <body>
 
@@ -243,7 +278,7 @@
     <div>
       <span class="status-dot off" id="statusDot"></span>
       <span id="statusText" style="font-size:11px;">ESPN Feed</span>
-    </div>
+    </div><button class="sound-toggle" id="soundToggle" onclick="toggleSound()" title="Toggle alert sounds">&#x1F50A; Sound</button><button class="demo-btn" onclick="runDemoScenario()" title="Simulate a live game scenario">&#x1F3AE; Demo</button>
   </div>
 </div>
 
@@ -418,7 +453,10 @@
   </div>
 </div>
 
-<div id="toast-container" style="position:fixed;top:70px;right:20px;z-index:150;display:flex;flex-direction:column;gap:6px;"></div>
+
+  <div id="scenario-alert-panel" class="scenario-alert-panel"></div>
+
+  <div id="toast-container" style="position:fixed;top:70px;right:20px;z-index:150;display:flex;flex-direction:column;gap:6px;"></div>
 
 <script>
 // ==================== STAR DATABASE (23+ PPG) ====================
@@ -670,7 +708,8 @@ async function fetchESPNScoreboard() {
           const pn=parseFloat(p), an=parseInt(a), mn=parseInt(m);
           if (pn>=50&&an>=8) {
             signals.push({type:'3pt',text:`${t} ${pn.toFixed(0)}% from 3 (${mn}/${an}) - UNSUSTAINABLE`,level:2});
-            sig3++; hotTeams++;
+            sig3++;
+                  fire3PTAlert(t, pn.toFixed(0), mn, an, gLabel, per, clk); hotTeams++;
             thesis.criteria[`3pt_${side}`] = {met:true, strong:true, label:`${t} 3PT: ${pn.toFixed(0)}% (${mn}/${an})`, detail:`NBA avg is 36.5%. Shooting ${pn.toFixed(0)}% on ${an} attempts is 2+ std deviations above mean. This rate will regress â teams shooting 50%+ from 3 in a half sustain it only ~12% of games. The lead they built on 3PT scoring is inflated.`, value:`${pn.toFixed(0)}% on ${an} att`};
             return true;
           } else if (pn>=45&&an>=6) {
@@ -699,6 +738,7 @@ async function fetchESPNScoreboard() {
               let ctx = per===1?` Q1 exp: ${getQ1Expected(star.ppg).toFixed(0)}`:per===2?` Half exp: ${getHalfExpected(star.ppg).toFixed(0)}`:'';
               signals.push({type:'star',text:`${leader.name} ${leader.pts}pts (exp ~${exp.toFixed(0)}, threshold ${(exp*0.6).toFixed(0)}).${ctx} MR candidate.`,level:2});
               sigStar++;
+                fireStarColdAlert(leader, star, gMins, per, clk, gLabel, pr);
               starColdTeams[leader.team] = leader.name;
               thesis.criteria[`star_${oppSide}`] = {met:true, strong:true, label:`Opponent Star Cold: ${leader.name}`, detail:`${leader.name} averages ${star.ppg} PPG. At Q${per} ${clk}, expected ~${exp.toFixed(0)} pts but only has ${leader.pts}. That's ${(pr*100).toFixed(0)}% of pace (<60% threshold). Stars at this pace typically score 4-8 pts above current rate by game end â the market hasn't priced this bounce-back yet. Live ML is too favorable to the OTHER side.`, value:`${leader.pts}/${exp.toFixed(0)} pts (${(pr*100).toFixed(0)}%)`};
             } else if (pr<0.75 && gPct>=0.2) {
@@ -1058,6 +1098,257 @@ function updateBankroll() {
   document.getElementById('br-pl-pct').className=`stat-value ${pct>=0?'green':'red'}`;
 }
 document.getElementById('logModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+
+// ==================== SOUND SYSTEM (Web Audio API) ====================
+let audioCtx = null;
+let soundEnabled = JSON.parse(localStorage.getItem('soundEnabled') || 'true');
+
+function initAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playAlertSound(type) {
+  if (!soundEnabled) return;
+  const ctx = initAudio();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  
+  if (type === 'cold') {
+    // Descending alert: urgent but not annoying
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.15);
+    osc.frequency.setValueAtTime(880, ctx.currentTime + 0.2);
+    osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.35);
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.5);
+  } else if (type === 'hot3pt') {
+    // Triple beep for 3PT
+    osc.type = 'square';
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    for (let i = 0; i < 3; i++) {
+      const t = ctx.currentTime + i * 0.15;
+      osc.frequency.setValueAtTime(660, t);
+      gain.gain.setValueAtTime(0.2, t);
+      gain.gain.setValueAtTime(0, t + 0.08);
+    }
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.5);
+  } else if (type === 'combined') {
+    // Epic alert for combined signals
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(440, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.2);
+    osc.frequency.setValueAtTime(440, ctx.currentTime + 0.25);
+    osc.frequency.exponentialRampToValueAtTime(1100, ctx.currentTime + 0.45);
+    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.6);
+  }
+}
+
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  localStorage.setItem('soundEnabled', JSON.stringify(soundEnabled));
+  const btn = document.getElementById('soundToggle');
+  btn.classList.toggle('active', soundEnabled);
+  btn.innerHTML = soundEnabled ? '&#x1F50A; Sound' : '&#x1F507; Muted';
+  if (soundEnabled) playAlertSound('cold'); // test beep
+}
+
+// Init sound button state
+document.addEventListener('DOMContentLoaded', function() {
+  const btn = document.getElementById('soundToggle');
+  if (btn) {
+    btn.classList.toggle('active', soundEnabled);
+    btn.innerHTML = soundEnabled ? '&#x1F50A; Sound' : '&#x1F507; Muted';
+  }
+});
+
+// ==================== SCENARIO ALERT SYSTEM ====================
+let activeAlerts = [];
+let alertIdCounter = 0;
+const ALERT_HISTORY = JSON.parse(localStorage.getItem('alertHistory') || '[]');
+
+function showScenarioAlert(data) {
+  // data: { player, team, game, quarter, clock, currentPts, expectedPts, ppg, pacePercent, type, signals }
+  const panel = document.getElementById('scenario-alert-panel');
+  if (!panel) return;
+  
+  const id = 'alert-' + (++alertIdCounter);
+  const paceColor = data.pacePercent < 50 ? '#4fc3f7' : data.pacePercent < 75 ? 'var(--orange)' : 'var(--green)';
+  const paceFill = Math.min(data.pacePercent, 100);
+  const deficit = data.expectedPts - data.currentPts;
+  const deficitText = deficit > 0 ? deficit.toFixed(1) + ' pts behind' : Math.abs(deficit).toFixed(1) + ' pts ahead';
+  
+  let badge = 'COLD ALERT';
+  let badgeBg = 'var(--red)';
+  let soundType = 'cold';
+  if (data.type === 'hot3pt') { badge = '3PT FIRE'; badgeBg = 'var(--orange)'; soundType = 'hot3pt'; }
+  else if (data.type === 'combined') { badge = 'MULTI-SIGNAL'; badgeBg = 'linear-gradient(90deg, var(--red), var(--orange))'; soundType = 'combined'; }
+  else if (data.type === 'fragile') { badge = 'FRAGILE LEAD'; badgeBg = '#e91e63'; soundType = 'cold'; }
+  
+  const q1Exp = (data.ppg * 0.25).toFixed(1);
+  const halfExp = (data.ppg * 0.5).toFixed(1);
+  const periodLabel = data.quarter <= 2 ? 'Q' + data.quarter : data.quarter <= 4 ? 'Q' + data.quarter : 'OT';
+  const periodExp = data.quarter === 1 ? q1Exp : data.quarter === 2 ? halfExp : data.expectedPts.toFixed(1);
+  const periodExpLabel = data.quarter === 1 ? 'Q1 Exp' : data.quarter === 2 ? 'Half Exp' : 'Exp Now';
+  
+  const alertEl = document.createElement('div');
+  alertEl.className = 'scenario-alert';
+  alertEl.id = id;
+  alertEl.innerHTML = `
+    <button class="alert-dismiss" onclick="dismissAlert('${id}')">&times;</button>
+    <div class="alert-header">
+      <span class="alert-badge" style="background:${badgeBg};">${badge}</span>
+      <span class="alert-game-time">${data.game} &bull; ${periodLabel} ${data.clock}</span>
+    </div>
+    <div class="alert-player">${data.player}</div>
+    <div class="alert-team">${data.team} &bull; ${data.ppg} PPG season avg</div>
+    <div class="alert-stats">
+      <div class="alert-stat">
+        <div class="alert-stat-label">Current</div>
+        <div class="alert-stat-value cold">${data.currentPts}</div>
+      </div>
+      <div class="alert-stat">
+        <div class="alert-stat-label">${periodExpLabel}</div>
+        <div class="alert-stat-value neutral">${periodExp}</div>
+      </div>
+      <div class="alert-stat">
+        <div class="alert-stat-label">Pace</div>
+        <div class="alert-stat-value ${data.pacePercent < 60 ? 'cold' : data.pacePercent < 80 ? 'neutral' : 'hot'}">${data.pacePercent.toFixed(0)}%</div>
+      </div>
+    </div>
+    <div class="alert-pace-bar">
+      <div class="alert-pace-fill" style="width:${paceFill}%;background:${paceColor};"></div>
+      <div class="alert-pace-marker" style="left:60%;" title="60% threshold"></div>
+    </div>
+    <div class="alert-verdict">
+      <strong>${deficitText}</strong> expected pace at ${periodLabel} ${data.clock}. 
+      Stars below 60% pace at this point bounce back ~78% of the time. 
+      <strong>Mean reversion candidate — live ML is mispriced.</strong>
+    </div>
+    <div class="alert-action">
+      <button class="btn btn-orange btn-sm" onclick="openLogModal('${data.game}','Live ML','Mean Reversion')">Log Bet</button>
+      <button class="btn btn-outline btn-sm" onclick="dismissAlert('${id}')">Dismiss</button>
+    </div>
+  `;
+  
+  panel.appendChild(alertEl);
+  activeAlerts.push(id);
+  
+  // Play sound
+  playAlertSound(soundType);
+  
+  // Auto-dismiss after 30s
+  setTimeout(() => dismissAlert(id), 30000);
+  
+  // Save to history
+  ALERT_HISTORY.unshift({ ...data, time: new Date().toISOString() });
+  if (ALERT_HISTORY.length > 50) ALERT_HISTORY.length = 50;
+  localStorage.setItem('alertHistory', JSON.stringify(ALERT_HISTORY));
+}
+
+function dismissAlert(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.style.animation = 'alertSlideIn 0.3s ease-in reverse';
+    setTimeout(() => el.remove(), 300);
+  }
+  activeAlerts = activeAlerts.filter(a => a !== id);
+}
+
+// ==================== DEMO SIMULATION MODE ====================
+function runDemoScenario() {
+  // Initialize audio on user gesture
+  initAudio();
+  
+  const scenarios = [
+    {
+      player: 'Jalen Brunson', team: 'NYK • New York Knicks', game: 'NYK @ BOS',
+      quarter: 2, clock: '1:01', currentPts: 3, ppg: 26.3,
+      expectedPts: 14.5, pacePercent: 20.7, type: 'cold',
+      signals: ['Star at 21% pace', 'Mean reversion candidate']
+    },
+    {
+      player: 'Shai Gilgeous-Alexander', team: 'OKC • Oklahoma City Thunder', game: 'OKC @ LAL',
+      quarter: 1, clock: '2:30', currentPts: 2, ppg: 32.2,
+      expectedPts: 7.7, pacePercent: 26.0, type: 'cold',
+      signals: ['Star at 26% Q1 pace', 'Below 60% threshold']
+    },
+    {
+      player: 'Luka Doncic', team: 'DAL • Dallas Mavericks', game: 'DAL @ MIA',
+      quarter: 2, clock: '5:45', currentPts: 4, ppg: 28.1,
+      expectedPts: 11.7, pacePercent: 34.2, type: 'combined',
+      signals: ['Star cold + MIA shooting 55% from 3', 'Multi-signal edge']
+    }
+  ];
+  
+  // Pick a random scenario or cycle through them
+  const idx = Math.floor(Math.random() * scenarios.length);
+  const s = scenarios[idx];
+  
+  showScenarioAlert(s);
+}
+
+
+
+// ==================== HOOK: FIRE SCENARIO ALERTS FROM LIVE DATA ====================
+// Override the original signal detection to also trigger scenario alerts
+const _origShowQuarterToast = showQuarterToast;
+const _firedAlerts = new Set(); // prevent duplicate alerts per game refresh
+
+function fireStarColdAlert(leader, star, gMins, per, clk, gLabel, paceRatio) {
+  const alertKey = star.name + '_' + per + '_' + Math.floor(gMins);
+  if (_firedAlerts.has(alertKey)) return;
+  _firedAlerts.add(alertKey);
+  // Clear old keys every 5 minutes
+  setTimeout(() => _firedAlerts.delete(alertKey), 300000);
+  
+  const exp = getExpectedByTime(star.ppg, gMins);
+  showScenarioAlert({
+    player: leader.name,
+    team: star.team,
+    game: gLabel,
+    quarter: per,
+    clock: clk,
+    currentPts: leader.pts,
+    expectedPts: exp,
+    ppg: star.ppg,
+    pacePercent: paceRatio * 100,
+    type: 'cold',
+    signals: ['Star at ' + (paceRatio * 100).toFixed(0) + '% pace', 'Below 60% threshold']
+  });
+}
+
+function fire3PTAlert(teamAbbr, pct, made, att, gLabel, per, clk) {
+  const alertKey = teamAbbr + '_3pt_' + per;
+  if (_firedAlerts.has(alertKey)) return;
+  _firedAlerts.add(alertKey);
+  setTimeout(() => _firedAlerts.delete(alertKey), 300000);
+  
+  showScenarioAlert({
+    player: teamAbbr + ' Team',
+    team: teamAbbr + ' shooting unsustainably hot',
+    game: gLabel,
+    quarter: per,
+    clock: clk,
+    currentPts: parseFloat(pct),
+    expectedPts: 36.5,
+    ppg: 36.5,
+    pacePercent: (parseFloat(pct) / 36.5) * 100,
+    type: 'hot3pt',
+    signals: [teamAbbr + ' at ' + pct + '% from 3 (' + made + '/' + att + ')']
+  });
+}
+
 </script>
 </body>
 </html>
