@@ -600,7 +600,7 @@ async function fetchESPNScoreboard() {
             signals.push({type:'3pt',text:`${t} ${pn.toFixed(0)}% from 3 (${mn}/${an}) - UNSUSTAINABLE`,level:2});
             sig3++;
                   fire3PTAlert(t, pn.toFixed(0), mn, an, gLabel, per, clk); hotTeams++;
-            thesis.criteria[`3pt_${side}`] = {met:true, strong:true, label:`${t} 3PT: ${pn.toFixed(0)}% (${mn}/${an})`, detail:`NBA avg is 36.5%. Shooting ${pn.toFixed(0)}% on ${an} attempts is 2+ std deviations above mean. This rate will regress — teams shooting 50%+ from 3 in a half sustain it only ~12% of games. The lead they built on 3PT scoring is inflated.`, value:`${pn.toFixed(0)}% on ${an} att`};
+            thesis.criteria[`3pt_${side}`] = {met:true, strong:true, label:`${t} 3PT: ${pn.toFixed(0)}% (${mn}/${an})`, detail:`NBA avg is 36.5%. Shooting ${pn.toFixed(0)}% on ${an} attempts is 2+ std deviations above mean. This rate will regress &mdash; teams shooting 50%+ from 3 in a half sustain it only ~12% of games. The lead they built on 3PT scoring is inflated.`, value:`${pn.toFixed(0)}% on ${an} att`};
             return true;
           } else if (pn>=45&&an>=6) {
             signals.push({type:'3pt',text:`${t} ${pn.toFixed(0)}% from 3 (${mn}/${an}) - elevated`,level:1});
@@ -630,7 +630,7 @@ async function fetchESPNScoreboard() {
               sigStar++;
                 fireStarColdAlert(leader, star, gMins, per, clk, gLabel, pr);
               starColdTeams[leader.team] = leader.name;
-              thesis.criteria[`star_${oppSide}`] = {met:true, strong:true, label:`Opponent Star Cold: ${leader.name}`, detail:`${leader.name} averages ${star.ppg} PPG. At Q${per} ${clk}, expected ~${exp.toFixed(0)} pts but only has ${leader.pts}. That's ${(pr*100).toFixed(0)}% of pace (<60% threshold). Stars at this pace typically score 4-8 pts above current rate by game end — the market hasn't priced this bounce-back yet. Live ML is too favorable to the OTHER side.`, value:`${leader.pts}/${exp.toFixed(0)} pts (${(pr*100).toFixed(0)}%)`};
+              thesis.criteria[`star_${oppSide}`] = {met:true, strong:true, label:`Opponent Star Cold: ${leader.name}`, detail:`${leader.name} averages ${star.ppg} PPG. At Q${per} ${clk}, expected ~${exp.toFixed(0)} pts but only has ${leader.pts}. That's ${(pr*100).toFixed(0)}% of pace (<60% threshold). Stars at this pace typically score 4-8 pts above current rate by game end &mdash; the market hasn't priced this bounce-back yet. Live ML is too favorable to the OTHER side.`, value:`${leader.pts}/${exp.toFixed(0)} pts (${(pr*100).toFixed(0)}%)`};
             } else if (pr<0.75 && gPct>=0.2) {
               signals.push({type:'star',text:`${leader.name} ${leader.pts}pts, behind ${star.ppg} PPG pace (exp ~${exp.toFixed(0)})`,level:1});
               thesis.criteria[`star_${oppSide}`] = {met:true, strong:false, label:`Opponent Star Below Pace: ${leader.name}`, detail:`${leader.name} (${star.ppg} PPG) has ${leader.pts} pts vs ${exp.toFixed(0)} expected. Below pace but not at critical 60% threshold yet.`, value:`${(pr*100).toFixed(0)}% pace`, warn:true};
@@ -644,14 +644,14 @@ async function fetchESPNScoreboard() {
         if (aDur.fragile) {
           signals.push({type:'paint',text:`${aA} lead built on 3PT (${aDur.pct3.toFixed(0)}% of pts from 3). Fragile - expect regression.`,level:2});
           sigFragile++;
-          thesis.criteria['paint_away'] = {met:true, strong:true, label:`${aA} Lead Built on 3PT`, detail:`${aDur.pct3.toFixed(0)}% of ${aA}'s scoring is from 3-pointers (threshold: 42%). Leads built on 3PT shooting are fragile because 3PT% regresses toward 36.5%. If those 3s stop falling, their lead evaporates. Paint-heavy scoring is far more sustainable — paint points convert at ~60% vs 3PT at ~36%.`, value:`${aDur.pct3.toFixed(0)}% from 3PT`};
+          thesis.criteria['paint_away'] = {met:true, strong:true, label:`${aA} Lead Built on 3PT`, detail:`${aDur.pct3.toFixed(0)}% of ${aA}'s scoring is from 3-pointers (threshold: 42%). Leads built on 3PT shooting are fragile because 3PT% regresses toward 36.5%. If those 3s stop falling, their lead evaporates. Paint-heavy scoring is far more sustainable &mdash; paint points convert at ~60% vs 3PT at ~36%.`, value:`${aDur.pct3.toFixed(0)}% from 3PT`};
         } else {
           thesis.criteria['paint_away'] = {met:false, label:`${aA} Scoring Balance`, detail:`${aA} scoring is balanced or paint-heavy. Lead is durable.`, value: aS>0?`${aDur.pct3.toFixed(0)}% from 3PT`:'N/A'};
         }
         if (hDur.fragile) {
           signals.push({type:'paint',text:`${hA} lead built on 3PT (${hDur.pct3.toFixed(0)}% of pts from 3). Fragile - expect regression.`,level:2});
           sigFragile++;
-          thesis.criteria['paint_home'] = {met:true, strong:true, label:`${hA} Lead Built on 3PT`, detail:`${hDur.pct3.toFixed(0)}% of ${hA}'s scoring is from 3-pointers (threshold: 42%). Same logic — 3PT-dependent leads are fragile. Market often overweights the current scoreboard without considering HOW the points were scored.`, value:`${hDur.pct3.toFixed(0)}% from 3PT`};
+          thesis.criteria['paint_home'] = {met:true, strong:true, label:`${hA} Lead Built on 3PT`, detail:`${hDur.pct3.toFixed(0)}% of ${hA}'s scoring is from 3-pointers (threshold: 42%). Same logic &mdash; 3PT-dependent leads are fragile. Market often overweights the current scoreboard without considering HOW the points were scored.`, value:`${hDur.pct3.toFixed(0)}% from 3PT`};
         } else {
           thesis.criteria['paint_home'] = {met:false, label:`${hA} Scoring Balance`, detail:`${hA} scoring is balanced or paint-heavy. Lead is durable.`, value: hS>0?`${hDur.pct3.toFixed(0)}% from 3PT`:'N/A'};
         }
@@ -661,7 +661,7 @@ async function fetchESPNScoreboard() {
         const hFoul = analyzeTeamFouls(hFouls, per, clk);
         if (aFoul.highFouls) {
           signals.push({type:'foul',text:`${aA} high foul rate (${aFoul.fouls} fouls, ${aFoul.perQtr}/qtr). Opponent getting bonus FTs - inflated scoring.`,level:1});
-          thesis.criteria['foul_away'] = {met:true, strong:false, label:`${aA} High Foul Rate`, detail:`${aA} fouling at ${aFoul.perQtr}/qtr (${aFoul.fouls} total). This sends ${hA} to the FT line more — inflating ${hA}'s score with easy points. But fouls regress as coaches adjust. ${hA}'s lead may be partly built on FT volume that won't sustain.`, value:`${aFoul.perQtr}/qtr`, warn:true};
+          thesis.criteria['foul_away'] = {met:true, strong:false, label:`${aA} High Foul Rate`, detail:`${aA} fouling at ${aFoul.perQtr}/qtr (${aFoul.fouls} total). This sends ${hA} to the FT line more &mdash; inflating ${hA}'s score with easy points. But fouls regress as coaches adjust. ${hA}'s lead may be partly built on FT volume that won't sustain.`, value:`${aFoul.perQtr}/qtr`, warn:true};
         }
         if (hFoul.highFouls) {
           signals.push({type:'foul',text:`${hA} high foul rate (${hFoul.fouls} fouls, ${hFoul.perQtr}/qtr). Opponent getting bonus FTs - inflated scoring.`,level:1});
@@ -698,14 +698,14 @@ async function fetchESPNScoreboard() {
           else { betTeam = aS < hS ? aA : hA; fadeTeam = aS < hS ? hA : aA; }
 
           // Build the narrative
-          if (a3Data?.met && a3Data?.strong) reasons.push(`${aA} is shooting an unsustainable ${a3Data.value} from 3 — this will cool off`);
-          if (h3Data?.met && h3Data?.strong) reasons.push(`${hA} is shooting an unsustainable ${h3Data.value} from 3 — this will cool off`);
-          if (starColdTeams[aA]) reasons.push(`${starColdTeams[aA]} (${aA}) is ice cold — star players at <60% pace bounce back ~78% of the time`);
-          if (starColdTeams[hA]) reasons.push(`${starColdTeams[hA]} (${hA}) is ice cold — star players at <60% pace bounce back ~78% of the time`);
-          if (aPaint?.met && aPaint?.strong && aS > hS) reasons.push(`${aA}'s lead is fragile — ${aPaint.value} scoring from 3PT`);
-          if (hPaint?.met && hPaint?.strong && hS > aS) reasons.push(`${hA}'s lead is fragile — ${hPaint.value} scoring from 3PT`);
-          if (thesis.criteria['foul_away']?.met) reasons.push(`${aA} fouling heavy (${thesis.criteria['foul_away'].value}) — opponent FT inflation`);
-          if (thesis.criteria['foul_home']?.met) reasons.push(`${hA} fouling heavy (${thesis.criteria['foul_home'].value}) — opponent FT inflation`);
+          if (a3Data?.met && a3Data?.strong) reasons.push(`${aA} is shooting an unsustainable ${a3Data.value} from 3 &mdash; this will cool off`);
+          if (h3Data?.met && h3Data?.strong) reasons.push(`${hA} is shooting an unsustainable ${h3Data.value} from 3 &mdash; this will cool off`);
+          if (starColdTeams[aA]) reasons.push(`${starColdTeams[aA]} (${aA}) is ice cold &mdash; star players at <60% pace bounce back ~78% of the time`);
+          if (starColdTeams[hA]) reasons.push(`${starColdTeams[hA]} (${hA}) is ice cold &mdash; star players at <60% pace bounce back ~78% of the time`);
+          if (aPaint?.met && aPaint?.strong && aS > hS) reasons.push(`${aA}'s lead is fragile &mdash; ${aPaint.value} scoring from 3PT`);
+          if (hPaint?.met && hPaint?.strong && hS > aS) reasons.push(`${hA}'s lead is fragile &mdash; ${hPaint.value} scoring from 3PT`);
+          if (thesis.criteria['foul_away']?.met) reasons.push(`${aA} fouling heavy (${thesis.criteria['foul_away'].value}) &mdash; opponent FT inflation`);
+          if (thesis.criteria['foul_home']?.met) reasons.push(`${hA} fouling heavy (${thesis.criteria['foul_home'].value}) &mdash; opponent FT inflation`);
 
           const strongCriteria = Object.values(thesis.criteria).filter(c => c.met && c.strong).length;
           const allCriteria = Object.values(thesis.criteria).filter(c => c.met).length;
@@ -843,13 +843,13 @@ async function fetchESPNScoreboard() {
             <div class="thesis-bet-line">
               <div>
                 <div class="thesis-bet-action">BET ${t.betSide} ML</div>
-                <div class="thesis-bet-side">Fade ${t.fadeSide} — ${t.confidence.toUpperCase()} confidence</div>
+                <div class="thesis-bet-side">Fade ${t.fadeSide} &mdash; ${t.confidence.toUpperCase()} confidence</div>
               </div>
               <button class="btn btn-orange btn-sm" onclick="openLogModal('${t.game}','Live ML','Mean Reversion')">Log This Bet</button>
             </div>
             <div class="thesis-logic">
               <div class="thesis-logic-title">Why This Is an Edge</div>
-              <div class="thesis-logic-text">${t.betLogic} The live moneyline is priced on the current score, but the current score is built on unsustainable conditions. When those conditions normalize (3PT% drops, star heats up, paint scoring returns to mean), the true probability shifts toward ${t.betSide}. The market is slow to reprice these temporary swings — that's the edge.</div>
+              <div class="thesis-logic-text">${t.betLogic} The live moneyline is priced on the current score, but the current score is built on unsustainable conditions. When those conditions normalize (3PT% drops, star heats up, paint scoring returns to mean), the true probability shifts toward ${t.betSide}. The market is slow to reprice these temporary swings &mdash; that's the edge.</div>
             </div>
             <div class="thesis-criteria">${criteriaHTML}</div>
             <div class="thesis-actions">
@@ -1123,7 +1123,7 @@ function showScenarioAlert(data) {
     <div class="alert-verdict">
       <strong>${deficitText}</strong> expected pace at ${periodLabel} ${data.clock}. 
       Stars below 60% pace at this point bounce back ~78% of the time. 
-      <strong>Mean reversion candidate — live ML is mispriced.</strong>
+      <strong>Mean reversion candidate &mdash; live ML is mispriced.</strong>
     </div>
     <div class="alert-action">
       <button class="btn btn-orange btn-sm" onclick="openLogModal('${data.game}','Live ML','Mean Reversion')">Log Bet</button>
@@ -1162,19 +1162,19 @@ function runDemoScenario() {
   
   const scenarios = [
     {
-      player: 'Jalen Brunson', team: 'NYK • New York Knicks', game: 'NYK @ BOS',
+      player: 'Jalen Brunson', team: 'NYK &bull; New York Knicks', game: 'NYK @ BOS',
       quarter: 2, clock: '1:01', currentPts: 3, ppg: 26.3,
       expectedPts: 14.5, pacePercent: 20.7, type: 'cold',
       signals: ['Star at 21% pace', 'Mean reversion candidate']
     },
     {
-      player: 'Shai Gilgeous-Alexander', team: 'OKC • Oklahoma City Thunder', game: 'OKC @ LAL',
+      player: 'Shai Gilgeous-Alexander', team: 'OKC &bull; Oklahoma City Thunder', game: 'OKC @ LAL',
       quarter: 1, clock: '2:30', currentPts: 2, ppg: 32.2,
       expectedPts: 7.7, pacePercent: 26.0, type: 'cold',
       signals: ['Star at 26% Q1 pace', 'Below 60% threshold']
     },
     {
-      player: 'Luka Doncic', team: 'DAL • Dallas Mavericks', game: 'DAL @ MIA',
+      player: 'Luka Doncic', team: 'DAL &bull; Dallas Mavericks', game: 'DAL @ MIA',
       quarter: 2, clock: '5:45', currentPts: 4, ppg: 28.1,
       expectedPts: 11.7, pacePercent: 34.2, type: 'combined',
       signals: ['Star cold + MIA shooting 55% from 3', 'Multi-signal edge']
@@ -1246,21 +1246,21 @@ function fire3PTAlert(teamAbbr, pct, made, att, gLabel, per, clk) {
 <div id="nba-guide">
 <p class="guide-intro">Each signal identifies a specific market inefficiency in live NBA games. When conditions are met, the live moneyline is likely mispriced.</p>
 <div class="guide-grid">
-<div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT</span> 3PT Regression</h3><p class="edge-label">The Edge: Unsustainable Shooting Regresses to Mean</p><p>When a team shoots 50%+ from three on 8+ attempts, this rate is almost certainly unsustainable.</p><div class="threshold">Thresholds: ≥50% on ≥8 attempts, or ≥45% on ≥6</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT</span> 3PT Regression</h3><p class="edge-label">The Edge: Unsustainable Shooting Regresses to Mean</p><p>When a team shoots 50%+ from three on 8+ attempts, this rate is almost certainly unsustainable.</p><div class="threshold">Thresholds: &ge;50% on &ge;8 attempts, or &ge;45% on &ge;6</div></div>
 <div class="guide-card"><h3><span class="signal-badge badge-star">STAR</span> Star Cold</h3><p class="edge-label">The Edge: Star Performance Regresses Upward</p><p>When a franchise player shoots well below their season average, regression suggests their production will improve.</p><div class="threshold">Thresholds: Star shooting 15%+ below season avg, 8+ min played</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-fragile">FRAGILE</span> Fragile Lead</h3><p class="edge-label">The Edge: 3PT-Built Leads Are Structurally Weak</p><p>When 42%+ of points come from 3PT and team is leading, that lead is built on the most volatile shot.</p><div class="threshold">Thresholds: 3PT pts ≥42% of total, ≥20 3PT attempts, leading</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-paint">PAINT</span> Paint Durability</h3><p class="edge-label">The Edge: Inside Scoring = Sustainable Advantage</p><p>Teams scoring heavily in the paint have a structural advantage — close-range shots don't regress like 3PT.</p><div class="threshold">Thresholds: Paint points percentage and volume above league average</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-foul">FOUL</span> Foul Trouble</h3><p class="edge-label">The Edge: Foul Rate Predicts Free Throw Swings</p><p>When a team is fouling at an elevated rate, they're on pace to put the opponent in the bonus early.</p><div class="threshold">Thresholds: ≥6.5 fouls per 12 min, or ≥10 total</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-fragile">FRAGILE</span> Fragile Lead</h3><p class="edge-label">The Edge: 3PT-Built Leads Are Structurally Weak</p><p>When 42%+ of points come from 3PT and team is leading, that lead is built on the most volatile shot.</p><div class="threshold">Thresholds: 3PT pts &ge;42% of total, &ge;20 3PT attempts, leading</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-paint">PAINT</span> Paint Durability</h3><p class="edge-label">The Edge: Inside Scoring = Sustainable Advantage</p><p>Teams scoring heavily in the paint have a structural advantage &mdash; close-range shots don't regress like 3PT.</p><div class="threshold">Thresholds: Paint points percentage and volume above league average</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-foul">FOUL</span> Foul Trouble</h3><p class="edge-label">The Edge: Foul Rate Predicts Free Throw Swings</p><p>When a team is fouling at an elevated rate, they're on pace to put the opponent in the bonus early.</p><div class="threshold">Thresholds: &ge;6.5 fouls per 12 min, or &ge;10 total</div></div>
 <div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">The Edge: Stacked Signals Compound</p><p>When multiple signals point the same direction, the edge multiplies.</p><div class="threshold">Scoring: +1 per signal per side, 2+ = actionable edge</div></div>
 </div></div>
 <div id="ncaa-guide" style="display:none">
 <p class="guide-intro">NCAA signals calibrated for college basketball: 5-foul limit, earlier bonus, two 20-min halves. Star Cold replaced by Team Offensive Slump.</p>
 <div class="guide-grid">
-<div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT</span> 3PT Regression</h3><p class="edge-label">The Edge: College Shooters Regress Harder</p><p>College teams have even more 3PT variance. Hot shooting is less sustainable with younger shooters.</p><div class="threshold">Thresholds: ≥50% on ≥8 attempts, or ≥45% on ≥6</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT</span> 3PT Regression</h3><p class="edge-label">The Edge: College Shooters Regress Harder</p><p>College teams have even more 3PT variance. Hot shooting is less sustainable with younger shooters.</p><div class="threshold">Thresholds: &ge;50% on &ge;8 attempts, or &ge;45% on &ge;6</div></div>
 <div class="guide-card"><h3><span class="signal-badge badge-star">TEAM</span> Team Offensive Slump</h3><p class="edge-label">The Edge: Team Efficiency Regresses to Mean</p><p>Instead of tracking one star, we track team offensive efficiency vs season average. Markets overreact to cold stretches.</p><div class="threshold">Thresholds: Offensive rating 15%+ below season avg, 8+ min played</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-fragile">FRAGILE</span> Fragile Lead</h3><p class="edge-label">The Edge: 3PT-Built Leads Collapse Faster</p><p>College teams are more 3PT-dependent. Leads built on hot shooting are structurally weaker.</p><div class="threshold">Thresholds: 3PT pts ≥42% of total, ≥20 3PT attempts, leading</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-fragile">FRAGILE</span> Fragile Lead</h3><p class="edge-label">The Edge: 3PT-Built Leads Collapse Faster</p><p>College teams are more 3PT-dependent. Leads built on hot shooting are structurally weaker.</p><div class="threshold">Thresholds: 3PT pts &ge;42% of total, &ge;20 3PT attempts, leading</div></div>
 <div class="guide-card"><h3><span class="signal-badge badge-paint">PAINT</span> Paint Durability</h3><p class="edge-label">The Edge: Inside Scoring = Sustainable</p><p>Paint scoring in college reflects size mismatches and scheme advantages that persist.</p><div class="threshold">Thresholds: Paint points percentage and volume above average</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-foul">FOUL</span> Foul Trouble</h3><p class="edge-label">The Edge: 5 Fouls + Early Bonus</p><p>STRONGER in NCAA. 5-foul limit, bonus at 7th team foul per half, double bonus at 10th.</p><div class="threshold">Thresholds: ≥5.0 per 10 min, or ≥7 total in a half</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-foul">FOUL</span> Foul Trouble</h3><p class="edge-label">The Edge: 5 Fouls + Early Bonus</p><p>STRONGER in NCAA. 5-foul limit, bonus at 7th team foul per half, double bonus at 10th.</p><div class="threshold">Thresholds: &ge;5.0 per 10 min, or &ge;7 total in a half</div></div>
 <div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">The Edge: Stacked Signals Compound</p><p>Multiple signals pointing same direction = stronger edge. More powerful in NCAA where markets are less efficient.</p><div class="threshold">Scoring: +1 per signal per side</div></div>
 </div></div>
 </div></div>
