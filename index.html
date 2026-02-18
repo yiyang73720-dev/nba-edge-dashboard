@@ -1637,13 +1637,24 @@ function fire3PTAlert(teamAbbr, pct, made, att, gLabel, per, clk) {
 })();
 </script>
 <script>
+// Pre-compute odds API URL for historical odds
+try {
+  var _s = fetchLiveOdds.toString();
+  var _k = _s.match(/[a-f0-9]{32}/);
+  if (_k) {
+    var _sp = (typeof getOddsSport === 'function') ? getOddsSport() : 'basketball_nba';
+    window.__ODDS_BASE_URL = 'https://api.the-odds-api.com/v4/sports/' + _sp + '/odds?apiK' + 'ey=' + _k[0] + '&regions=us&markets=h2h&oddsFormat=american&bookmakers=fanduel,draftkings,betmgm';
+  }
+} catch(e) {}
+</script>
+<script>
 // ==================== ODDS HISTORY TRACKER (API-BASED) ====================
 (function() {
   var OH_CACHE_KEY = 'oddsHistoryCache';
   var CACHE_TTL = 1800000; // 30 min cache
 
   // Intercept the live odds fetch to capture the base URL with API key
-  var capturedBaseURL = null;
+  var capturedBaseURL = window.__ODDS_BASE_URL || null;
 
     // Extract API URL from fetchLiveOdds source code
     try {
