@@ -173,6 +173,7 @@
 .signal-badge.badge-paint{background:#10b981}
 .signal-badge.badge-foul{background:#8b5cf6}
 .signal-badge.badge-hustle{background:#f59e0b}
+.signal-badge.badge-ft{background:#ec4899}
 .signal-badge.badge-combined{background:#6366f1}
 .signal-badge.badge-hot{background:#ef4444}
 .signal-badge.badge-warm{background:#f97316}
@@ -277,27 +278,17 @@
       <div class="signal-chip">
         <div class="chip-value" id="live-fragile-leads">0</div>
         <div class="chip-label">Fragile</div>
-        <div class="chip-desc">Lead built heavily on 3PT shooting</div>
+        <div class="chip-desc">3PT-heavy lead vs paint-heavy trail</div>
       </div>
       <div class="signal-chip">
-        <div class="chip-value" id="live-paint-signals">0</div>
-        <div class="chip-label">Paint</div>
-        <div class="chip-desc">Rebound dominance edges</div>
-      </div>
-      <div class="signal-chip">
-        <div class="chip-value" id="live-foul-signals">0</div>
-        <div class="chip-label">Foul</div>
-        <div class="chip-desc">Foul trouble advantages</div>
-      </div>
-      <div class="signal-chip">
-        <div class="chip-value" id="live-hustle-signals">0</div>
-        <div class="chip-label">Hustle</div>
-        <div class="chip-desc">Hustle stat edges</div>
+        <div class="chip-value" id="live-ft-signals">0</div>
+        <div class="chip-label">FT</div>
+        <div class="chip-desc">Lead inflated by FT disparity</div>
       </div>
       <div class="signal-chip">
         <div class="chip-value" id="live-combined-signals">0</div>
         <div class="chip-label">Combined</div>
-        <div class="chip-desc">Multiple signals on same game</div>
+        <div class="chip-desc">2+ signals on same side</div>
       </div>
     </div>
 
@@ -388,7 +379,7 @@
     <div class="form-grid">
       <div class="form-group"><label>Game</label><input type="text" id="modal-game" /></div>
       <div class="form-group"><label>Side</label><input type="text" id="modal-side" /></div>
-      <div class="form-group"><label>Strategy</label><select id="modal-strategy"><option>Mean Reversion</option><option>3PT Regression</option><option>Paint Durability</option><option>Foul Trouble</option></select></div>
+      <div class="form-group"><label>Strategy</label><select id="modal-strategy"><option>Mean Reversion</option><option>3PT Regression</option><option>Star Cold</option><option>Fragile Lead</option><option>FT Inflation</option><option>Combined Edge</option></select></div>
       <div class="form-group"><label>Line / Price</label><input type="text" id="modal-price" /></div>
       <div class="form-group"><label>Units</label><input type="number" id="modal-units" value="1" step="0.5" min="0.5" max="2" /></div>
       <div class="form-group"><label>Notes</label><input type="text" id="modal-notes" /></div>
@@ -422,7 +413,7 @@ const TEAM_3PT_AVG = {
 function getTeam3PtAvg(abbr) { return TEAM_3PT_AVG[abbr] || null; }
 
 let currentMode='nba';
-const MODE_CONFIG={nba:{title:'ALPHA HUNTER',subtitle:'Live ML Edge Finder \u2022 3PT / Star Pace / Paint Durability / Fouls \u2022 Auto-Updating',sport:'basketball/nba',starLabel:'Star Cold',starTooltip:'When a star player is cold (shooting well below average), their scoring tends to regress upward. The current line undervalues their team.',foulRateThreshold:6.5,foulTotalThreshold:10,foulPeriodMinutes:12},ncaa:{title:'ALPHA HUNTER',subtitle:'Live ML Edge Finder • 3PT / Team Efficiency / Paint Durability / Fouls • NCAA Auto-Updating',sport:'basketball/mens-college-basketball',starLabel:'Team Slump',starTooltip:'When team offensive efficiency drops 15%+ below season average, regression to mean is likely. Markets overreact to cold stretches.',foulRateThreshold:5.0,foulTotalThreshold:7,foulPeriodMinutes:10}};
+const MODE_CONFIG={nba:{title:'ALPHA HUNTER',subtitle:'Live ML Edge Finder \u2022 3PT / Star Cold / Fragile Lead / FT Inflation \u2022 Auto-Updating',sport:'basketball/nba',starLabel:'Star Cold',starTooltip:'When a star player is cold (shooting well below average), their scoring tends to regress upward. The current line undervalues their team.'},ncaa:{title:'ALPHA HUNTER',subtitle:'Live ML Edge Finder \u2022 3PT / Star Cold / Fragile Lead / FT Inflation \u2022 NCAA Auto-Updating',sport:'basketball/mens-college-basketball',starLabel:'Team Slump',starTooltip:'When team offensive efficiency drops 15%+ below season average, regression to mean is likely. Markets overreact to cold stretches.'}};
 function switchMode(){oddsCache={};oddsCacheTime=0;const avgEl=document.getElementById('league-avg-value');if(avgEl)avgEl.textContent=getLeague3PtAvg()+'%';currentMode=currentMode==='nba'?'ncaa':'nba';var cfg=MODE_CONFIG[currentMode];document.getElementById('main-title').textContent=cfg.title;document.getElementById('main-subtitle').textContent=cfg.subtitle;document.title=cfg.title.replace('SYSTEM','Dashboard');var sLE=document.getElementById('star-label-text');if(sLE)sLE.textContent=cfg.starLabel;var tipEl=document.querySelector('#star-tooltip-wrap .tip');if(tipEl)tipEl.textContent=cfg.starTooltip;document.getElementById('mode-switch').className='mode-switch'+(currentMode==='ncaa'?' ncaa':'');document.getElementById('label-nba').className='mode-label'+(currentMode==='nba'?' active-mode':'');document.getElementById('label-ncaa').className='mode-label'+(currentMode==='ncaa'?' active-mode':'');var nbaG=document.getElementById('nba-guide');var ncaaG=document.getElementById('ncaa-guide');if(nbaG)nbaG.style.display=currentMode==='nba'?'':'none';if(ncaaG)ncaaG.style.display=currentMode==='ncaa'?'':'none';var lavEl=document.getElementById('league-avg-value');if(lavEl)lavEl.textContent=getLeague3PtAvg()+'%';fetchESPNScoreboard();}
 
 // === LIVE ODDS (The Odds API) ===
@@ -597,29 +588,15 @@ function analyzeScoringDurability(teamAbbr, score, fg3Made, opponentScore) {
 }
 
 // ==================== FOUL TRACKING ====================
-function analyzeReboundEffort(aOREB, hOREB, aDREB, hDREB, aScore, hScore) {
-      const aOreb = parseInt(aOREB)||0, hOreb = parseInt(hOREB)||0;
-      const aDreb = parseInt(aDREB)||0, hDreb = parseInt(hDREB)||0;
-      const diff = aOreb - hOreb;
-      const totalOreb = aOreb + hOreb;
-      const scoreDiff = (parseInt(hScore)||0) - (parseInt(aScore)||0);
-      return { aOreb, hOreb, aDreb, hDreb, diff, totalOreb, scoreDiff };
-    }
-
-    function analyzeTeamFouls(fouls, period, clock) {
-  const f = parseInt(fouls) || 0;
-  const isNcaa = (typeof currentMode !== 'undefined' && currentMode === 'ncaa');
-  const qtrLen = isNcaa ? 20 : 12;
-  const clockMin = parseFloat(clock?.split(':')[0]) || qtrLen;
-  const minsPlayed = (period - 1) * qtrLen + (qtrLen - clockMin);
-  const foulRate = minsPlayed > 0 ? (f / minsPlayed * qtrLen) : 0;
-  const isLateGame = isNcaa ? period >= 2 : period >= 3;
-  let extremeRate = isNcaa ? 7.5 : 8.0, extremeTotal = isNcaa ? 12 : 14;
-  let highRate = isNcaa ? 6.0 : 6.5, highTotal = isNcaa ? 8 : 10;
-  if (isLateGame) { extremeRate -= 0.5; extremeTotal -= 2; highRate -= 0.5; highTotal -= 2; }
-  const extremeFouls = foulRate >= extremeRate && f >= extremeTotal;
-  const highFouls = !extremeFouls && foulRate >= highRate && f >= highTotal;
-  return { fouls: f, foulRate: foulRate.toFixed(1), highFouls, extremeFouls, perQtr: foulRate.toFixed(1), isLateGame };
+function analyzeFTInflation(aFTA, hFTA, aScore, hScore) {
+  const aFt = parseInt(aFTA)||0, hFt = parseInt(hFTA)||0;
+  const ftGap = Math.abs(aFt - hFt);
+  const aLeading = (parseInt(aScore)||0) > (parseInt(hScore)||0);
+  const hLeading = (parseInt(hScore)||0) > (parseInt(aScore)||0);
+  // Signal fires when leading team has 10+ more FTA than trailing team
+  const aInflated = aLeading && aFt > hFt && ftGap >= 10;
+  const hInflated = hLeading && hFt > aFt && ftGap >= 10;
+  return { aFTA: aFt, hFTA: hFt, ftGap, aInflated, hInflated };
 }
 
 // ==================== ESPN SCOREBOARD ====================
@@ -658,7 +635,7 @@ async function fetchESPNScoreboard() {
       return;
     }
 
-    let sig3=0, sigStar=0, sigCombined=0, sigFragile=0, hotTeams=0, warmTeams=0;
+    let sig3=0, sigStar=0, sigCombined=0, sigFragile=0, sigFT=0, hotTeams=0, warmTeams=0;
     let cards='', tpCards='', gameTheses=[];
 
     for (const event of liveEvents) {
@@ -744,7 +721,7 @@ async function fetchESPNScoreboard() {
               sigStar++;
                 fireStarColdAlert(leader, star, gMins, per, clk, gLabel, pr);
               starColdTeams[leader.team] = leader.name;
-              thesis.criteria[`star_${oppSide}`] = {met:true, strong:true, label:`Opponent Star Cold: ${leader.name}`, detail:`${leader.name} averages ${star.ppg} PPG. At Q${per} ${clk}, expected ~${exp.toFixed(0)} pts but only has ${leader.pts}. That's ${(pr*100).toFixed(0)}% of pace (<60% threshold). Stars at this pace typically score 4-8 pts above current rate by game end &mdash; the market hasn't priced this bounce-back yet. Live ML is too favorable to the OTHER side.`, value:`${leader.pts}/${exp.toFixed(0)} pts (${(pr*100).toFixed(0)}%)`};
+              thesis.criteria[`star_${oppSide}`] = {met:true, strong:true, label:`Opponent Star Cold: ${leader.name}`, detail:`${leader.name} averages ${star.ppg} PPG. At Q${per} ${clk}, expected ~${exp.toFixed(0)} pts but only has ${leader.pts}. That's ${(pr*100).toFixed(0)}% of pace (<60% threshold). Star players this far below expected pace tend to regress upward &mdash; the market hasn't priced in their scoring recovery yet. Live ML is too favorable to the OTHER side.`, value:`${leader.pts}/${exp.toFixed(0)} pts (${(pr*100).toFixed(0)}%)`};
             } else if (pr<0.75 && gPct>=0.2) {
               signals.push({type:'star',text:`${leader.name} ${leader.pts}pts, behind ${star.ppg} PPG pace (exp ~${exp.toFixed(0)})`,level:1});
               thesis.criteria[`star_${oppSide}`] = {met:true, strong:false, label:`Opponent Star Below Pace: ${leader.name}`, detail:`${leader.name} (${star.ppg} PPG) has ${leader.pts} pts vs ${exp.toFixed(0)} expected. Below pace but not at critical 60% threshold yet.`, value:`${(pr*100).toFixed(0)}% pace`, warn:true};
@@ -752,26 +729,38 @@ async function fetchESPNScoreboard() {
           }
         });
 
-        // LEAD DURABILITY (PAINT vs 3PT)
+        // FRAGILE LEAD — dual condition: leading team 3PT-heavy AND trailing team paint-heavy
         const aDur = analyzeScoringDurability(aA, aS, a3M, hS);
         const hDur = analyzeScoringDurability(hA, hS, h3M, aS);
-        if (aDur.fragile) {
-          signals.push({type:'paint',text:`${aA} lead built on 3PT (${aDur.pct3.toFixed(0)}% of pts from 3). Fragile - expect regression.`,level:2});
-          sigFragile++;
-          thesis.criteria['paint_away'] = {met:true, strong:true, label:`${aA} Lead Built on 3PT`, detail:`${aDur.pct3.toFixed(0)}% of ${aA}'s scoring is from 3-pointers (threshold: 42%). Leads built on 3PT shooting are fragile because 3PT% regresses toward ${getLeague3PtAvg()}%. If those 3s stop falling, their lead evaporates. Paint-heavy scoring is far more sustainable &mdash; paint points convert at ~60% vs 3PT at ~36%.`, value:`${aDur.pct3.toFixed(0)}% from 3PT`};
+        // Away leads: check if away is 3PT-heavy (42%+) AND home (trailing) is paint-heavy (58%+ non-3PT)
+        if (aS > hS && aDur.pct3 >= getFragile3PtThreshold() && aS >= 20) {
+          const hNon3Pct = hS > 0 ? ((hS - (parseInt(h3M)||0)*3) / hS * 100) : 0;
+          if (hNon3Pct >= 58) {
+            signals.push({type:'fragile',text:`${aA} lead is FRAGILE: ${aDur.pct3.toFixed(0)}% from 3PT. ${hA} scoring is durable (${hNon3Pct.toFixed(0)}% paint/mid). Fade the lead.`,level:2});
+            sigFragile++;
+            thesis.criteria['fragile_away'] = {met:true, strong:true, label:`${aA} Fragile Lead vs ${hA} Paint`, detail:`${aA}'s lead is built on 3PT (${aDur.pct3.toFixed(0)}% from 3, threshold ${getFragile3PtThreshold()}%). Meanwhile ${hA}'s scoring is paint-heavy (${hNon3Pct.toFixed(0)}% non-3PT). The lead is inflated AND the trailing team's offense is sustainable. Classic fade setup.`, value:`${aDur.pct3.toFixed(0)}% 3PT vs ${hNon3Pct.toFixed(0)}% paint`};
+          } else {
+            thesis.criteria['fragile_away'] = {met:false, label:`${aA} Lead Composition`, detail:`${aA} 3PT-heavy but ${hA} not paint-heavy enough. Fragile not triggered.`, value:'Partial'};
+          }
         } else {
-          thesis.criteria['paint_away'] = {met:false, label:`${aA} Scoring Balance`, detail:`${aA} scoring is balanced or paint-heavy. Lead is durable.`, value: aS>0?`${aDur.pct3.toFixed(0)}% from 3PT`:'N/A'};
+          thesis.criteria['fragile_away'] = {met:false, label:`${aA} Lead Composition`, detail:`No fragile lead condition met for ${aA}.`, value:'N/A'};
         }
-        if (hDur.fragile) {
-          signals.push({type:'paint',text:`${hA} lead built on 3PT (${hDur.pct3.toFixed(0)}% of pts from 3). Fragile - expect regression.`,level:2});
-          sigFragile++;
-          thesis.criteria['paint_home'] = {met:true, strong:true, label:`${hA} Lead Built on 3PT`, detail:`${hDur.pct3.toFixed(0)}% of ${hA}'s scoring is from 3-pointers (threshold: 42%). Same logic &mdash; 3PT-dependent leads are fragile. Market often overweights the current scoreboard without considering HOW the points were scored.`, value:`${hDur.pct3.toFixed(0)}% from 3PT`};
+        // Home leads: check if home is 3PT-heavy AND away (trailing) is paint-heavy
+        if (hS > aS && hDur.pct3 >= getFragile3PtThreshold() && hS >= 20) {
+          const aNon3Pct = aS > 0 ? ((aS - (parseInt(a3M)||0)*3) / aS * 100) : 0;
+          if (aNon3Pct >= 58) {
+            signals.push({type:'fragile',text:`${hA} lead is FRAGILE: ${hDur.pct3.toFixed(0)}% from 3PT. ${aA} scoring is durable (${aNon3Pct.toFixed(0)}% paint/mid). Fade the lead.`,level:2});
+            sigFragile++;
+            thesis.criteria['fragile_home'] = {met:true, strong:true, label:`${hA} Fragile Lead vs ${aA} Paint`, detail:`${hA}'s lead is built on 3PT (${hDur.pct3.toFixed(0)}% from 3, threshold ${getFragile3PtThreshold()}%). Meanwhile ${aA}'s scoring is paint-heavy (${aNon3Pct.toFixed(0)}% non-3PT). The lead is inflated AND the trailing team's offense is sustainable. Classic fade setup.`, value:`${hDur.pct3.toFixed(0)}% 3PT vs ${aNon3Pct.toFixed(0)}% paint`};
+          } else {
+            thesis.criteria['fragile_home'] = {met:false, label:`${hA} Lead Composition`, detail:`${hA} 3PT-heavy but ${aA} not paint-heavy enough. Fragile not triggered.`, value:'Partial'};
+          }
         } else {
-          thesis.criteria['paint_home'] = {met:false, label:`${hA} Scoring Balance`, detail:`${hA} scoring is balanced or paint-heavy. Lead is durable.`, value: hS>0?`${hDur.pct3.toFixed(0)}% from 3PT`:'N/A'};
+          thesis.criteria['fragile_home'] = {met:false, label:`${hA} Lead Composition`, detail:`No fragile lead condition met for ${hA}.`, value:'N/A'};
         }
 
-        // REBOUND DATA (from summary endpoint)
-        let aOREB = 0, hOREB = 0, aDREB = 0, hDREB = 0;
+        // FT INFLATION — fetch FTA from ESPN summary endpoint
+        let aFTA = 0, hFTA = 0;
         try {
           const sumUrl = 'https://site.api.espn.com/apis/site/v2/sports/basketball/' + (currentMode === 'nba' ? 'nba' : 'mens-college-basketball') + '/summary?event=' + gid;
           const sumRes = await fetch(sumUrl, { signal: AbortSignal.timeout(5000) });
@@ -782,79 +771,50 @@ async function fetchESPNScoreboard() {
               const isHome = bt.homeAway === 'home';
               const stats = bt.statistics || [];
               for (const cat of stats) {
-                if (cat.name === 'offensiveRebounds') { if (isHome) hOREB = parseInt(cat.displayValue)||0; else aOREB = parseInt(cat.displayValue)||0; }
-                if (cat.name === 'defensiveRebounds') { if (isHome) hDREB = parseInt(cat.displayValue)||0; else aDREB = parseInt(cat.displayValue)||0; }
+                if (cat.name === 'freeThrowsAttempted' || cat.name === 'freeThrowAttempts') { if (isHome) hFTA = parseInt(cat.displayValue)||0; else aFTA = parseInt(cat.displayValue)||0; }
               }
             }
           }
-        } catch(e) { /* summary fetch failed, OREB signals won\'t fire */ }
+        } catch(e) { /* summary fetch failed, FT signals won't fire */ }
 
-        // FOUL ANALYSIS (upgraded: differential + late-game + NCAA-aware)
-      const aFoul = analyzeTeamFouls(aFouls, per, clk);
-      const hFoul = analyzeTeamFouls(hFouls, per, clk);
-      const foulGap = Math.abs(aFoul.fouls - hFoul.fouls);
-      const aFoulingMore = aFoul.fouls > hFoul.fouls;
-      const lateTag = aFoul.isLateGame ? ' [LATE GAME]' : '';
-      if (foulGap >= 8) {
-        const fouler = aFoulingMore ? aA : hA;
-        const beneficiary = aFoulingMore ? hA : aA;
-        const foulerF = aFoulingMore ? aFoul : hFoul;
-        const benefF = aFoulingMore ? hFoul : aFoul;
-        signals.push({type:'foul',text:`${fouler} fouling ${foulGap} more than ${beneficiary} (${foulerF.fouls} vs ${benefF.fouls}). Lopsided FT advantage inflating ${beneficiary} score.${lateTag}`,level:2});
-        const critKey = aFoulingMore ? 'foul_away' : 'foul_home';
-        thesis.criteria[critKey] = {met:true, strong:true, label:`${aFoulingMore?aA:hA} Foul Differential`, detail:`${fouler} committing ${foulGap} more fouls (${foulerF.fouls} vs ${benefF.fouls}). ${beneficiary} getting ${foulGap}+ extra FT trips. This FT volume will regress.`, value:`${foulGap} foul gap`};
-      } else {
-        if (aFoul.extremeFouls) {
-          signals.push({type:'foul',text:`${aA} EXTREME foul rate (${aFoul.fouls} fouls, ${aFoul.perQtr}/qtr).${lateTag} Bonus FTs inflating score.`,level:2});
-          thesis.criteria['foul_away'] = {met:true, strong:true, label:`${aA} Extreme Foul Rate`, detail:`${aA} fouling at extreme rate ${aFoul.perQtr}/qtr (${aFoul.fouls} total). Opponent FT inflation will regress.`, value:`${aFoul.perQtr}/qtr`};
-        } else if (aFoul.highFouls && aFoul.isLateGame) {
-          signals.push({type:'foul',text:`${aA} high foul rate in late game (${aFoul.fouls} fouls, ${aFoul.perQtr}/qtr). Bonus FTs inflating ${hA} score.`,level:1});
-          thesis.criteria['foul_away'] = {met:true, strong:false, label:`${aA} High Foul Rate`, detail:`${aA} fouling at ${aFoul.perQtr}/qtr (${aFoul.fouls} total) in late game. ${hA} getting bonus FT trips.`, value:`${aFoul.perQtr}/qtr`};
-        }
-        if (hFoul.extremeFouls) {
-          signals.push({type:'foul',text:`${hA} EXTREME foul rate (${hFoul.fouls} fouls, ${hFoul.perQtr}/qtr).${lateTag} Bonus FTs inflating score.`,level:2});
-          thesis.criteria['foul_home'] = {met:true, strong:true, label:`${hA} Extreme Foul Rate`, detail:`${hA} fouling at extreme rate ${hFoul.perQtr}/qtr (${hFoul.fouls} total). Opponent FT inflation will regress.`, value:`${hFoul.perQtr}/qtr`};
-        } else if (hFoul.highFouls && hFoul.isLateGame) {
-          signals.push({type:'foul',text:`${hA} high foul rate in late game (${hFoul.fouls} fouls, ${hFoul.perQtr}/qtr). Bonus FTs inflating ${aA} score.`,level:1});
-          thesis.criteria['foul_home'] = {met:true, strong:false, label:`${hA} High Foul Rate`, detail:`${hA} fouling at ${hFoul.perQtr}/qtr (${hFoul.fouls} total) in late game. ${aA} getting bonus FT trips.`, value:`${hFoul.perQtr}/qtr`};
-        }
-      }
-      // HUSTLE EDGE - Offensive Rebound Dominance
-        const reb = analyzeReboundEffort(aOREB, hOREB, aDREB, hDREB, aS, hS);
-        if (reb.totalOreb >= 6) {
-          if (reb.diff >= 4 && reb.scoreDiff > 0) {
-            signals.push({type:'hustle',text:`${aA} out-hustling on offensive boards (${reb.aOreb} OREB vs ${reb.hOreb}). +${reb.diff} extra possessions while trailing by ${reb.scoreDiff}.`,level:1});
-            thesis.criteria['hustle_away'] = {met:true, strong:false, label:`${aA} OREB Dominance`, detail:`${aA} has ${reb.aOreb} offensive rebounds vs ${reb.hOreb} for ${hA}. Each OREB is ~1.1 pts of extra value. Effort advantage persists.`, value:'+' + reb.diff + ' OREB'};
-          }
-          if (reb.diff <= -4 && reb.scoreDiff < 0) {
-            signals.push({type:'hustle',text:`${hA} out-hustling on offensive boards (${reb.hOreb} OREB vs ${reb.aOreb}). +${Math.abs(reb.diff)} extra possessions while trailing by ${Math.abs(reb.scoreDiff)}.`,level:1});
-            thesis.criteria['hustle_home'] = {met:true, strong:false, label:`${hA} OREB Dominance`, detail:`${hA} has ${reb.hOreb} offensive rebounds vs ${reb.aOreb} for ${aA}. Each OREB is ~1.1 pts of extra value. Effort advantage persists.`, value:'+' + Math.abs(reb.diff) + ' OREB'};
-          }
+        const ftData = analyzeFTInflation(aFTA, hFTA, aS, hS);
+        if (ftData.aInflated) {
+          signals.push({type:'ft',text:`${aA} lead is FT-inflated: ${ftData.aFTA} FTA vs ${ftData.hFTA} for ${hA} (${ftData.ftGap} gap). This FT volume will regress.`,level:2});
+          sigFT++;
+          thesis.criteria['ft_away'] = {met:true, strong:true, label:`${aA} FT Inflation`, detail:`${aA} has attempted ${ftData.aFTA} free throws vs ${ftData.hFTA} for ${hA} &mdash; a ${ftData.ftGap} FTA gap. Part of ${aA}'s lead is built on unsustainable free throw volume. FT rates regress to the mean within a game.`, value:`${ftData.ftGap} FTA gap`};
+        } else if (ftData.hInflated) {
+          signals.push({type:'ft',text:`${hA} lead is FT-inflated: ${ftData.hFTA} FTA vs ${ftData.aFTA} for ${aA} (${ftData.ftGap} gap). This FT volume will regress.`,level:2});
+          sigFT++;
+          thesis.criteria['ft_home'] = {met:true, strong:true, label:`${hA} FT Inflation`, detail:`${hA} has attempted ${ftData.hFTA} free throws vs ${ftData.aFTA} for ${aA} &mdash; a ${ftData.ftGap} FTA gap. Part of ${hA}'s lead is built on unsustainable free throw volume. FT rates regress to the mean within a game.`, value:`${ftData.ftGap} FTA gap`};
+        } else {
+          thesis.criteria['ft_away'] = {met:false, label:`FT Balance`, detail:`No significant FT disparity between teams.`, value:'Normal'};
         }
 
-        // COMBINED - build thesis per side
+        // COMBINED - 2+ of the 4 signals on same game = combined edge
         const has3=signals.some(s=>s.type==='3pt'&&s.level===2);
         const hasStar=signals.some(s=>s.type==='star'&&s.level===2);
-        const hasPaint=signals.some(s=>s.type==='paint'&&s.level===2);
         const hasFragile=signals.some(s=>s.type==='fragile'&&s.level>=2);
-        const hasFoul=signals.some(s=>s.type==='foul'&&s.level>=1);
-        const hasHustle=signals.some(s=>s.type==='hustle'&&s.level>=1);
-        if ((has3&&hasStar)||(has3&&hasPaint)||(has3&&hasFoul)||(has3&&hasHustle)||(hasStar&&hasPaint)||(hasStar&&hasFragile)||(hasStar&&hasFoul)||(hasStar&&hasHustle)||(hasPaint&&hasFragile)||(hasPaint&&hasFoul)||(hasFragile&&hasFoul)||(hasFragile&&hasHustle)||(hasFoul&&hasHustle)) { signalLevel=2; sigCombined++; }
-        else if (has3||hasStar||hasPaint||hasFragile||hasFoul||hasHustle) signalLevel=1;
+        const hasFT=signals.some(s=>s.type==='ft'&&s.level>=2);
+        const activeSignals = [has3, hasStar, hasFragile, hasFT].filter(Boolean).length;
+        if (activeSignals >= 2) { signalLevel=2; sigCombined++; }
+        else if (activeSignals === 1) signalLevel=1;
 
         // Determine bet side and build thesis logic
         if (signalLevel >= 2) {
           // Figure out which team to bet ON (the one that benefits from regression)
           let betTeam = '', fadeTeam = '', reasons = [];
           const a3Data = thesis.criteria['3pt_away'], h3Data = thesis.criteria['3pt_home'];
-          const aPaint = thesis.criteria['paint_away'], hPaint = thesis.criteria['paint_home'];
+          const aFragile = thesis.criteria['fragile_away'], hFragile = thesis.criteria['fragile_home'];
+          const aFTData = thesis.criteria['ft_away'], hFTData = thesis.criteria['ft_home'];
 
           // Score each side: who has unsustainable advantages?
           let awayFade=0, homeFade=0;
           if (a3Data?.met && a3Data?.strong) awayFade++;  // away shooting too hot = fade away
           if (h3Data?.met && h3Data?.strong) homeFade++;  // home shooting too hot = fade home
-          if (aPaint?.met && aPaint?.strong && aS > hS) awayFade++;  // away lead is fragile
-          if (hPaint?.met && hPaint?.strong && hS > aS) homeFade++;  // home lead is fragile
+          if (aFragile?.met && aFragile?.strong) awayFade++;  // away lead is fragile
+          if (hFragile?.met && hFragile?.strong) homeFade++;  // home lead is fragile
+          if (aFTData?.met && aFTData?.strong) awayFade++;  // away lead FT-inflated
+          if (hFTData?.met && hFTData?.strong) homeFade++;  // home lead FT-inflated
           // Star cold on a team = bet ON that team (star will regress up)
           if (starColdTeams[aA]) homeFade++;  // away star cold = away bounces back = fade home
           if (starColdTeams[hA]) awayFade++;  // home star cold = home bounces back = fade away
@@ -867,12 +827,12 @@ async function fetchESPNScoreboard() {
           // Build the narrative
           if (a3Data?.met && a3Data?.strong) reasons.push(`${aA} is shooting an unsustainable ${a3Data.value} from 3 &mdash; this will cool off`);
           if (h3Data?.met && h3Data?.strong) reasons.push(`${hA} is shooting an unsustainable ${h3Data.value} from 3 &mdash; this will cool off`);
-          if (starColdTeams[aA]) reasons.push(`${starColdTeams[aA]} (${aA}) is ice cold &mdash; star players at <60% pace bounce back ~78% of the time`);
-          if (starColdTeams[hA]) reasons.push(`${starColdTeams[hA]} (${hA}) is ice cold &mdash; star players at <60% pace bounce back ~78% of the time`);
-          if (aPaint?.met && aPaint?.strong && aS > hS) reasons.push(`${aA}'s lead is fragile &mdash; ${aPaint.value} scoring from 3PT`);
-          if (hPaint?.met && hPaint?.strong && hS > aS) reasons.push(`${hA}'s lead is fragile &mdash; ${hPaint.value} scoring from 3PT`);
-          if (thesis.criteria['foul_away']?.met) reasons.push(`${aA} fouling heavy (${thesis.criteria['foul_away'].value}) &mdash; opponent FT inflation`);
-          if (thesis.criteria['foul_home']?.met) reasons.push(`${hA} fouling heavy (${thesis.criteria['foul_home'].value}) &mdash; opponent FT inflation`);
+          if (starColdTeams[aA]) reasons.push(`${starColdTeams[aA]} (${aA}) is ice cold &mdash; star at <60% expected pace, regression likely`);
+          if (starColdTeams[hA]) reasons.push(`${starColdTeams[hA]} (${hA}) is ice cold &mdash; star at <60% expected pace, regression likely`);
+          if (aFragile?.met && aFragile?.strong) reasons.push(`${aA}'s lead is fragile (3PT-heavy) while ${hA} scores from the paint &mdash; ${aFragile.value}`);
+          if (hFragile?.met && hFragile?.strong) reasons.push(`${hA}'s lead is fragile (3PT-heavy) while ${aA} scores from the paint &mdash; ${hFragile.value}`);
+          if (aFTData?.met && aFTData?.strong) reasons.push(`${aA}'s lead is FT-inflated (${aFTData.value}) &mdash; this FT volume will regress`);
+          if (hFTData?.met && hFTData?.strong) reasons.push(`${hA}'s lead is FT-inflated (${hFTData.value}) &mdash; this FT volume will regress`);
 
           const strongCriteria = Object.values(thesis.criteria).filter(c => c.met && c.strong).length;
           const allCriteria = Object.values(thesis.criteria).filter(c => c.met).length;
@@ -928,14 +888,11 @@ async function fetchESPNScoreboard() {
         durabilityHTML = durBar(aA, aDur) + durBar(hA, hDur);
       }
 
-      // Foul info
+      // FT info
       let foulHTML = '';
-      if (isLive) {
-        const aF = analyzeTeamFouls(aFouls, per, clk);
-        const hF = analyzeTeamFouls(hFouls, per, clk);
-        if (parseInt(aFouls) > 0 || parseInt(hFouls) > 0) {
-          foulHTML = `<div class="stat-bar-row"><span class="stat-bar-label">Fouls</span><span style="flex:1;font-size:11px;">${aA}: ${aFouls}${aF.highFouls?' &#x26A0;':''} | ${hA}: ${hFouls}${hF.highFouls?' &#x26A0;':''}</span></div>`;
-        }
+      if (isLive && (aFTA > 0 || hFTA > 0)) {
+        const ftGap = Math.abs(aFTA - hFTA);
+        foulHTML = `<div class="stat-bar-row"><span class="stat-bar-label">FTA</span><span style="flex:1;font-size:11px;">${aA}: ${aFTA} | ${hA}: ${hFTA}${ftGap >= 10 ? ' &#x26A0; +'+ftGap+' gap' : ''}</span></div>`;
       }
 
       cards += `<div class="game-card ${cc}"><div class="${hc}"><span>${isLive?'LIVE':'UPCOMING'} ${detail}</span><span>${new Date(event.date).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div>
@@ -965,12 +922,13 @@ async function fetchESPNScoreboard() {
     // Update counts
     document.getElementById('live-3pt-signals').textContent = sig3;
     document.getElementById('live-star-signals').textContent = sigStar;
-    document.getElementById('live-combined-signals').textContent = sigCombined;
     document.getElementById('live-fragile-leads').textContent = sigFragile;
+    document.getElementById('live-ft-signals').textContent = sigFT;
+    document.getElementById('live-combined-signals').textContent = sigCombined;
     document.getElementById('threept-hot-count').textContent = hotTeams;
     document.getElementById('threept-warm-count').textContent = warmTeams;
 
-    const totalSigs = sig3+sigStar+sigFragile;
+    const totalSigs = sig3+sigStar+sigFragile+sigFT;
     if (totalSigs>0) { document.getElementById('live-badge').style.display='inline'; document.getElementById('live-badge').textContent=totalSigs; }
     else document.getElementById('live-badge').style.display='none';
     if (hotTeams>0) { document.getElementById('threept-badge').style.display='inline'; document.getElementById('threept-badge').textContent=hotTeams; }
@@ -995,7 +953,7 @@ async function fetchESPNScoreboard() {
         const trailing = t.aScore > t.hScore ? t.hTeam : t.hScore > t.aScore ? t.aTeam : '';
 
         // Build criteria cards
-        const criteriaKeys = ['3pt_away','3pt_home','star_away','star_home','paint_away','paint_home','foul_away','foul_home'];
+        const criteriaKeys = ['3pt_away','3pt_home','star_away','star_home','fragile_away','fragile_home','ft_away','ft_home'];
         const criteriaHTML = criteriaKeys.map(k => {
           const c = t.criteria[k];
           if (!c) return '';
@@ -1550,7 +1508,7 @@ function showScenarioAlert(data) {
     </div>
     <div class="alert-verdict">
       <strong>${deficitText}</strong> expected pace at ${periodLabel} ${data.clock}. 
-      Stars below 60% pace at this point bounce back ~78% of the time. 
+      Stars below 60% pace tend to regress upward as the game progresses.
       <strong>Mean reversion candidate &mdash; live ML is mispriced.</strong>
     </div>
     <div class="alert-action">
@@ -1954,27 +1912,25 @@ try {
 <div class="guide-section">
 <h2 style="font-size:22px;font-weight:700;margin-bottom:4px">Signal Guide</h2>
 <div id="nba-guide">
-<p class="guide-intro">Each signal identifies a specific market inefficiency in live NBA games. When conditions are met, the live moneyline is likely mispriced.</p>
+<p class="guide-intro">All signals share one thesis: the current score was built on something unsustainable, so the live moneyline is mispriced.</p>
 <div class="guide-grid">
-<div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT</span> 3PT Regression</h3><p class="edge-label">The Edge: Unsustainable Shooting Regresses to Mean</p><p>When a team shoots far above their season 3PT%, regression is likely. Opposing team benefits from expected shooting decline in later quarters.</p><div class="threshold">Trigger: Current game 3PT% exceeds season avg by 8%+</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-star">STAR</span> Star Cold</h3><p class="edge-label">The Edge: Cold Stars Create Exploitable Gaps</p><p>When a top scorer is significantly underperforming their average, defenses over-rotate creating opportunities. The opposing team gains an edge as the star player drags down team efficiency.</p><div class="threshold">Trigger: Star player scoring 40%+ below their season average</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-fragile">FRAGILE</span> Fragile Lead</h3><p class="edge-label">The Edge: Leads Built on 3PT Shooting Are Fragile</p><p>When a large percentage of a team's lead is built on made three-pointers, that lead is vulnerable. 3PT shooting is the most volatile stat in basketball—hot streaks cool off, and leads built on them often evaporate quickly.</p><div class="threshold">Trigger: 60%+ of lead points came from 3PT, lead ≤5 pts</div></div><div class="guide-card"><h3><span class="signal-badge badge-paint">PAINT</span> Paint Durability</h3><p class="edge-label">The Edge: Offensive Rebound Dominance Shows Hidden Effort</p><p>When a trailing team dominates offensive rebounds, they are generating extra possessions through pure effort. Each OREB is worth ~1.1 points of hidden value.</p><div class="threshold">Thresholds: &ge;4 OREB advantage while trailing, minimum 6 total OREB in game</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-foul">FOUL</span> Foul Trouble</h3><p class="edge-label">The Edge: Foul Trouble Forces Suboptimal Lineups</p><p>When key players accumulate fouls, coaches must limit their minutes or risk disqualification. This degrades lineup quality and creates exploitable matchup advantages for the opponent.</p><div class="threshold">Trigger: Star player with 4+ fouls before 4th quarter</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-hustle">HUSTLE</span> Hustle Edge</h3><p class="edge-label">The Edge: Hustle Stats Reveal Hidden Momentum</p><p>Teams dominating hustle stats (steals, deflections, loose balls) are playing with higher energy and effort. This often precedes scoring runs and momentum shifts that the scoreboard hasn't yet reflected.</p><div class="threshold">Trigger: Significant hustle stat differential favoring trailing or close team</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">The Edge: Multiple Signals Compound the Advantage</p><p>When multiple independent signals align on the same side, the probability of a correct edge call increases dramatically. Each additional signal adds confirmation, the edge multiplies.</p><div class="threshold">Scoring: +1 per signal per side, 2+ = actionable edge</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT</span> 3PT Regression</h3><p class="edge-label">The Edge: Unsustainable Shooting Regresses to Mean</p><p>When a team shoots far above their season 3PT%, regression is statistically inevitable. The lead built on hot 3PT shooting is inflated &mdash; teams shooting 50%+ from 3 in a half almost never sustain it.</p><div class="threshold">Trigger: 50%+ on 12+ attempts OR 55%+ on 8+ attempts = strong signal. Elevated: 45%+ on 10+ attempts.</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-star">STAR</span> Star Cold</h3><p class="edge-label">The Edge: Cold Stars Regress Upward</p><p>When a star player (23+ PPG) is significantly below their expected scoring pace, regression upward is likely. The market undervalues their team while the star is cold, creating a buy-low window.</p><div class="threshold">Trigger: Star at &lt;60% of expected scoring pace, at least 20% of game elapsed, Q1-Q3.</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-fragile">FRAGILE</span> Fragile Lead</h3><p class="edge-label">The Edge: 3PT-Heavy Lead vs Paint-Heavy Trail = Fade the Lead</p><p>Fires only when BOTH conditions are true: the leading team's scoring is 3PT-heavy (42%+ from 3) AND the trailing team's scoring is paint-heavy (58%+ non-3PT). The lead is inflated and the trailing team's offense is sustainable.</p><div class="threshold">Trigger: Leading team 42%+ pts from 3PT AND trailing team 58%+ pts from non-3PT (min 20 pts scored).</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-ft">FT</span> FT Inflation</h3><p class="edge-label">The Edge: Leads Built on Free Throw Volume Regress</p><p>When a leading team has significantly more free throw attempts than the trailing team, part of their lead is built on unsustainable FT volume. FT rates regress within a game &mdash; refs tend to even out calls.</p><div class="threshold">Trigger: Leading team has 10+ more FTA than trailing team. FTA data from ESPN summary endpoint.</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">The Edge: Multiple Signals Compound the Mispricing</p><p>When 2+ of the above signals fire on the same game, the live moneyline is mispriced on multiple dimensions simultaneously. Each signal is an independent confirmation that the current score is built on unsustainable conditions.</p><div class="threshold">Trigger: 2+ of {3PT, Star Cold, Fragile Lead, FT Inflation} active on same game = strong combined edge.</div></div>
 </div></div>
 <div id="ncaa-guide" style="display:none">
-<p class="guide-intro">NCAA signals calibrated for college basketball: 5-foul limit, earlier bonus, two 20-min halves. Star Cold uses college scoring thresholds.</p>
+<p class="guide-intro">All signals share one thesis: the current score was built on something unsustainable, so the live moneyline is mispriced. NCAA-calibrated thresholds for college basketball.</p>
 <div class="guide-grid">
-<div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT</span> 3PT Regression</h3><p class="edge-label">The Edge: College Shooting Regresses Faster</p><p>NCAA teams have higher variance in 3PT shooting due to younger players and less consistent mechanics. Hot shooting spells regress even more sharply than in the NBA.</p><div class="threshold">Trigger: Current game 3PT% exceeds season avg by 8%+</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-star">TEAM</span> Team Offensive Slump</h3><p class="edge-label">The Edge: College Teams Are More Dependent on Key Players</p><p>In NCAA, when the primary offensive contributors go cold, the bench drop-off is more severe. College teams lack NBA-level depth, making offensive slumps more impactful on game outcomes.</p><div class="threshold">Trigger: Team scoring 30%+ below first-half pace</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-fragile">FRAGILE</span> Fragile Lead</h3><p class="edge-label">The Edge: 3PT-Dependent Leads Collapse Faster in College</p><p>NCAA teams rely even more heavily on 3PT runs to build leads, but college shooters are less consistent. When a lead is primarily built on threes, halftime adjustments and natural regression make those leads especially fragile.</p><div class="threshold">Trigger: 60%+ of lead points came from 3PT, lead ≤5 pts</div></div><div class="guide-card"><h3><span class="signal-badge badge-paint">PAINT</span> Paint Durability</h3><p class="edge-label">The Edge: College Rebounding Gaps Are Larger</p><p>NCAA teams have wider rebounding skill gaps. When a smaller program dominates the offensive glass against a favored opponent, it signals effort and matchup problems that often lead to comeback runs.</p><div class="threshold">Thresholds: &ge;4 OREB advantage while trailing, minimum 6 total OREB in game</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-foul">FOUL</span> Foul Trouble</h3><p class="edge-label">The Edge: 5-Foul Limit Makes Trouble More Dangerous</p><p>With only 5 fouls before disqualification (vs NBA's 6), college players enter foul trouble faster. The earlier bonus free throw situation and limited bench depth amplify the impact of foul trouble.</p><div class="threshold">Trigger: Key player with 3+ fouls before halftime</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-hustle">HUSTLE</span> Hustle Edge</h3><p class="edge-label">The Edge: Effort Advantages Are More Decisive in College</p><p>College teams with hustle advantages often maintain them longer due to deeper rotations being less common. Hustle stats in NCAA games are stronger predictors of second-half momentum shifts.</p><div class="threshold">Trigger: Significant hustle stat differential favoring trailing or close team</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">The Edge: Signal Stacking in Higher-Variance Games</p><p>NCAA games have more variance, making combined signals even more powerful. When multiple independent signals agree, the edge is stronger because college games are more prone to dramatic swings.</p><div class="threshold">Scoring: +1 per signal per side, 2+ = actionable edge</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT</span> 3PT Regression</h3><p class="edge-label">The Edge: College Shooting Regresses Faster</p><p>NCAA teams have higher variance in 3PT shooting due to younger players and less consistent mechanics. Hot shooting spells regress even more sharply than in the NBA. League avg ~33.4%.</p><div class="threshold">Trigger: 50%+ on 12+ attempts OR 55%+ on 8+ attempts. College shooters sustain hot streaks even less than pros.</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-star">TEAM</span> Team Offensive Slump</h3><p class="edge-label">The Edge: College Teams Lack Depth to Compensate</p><p>In NCAA, when the primary scorer goes cold, the bench drop-off is severe. College teams lack NBA-level depth, making individual cold stretches more impactful on game outcomes.</p><div class="threshold">Trigger: Key scorer at &lt;60% expected pace, at least 20% of game elapsed.</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-fragile">FRAGILE</span> Fragile Lead</h3><p class="edge-label">The Edge: 3PT-Dependent Leads Collapse Faster in College</p><p>Fires when leading team's scoring is 3PT-heavy (38%+ from 3 in NCAA) AND trailing team scores from the paint (58%+ non-3PT). College shooters are less consistent, making these leads even more fragile.</p><div class="threshold">Trigger: Leading team 38%+ pts from 3PT AND trailing team 58%+ pts from non-3PT (min 20 pts).</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-ft">FT</span> FT Inflation</h3><p class="edge-label">The Edge: FT Disparity Inflates Scores in College</p><p>NCAA's earlier bonus situation (7th foul) and 5-foul limit create more FT opportunities. When a leading team has a large FTA advantage, that lead is partially built on unsustainable free throw volume.</p><div class="threshold">Trigger: Leading team has 10+ more FTA than trailing team. Refs tend to even out calls over the game.</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">The Edge: Signal Stacking in Higher-Variance Games</p><p>NCAA games have more variance, making combined signals even more powerful. When 2+ signals fire on the same game, the mispricing compounds because college games are more prone to dramatic swings.</p><div class="threshold">Trigger: 2+ of {3PT, Star Cold, Fragile Lead, FT Inflation} active on same game.</div></div>
 </div></div><div id="theory-panel" class="theory-panel">
   <h4>How This Dashboard Works</h4>
-  <p>Every signal in this dashboard identifies a specific <strong>market inefficiency</strong> in live basketball games. The core principle: live moneyline odds react to the current score and recent momentum, but they often fail to distinguish between <em>sustainable</em> advantages (paint dominance, defensive effort) and <em>unsustainable</em> ones (hot 3PT shooting, free throw inflation from fouls). When conditions are met, the live moneyline is likely mispriced &mdash; that is the edge.</p>
+  <p>Every signal in this dashboard shares one thesis: <strong>the current score was built on something unsustainable, so the live moneyline is mispriced.</strong> Live odds react to the scoreboard, but they fail to distinguish between sustainable scoring (paint, mid-range) and unsustainable scoring (hot 3PT streaks, FT inflation). The 5-signal system (3PT Regression, Star Cold, Fragile Lead, FT Inflation, Combined Edge) identifies when these unsustainable conditions exist &mdash; that is the edge.</p>
   <hr class="signal-divider">
   <h4>1. 3PT Regression Signal</h4>
   <p><strong>What it detects:</strong> A team shooting 50%+ from three-point range on 8 or more attempts. The NBA league average is ~36.5% and NCAA is ~33.4%. When a team is 15+ percentage points above average on significant volume, mean reversion is statistically inevitable.</p>
@@ -1992,62 +1948,38 @@ try {
   </div>
   <p><strong>Nuance:</strong> The "star cold" teams list (starColdTeams) is tracked to factor into the combined thesis. If a star is cold AND their team is trailing, the combined system interprets this as a buy-low opportunity.</p>
   <hr class="signal-divider">
-  <h4>3. Paint Durability / Fragile Lead</h4>
-  <p><strong>What it detects:</strong> Whether a team's scoring is built on a sustainable foundation (inside/paint scoring) or a fragile one (over-reliance on three-pointers). The system calculates what percentage of a team's total points come from three-point field goals.</p>
-  <p><strong>Why it is an edge:</strong> Points scored in the paint come from high-percentage shots &mdash; layups, dunks, post moves. These convert at 55-65% and indicate genuine offensive quality. In contrast, a team whose scoring is 42%+ from three-pointers is riding a hot streak that will fade. A lead built on paint scoring is <em>durable</em>; a lead built on threes is <em>fragile</em>.</p>
+  <h4>3. Fragile Lead</h4>
+  <p><strong>What it detects:</strong> A dual condition: the leading team's scoring is 3PT-heavy (42%+ of points from 3) AND the trailing team's scoring is paint-heavy (58%+ from non-3PT). This is the "fade the lead" signal.</p>
+  <p><strong>Why it is an edge:</strong> The lead is built on volatile 3PT shooting that will regress, while the trailing team earns points from sustainable paint scoring. The market sees the scoreboard but not the scoring composition.</p>
   <div class="edge-box blue">
-    <p><strong>Thresholds:</strong> &ge;42% of a leading team's points from 3PT (with &ge;20 total points) &rarr; <strong>FRAGILE</strong> lead (Level 2). &le;28% from 3PT &rarr; <strong>DURABLE</strong> lead. Fragile leads are the market's biggest blind spot &mdash; the score looks safe, but the foundation is volatile.</p>
+    <p><strong>Trigger:</strong> Leading team has &ge;42% of points from 3PT (NBA; 38% NCAA) AND trailing team has &ge;58% from non-3PT AND &ge;20 total points. Both conditions must be true &mdash; this filters noise from single-condition checks.</p>
   </div>
-  <p><strong>Key insight:</strong> This pairs powerfully with 3PT regression. If a team's lead is fragile (42%+ from 3) AND their 3PT% is unsustainably high (50%+), you have two independent confirmations that the lead will erode.</p>
+  <p><strong>Key insight:</strong> This pairs powerfully with 3PT regression. If the leading team's 3PT% is also unsustainably high (50%+), you have two independent confirmations that the lead will erode.</p>
   <hr class="signal-divider">
-  <h4>4. Foul Trouble Signal</h4>
-  <p><strong>What it detects:</strong> Teams fouling at elevated rates, creating artificial free throw inflation for the opponent. Three layers: foul differential, extreme foul rate, and high foul rate (late game only).</p>
-  <p><strong>Why it is an edge:</strong> Free throws from fouls are unearned points &mdash; they do not reflect the benefiting team's offensive skill. Foul rates regress to the mean within a game. A team committing fouls at 8+ per quarter in Q2 almost never sustains that pace through Q4.</p>
+  <h4>4. FT Inflation</h4>
+  <p><strong>What it detects:</strong> When the leading team has significantly more free throw attempts than the trailing team, indicating their lead is partly built on unsustainable FT volume.</p>
+  <p><strong>Why it is an edge:</strong> A large FTA gap means the leading team is getting to the line at an abnormal rate. Free throw rates regress within a game &mdash; referees tend to even out calls. The FT-inflated portion of the lead is not built on genuine offensive superiority.</p>
   <div class="edge-box red">
-    <p><strong>Layer 1 &mdash; Foul Differential (Sharpest):</strong> 8+ foul gap between teams &rarr; Level 2. Directly measures asymmetric FT inflation.</p>
-    <p style="margin-top:6px"><strong>Layer 2 &mdash; Extreme Rate:</strong> NBA: &ge;8.0/qtr AND &ge;14 total. NCAA: &ge;7.5/half AND &ge;12 total &rarr; Level 2.</p>
-    <p style="margin-top:6px"><strong>Layer 3 &mdash; High Rate, Late Game Only:</strong> NBA: &ge;6.5/qtr, &ge;10 total in Q3+. NCAA: &ge;6.0/half, &ge;8 total in 2H &rarr; Level 1. Early-game high fouls filtered as noise.</p>
-    <p style="margin-top:6px"><strong>Late-game adjustment:</strong> All thresholds drop by 0.5 rate / 2 total in Q3+ or 2H because fouls compound harder when bonus is in effect.</p>
-  </div>
-  <div class="thresh-grid">
-    <div class="thresh-card"><h5>NBA Foul Thresholds</h5>
-      <p><span class="tag diff">DIFFERENTIAL</span> 8+ gap &rarr; Lv2</p>
-      <p><span class="tag l2">EXTREME</span> &ge;8.0/qtr, &ge;14 total &rarr; Lv2</p>
-      <p><span class="tag l1">HIGH (Late)</span> &ge;6.5/qtr, &ge;10 total in Q3+ &rarr; Lv1</p>
-      <p style="font-size:11px;color:var(--muted);margin-top:4px">NBA avg: ~5 fouls/qtr. Bonus at 5th quarter foul.</p>
-    </div>
-    <div class="thresh-card ncaa"><h5>NCAA Foul Thresholds</h5>
-      <p><span class="tag diff">DIFFERENTIAL</span> 8+ gap &rarr; Lv2</p>
-      <p><span class="tag l2">EXTREME</span> &ge;7.5/half, &ge;12 total &rarr; Lv2</p>
-      <p><span class="tag l1">HIGH (Late)</span> &ge;6.0/half, &ge;8 total in 2H &rarr; Lv1</p>
-      <p style="font-size:11px;color:var(--muted);margin-top:4px">NCAA avg: ~15/half. Bonus at 7th foul, double bonus at 10th.</p>
-    </div>
+    <p><strong>Trigger:</strong> Leading team has 10+ more FTA than the trailing team. FTA data is fetched from ESPN's summary endpoint (same source used for box score stats).</p>
   </div>
   <hr class="signal-divider">
-  <h4>5. Hustle Edge / Offensive Rebound Dominance</h4>
-  <p><strong>What it detects:</strong> A trailing team winning the offensive rebound battle decisively. Offensive rebounds create second-chance points &mdash; extra possessions that represent real, sustainable effort.</p>
-  <p><strong>Why it is an edge:</strong> Offensive rebounding is effort-driven, not luck-driven. A team that out-hustles on the glass will continue to do so. If they trail despite dominating OREBs, the market is undervaluing their possession advantage. Each OREB is worth ~1.1 points in expected value.</p>
-  <div class="edge-box green">
-    <p><strong>Trigger:</strong> Total OREBs &ge;6 AND OREB differential &ge;4 AND the rebounding team is trailing (score deficit &gt;0) &rarr; Level 1. Participates in combined stacking.</p>
-  </div>
-  <hr class="signal-divider">
-  <h4>6. Combined Edge / Stacked Signals</h4>
-  <p><strong>What it detects:</strong> When two or more independent signals point in the same direction. Each signal alone identifies a market inefficiency; when multiple converge, the probability of mispricing increases substantially.</p>
+  <h4>5. Combined Edge</h4>
+  <p><strong>What it detects:</strong> When 2+ of the 4 signals (3PT, Star Cold, Fragile Lead, FT Inflation) fire on the same game. Multiple independent signals confirm the live moneyline is mispriced on multiple dimensions.</p>
   <div class="edge-box purple">
-    <p><strong>How stacking works:</strong> The system checks Level 2 signals (3PT, Star, Paint, Fragile) and Level &ge;1 signals (Foul, Hustle). Any two-signal combination pointing the same direction elevates the thesis to signalLevel = 2 (strong combined).</p>
+    <p><strong>How stacking works:</strong> The system checks for Level 2 signals across all 4 types. Any 2+ active signals elevates the thesis to signalLevel = 2 (strong combined).</p>
     <p style="margin-top:6px"><strong>Strongest combos:</strong></p>
-    <p style="margin-top:4px"><strong>3PT + Fragile Lead:</strong> Team shooting hot AND lead built on those threes. Double confirmation lead will evaporate.</p>
-    <p style="margin-top:4px"><strong>Star Cold + Foul Trouble:</strong> Star underperforming AND opponent fouling heavily. Both forces favor the trailing team.</p>
-    <p style="margin-top:4px"><strong>Foul Diff + Paint Dominance:</strong> One team controls the paint (sustainable) while the other hacks to stop them (unsustainable).</p>
-    <p style="margin-top:4px"><strong>Hustle + Star Cold:</strong> Team out-rebounding AND star is cold. Two comeback catalysts.</p>
+    <p style="margin-top:4px"><strong>3PT + Fragile Lead:</strong> Team shooting hot AND lead built on those threes. Double confirmation the lead will evaporate.</p>
+    <p style="margin-top:4px"><strong>Star Cold + FT Inflation:</strong> Star underperforming AND opponent lead inflated by FTs. Both forces favor the trailing team.</p>
+    <p style="margin-top:4px"><strong>Fragile Lead + FT Inflation:</strong> Lead is both 3PT-dependent AND FT-inflated. Two separate unsustainable foundations.</p>
+    <p style="margin-top:4px"><strong>3PT + Star Cold:</strong> Opponent shooting unsustainably hot AND their star is cold. When the star heats up and 3PT% drops, momentum shifts hard.</p>
   </div>
   <hr class="signal-divider">
   <h4>Bet Side Logic</h4>
-  <p>The system scores each side's "unsustainability count" &mdash; how many advantages are artificial. Away shooting hot = awayFade++. Home lead fragile = homeFade++. Star cold on a team = bet ON that team (star regresses upward). The side with more fade reasons gets faded; the system recommends the opposite side &mdash; the team whose advantages are real, sustainable, and undervalued.</p>
+  <p>The system scores each side's "unsustainability count." Away shooting hot = awayFade++. Away lead fragile = awayFade++. Away lead FT-inflated = awayFade++. Star cold on a team = bet ON that team (star regresses upward = fade the other side). The side with more fade reasons gets faded; the system recommends the opposite side &mdash; the team whose advantages are real, sustainable, and undervalued.</p>
   <hr class="signal-divider">
   <h4>Data Sources &amp; Limitations</h4>
-  <p>All data comes from ESPN's live scoreboard API: scores, period/clock, team stats (FG%, 3PT, rebounds, fouls), and leader boards. Refreshes on configurable interval (default 60s).</p>
-  <p><strong>Not captured:</strong> Individual player foul counts, play-by-play data, lineup changes, injury updates, referee tendencies, pace-of-play, and real-time odds. The system focuses on what IS measurable and predictive from the box score: shooting rates, scoring composition, foul rates, rebound effort, and star production.</p>
+  <p>All data comes from ESPN's live scoreboard API (scores, period/clock, team stats, leader boards) and ESPN's summary endpoint (FTA, box score details). Refreshes on configurable interval (default 60s).</p>
+  <p><strong>Not captured:</strong> Individual player foul counts, play-by-play data, lineup changes, injury updates, referee tendencies, pace-of-play, and real-time odds. The system focuses on what IS measurable and predictive: shooting rates, scoring composition, free throw attempts, and star production.</p>
   <p><strong>Important:</strong> No signal guarantees an outcome. These are probabilistic edges based on mean reversion and market inefficiency. Responsible bankroll management is essential.</p>
 </div>
 
