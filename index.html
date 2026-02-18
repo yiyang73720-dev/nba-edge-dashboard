@@ -150,28 +150,30 @@
 .signal-badge.badge-hustle{background:#f59e0b}
 .signal-badge.badge-combined{background:#6366f1}
 
-    .theory-toggle { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 16px auto; max-width: 1200px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s; }
-    .theory-toggle:hover { border-color: var(--orange); background: rgba(255,152,0,0.05); }
-    .theory-toggle h3 { margin: 0; font-size: 14px; color: var(--text); }
-    .theory-toggle .arrow { transition: transform 0.3s; font-size: 16px; color: var(--muted); }
-    .theory-toggle.open .arrow { transform: rotate(180deg); }
-    .theory-panel { max-width: 1200px; margin: 0 auto 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s ease; }
-    .theory-panel.open { max-height: 3000px; padding: 20px 24px; }
-    .theory-panel h4 { color: var(--orange); font-size: 15px; margin: 18px 0 8px; }
-    .theory-panel h4:first-child { margin-top: 0; }
-    .theory-panel p { color: var(--text); font-size: 13px; line-height: 1.7; margin: 0 0 10px; }
-    .theory-panel .edge-box { background: rgba(255,152,0,0.08); border-left: 3px solid var(--orange); padding: 10px 14px; border-radius: 0 6px 6px 0; margin: 12px 0; }
-    .theory-panel .edge-box p { margin: 0; font-size: 12px; }
-    .theory-panel .thresh-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
-    .theory-panel .thresh-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; }
-    .theory-panel .thresh-card h5 { margin: 0 0 6px; font-size: 13px; color: var(--green); }
-    .theory-panel .thresh-card.ncaa h5 { color: var(--blue); }
-    .theory-panel .thresh-card p { font-size: 12px; margin: 2px 0; }
-    .theory-panel .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin: 2px 4px 2px 0; }
-    .theory-panel .tag.extreme { background: rgba(244,67,54,0.15); color: #f44336; }
-    .theory-panel .tag.high { background: rgba(255,152,0,0.15); color: var(--orange); }
-    .theory-panel .tag.diff { background: rgba(156,39,176,0.15); color: #ce93d8; }
-    @media(max-width:600px) { .theory-panel .thresh-grid { grid-template-columns: 1fr; } }
+
+    .theory-toggle{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 16px;margin:16px auto;max-width:1200px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .2s}
+    .theory-toggle:hover{border-color:var(--orange);background:rgba(255,152,0,.05)}
+    .theory-toggle h3{margin:0;font-size:14px;color:var(--text)}.theory-toggle .arrow{transition:transform .3s;font-size:16px;color:var(--muted)}
+    .theory-toggle.open .arrow{transform:rotate(180deg)}
+    .theory-panel{max-width:1200px;margin:0 auto 20px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0;max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s ease}
+    .theory-panel.open{max-height:8000px;padding:20px 24px}
+    .theory-panel h4{color:var(--orange);font-size:15px;margin:18px 0 8px}.theory-panel h4:first-child{margin-top:0}
+    .theory-panel p{color:var(--text);font-size:13px;line-height:1.7;margin:0 0 10px}
+    .theory-panel .edge-box{background:rgba(255,152,0,.08);border-left:3px solid var(--orange);padding:10px 14px;border-radius:0 6px 6px 0;margin:12px 0}
+    .theory-panel .edge-box p{margin:0;font-size:12px}
+    .theory-panel .edge-box.green{background:rgba(16,185,129,.08);border-left-color:var(--green)}
+    .theory-panel .edge-box.blue{background:rgba(37,99,235,.08);border-left-color:var(--accent)}
+    .theory-panel .edge-box.red{background:rgba(239,68,68,.08);border-left-color:var(--red)}
+    .theory-panel .edge-box.purple{background:rgba(139,92,246,.08);border-left-color:var(--purple)}
+    .theory-panel .thresh-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+    .theory-panel .thresh-card{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:6px;padding:10px 14px}
+    .theory-panel .thresh-card h5{margin:0 0 6px;font-size:13px;color:var(--green)}.theory-panel .thresh-card.ncaa h5{color:var(--blue)}
+    .theory-panel .thresh-card p{font-size:12px;margin:2px 0}
+    .theory-panel .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;margin:2px 4px 2px 0}
+    .theory-panel .tag.l2{background:rgba(244,67,54,.15);color:#f44336}.theory-panel .tag.l1{background:rgba(255,152,0,.15);color:var(--orange)}
+    .theory-panel .tag.diff{background:rgba(156,39,176,.15);color:#ce93d8}
+    .theory-panel .signal-divider{border:none;border-top:1px solid var(--border);margin:24px 0}
+    @media(max-width:600px){.theory-panel .thresh-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -1371,53 +1373,88 @@ function fire3PTAlert(teamAbbr, pct, made, att, gLabel, per, clk) {
 </div></div>
 </div></div>
 
+
 <div class="theory-toggle" onclick="this.classList.toggle('open');document.getElementById('theory-panel').classList.toggle('open')">
-  <h3>Foul Trouble Signal Theory &amp; Methodology</h3>
+  <h3>Edge Signal Theory &amp; Methodology</h3>
   <span class="arrow">&#9660;</span>
 </div>
 <div id="theory-panel" class="theory-panel">
-  <h4>Core Thesis: Free Throw Inflation Is Unsustainable</h4>
-  <p>When a team fouls at an elevated rate, their opponent receives bonus free throw attempts &mdash; easy, uncontested points that inflate the score beyond what the opponent's actual offensive skill would produce. This creates a mirage: the benefiting team's lead or scoring pace looks stronger than it truly is. The foul trouble signal identifies these situations because <strong>foul rates regress to the mean</strong>. A team fouling at 8+ per quarter in Q2 almost never sustains that pace through Q4. As the foul rate normalizes, the artificial FT-driven scoring dries up, and the inflated team's lead becomes vulnerable.</p>
+  <h4>How This Dashboard Works</h4>
+  <p>Every signal in this dashboard identifies a specific <strong>market inefficiency</strong> in live basketball games. The core principle: live moneyline odds react to the current score and recent momentum, but they often fail to distinguish between <em>sustainable</em> advantages (paint dominance, defensive effort) and <em>unsustainable</em> ones (hot 3PT shooting, free throw inflation from fouls). When conditions are met, the live moneyline is likely mispriced &mdash; that is the edge.</p>
+  <hr class="signal-divider">
+  <h4>1. 3PT Regression Signal</h4>
+  <p><strong>What it detects:</strong> A team shooting 50%+ from three-point range on 8 or more attempts. The NBA league average is ~36.5% and NCAA is ~33.4%. When a team is 15+ percentage points above average on significant volume, mean reversion is statistically inevitable.</p>
+  <p><strong>Why it is an edge:</strong> Three-point shooting is the most volatile stat in basketball. Even elite shooters regress heavily within a single game. A team hitting 9-of-16 from three in the first half will almost certainly cool off. If their lead is built on this hot streak, the market is pricing in a scoring pace that will not continue. The team that earned points inside the arc (paint scoring, free throws from driving) has the more durable lead.</p>
   <div class="edge-box">
-    <p><strong>The Betting Edge:</strong> Markets price in the current score and recent momentum. When a large portion of that score came from an opponent's fouls (not skill), the market is overvaluing the beneficiary. Bet on regression &mdash; the team that earned their points through shooting, not free throws.</p>
+    <p><strong>Trigger:</strong> 3PT% &ge;50% AND 3PT made &ge;8 &rarr; Level 2 (strong). The further above league average, the stronger the regression expectation. The signal creates thesis criteria tracking which side is shooting unsustainably hot.</p>
   </div>
-  <h4>Three Layers of Foul Analysis</h4>
-  <p><strong>1. Foul Differential (Sharpest Edge)</strong><br>
-  This fires when one team has committed 8+ more fouls than their opponent. A lopsided foul gap of this magnitude means one team is living at the free throw line while the other barely visits. This is the strongest foul signal because it directly measures the asymmetry &mdash; one side's score is artificially inflated by referee-driven FT volume. Example: Team A has 22 fouls, Team B has 12. Team B has received roughly 10 extra FT trips (~15-20 extra points) that will not continue at this rate.</p>
-  <p><strong>2. Extreme Foul Rate (Per-Team)</strong><br>
-  Fires when a single team's per-quarter foul rate hits extreme levels AND the total count is high enough to be statistically meaningful. This catches teams that are hemorrhaging fouls regardless of what the other team is doing. The opponent is guaranteed bonus FT attempts (NBA: 5th foul in quarter = bonus; NCAA: 7th foul in half = 1-and-1, 10th = double bonus).</p>
-  <p><strong>3. High Foul Rate, Late Game Only</strong><br>
-  A moderately elevated foul rate is only flagged if the game is in Q3+ (NBA) or 2nd half (NCAA). Early-game high fouls are filtered out as noise &mdash; teams often adjust after halftime, and early foul patterns are less predictive. But a team still fouling heavily in the second half is less likely to correct course, and the compounding effect of bonus FTs becomes decisive.</p>
-  <h4>Mode-Aware Thresholds</h4>
+  <p><strong>What to watch for:</strong> The signal is strongest when the hot-shooting team is leading by a margin smaller than their 3PT-inflated points. If a team made 12 threes at 55% (vs their normal 35%), roughly 6 of those threes are "above expected" &mdash; that is ~18 points of inflated scoring.</p>
+  <hr class="signal-divider">
+  <h4>2. Star Player Cold / Below Pace</h4>
+  <p><strong>What it detects:</strong> A franchise-caliber player performing well below their expected scoring pace early in the game (Q1-Q3 for NBA). The system tracks each team's leading scorer and compares their actual output to their per-minute expected production.</p>
+  <p><strong>Why it is an edge:</strong> Star players regress <em>upward</em>. A player averaging 28 PPG who has 6 points through two quarters is not suddenly a bad player &mdash; they are having an off stretch that will likely correct. If their team is losing partly because their star is cold, the market is undervaluing that team's true offensive potential. The star will get more touches, the coach will run plays for them, and production typically surges in the second half.</p>
+  <div class="edge-box green">
+    <p><strong>Trigger:</strong> Star's actual production &lt;60% of expected pace AND usage &ge;20% of team scoring AND Q3 or earlier. The system calculates expected output using per-minute projections from season averages. Example: A 30 PPG scorer expected to have 20 pts by halftime who only has 8 &mdash; that gap will likely close.</p>
+  </div>
+  <p><strong>Nuance:</strong> The "star cold" teams list (starColdTeams) is tracked to factor into the combined thesis. If a star is cold AND their team is trailing, the combined system interprets this as a buy-low opportunity.</p>
+  <hr class="signal-divider">
+  <h4>3. Paint Durability / Fragile Lead</h4>
+  <p><strong>What it detects:</strong> Whether a team's scoring is built on a sustainable foundation (inside/paint scoring) or a fragile one (over-reliance on three-pointers). The system calculates what percentage of a team's total points come from three-point field goals.</p>
+  <p><strong>Why it is an edge:</strong> Points scored in the paint come from high-percentage shots &mdash; layups, dunks, post moves. These convert at 55-65% and indicate genuine offensive quality. In contrast, a team whose scoring is 42%+ from three-pointers is riding a hot streak that will fade. A lead built on paint scoring is <em>durable</em>; a lead built on threes is <em>fragile</em>.</p>
+  <div class="edge-box blue">
+    <p><strong>Thresholds:</strong> &ge;42% of a leading team's points from 3PT (with &ge;20 total points) &rarr; <strong>FRAGILE</strong> lead (Level 2). &le;28% from 3PT &rarr; <strong>DURABLE</strong> lead. Fragile leads are the market's biggest blind spot &mdash; the score looks safe, but the foundation is volatile.</p>
+  </div>
+  <p><strong>Key insight:</strong> This pairs powerfully with 3PT regression. If a team's lead is fragile (42%+ from 3) AND their 3PT% is unsustainably high (50%+), you have two independent confirmations that the lead will erode.</p>
+  <hr class="signal-divider">
+  <h4>4. Foul Trouble Signal</h4>
+  <p><strong>What it detects:</strong> Teams fouling at elevated rates, creating artificial free throw inflation for the opponent. Three layers: foul differential, extreme foul rate, and high foul rate (late game only).</p>
+  <p><strong>Why it is an edge:</strong> Free throws from fouls are unearned points &mdash; they do not reflect the benefiting team's offensive skill. Foul rates regress to the mean within a game. A team committing fouls at 8+ per quarter in Q2 almost never sustains that pace through Q4.</p>
+  <div class="edge-box red">
+    <p><strong>Layer 1 &mdash; Foul Differential (Sharpest):</strong> 8+ foul gap between teams &rarr; Level 2. Directly measures asymmetric FT inflation.</p>
+    <p style="margin-top:6px"><strong>Layer 2 &mdash; Extreme Rate:</strong> NBA: &ge;8.0/qtr AND &ge;14 total. NCAA: &ge;7.5/half AND &ge;12 total &rarr; Level 2.</p>
+    <p style="margin-top:6px"><strong>Layer 3 &mdash; High Rate, Late Game Only:</strong> NBA: &ge;6.5/qtr, &ge;10 total in Q3+. NCAA: &ge;6.0/half, &ge;8 total in 2H &rarr; Level 1. Early-game high fouls filtered as noise.</p>
+    <p style="margin-top:6px"><strong>Late-game adjustment:</strong> All thresholds drop by 0.5 rate / 2 total in Q3+ or 2H because fouls compound harder when bonus is in effect.</p>
+  </div>
   <div class="thresh-grid">
-    <div class="thresh-card">
-      <h5>NBA Thresholds</h5>
-      <p><span class="tag diff">DIFFERENTIAL</span> 8+ foul gap between teams &rarr; Level 2</p>
-      <p><span class="tag extreme">EXTREME</span> Rate &ge;8.0/qtr AND &ge;14 total &rarr; Level 2</p>
-      <p><span class="tag high">HIGH (Late)</span> Rate &ge;6.5/qtr AND &ge;10 total in Q3+ &rarr; Level 1</p>
-      <p style="font-size:11px;color:var(--muted);margin-top:6px;">Late-game adjustment: thresholds drop by 0.5 rate / 2 total in Q3+</p>
-      <p style="font-size:11px;color:var(--muted);">NBA avg: ~5 fouls/qtr per team. Bonus at 5th quarter foul.</p>
+    <div class="thresh-card"><h5>NBA Foul Thresholds</h5>
+      <p><span class="tag diff">DIFFERENTIAL</span> 8+ gap &rarr; Lv2</p>
+      <p><span class="tag l2">EXTREME</span> &ge;8.0/qtr, &ge;14 total &rarr; Lv2</p>
+      <p><span class="tag l1">HIGH (Late)</span> &ge;6.5/qtr, &ge;10 total in Q3+ &rarr; Lv1</p>
+      <p style="font-size:11px;color:var(--muted);margin-top:4px">NBA avg: ~5 fouls/qtr. Bonus at 5th quarter foul.</p>
     </div>
-    <div class="thresh-card ncaa">
-      <h5>NCAA Thresholds</h5>
-      <p><span class="tag diff">DIFFERENTIAL</span> 8+ foul gap between teams &rarr; Level 2</p>
-      <p><span class="tag extreme">EXTREME</span> Rate &ge;7.5/half AND &ge;12 total &rarr; Level 2</p>
-      <p><span class="tag high">HIGH (Late)</span> Rate &ge;6.0/half AND &ge;8 total in 2H &rarr; Level 1</p>
-      <p style="font-size:11px;color:var(--muted);margin-top:6px;">Late-game adjustment: thresholds drop by 0.5 rate / 2 total in 2nd half</p>
-      <p style="font-size:11px;color:var(--muted);">NCAA avg: ~15 fouls/half. Bonus at 7th half foul (1-and-1), double bonus at 10th.</p>
+    <div class="thresh-card ncaa"><h5>NCAA Foul Thresholds</h5>
+      <p><span class="tag diff">DIFFERENTIAL</span> 8+ gap &rarr; Lv2</p>
+      <p><span class="tag l2">EXTREME</span> &ge;7.5/half, &ge;12 total &rarr; Lv2</p>
+      <p><span class="tag l1">HIGH (Late)</span> &ge;6.0/half, &ge;8 total in 2H &rarr; Lv1</p>
+      <p style="font-size:11px;color:var(--muted);margin-top:4px">NCAA avg: ~15/half. Bonus at 7th foul, double bonus at 10th.</p>
     </div>
   </div>
-  <h4>Why High Fouls Are Filtered in Early Game</h4>
-  <p>A team committing 8 fouls by the end of Q1 is notable, but it is often corrected by halftime through coaching adjustments and player substitutions. Historically, early foul rates are poor predictors of final foul totals. By requiring late game (Q3+/2H) for the "high" tier, we eliminate roughly 40% of false positives while keeping the signals that actually predict unsustainable FT volume through the remainder of the game.</p>
-  <h4>How Foul Signals Stack</h4>
-  <p>Foul signals participate in the combined stacking system. A foul signal (level &ge;1) can combine with any other signal (3PT regression, star player cold, paint dominance, fragile lead, hustle edge) to create a stronger combined thesis. The most powerful combinations are:</p>
-  <div class="edge-box">
-    <p><strong>Foul + Fragile Lead:</strong> A team leads primarily because their opponent is fouling, AND the lead itself is fragile (built on unsustainable runs). Double regression incoming.</p>
-    <p style="margin-top:6px;"><strong>Foul + 3PT Regression:</strong> Opponent is both shooting hot from 3 AND getting bonus free throws. Two separate inflation sources that will both regress.</p>
-    <p style="margin-top:6px;"><strong>Foul Differential + Paint Dominance:</strong> One team controls the paint AND the other team is hacking to stop them. The paint team's advantage is real and sustainable; the FT inflation on the other side is not.</p>
+  <hr class="signal-divider">
+  <h4>5. Hustle Edge / Offensive Rebound Dominance</h4>
+  <p><strong>What it detects:</strong> A trailing team winning the offensive rebound battle decisively. Offensive rebounds create second-chance points &mdash; extra possessions that represent real, sustainable effort.</p>
+  <p><strong>Why it is an edge:</strong> Offensive rebounding is effort-driven, not luck-driven. A team that out-hustles on the glass will continue to do so. If they trail despite dominating OREBs, the market is undervaluing their possession advantage. Each OREB is worth ~1.1 points in expected value.</p>
+  <div class="edge-box green">
+    <p><strong>Trigger:</strong> Total OREBs &ge;6 AND OREB differential &ge;4 AND the rebounding team is trailing (score deficit &gt;0) &rarr; Level 1. Participates in combined stacking.</p>
   </div>
-  <h4>What This Signal Does NOT Capture</h4>
-  <p>This analysis uses team-level foul totals from the box score. It does not track individual player foul counts (star players in personal foul trouble), intentional fouling strategies (late-game hack-a-player), or the quality of foul calls (soft vs hard fouls). These are real factors, but require play-by-play data not available in the current ESPN feed. The signal focuses on what IS measurable and predictive: aggregate foul rates and differentials.</p>
+  <hr class="signal-divider">
+  <h4>6. Combined Edge / Stacked Signals</h4>
+  <p><strong>What it detects:</strong> When two or more independent signals point in the same direction. Each signal alone identifies a market inefficiency; when multiple converge, the probability of mispricing increases substantially.</p>
+  <div class="edge-box purple">
+    <p><strong>How stacking works:</strong> The system checks Level 2 signals (3PT, Star, Paint, Fragile) and Level &ge;1 signals (Foul, Hustle). Any two-signal combination pointing the same direction elevates the thesis to signalLevel = 2 (strong combined).</p>
+    <p style="margin-top:6px"><strong>Strongest combos:</strong></p>
+    <p style="margin-top:4px"><strong>3PT + Fragile Lead:</strong> Team shooting hot AND lead built on those threes. Double confirmation lead will evaporate.</p>
+    <p style="margin-top:4px"><strong>Star Cold + Foul Trouble:</strong> Star underperforming AND opponent fouling heavily. Both forces favor the trailing team.</p>
+    <p style="margin-top:4px"><strong>Foul Diff + Paint Dominance:</strong> One team controls the paint (sustainable) while the other hacks to stop them (unsustainable).</p>
+    <p style="margin-top:4px"><strong>Hustle + Star Cold:</strong> Team out-rebounding AND star is cold. Two comeback catalysts.</p>
+  </div>
+  <hr class="signal-divider">
+  <h4>Bet Side Logic</h4>
+  <p>The system scores each side's "unsustainability count" &mdash; how many advantages are artificial. Away shooting hot = awayFade++. Home lead fragile = homeFade++. Star cold on a team = bet ON that team (star regresses upward). The side with more fade reasons gets faded; the system recommends the opposite side &mdash; the team whose advantages are real, sustainable, and undervalued.</p>
+  <hr class="signal-divider">
+  <h4>Data Sources &amp; Limitations</h4>
+  <p>All data comes from ESPN's live scoreboard API: scores, period/clock, team stats (FG%, 3PT, rebounds, fouls), and leader boards. Refreshes on configurable interval (default 60s).</p>
+  <p><strong>Not captured:</strong> Individual player foul counts, play-by-play data, lineup changes, injury updates, referee tendencies, pace-of-play, and real-time odds. The system focuses on what IS measurable and predictive from the box score: shooting rates, scoring composition, foul rates, rebound effort, and star production.</p>
+  <p><strong>Important:</strong> No signal guarantees an outcome. These are probabilistic edges based on mean reversion and market inefficiency. Responsible bankroll management is essential.</p>
 </div>
 
 </body>
