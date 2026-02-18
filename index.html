@@ -230,7 +230,7 @@
       <div class="stat-card"><div class="stat-label">Teams 50%+ 3PT</div><div class="stat-value red" id="threept-hot-count">0</div></div>
       <div class="stat-card"><div class="stat-label">Teams 45-50%</div><div class="stat-value orange" id="threept-warm-count">0</div></div>
       <div class="stat-card"><div class="stat-label">Qtr Alerts</div><div class="stat-value purple" id="threept-qtr-alerts">0</div></div>
-      <div class="stat-card"><div class="stat-label">League Avg</div><div class="stat-value" style="color:var(--blue);">36.5%</div></div>
+      <div class="stat-card"><div class="stat-label">League Avg</div><div class="stat-value" style="color:var(--blue);">${getLeague3PtAvg()}%</div></div>
     </div>
     <div class="card">
       <div class="card-header"><span>3-Point Shooting Tracker - Live</span><span style="font-size:10px;color:var(--gray);">Alert: 50%+ on 8+ att</span></div>
@@ -499,7 +499,7 @@ function analyzeScoringDurability(teamAbbr, score, fg3Made, opponentScore) {
   const nonThreePts = s - pts3;
   // League average: ~35% of points come from 3PT. Above 42% is fragile, below 28% is durable
   const isLeading = s > (parseInt(opponentScore) || 0);
-  const fragile = pct3 >= 42 && isLeading && s >= 20;
+  const fragile = pct3 >= getFragile3PtThreshold() && isLeading && s >= 20;
   const durable = pct3 <= 28 && isLeading && s >= 20;
   let label = `${pct3.toFixed(0)}% from 3`;
   let durability = 'neutral';
@@ -515,11 +515,17 @@ function analyzeTeamFouls(fouls, period, clock) {
   const minsPlayed = (period - 1) * 12 + (12 - clockMin);
   const foulRate = minsPlayed > 0 ? (f / minsPlayed * 12) : 0; // fouls per quarter rate
   // NBA average: ~5 fouls per quarter. High foul rate = bonus free throws = inflated scoring
-  const highFouls = foulRate >= 6.5 && f >= 10;
-  return { fouls: f, foulRate: foulRate.toFixed(1), highFouls, perQtr: foulRate.toFixed(1) };
+  const extremeFouls = foulRate >= 8.0 && f >= 14;
+      const highFouls = !extremeFouls && foulRate >= 6.5 && f >= 10;
+  return { fouls: f, foulRate: foulRate.toFixed(1), highFouls, extremeFouls, perQtr: foulRate.toFixed(1) };
 }
 
 // ==================== ESPN SCOREBOARD ====================
+
+function getLeague3PtAvg() { return currentMode === 'nba' ? 36.5 : 33.4; }
+function getFragile3PtThreshold() { return currentMode === 'nba' ? 42 : 38; }
+function getLeagueName() { return currentMode === 'nba' ? 'NBA' : 'NCAA'; }
+
 async function fetchESPNScoreboard() {
   const grid = document.getElementById('live-games-grid');
   const tpGrid = document.getElementById('threept-grid');
@@ -601,9 +607,9 @@ async function fetchESPNScoreboard() {
             signals.push({type:'3pt',text:`${t} ${pn.toFixed(0)}% from 3 (${mn}/${an}) - UNSUSTAINABLE`,level:2});
             sig3++;
                   fire3PTAlert(t, pn.toFixed(0), mn, an, gLabel, per, clk); hotTeams++;
-            thesis.criteria[`3pt_${side}`] = {met:true, strong:true, label:`${t} 3PT: ${pn.toFixed(0)}% (${mn}/${an})`, detail:`NBA avg is 36.5%. Shooting ${pn.toFixed(0)}% on ${an} attempts is 2+ std deviations above mean. This rate will regress &mdash; teams shooting 50%+ from 3 in a half sustain it only ~12% of games. The lead they built on 3PT scoring is inflated.`, value:`${pn.toFixed(0)}% on ${an} att`};
+            thesis.criteria[`3pt_${side}`] = {met:true, strong:true, label:`${t} 3PT: ${pn.toFixed(0)}% (${mn}/${an})`, detail:`${getLeagueName()} avg is ${getLeague3PtAvg()}%. Shooting ${pn.toFixed(0)}% on ${an} attempts is 2+ std deviations above mean. This rate will regress &mdash; teams shooting 50%+ from 3 in a half sustain it only ~12% of games. The lead they built on 3PT scoring is inflated.`, value:`${pn.toFixed(0)}% on ${an} att`};
             return true;
-          } else if (pn>=45&&an>=6) {
+          } else if (pn>=45&&an>=10) {
             signals.push({type:'3pt',text:`${t} ${pn.toFixed(0)}% from 3 (${mn}/${an}) - elevated`,level:1});
             warmTeams++;
             thesis.criteria[`3pt_${side}`] = {met:true, strong:false, label:`${t} 3PT: ${pn.toFixed(0)}% (${mn}/${an})`, detail:`Elevated but not extreme. Watch for further increase.`, value:`${pn.toFixed(0)}% on ${an} att`, warn:true};
@@ -645,7 +651,7 @@ async function fetchESPNScoreboard() {
         if (aDur.fragile) {
           signals.push({type:'paint',text:`${aA} lead built on 3PT (${aDur.pct3.toFixed(0)}% of pts from 3). Fragile - expect regression.`,level:2});
           sigFragile++;
-          thesis.criteria['paint_away'] = {met:true, strong:true, label:`${aA} Lead Built on 3PT`, detail:`${aDur.pct3.toFixed(0)}% of ${aA}'s scoring is from 3-pointers (threshold: 42%). Leads built on 3PT shooting are fragile because 3PT% regresses toward 36.5%. If those 3s stop falling, their lead evaporates. Paint-heavy scoring is far more sustainable &mdash; paint points convert at ~60% vs 3PT at ~36%.`, value:`${aDur.pct3.toFixed(0)}% from 3PT`};
+          thesis.criteria['paint_away'] = {met:true, strong:true, label:`${aA} Lead Built on 3PT`, detail:`${aDur.pct3.toFixed(0)}% of ${aA}'s scoring is from 3-pointers (threshold: 42%). Leads built on 3PT shooting are fragile because 3PT% regresses toward ${getLeague3PtAvg()}%. If those 3s stop falling, their lead evaporates. Paint-heavy scoring is far more sustainable &mdash; paint points convert at ~60% vs 3PT at ~36%.`, value:`${aDur.pct3.toFixed(0)}% from 3PT`};
         } else {
           thesis.criteria['paint_away'] = {met:false, label:`${aA} Scoring Balance`, detail:`${aA} scoring is balanced or paint-heavy. Lead is durable.`, value: aS>0?`${aDur.pct3.toFixed(0)}% from 3PT`:'N/A'};
         }
@@ -660,11 +666,17 @@ async function fetchESPNScoreboard() {
         // FOUL ANALYSIS
         const aFoul = analyzeTeamFouls(aFouls, per, clk);
         const hFoul = analyzeTeamFouls(hFouls, per, clk);
-        if (aFoul.highFouls) {
+        if (aFoul.extremeFouls) {
+        signals.push({type:'foul',text:`${aA} EXTREME foul rate (${aFoul.fouls} fouls, ${aFoul.perQtr}/qtr). Bonus FTs inflating score.`,level:2});
+        thesis.criteria['foul_away'] = {met:true, strong:true, label:`${aA} Extreme Foul Rate`, detail:`${aA} fouling at extreme rate ${aFoul.perQtr}/qtr (${aFoul.fouls} total). Opponent FT inflation will regress.`, value:`${aFoul.perQtr}/qtr`};
+      } else if (aFoul.highFouls) {
           signals.push({type:'foul',text:`${aA} high foul rate (${aFoul.fouls} fouls, ${aFoul.perQtr}/qtr). Opponent getting bonus FTs - inflated scoring.`,level:1});
           thesis.criteria['foul_away'] = {met:true, strong:false, label:`${aA} High Foul Rate`, detail:`${aA} fouling at ${aFoul.perQtr}/qtr (${aFoul.fouls} total). This sends ${hA} to the FT line more &mdash; inflating ${hA}'s score with easy points. But fouls regress as coaches adjust. ${hA}'s lead may be partly built on FT volume that won't sustain.`, value:`${aFoul.perQtr}/qtr`, warn:true};
         }
-        if (hFoul.highFouls) {
+        if (hFoul.extremeFouls) {
+        signals.push({type:'foul',text:`${hA} EXTREME foul rate (${hFoul.fouls} fouls, ${hFoul.perQtr}/qtr). Bonus FTs inflating score.`,level:2});
+        thesis.criteria['foul_home'] = {met:true, strong:true, label:`${hA} Extreme Foul Rate`, detail:`${hA} fouling at extreme rate ${hFoul.perQtr}/qtr (${hFoul.fouls} total). Opponent FT inflation will regress.`, value:`${hFoul.perQtr}/qtr`};
+      } else if (hFoul.highFouls) {
           signals.push({type:'foul',text:`${hA} high foul rate (${hFoul.fouls} fouls, ${hFoul.perQtr}/qtr). Opponent getting bonus FTs - inflated scoring.`,level:1});
           thesis.criteria['foul_home'] = {met:true, strong:false, label:`${hA} High Foul Rate`, detail:`${hA} fouling at ${hFoul.perQtr}/qtr (${hFoul.fouls} total). ${aA} getting bonus FT trips that inflate their scoring. Foul rates typically normalize as game progresses.`, value:`${hFoul.perQtr}/qtr`, warn:true};
         }
@@ -677,7 +689,7 @@ async function fetchESPNScoreboard() {
         else if (has3||hasStar||hasPaint) signalLevel=1;
 
         // Determine bet side and build thesis logic
-        if (signalLevel >= 1) {
+        if (signalLevel >= 2) {
           // Figure out which team to bet ON (the one that benefits from regression)
           let betTeam = '', fadeTeam = '', reasons = [];
           const a3Data = thesis.criteria['3pt_away'], h3Data = thesis.criteria['3pt_home'];
@@ -727,8 +739,8 @@ async function fetchESPNScoreboard() {
       const hc = isLive?'game-card-header live-pulse':'game-card-header';
 
       const bar3 = (p,m,a,t) => {
-        const v=parseFloat(p)||0, bc=v>=50?'hot':v>=36.5?'normal':'cold';
-        return `<div class="stat-bar-row"><span class="stat-bar-label">${t} 3PT%</span><div class="stat-bar-track"><div class="stat-bar-fill ${bc}" style="width:${Math.min(v,100)}%">${v.toFixed(0)}%</div><div class="stat-bar-avg" style="left:36.5%" data-label="36.5%"></div></div><span class="stat-bar-value">${m||'-'}/${a||'-'}</span></div>`;
+        const v=parseFloat(p)||0, bc=v>=50?'hot':v>=getLeague3PtAvg()?'normal':'cold';
+        return `<div class="stat-bar-row"><span class="stat-bar-label">${t} 3PT%</span><div class="stat-bar-track"><div class="stat-bar-fill ${bc}" style="width:${Math.min(v,100)}%">${v.toFixed(0)}%</div><div class="stat-bar-avg" style="left:${getLeague3PtAvg()}%" data-label="${getLeague3PtAvg()}%"></div></div><span class="stat-bar-value">${m||'-'}/${a||'-'}</span></div>`;
       };
 
       // Durability bars
@@ -1232,9 +1244,9 @@ function fire3PTAlert(teamAbbr, pct, made, att, gLabel, per, clk) {
     quarter: per,
     clock: clk,
     currentPts: parseFloat(pct),
-    expectedPts: 36.5,
-    ppg: 36.5,
-    pacePercent: (parseFloat(pct) / 36.5) * 100,
+    expectedPts: getLeague3PtAvg(),
+    ppg: getLeague3PtAvg(),
+    pacePercent: (parseFloat(pct) / getLeague3PtAvg()) * 100,
     type: 'hot3pt',
     signals: [teamAbbr + ' at ' + pct + '% from 3 (' + made + '/' + att + ')']
   });
