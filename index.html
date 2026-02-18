@@ -1762,7 +1762,47 @@ function fire3PTAlert(teamAbbr, pct, made, att, gLabel, per, clk) {
   // Initial injection
   setTimeout(injectOddsButtons, 2000);
   
-  // Also save snapshot immediately if oddsCache has data
+  // ========== AUTO-COLLECT ODDS EVERY HOUR ==========
+  // Automatically fetch odds and save snapshot on a timer
+  var AUTO_COLLECT_INTERVAL = 3600000; // 1 hour in ms
+  var AUTO_COLLECT_KEY = 'oddsAutoCollectLast';
+  
+  function autoCollectOdds() {
+    if (typeof fetchLiveOdds !== 'function') return;
+    console.log('[Alpha Hunter] Auto-collecting odds snapshot...');
+    fetchLiveOdds().then(function() {
+      setTimeout(saveOddsSnapshot, 3000);
+      console.log('[Alpha Hunter] Odds snapshot saved.');
+    }).catch(function(e) {
+      console.log('[Alpha Hunter] Auto-collect failed:', e.message);
+    });
+  }
+  
+  // Check when last auto-collect happened
+  function shouldAutoCollect() {
+    var last = parseInt(localStorage.getItem(AUTO_COLLECT_KEY) || '0');
+    return (Date.now() - last) >= AUTO_COLLECT_INTERVAL;
+  }
+  
+  function markCollected() {
+    localStorage.setItem(AUTO_COLLECT_KEY, Date.now().toString());
+  }
+  
+  // Run initial collection on page load (after 5s for page to settle)
+  setTimeout(function() {
+    autoCollectOdds();
+    markCollected();
+  }, 5000);
+  
+  // Set up recurring hourly collection
+  setInterval(function() {
+    if (shouldAutoCollect()) {
+      autoCollectOdds();
+      markCollected();
+    }
+  }, AUTO_COLLECT_INTERVAL);
+  
+  // Also collect whenever the existing refresh runs
   setTimeout(saveOddsSnapshot, 3000);
 })();
 </script>
