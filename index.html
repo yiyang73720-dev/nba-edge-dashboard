@@ -20,7 +20,7 @@
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text-primary); line-height: 1.5; -webkit-font-smoothing: antialiased; }
-    .header { background: var(--white); border-bottom: 1px solid var(--border); padding: 16px 28px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 200; box-shadow: var(--shadow-sm); }
+    .header { background: var(--white); border-bottom: none; padding: 14px 28px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 200; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.02); }
     .header h1, .header .title { font-size: 18px; font-weight: 800; color: var(--accent); letter-spacing: -0.3px; }
     .header .subtitle, .header p, .header small { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
     .header-right, .header-actions, .header .actions { display: flex; gap: 8px; align-items: center; }
@@ -34,10 +34,10 @@
     .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
     .status-dot.green, .status-dot.live { background: var(--green); }
     .status-dot.red, .status-dot.off { background: var(--red); }
-    .tab-bar { display: flex; background: var(--white); border-bottom: 1px solid var(--border); padding: 0 28px; position: sticky; top: 56px; z-index: 100; gap: 0; }
+    .tab-bar { display: flex; background: var(--white); border-bottom: 2px solid var(--border-light); padding: 0 28px; position: sticky; top: 52px; z-index: 100; gap: 0; }
     .tab { padding: 14px 20px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-muted); border-bottom: 2px solid transparent; transition: all 0.15s ease; white-space: nowrap; }
     .tab:hover { color: var(--text-primary); background: var(--bg); }
-    .tab.active { color: var(--accent); font-weight: 600; border-bottom-color: var(--accent); }
+    .tab.active { color: var(--accent); font-weight: 700; border-bottom: 3px solid var(--accent); margin-bottom: -2px; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
     .content, .main-content, .tab-content { padding: 24px 28px; max-width: 1400px; margin: 0 auto; }
@@ -48,6 +48,25 @@
     .stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
     .stat-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
     .stat-value { font-size: 28px; font-weight: 800; color: var(--text-primary); letter-spacing: -1px; }
+    .signal-strip { display: flex; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--card-bg); box-shadow: var(--shadow-sm); margin-bottom: 20px; }
+    .signal-chip { flex: 1; padding: 10px 4px; text-align: center; border-right: 1px solid var(--border-light); transition: background 0.15s; cursor: default; position: relative; }
+    .signal-chip:last-child { border-right: none; }
+    .signal-chip:hover { background: var(--bg); }
+    .signal-chip .chip-value { font-size: 18px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.5px; line-height: 1.2; }
+    .signal-chip .chip-label { font-size: 8px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
+    .signal-chip .chip-value.orange { color: var(--orange); }
+    .signal-chip .chip-value.teal { color: #0d9488; }
+    .signal-chip .chip-value.red { color: var(--red); }
+    .signal-chip .chip-value.purple { color: var(--purple); }
+    .signal-chip .chip-value.green { color: var(--green); }
+    .section-divider { height: 1px; background: var(--border-light); margin: 16px 0; }
+    .edge-thesis-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+    .edge-thesis-header h2 { font-size: 14px; font-weight: 700; color: var(--text-primary); letter-spacing: 0.5px; text-transform: uppercase; margin: 0; }
+    .edge-count-badge { background: var(--accent); color: white; font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 12px; min-width: 24px; text-align: center; }
+    .auto-refresh-bar { display: flex; align-items: center; gap: 12px; padding: 8px 0; font-size: 12px; color: var(--text-secondary); flex-wrap: wrap; }
+    .refresh-pill { padding: 5px 14px; font-size: 11px; font-weight: 700; border-radius: 20px; border: 1px solid var(--accent); color: var(--accent); background: transparent; cursor: pointer; transition: all 0.2s; }
+    .refresh-pill:hover { background: var(--accent); color: white; }
+    .card:hover { box-shadow: var(--shadow-md); }
     .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow-sm); margin-bottom: 16px; transition: all 0.2s ease; }
     .card:hover { box-shadow: var(--shadow-md); }
     .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: 700; font-size: 15px; color: var(--text-primary); }
@@ -228,12 +247,43 @@
       <span style="margin-left:auto;color:var(--gray);font-size:10px;">Last: <span id="live-last-update">-</span> | Errors: <span id="errorCount">0</span></span>
     </div>
 
-    <div class="stats-row">
-      <div class="stat-card"><div class="stat-label">Live Games</div><div class="stat-value" id="live-games-count">-</div></div>
-      <div class="stat-card"><div class="stat-label">3PT Signals <span class="tooltip-wrap" id="tpt-tooltip-wrap"><span class="info-dot">i</span><span class="tip">When a team shoots abnormally hot from 3PT (50%+ on 8+ attempts), regression to the mean is likely. Fade the hot-shooting team.</span></span></div><div class="stat-value orange" id="live-3pt-signals">0</div></div>
-      <div class="stat-card"><div class="stat-label"><span id="star-label-text">Star Cold</span> <span class="tooltip-wrap" id="star-tooltip-wrap"><span class="info-dot">i</span><span class="tip">When a star player is cold (shooting well below average), their scoring tends to regress upward. The current line undervalues their team.</span></span></div><div class="stat-value orange" id="live-star-signals">0</div></div>
-      <div class="stat-card"><div class="stat-label">Fragile Leads <span class="tooltip-wrap"><span class="info-dot">i</span><span class="tip">Leads built primarily on 3PT shooting (42%+ of points from 3) are structurally fragile. These leads collapse when shooting normalizes.</span></span></div><div class="stat-value teal" id="live-fragile-leads">0</div></div>
-      <div class="stat-card"><div class="stat-label">Combined <span class="tooltip-wrap"><span class="info-dot">i</span><span class="tip">When multiple signals align (3PT regression + fragile lead + star cold), the edge compounds. 2+ signals = high confidence opportunity.</span></span></div><div class="stat-value red" id="live-combined-signals">0</div></div>
+    <div class="signal-strip">
+      <div class="signal-chip" title="Total live games being tracked">
+        <div class="chip-value" id="live-games-count">-</div>
+        <div class="chip-label">Games</div>
+      </div>
+      <div class="signal-chip" title="Teams shooting abnormally hot from 3PT">
+        <div class="chip-value orange" id="live-3pt-signals">0</div>
+        <div class="chip-label">3PT</div>
+      </div>
+      <div class="signal-chip" title="Star players underperforming expected pace">
+        <div class="chip-value orange" id="live-star-signals">0</div>
+        <div class="chip-label">Star Cold</div>
+      </div>
+      <div class="signal-chip" title="Leads built on unsustainable 3PT shooting">
+        <div class="chip-value teal" id="live-fragile-leads">0</div>
+        <div class="chip-label">Fragile</div>
+      </div>
+      <div class="signal-chip" title="Multiple signals firing on same game">
+        <div class="chip-value red" id="live-combined-signals">0</div>
+        <div class="chip-label">Combined</div>
+      </div>
+      <div class="signal-chip" title="Teams shooting 50%+ from three">
+        <div class="chip-value red" id="threept-hot-count2">0</div>
+        <div class="chip-label">Hot 50%</div>
+      </div>
+      <div class="signal-chip" title="Teams shooting 45-50% from three">
+        <div class="chip-value orange" id="threept-warm-count2">0</div>
+        <div class="chip-label">Warm 45%</div>
+      </div>
+      <div class="signal-chip" title="Quarter-level 3PT alerts">
+        <div class="chip-value purple" id="threept-qtr-alerts2">0</div>
+        <div class="chip-label">Qtr Alert</div>
+      </div>
+      <div class="signal-chip" title="League average 3PT percentage">
+        <div class="chip-value green" id="league-avg-value2">36.5%</div>
+        <div class="chip-label">Lg Avg</div>
+      </div>
     </div>
 
     <div class="card">
@@ -1558,6 +1608,34 @@ function fire3PTAlert(teamAbbr, pct, made, att, gLabel, per, clk) {
 
 </script>
 <script>try { renderStarDB(); } catch(e) {}</script>
+<script>
+// Sync 3PT stats from original IDs to signal strip duplicates
+(function() {
+  var pairs = [
+    ['threept-hot-count', 'threept-hot-count2'],
+    ['threept-warm-count', 'threept-warm-count2'],
+    ['threept-qtr-alerts', 'threept-qtr-alerts2'],
+    ['league-avg-value', 'league-avg-value2']
+  ];
+  function syncStats() {
+    pairs.forEach(function(p) {
+      var src = document.getElementById(p[0]);
+      var dst = document.getElementById(p[1]);
+      if (src && dst && dst.textContent !== src.textContent) {
+        dst.textContent = src.textContent;
+        // Copy color class
+        dst.className = dst.className.replace(/ ?(orange|red|purple|green|teal)/g, '');
+        if (src.classList.contains('orange')) dst.classList.add('orange');
+        if (src.classList.contains('red')) dst.classList.add('red');
+        if (src.classList.contains('purple')) dst.classList.add('purple');
+        if (src.classList.contains('teal')) dst.classList.add('teal');
+      }
+    });
+  }
+  setInterval(syncStats, 2000);
+  setTimeout(syncStats, 1000);
+})();
+</script>
 <script>
 // ==================== ODDS HISTORY TRACKER ====================
 (function() {
