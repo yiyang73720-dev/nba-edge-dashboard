@@ -485,7 +485,7 @@ async function fetchLiveOdds(){const now=Date.now();if(now-oddsCacheTime<ODDS_CA
 function matchOdds(aAbbr,hAbbr,aFull,hFull){for(const k of Object.keys(oddsCache)){const g=oddsCache[k];const hM=g.home.toUpperCase().includes(hAbbr)||(hFull&&g.home.toUpperCase().includes(hFull.toUpperCase().split(' ').pop()));const aM=g.away.toUpperCase().includes(aAbbr)||(aFull&&g.away.toUpperCase().includes(aFull.toUpperCase().split(' ').pop()));if(hM&&aM)return g;}return null;}
 function buildOddsHTML(aAbbr,hAbbr,aFull,hFull){const o=matchOdds(aAbbr,hAbbr,aFull,hFull);if(!o)return'';const aML=(o.awayML>0?'+':'')+o.awayML;const hML=(o.homeML>0?'+':'')+o.homeML;return'<div class="odds-row"><span><span class="odds-label">'+aAbbr+' ML</span> <span class="odds-val '+oddsClass(aML)+'">'+aML+'</span> <span class="odds-implied">('+impliedProb(aML)+'%)</span></span><span class="odds-src">'+o.book+'</span><span><span class="odds-implied">('+impliedProb(hML)+'%)</span> <span class="odds-val '+oddsClass(hML)+'">'+hML+'</span> <span class="odds-label">'+hAbbr+' ML</span></span></div>';}
 
-function getESPNUrl(){return 'https://site.api.espn'+'.com/apis/site/v2/sports/'+MODE_CONFIG[currentMode].sport+'/scoreboard';}
+function getESPNUrl(){const base='https://site.api.espn'+'.com/apis/site/v2/sports/'+MODE_CONFIG[currentMode].sport+'/scoreboard';return currentMode==='ncaa'?base+'?limit=200&groups=50':base;}
 
 // ==================== STAR DATABASE (23+ PPG) ====================
 const DEFAULT_STARS = [
