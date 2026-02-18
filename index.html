@@ -280,24 +280,24 @@
         <div class="chip-desc">Leads on unsustainable 3PT</div>
       </div>
       <div class="signal-chip">
+        <div class="chip-value" id="live-paint-signals">0</div>
+        <div class="chip-label">Paint</div>
+        <div class="chip-desc">Rebound dominance edges</div>
+      </div>
+      <div class="signal-chip">
+        <div class="chip-value" id="live-foul-signals">0</div>
+        <div class="chip-label">Foul</div>
+        <div class="chip-desc">Foul trouble advantages</div>
+      </div>
+      <div class="signal-chip">
+        <div class="chip-value" id="live-hustle-signals">0</div>
+        <div class="chip-label">Hustle</div>
+        <div class="chip-desc">Hustle stat edges</div>
+      </div>
+      <div class="signal-chip">
         <div class="chip-value" id="live-combined-signals">0</div>
         <div class="chip-label">Combined</div>
         <div class="chip-desc">Multiple signals on same game</div>
-      </div>
-      <div class="signal-chip">
-        <div class="chip-value" id="threept-hot-count2">0</div>
-        <div class="chip-label">Hot 50%</div>
-        <div class="chip-desc">Teams 50%+ from three</div>
-      </div>
-      <div class="signal-chip">
-        <div class="chip-value" id="threept-warm-count2">0</div>
-        <div class="chip-label">Warm 45%</div>
-        <div class="chip-desc">Teams 45-50% from three</div>
-      </div>
-      <div class="signal-chip">
-        <div class="chip-value" id="threept-qtr-alerts2">0</div>
-        <div class="chip-label">Qtr Alert</div>
-        <div class="chip-desc">Quarter-level 3PT alerts</div>
       </div>
     </div>
 
@@ -1642,11 +1642,7 @@ function fire3PTAlert(teamAbbr, pct, made, att, gLabel, per, clk) {
 <script>
 // Sync 3PT stats from original IDs to signal strip duplicates
 (function() {
-  var pairs = [
-    ['threept-hot-count', 'threept-hot-count2'],
-    ['threept-warm-count', 'threept-warm-count2'],
-    ['threept-qtr-alerts', 'threept-qtr-alerts2']
-  ];
+  var pairs = [];
   function syncStats() {
     pairs.forEach(function(p) {
       var src = document.getElementById(p[0]);
@@ -1963,23 +1959,22 @@ try {
 <div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT</span> 3PT Regression</h3><p class="edge-label">The Edge: Unsustainable Shooting Regresses to Mean</p><p>When a team shoots far above their season 3PT%, regression is likely. Opposing team benefits from expected shooting decline in later quarters.</p><div class="threshold">Trigger: Current game 3PT% exceeds season avg by 8%+</div></div>
 <div class="guide-card"><h3><span class="signal-badge badge-star">STAR</span> Star Cold</h3><p class="edge-label">The Edge: Cold Stars Create Exploitable Gaps</p><p>When a top scorer is significantly underperforming their average, defenses over-rotate creating opportunities. The opposing team gains an edge as the star player drags down team efficiency.</p><div class="threshold">Trigger: Star player scoring 40%+ below their season average</div></div>
 <div class="guide-card"><h3><span class="signal-badge badge-fragile">FRAGILE</span> Fragile Lead</h3><p class="edge-label">The Edge: Narrow Leads Built on Unsustainable Runs</p><p>A team leading by a small margin despite being outplayed in key metrics signals a fragile advantage. These leads frequently collapse as underlying performance reasserts itself.</p><div class="threshold">Trigger: Lead of 1-7 pts with negative efficiency differential</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-paint">PAINT</span> Paint Durability</h3><p class="edge-label">The Edge: Offensive Rebound Dominance Shows Hidden Effort</p><p>When a trailing team dominates offensive rebounds, they are generating extra possessions through pure effort. Each OREB is worth ~1.1 points of hidden value.</p><div class="threshold">Thresholds: &ge;4 OREB advantage while trailing, minimum 6 total OREB in game</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-foul">FOUL</span> Foul Trouble</h3><p class="edge-label">The Edge: Foul Trouble Forces Suboptimal Lineups</p><p>When key players accumulate fouls, coaches must limit their minutes or risk disqualification. This degrades lineup quality and creates exploitable matchup advantages for the opponent.</p><div class="threshold">Trigger: Star player with 4+ fouls before 4th quarter</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-hustle">HUSTLE</span> Hustle Edge</h3><p class="edge-label">The Edge: Hustle Stats Reveal Hidden Momentum</p><p>Teams dominating hustle stats (steals, deflections, loose balls) are playing with higher energy and effort. This often precedes scoring runs and momentum shifts that the scoreboard hasn't yet reflected.</p><div class="threshold">Trigger: Significant hustle stat differential favoring trailing or close team</div></div>
 <div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">The Edge: Multiple Signals Compound the Advantage</p><p>When multiple independent signals align on the same side, the probability of a correct edge call increases dramatically. Each additional signal adds confirmation, the edge multiplies.</p><div class="threshold">Scoring: +1 per signal per side, 2+ = actionable edge</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-hot">HOT</span> Hot 50%+ Teams</h3><p class="edge-label">The Edge: Teams Shooting Exceptionally Above Average</p><p>Teams currently shooting 50%+ from three-point range are in an unsustainable hot streak. This extreme shooting is almost certain to cool down, creating a regression opportunity against them.</p><div class="threshold">Trigger: Team 3PT% currently at 50% or above</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-warm">WARM</span> Warm 45-50% Teams</h3><p class="edge-label">The Edge: Elevated Shooting Likely to Decline</p><p>Teams shooting between 45-50% from three are above average but not extreme. This moderate elevation still suggests regression, especially in later quarters as fatigue and defensive adjustments take effect.</p><div class="threshold">Trigger: Team 3PT% currently between 45-50%</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-qtr">QTR</span> Quarter Alerts</h3><p class="edge-label">The Edge: Quarter-Specific Shooting Spikes</p><p>Tracks teams with abnormally high 3PT shooting in the current quarter specifically. Quarter-level hot shooting is even more volatile than game-level and regresses faster, making it a strong short-term signal.</p><div class="threshold">Trigger: Quarter 3PT% significantly above season average</div></div>
 </div></div>
 <div id="ncaa-guide" style="display:none">
 <p class="guide-intro">NCAA signals calibrated for college basketball: 5-foul limit, earlier bonus, two 20-min halves. Star Cold uses college scoring thresholds.</p>
 <div class="guide-grid">
 <div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT</span> 3PT Regression</h3><p class="edge-label">The Edge: College Shooting Regresses Faster</p><p>NCAA teams have higher variance in 3PT shooting due to younger players and less consistent mechanics. Hot shooting spells regress even more sharply than in the NBA.</p><div class="threshold">Trigger: Current game 3PT% exceeds season avg by 8%+</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-star">STAR</span> Star Cold</h3><p class="edge-label">The Edge: College Stars Have Outsized Impact</p><p>In NCAA, top scorers often carry a larger share of offensive load. When they go cold, the drop-off to bench production is steeper, creating a bigger exploitable gap for the opposing team.</p><div class="threshold">Trigger: Star player scoring 40%+ below their season average</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-star">TEAM</span> Team Offensive Slump</h3><p class="edge-label">The Edge: College Teams Are More Dependent on Key Players</p><p>In NCAA, when the primary offensive contributors go cold, the bench drop-off is more severe. College teams lack NBA-level depth, making offensive slumps more impactful on game outcomes.</p><div class="threshold">Trigger: Team scoring 30%+ below first-half pace</div></div>
 <div class="guide-card"><h3><span class="signal-badge badge-fragile">FRAGILE</span> Fragile Lead</h3><p class="edge-label">The Edge: Two-Half Format Amplifies Fragility</p><p>With only two 20-minute halves, NCAA games see bigger momentum swings at the break. Fragile leads heading into halftime are especially vulnerable to coaching adjustments and second-half runs.</p><div class="threshold">Trigger: Lead of 1-7 pts with negative efficiency differential</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-paint">PAINT</span> Paint Durability</h3><p class="edge-label">The Edge: College Rebounding Gaps Are Larger</p><p>NCAA teams have wider rebounding skill gaps. When a smaller program dominates the offensive glass against a favored opponent, it signals effort and matchup problems that often lead to comeback runs.</p><div class="threshold">Thresholds: &ge;4 OREB advantage while trailing, minimum 6 total OREB in game</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-foul">FOUL</span> Foul Trouble</h3><p class="edge-label">The Edge: 5-Foul Limit Makes Trouble More Dangerous</p><p>With only 5 fouls before disqualification (vs NBA's 6), college players enter foul trouble faster. The earlier bonus free throw situation and limited bench depth amplify the impact of foul trouble.</p><div class="threshold">Trigger: Key player with 3+ fouls before halftime</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-hustle">HUSTLE</span> Hustle Edge</h3><p class="edge-label">The Edge: Effort Advantages Are More Decisive in College</p><p>College teams with hustle advantages often maintain them longer due to deeper rotations being less common. Hustle stats in NCAA games are stronger predictors of second-half momentum shifts.</p><div class="threshold">Trigger: Significant hustle stat differential favoring trailing or close team</div></div>
 <div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">The Edge: Signal Stacking in Higher-Variance Games</p><p>NCAA games have more variance, making combined signals even more powerful. When multiple independent signals agree, the edge is stronger because college games are more prone to dramatic swings.</p><div class="threshold">Scoring: +1 per signal per side, 2+ = actionable edge</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-hot">HOT</span> Hot 50%+ Teams</h3><p class="edge-label">The Edge: Unsustainable College Shooting Streaks</p><p>College teams shooting 50%+ from three are on a streak that rarely sustains. With shorter shot clocks and less experienced shooters, expect sharp regression in coming possessions.</p><div class="threshold">Trigger: Team 3PT% currently at 50% or above</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-warm">WARM</span> Warm 45-50% Teams</h3><p class="edge-label">The Edge: Moderate Hot Shooting Fades Faster</p><p>College teams in the 45-50% range from three are shooting well above typical NCAA averages. Fatigue, defensive adjustments, and the 5-foul limit amplify regression in later periods.</p><div class="threshold">Trigger: Team 3PT% currently between 45-50%</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-qtr">QTR</span> Half Alerts</h3><p class="edge-label">The Edge: Half-Specific Shooting Spikes</p><p>Tracks teams with abnormally high 3PT shooting in the current half. Half-level shooting spikes in college basketball regress sharply, especially after halftime coaching adjustments.</p><div class="threshold">Trigger: Half 3PT% significantly above season average</div></div>
-</div></div>
-<div id="theory-panel" class="theory-panel">
+</div></div><div id="theory-panel" class="theory-panel">
   <h4>How This Dashboard Works</h4>
   <p>Every signal in this dashboard identifies a specific <strong>market inefficiency</strong> in live basketball games. The core principle: live moneyline odds react to the current score and recent momentum, but they often fail to distinguish between <em>sustainable</em> advantages (paint dominance, defensive effort) and <em>unsustainable</em> ones (hot 3PT shooting, free throw inflation from fouls). When conditions are met, the live moneyline is likely mispriced &mdash; that is the edge.</p>
   <hr class="signal-divider">
