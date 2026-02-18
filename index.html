@@ -18,6 +18,23 @@
       --shadow-sm: 0 1px 3px rgba(0,0,0,0.04); --shadow-md: 0 2px 8px rgba(0,0,0,0.05); --shadow-lg: 0 4px 16px rgba(0,0,0,0.06);
       --radius: 12px; --radius-sm: 6px; --radius-lg: 16px;
     }
+    [data-theme="dark"] {
+      --white: #1a1a2e; --bg: #0f0f1a; --card-bg: #1a1a2e; --border: #2d2d44; --border-light: #252540;
+      --text-primary: #e2e8f0; --text-secondary: #94a3b8; --text-muted: #64748b;
+      --accent: #00d4aa; --accent-light: #0d3d33;
+      --green: #00d4aa; --green-light: #0d3d33;
+      --red: #ef4444; --red-light: #3b1111;
+      --orange: #f59e0b; --orange-light: #3b2e0a;
+      --purple: #8b5cf6; --purple-light: #2e1f5e;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3); --shadow-md: 0 2px 8px rgba(0,0,0,0.4); --shadow-lg: 0 4px 16px rgba(0,0,0,0.5);
+    }
+    [data-theme="dark"] .header { background: #1a1a2e; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+    [data-theme="dark"] .game-card-header { background: #151525; }
+    [data-theme="dark"] .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    [data-theme="dark"] input, [data-theme="dark"] select, [data-theme="dark"] textarea { background: #252540; color: #e2e8f0; border-color: #2d2d44; }
+    [data-theme="dark"] .modal { background: #1a1a2e; }
+    [data-theme="dark"] .edge-box { background: #151525; border-color: #2d2d44; }
+    [data-theme="dark"] .signal-strip { background: #1a1a2e; border-color: #2d2d44; }
     .team-3pt-avg { font-size: 9px; font-weight: 600; color: var(--accent); opacity: 0.8; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text-primary); line-height: 1.5; -webkit-font-smoothing: antialiased; }
@@ -204,6 +221,39 @@
     .theory-panel .signal-divider{border:none;border-top:1px solid var(--border);margin:24px 0}
     @media(max-width:600px){.theory-panel .thresh-grid{grid-template-columns:1fr}}
 .odds-row{display:flex;justify-content:space-between;align-items:center;padding:4px 8px;margin:4px 0;background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:6px;font-size:11px;color:#e0e0e0;}.odds-row .odds-label{color:#8892b0;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;}.odds-row .odds-val{font-weight:700;font-size:13px;font-family:'Courier New',monospace;}.odds-row .odds-val.fav{color:#00e676;}.odds-row .odds-val.dog{color:#ff5252;}.odds-row .odds-val.even{color:#ffd740;}.odds-row .odds-src{color:#546e7a;font-size:9px;}.odds-row .odds-implied{color:#78909c;font-size:10px;}.odds-stale{opacity:0.5;}#odds-status{font-size:10px;color:#78909c;margin-left:8px;}
+.live-indicator { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: var(--green); letter-spacing: 0.5px; }
+.live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: livePulse 1.5s ease-in-out infinite; }
+@keyframes livePulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.8); } }
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .header { padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
+  .header h1 { font-size: 15px; }
+  .header .subtitle { font-size: 10px; }
+  .header-right { gap: 4px; }
+  .header-right button { font-size: 10px; padding: 4px 8px; }
+  .tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { padding: 10px 14px; font-size: 12px; }
+  .signal-strip { flex-wrap: wrap; }
+  .signal-chip { flex: 1 1 30%; min-width: 90px; padding: 8px; }
+  .signal-chip .chip-value { font-size: 20px; }
+  .signal-chip .chip-label { font-size: 10px; }
+  .signal-chip .chip-desc { display: none; }
+  .game-card-body { padding: 8px 10px; }
+  .game-card { margin-bottom: 10px; }
+  .modal { width: 95%; padding: 16px; }
+  .container { padding: 10px; }
+  #live-games, #tab-3pt, #tab-star, #tab-betlog, #tab-bankroll, #tab-guide { padding: 10px; }
+  .edge-panel { padding: 10px; }
+  .guide-card { padding: 12px; }
+}
+@media (max-width: 480px) {
+  .header h1 { font-size: 13px; }
+  .signal-chip { flex: 1 1 45%; }
+  .tab { padding: 8px 10px; font-size: 11px; }
+}
+.game-card.signal-fire { border: 2px solid var(--accent); box-shadow: 0 0 12px rgba(0, 212, 170, 0.15); }
+.game-card.signal-warn { border: 1px solid var(--orange); }
 </style>
 </head>
 <body>
@@ -219,7 +269,7 @@
       <span class="status-dot off" id="statusDot"></span>
       <div class="mode-toggle" onclick="switchMode()" id="mode-toggle" title="Switch between NBA and NCAA mode"><span class="mode-label active-mode" id="label-nba">NBA</span><div class="mode-switch" id="mode-switch"></div><span class="mode-label" id="label-ncaa">NCAA</span></div>
 <span id="statusText" style="font-size:11px;">ESPN Feed</span>
-    </div><button class="sound-toggle" id="soundToggle" onclick="toggleSound()" title="Toggle alert sounds">&#x1F50A; Sound</button></div>
+    </div><button id="darkModeToggle" onclick="toggleDarkMode()" title="Toggle dark mode">🌙 Dark</button><button class="sound-toggle" id="soundToggle" onclick="toggleSound()" title="Toggle alert sounds">&#x1F50A; Sound</button></div>
 </div>
 
 <div class="tab-bar">
@@ -228,6 +278,7 @@
   <div class="tab" onclick="switchTab('stars')" id="tab-stars">Star Tracker</div>
   <div class="tab" onclick="switchTab('log')" id="tab-log">Bet Log</div>
   <div class="tab" onclick="switchTab('bankroll')" id="tab-bankroll">Bankroll</div>
+  <div class="tab" onclick="switchTab('history')" id="tab-history">📊 History</div>
   <div class="tab" onclick="switchTab('guide')" id="tab-guide">Signal Guide</div>
 </div>
 
@@ -251,11 +302,12 @@
       <button class="btn btn-sm btn-green" id="autoRefreshBtn" onclick="toggleAutoRefresh()">Start</button>
       <span style="margin-left:6px;">Every:</span>
       <select id="refreshInterval" style="padding:2px 6px;font-size:11px;border-radius:4px;border:1px solid var(--border);" onchange="updateRefreshInterval()">
-        <option value="30">30s</option>
-        <option value="60" selected>60s</option>
+        <option value="30" selected>30s</option>
+        <option value="60">60s</option>
         <option value="120">2min</option>
       </select>
       <div class="countdown-bar"><div class="countdown-fill" id="countdownFill" style="width:100%;"></div></div>
+      <span class="live-indicator" id="liveIndicator" style="display:none"><span class="live-dot"></span>LIVE</span>
       <span style="margin-left:auto;color:var(--gray);font-size:10px;">Last: <span id="live-last-update">-</span> | Errors: <span id="errorCount">0</span></span>
     </div>
 
@@ -291,6 +343,12 @@
         <div class="chip-desc">2+ signals on same side</div>
       </div>
     </div>
+
+<!-- QUICK BET ACTION CARDS -->
+<div id="quick-bet-panel" style="display:none; margin-bottom: 16px;">
+  <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">&#x26A1; ACTION REQUIRED</div>
+  <div id="quick-bet-cards"></div>
+</div>
 
     <div class="card">
       <div class="card-header"><span>Live Game Monitor</span>
@@ -477,12 +535,34 @@ let state = {
   quarterAlerts: JSON.parse(localStorage.getItem('quarterAlerts') || '[]'),
   lastKnownPeriods: {}, prevTeamData: {},
   errorCount: 0, consecutiveErrors: 0,
+  signalFirstSeen: {},
+  favorites: JSON.parse(localStorage.getItem('favorites') || '[]'),
+  signalHistory: JSON.parse(localStorage.getItem('signalHistory') || '[]'),
 };
 
 // ==================== INIT ====================
 document.getElementById('bankroll-start').value = state.bankroll.start || '';
 document.getElementById('bankroll-current').value = state.bankroll.current || '';
 updateBankroll(); renderBetLog(); renderStarDB(); renderQtrAlerts();
+
+// Push notification system
+let notifiedSignals = new Set(JSON.parse(localStorage.getItem('notifiedSignals') || '[]'));
+function requestNotifyPermission() {
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+}
+function sendSignalNotification(title, body, gameId, signalType) {
+  const key = gameId + '_' + signalType + '_' + new Date().getHours();
+  if (notifiedSignals.has(key)) return;
+  notifiedSignals.add(key);
+  if (notifiedSignals.size > 200) notifiedSignals = new Set([...notifiedSignals].slice(-100));
+  localStorage.setItem('notifiedSignals', JSON.stringify([...notifiedSignals]));
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification(title, { body: body, icon: '🏀', tag: key, requireInteraction: true });
+  }
+}
+requestNotifyPermission();
 
 // ==================== TABS ====================
 function switchTab(t) {
@@ -498,9 +578,11 @@ function toggleAutoRefresh() {
   const btn = document.getElementById('autoRefreshBtn'), dot = document.getElementById('autoRefreshDot'), lbl = document.getElementById('autoRefreshLabel');
   if (state.autoRefresh) {
     btn.textContent = 'Stop'; btn.className = 'btn btn-sm btn-red'; dot.className = 'dot'; lbl.textContent = 'ON';
+    document.getElementById('liveIndicator').style.display = 'inline-flex';
     fetchESPNScoreboard(); startCountdown();
   } else {
     btn.textContent = 'Start'; btn.className = 'btn btn-sm btn-green'; dot.className = 'dot off'; lbl.textContent = 'OFF';
+    document.getElementById('liveIndicator').style.display = 'none';
     clearInterval(state.refreshTimer); clearInterval(state.countdownTimer);
     document.getElementById('countdownFill').style.width = '100%';
   }
@@ -691,6 +773,8 @@ async function fetchESPNScoreboard() {
             signals.push({type:'3pt',text:`${t} ${pn.toFixed(0)}% from 3 (${mn}/${an}) - UNSUSTAINABLE`,level:2});
             sig3++;
                   fire3PTAlert(t, pn.toFixed(0), mn, an, gLabel, per, clk); hotTeams++;
+            sendSignalNotification('🔥 3PT Signal: ' + t, t + ' shooting ' + pn.toFixed(0) + '% from 3 (' + mn + '/' + an + ') - UNSUSTAINABLE', gid, '3pt_' + side);
+            if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
             thesis.criteria[`3pt_${side}`] = {met:true, strong:true, label:`${t} 3PT: ${pn.toFixed(0)}% (${mn}/${an})`, detail:`${getLeagueName()} avg is ${getLeague3PtAvg()}%. Shooting ${pn.toFixed(0)}% on ${an} attempts is 2+ std deviations above mean. This rate will regress &mdash; teams shooting 50%+ from 3 in a half sustain it only ~12% of games. The lead they built on 3PT scoring is inflated.`, value:`${pn.toFixed(0)}% on ${an} att`};
             return true;
           } else if (pn>=45&&an>=10) {
@@ -720,6 +804,8 @@ async function fetchESPNScoreboard() {
               signals.push({type:'star',text:`${leader.name} ${leader.pts}pts (exp ~${exp.toFixed(0)}, threshold ${(exp*0.6).toFixed(0)}).${ctx} MR candidate.`,level:2});
               sigStar++;
                 fireStarColdAlert(leader, star, gMins, per, clk, gLabel, pr);
+              sendSignalNotification('⭐ Star Cold: ' + leader.name, leader.name + ' only ' + leader.pts + 'pts (exp ~' + exp.toFixed(0) + '). Mean reversion candidate.', gid, 'star_' + leader.team);
+              if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
               starColdTeams[leader.team] = leader.name;
               thesis.criteria[`star_${oppSide}`] = {met:true, strong:true, label:`Opponent Star Cold: ${leader.name}`, detail:`${leader.name} averages ${star.ppg} PPG. At Q${per} ${clk}, expected ~${exp.toFixed(0)} pts but only has ${leader.pts}. That's ${(pr*100).toFixed(0)}% of pace (<60% threshold). Star players this far below expected pace tend to regress upward &mdash; the market hasn't priced in their scoring recovery yet. Live ML is too favorable to the OTHER side.`, value:`${leader.pts}/${exp.toFixed(0)} pts (${(pr*100).toFixed(0)}%)`};
             } else if (pr<0.75 && gPct>=0.2) {
@@ -738,6 +824,8 @@ async function fetchESPNScoreboard() {
           if (hNon3Pct >= 58) {
             signals.push({type:'fragile',text:`${aA} lead is FRAGILE: ${aDur.pct3.toFixed(0)}% from 3PT. ${hA} scoring is durable (${hNon3Pct.toFixed(0)}% paint/mid). Fade the lead.`,level:2});
             sigFragile++;
+            sendSignalNotification('⚠️ Fragile Lead: ' + aA, aA + ' lead fragile - ' + aDur.pct3.toFixed(0) + '% from 3PT vs ' + hA + ' paint', gid, 'fragile_away');
+            if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
             thesis.criteria['fragile_away'] = {met:true, strong:true, label:`${aA} Fragile Lead vs ${hA} Paint`, detail:`${aA}'s lead is built on 3PT (${aDur.pct3.toFixed(0)}% from 3, threshold ${getFragile3PtThreshold()}%). Meanwhile ${hA}'s scoring is paint-heavy (${hNon3Pct.toFixed(0)}% non-3PT). The lead is inflated AND the trailing team's offense is sustainable. Classic fade setup.`, value:`${aDur.pct3.toFixed(0)}% 3PT vs ${hNon3Pct.toFixed(0)}% paint`};
           } else {
             thesis.criteria['fragile_away'] = {met:false, label:`${aA} Lead Composition`, detail:`${aA} 3PT-heavy but ${hA} not paint-heavy enough. Fragile not triggered.`, value:'Partial'};
@@ -751,6 +839,8 @@ async function fetchESPNScoreboard() {
           if (aNon3Pct >= 58) {
             signals.push({type:'fragile',text:`${hA} lead is FRAGILE: ${hDur.pct3.toFixed(0)}% from 3PT. ${aA} scoring is durable (${aNon3Pct.toFixed(0)}% paint/mid). Fade the lead.`,level:2});
             sigFragile++;
+            sendSignalNotification('⚠️ Fragile Lead: ' + hA, hA + ' lead fragile - ' + hDur.pct3.toFixed(0) + '% from 3PT vs ' + aA + ' paint', gid, 'fragile_home');
+            if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
             thesis.criteria['fragile_home'] = {met:true, strong:true, label:`${hA} Fragile Lead vs ${aA} Paint`, detail:`${hA}'s lead is built on 3PT (${hDur.pct3.toFixed(0)}% from 3, threshold ${getFragile3PtThreshold()}%). Meanwhile ${aA}'s scoring is paint-heavy (${aNon3Pct.toFixed(0)}% non-3PT). The lead is inflated AND the trailing team's offense is sustainable. Classic fade setup.`, value:`${hDur.pct3.toFixed(0)}% 3PT vs ${aNon3Pct.toFixed(0)}% paint`};
           } else {
             thesis.criteria['fragile_home'] = {met:false, label:`${hA} Lead Composition`, detail:`${hA} 3PT-heavy but ${aA} not paint-heavy enough. Fragile not triggered.`, value:'Partial'};
@@ -767,10 +857,14 @@ async function fetchESPNScoreboard() {
         if (ftData.aInflated) {
           signals.push({type:'ft',text:`${aA} lead is FT-inflated: ${ftData.aFTA} FTA vs ${ftData.hFTA} for ${hA} (${ftData.ftGap} gap). This FT volume will regress.`,level:2});
           sigFT++;
+          sendSignalNotification('💰 FT Inflation: ' + aA, aA + ' FT-inflated: ' + ftData.aFTA + ' FTA vs ' + ftData.hFTA + ' (' + ftData.ftGap + ' gap)', gid, 'ft_away');
+          if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
           thesis.criteria['ft_away'] = {met:true, strong:true, label:`${aA} FT Inflation`, detail:`${aA} has attempted ${ftData.aFTA} free throws vs ${ftData.hFTA} for ${hA} &mdash; a ${ftData.ftGap} FTA gap. Part of ${aA}'s lead is built on unsustainable free throw volume. FT rates regress to the mean within a game.`, value:`${ftData.ftGap} FTA gap`};
         } else if (ftData.hInflated) {
           signals.push({type:'ft',text:`${hA} lead is FT-inflated: ${ftData.hFTA} FTA vs ${ftData.aFTA} for ${aA} (${ftData.ftGap} gap). This FT volume will regress.`,level:2});
           sigFT++;
+          sendSignalNotification('💰 FT Inflation: ' + hA, hA + ' FT-inflated: ' + ftData.hFTA + ' FTA vs ' + ftData.aFTA + ' (' + ftData.ftGap + ' gap)', gid, 'ft_home');
+          if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
           thesis.criteria['ft_home'] = {met:true, strong:true, label:`${hA} FT Inflation`, detail:`${hA} has attempted ${ftData.hFTA} free throws vs ${ftData.aFTA} for ${aA} &mdash; a ${ftData.ftGap} FTA gap. Part of ${hA}'s lead is built on unsustainable free throw volume. FT rates regress to the mean within a game.`, value:`${ftData.ftGap} FTA gap`};
         } else {
           thesis.criteria['ft_away'] = {met:false, label:`FT Balance`, detail:`No significant FT disparity between teams.`, value:'Normal'};
@@ -881,12 +975,13 @@ async function fetchESPNScoreboard() {
         foulHTML = `<div class="stat-bar-row"><span class="stat-bar-label">FTA</span><span style="flex:1;font-size:11px;">${aA}: ${aFTA} | ${hA}: ${hFTA}${ftGap >= 10 ? ' &#x26A0; +'+ftGap+' gap' : ''}</span></div>`;
       }
 
-      cards += `<div class="game-card ${cc}"><div class="${hc}"><span>${isLive?'LIVE':'UPCOMING'} ${detail}</span><span>${new Date(event.date).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div>
+      const isFav = state.favorites.includes(gid);
+      cards += `<div class="game-card ${cc}" data-game-id="${gid}"><div class="${hc}"><span>${isLive?'LIVE':'UPCOMING'} ${detail}</span><span class="fav-star" onclick="toggleFavorite('${gid}')" style="cursor:pointer;font-size:16px;margin-left:6px;">${isFav?'\u2605':'\u2606'}</span><span>${new Date(event.date).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div>
         <div class="game-card-body">
           <div class="game-teams"><div class="team-block"><div class="team-name">${aA}</div><div class="team-record">${aRec}</div>${getTeam3PtAvg(aA)?`<div class="team-3pt-avg">3PT: ${getTeam3PtAvg(aA)}%</div>`:''}<div class="team-score">${isLive?aS:'-'}</div></div><div class="vs-block"><div class="vs-text">@</div>${isLive?`<div class="game-period">Q${per} ${clk}</div>`:''}</div><div class="team-block"><div class="team-name">${hA}</div><div class="team-record">${hRec}</div>${getTeam3PtAvg(hA)?`<div class="team-3pt-avg">3PT: ${getTeam3PtAvg(hA)}%</div>`:''}<div class="team-score">${isLive?hS:'-'}</div></div></div>
           ${buildOddsHTML(aA,hA,aFull,hFull)}
           ${isLive?`<div class="stat-bars">${bar3(a3P,a3M,a3A,aA)}${bar3(h3P,h3M,h3A,hA)}${foulHTML}${aLeaders.length?`<div class="stat-bar-row"><span class="stat-bar-label">${aA} pts</span><span style="flex:1;font-weight:700;font-size:11px;">${aLeaders[0]?.name}: ${aLeaders[0]?.pts}</span></div>`:''}${hLeaders.length?`<div class="stat-bar-row"><span class="stat-bar-label">${hA} pts</span><span style="flex:1;font-weight:700;font-size:11px;">${hLeaders[0]?.name}: ${hLeaders[0]?.pts}</span></div>`:''}</div>${durabilityHTML}`:''}
-          ${signals.length?`<div class="signal-panel ${signalLevel===2?'fire':signalLevel===1?'strong':''}"><div class="signal-title ${signalLevel===2?'fire':'warn'}">${signalLevel===2?'STRONG EDGE SIGNAL':'DEVELOPING SIGNAL'}</div>${signals.map(s=>`<div class="signal-detail">${s.level===2?'&#x1F525;':'&#x26A0;&#xFE0F;'} ${s.text}</div>`).join('')}${signalLevel===2?`<div style="margin-top:5px;"><button class="btn btn-orange btn-sm" onclick="openLogModal('${gLabel}','Live ML','Mean Reversion')">Log Bet</button></div>`:''}</div>`:''}
+          ${signals.length?`<div class="signal-panel ${signalLevel===2?'fire':signalLevel===1?'strong':''}"><div class="signal-title ${signalLevel===2?'fire':'warn'}">${signalLevel===2?'STRONG EDGE SIGNAL':'DEVELOPING SIGNAL'}</div>${signals.map(s=>`<div class="signal-detail">${s.level===2?'&#x1F525;':'&#x26A0;&#xFE0F;'} ${s.text}</div>`).join('')}${state.signalFirstSeen[gid]?`<div style="font-size:9px;color:var(--text-muted);margin-top:4px;">\u23F1 Signal active ${Math.floor((Date.now()-state.signalFirstSeen[gid])/60000)}m ago</div>`:''}${signalLevel===2?`<div style="margin-top:5px;"><button class="btn btn-orange btn-sm" onclick="openLogModal('${gLabel}','Live ML','Mean Reversion')">Log Bet</button></div>`:''}</div>`:''}
           ${isLive&&!signals.length?`<div style="text-align:center;padding:4px;font-size:10px;color:var(--gray);">No signals</div>`:''}
         </div></div>`;
 
@@ -904,6 +999,49 @@ async function fetchESPNScoreboard() {
 
     grid.innerHTML = cards || `<div class="empty-state" style="grid-column:1/-1;"><p>No games.</p></div>`;
     tpGrid.innerHTML = tpCards || `<div class="empty-state" style="grid-column:1/-1;"><p>No live games.</p></div>`;
+
+    // Signal Priority: Sort gameTheses by strength
+    gameTheses.sort((a,b) => (b.strongCount||0) - (a.strongCount||0));
+
+    // Build Quick Bet Action Cards
+    const qbPanel = document.getElementById('quick-bet-panel');
+    const qbCards = document.getElementById('quick-bet-cards');
+    if (gameTheses.length > 0) {
+      qbPanel.style.display = 'block';
+      qbCards.innerHTML = gameTheses.map(t => {
+        const sigs = t.signals.filter(s=>s.level===2).map(s => {
+          const badges = {'3pt':'3PT','star':'STAR','fragile':'FRAGILE','ft':'FT'};
+          return '<span class="signal-badge badge-' + s.type + '">' + (badges[s.type]||s.type.toUpperCase()) + '</span>';
+        }).join(' ');
+        const oddsStr = t.marketOdds ? ' @ ' + (t.marketOdds > 0 ? '+' : '') + t.marketOdds : '';
+        const kellyStr = t.kellyPct ? ' (Kelly: ' + (t.kellyPct*100).toFixed(1) + '%)' : '';
+        const elapsed = state.signalFirstSeen[t.eventId] ? Math.floor((Date.now() - state.signalFirstSeen[t.eventId]) / 60000) : 0;
+        const elapsedStr = elapsed > 0 ? ' \u2022 Signal active ' + elapsed + 'm' : ' \u2022 NEW';
+        return '<div style="background:var(--card-bg);border:2px solid var(--accent);border-radius:var(--radius);padding:12px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow-md);animation:slideUp 0.3s ease">' +
+          '<div><div style="font-size:14px;font-weight:700;color:var(--accent)">BET ' + t.betSide + ' ML' + oddsStr + '</div>' +
+          '<div style="font-size:11px;color:var(--text-secondary);margin-top:2px">' + t.game + ' \u2022 Q' + (t.per||'?') + ' ' + (t.clk||'') + kellyStr + elapsedStr + '</div>' +
+          '<div style="margin-top:4px">' + sigs + '</div></div>' +
+          '<div style="text-align:right"><div style="font-size:20px;font-weight:800;color:var(--accent)">' + (t.strongCount||0) + '</div><div style="font-size:9px;color:var(--text-muted)">SIGNALS</div></div></div>';
+      }).join('');
+    } else {
+      qbPanel.style.display = 'none';
+      qbCards.innerHTML = '';
+    }
+
+    // Record signal history
+    gameTheses.forEach(t => {
+      const histKey = t.eventId + '_' + (t.betSide||'');
+      const existing = state.signalHistory.find(h => h.key === histKey);
+      if (!existing) {
+        state.signalHistory.push({
+          key: histKey, game: t.game||'', betSide: t.betSide||'', signals: (t.signals||[]).filter(s=>s.level===2).map(s=>s.type),
+          strongCount: t.strongCount||0, confidence: t.confidence||'', odds: t.marketOdds||0,
+          timestamp: Date.now(), date: new Date().toLocaleDateString()
+        });
+        if (state.signalHistory.length > 200) state.signalHistory = state.signalHistory.slice(-150);
+        localStorage.setItem('signalHistory', JSON.stringify(state.signalHistory));
+      }
+    });
 
     // Update counts
     document.getElementById('live-3pt-signals').textContent = sig3;
@@ -1418,6 +1556,60 @@ function toggleSound() {
   btn.innerHTML = soundEnabled ? '&#x1F50A; Sound' : '&#x1F507; Muted';
   if (soundEnabled) playAlertSound('cold'); // test beep
 }
+// Favorites / Watchlist
+function toggleFavorite(gameId) {
+  const idx = state.favorites.indexOf(gameId);
+  if (idx >= 0) state.favorites.splice(idx, 1);
+  else state.favorites.push(gameId);
+  localStorage.setItem('favorites', JSON.stringify(state.favorites));
+  // Re-sort: move favorites to top
+  const grid = document.getElementById('live-games-grid');
+  const cards = [...grid.querySelectorAll('.game-card')];
+  cards.sort((a,b) => {
+    const aFav = state.favorites.includes(a.dataset.gameId) ? 0 : 1;
+    const bFav = state.favorites.includes(b.dataset.gameId) ? 0 : 1;
+    return aFav - bFav;
+  });
+  cards.forEach(c => grid.appendChild(c));
+  // Toggle star icon
+  const star = event.target;
+  star.textContent = idx >= 0 ? '\u2606' : '\u2605';
+}
+
+// Signal History Dashboard
+function renderSignalHistory() {
+  const hist = state.signalHistory;
+  if (!hist.length) return '<div style="text-align:center;padding:20px;color:var(--text-muted);">No signals recorded yet. Start auto-refresh during live games.</div>';
+  const total = hist.length;
+  const byType = {};
+  hist.forEach(h => { (h.signals||[]).forEach(s => { byType[s] = (byType[s]||0) + 1; }); });
+  const typeStats = Object.entries(byType).map(([k,v]) => `<span style="background:var(--accent-light);color:var(--accent);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;">${k.toUpperCase()}: ${v}</span>`).join(' ');
+  const recent = hist.slice(-10).reverse().map(h => 
+    `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border-light);font-size:11px;">` +
+    `<span style="font-weight:600;">${h.game}</span>` +
+    `<span style="color:var(--accent);font-weight:700;">BET ${h.betSide}</span>` +
+    `<span>${h.signals.map(s=>s.toUpperCase()).join('+')}</span>` +
+    `<span style="color:var(--text-muted);">${h.date}</span></div>`
+  ).join('');
+  return `<div style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;margin-bottom:6px;">Signal Summary</div><div style="font-size:22px;font-weight:800;color:var(--accent);">${total}</div><div style="font-size:10px;color:var(--text-muted);">Total signals recorded</div><div style="margin-top:8px;">${typeStats}</div></div><div style="font-size:13px;font-weight:700;margin-bottom:6px;">Recent Signals</div>${recent}`;
+}
+
+function toggleDarkMode() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? '' : 'dark');
+  localStorage.setItem('darkMode', isDark ? '' : 'dark');
+  const btn = document.getElementById('darkModeToggle');
+  btn.textContent = isDark ? '🌙 Dark' : '☀️ Light';
+}
+// Auto-load dark mode preference
+(function() {
+  const saved = localStorage.getItem('darkMode');
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    setTimeout(() => { const btn = document.getElementById('darkModeToggle'); if(btn) btn.textContent = '☀️ Light'; }, 100);
+  }
+})();
 
 // Init sound button state
 document.addEventListener('DOMContentLoaded', function() {
@@ -1894,6 +2086,18 @@ try {
   setTimeout(injectOddsButtons, 2000);
 })();
 </script>
+<div id="content-history" class="tab-content">
+  <div class="card">
+    <div class="card-header"><span>📊 Signal History Dashboard</span>
+      <button class="btn btn-sm" onclick="document.getElementById('historyContent').innerHTML=renderSignalHistory()">Refresh</button>
+      <button class="btn btn-sm btn-red" onclick="if(confirm('Clear all signal history?')){state.signalHistory=[];localStorage.removeItem('signalHistory');document.getElementById('historyContent').innerHTML=renderSignalHistory();}">Clear</button>
+    </div>
+    <div class="card-body" id="historyContent">
+      <div style="text-align:center;padding:20px;color:var(--text-muted);">Click Refresh to load signal history.</div>
+    </div>
+  </div>
+</div>
+
 <div id="content-guide" class="tab-content">
 <div class="guide-section">
 <h2 style="font-size:22px;font-weight:700;margin-bottom:4px">Signal Guide</h2>
@@ -1964,7 +2168,7 @@ try {
   <p>The system scores each side's "unsustainability count." Away shooting hot = awayFade++. Away lead fragile = awayFade++. Away lead FT-inflated = awayFade++. Star cold on a team = bet ON that team (star regresses upward = fade the other side). The side with more fade reasons gets faded; the system recommends the opposite side &mdash; the team whose advantages are real, sustainable, and undervalued.</p>
   <hr class="signal-divider">
   <h4>Data Sources &amp; Limitations</h4>
-  <p>All data comes from ESPN's live scoreboard API (scores, period/clock, team stats, leader boards) and ESPN's summary endpoint (FTA, box score details). Refreshes on configurable interval (default 60s).</p>
+  <p>All data comes from ESPN's live scoreboard API (scores, period/clock, team stats, leader boards) and ESPN's summary endpoint (FTA, box score details). Refreshes on configurable interval (default 30s).</p>
   <p><strong>Not captured:</strong> Individual player foul counts, play-by-play data, lineup changes, injury updates, referee tendencies, pace-of-play, and real-time odds. The system focuses on what IS measurable and predictive: shooting rates, scoring composition, free throw attempts, and star production.</p>
   <p><strong>Important:</strong> No signal guarantees an outcome. These are probabilistic edges based on mean reversion and market inefficiency. Responsible bankroll management is essential.</p>
 </div>
