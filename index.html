@@ -510,7 +510,7 @@ function analyzeScoringDurability(teamAbbr, score, fg3Made, opponentScore) {
 }
 
 // ==================== FOUL TRACKING ====================
-function analyzeReboundEffort(aOREB, hOREB, aDREB, hDREB, aScore, hScore) {
+function analyzeReboundEffort(aOREB, hOREB, aDREB, hDREB, aS, hS) {
       const aOreb = parseInt(aOREB)||0, hOreb = parseInt(hOREB)||0;
       const aDreb = parseInt(aDREB)||0, hDreb = parseInt(hDREB)||0;
       const diff = aOreb - hOreb;
