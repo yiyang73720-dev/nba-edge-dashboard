@@ -1550,6 +1550,10 @@ function fire3PTAlert(teamAbbr, pct, made, att, gLabel, per, clk) {
     type: 'hot3pt',
     signals: [teamAbbr + ' at ' + pct + '% from 3 (' + made + '/' + att + ')']
   });
+
+    // Ensure star DB renders on page load
+    renderStarDB();
+
 }
 
 </script>
