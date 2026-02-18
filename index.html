@@ -727,8 +727,11 @@ async function fetchESPNScoreboard() {
         const has3=signals.some(s=>s.type==='3pt'&&s.level===2);
         const hasStar=signals.some(s=>s.type==='star'&&s.level===2);
         const hasPaint=signals.some(s=>s.type==='paint'&&s.level===2);
-        if ((has3&&hasStar)||(has3&&hasPaint)||(hasStar&&hasPaint)||(has3&&hasHustle)||(hasPaint&&hasHustle)||(hasStar&&hasHustle)) { signalLevel=2; sigCombined++; }
-        else if (has3||hasStar||hasPaint||hasHustle) signalLevel=1;
+        const hasFragile=signals.some(s=>s.type==='fragile'&&s.level>=2);
+        const hasFoul=signals.some(s=>s.type==='foul'&&s.level>=1);
+        const hasHustle=signals.some(s=>s.type==='hustle'&&s.level>=1);
+        if ((has3&&hasStar)||(has3&&hasPaint)||(has3&&hasFoul)||(has3&&hasHustle)||(hasStar&&hasPaint)||(hasStar&&hasFragile)||(hasStar&&hasFoul)||(hasStar&&hasHustle)||(hasPaint&&hasFragile)||(hasPaint&&hasFoul)||(hasFragile&&hasFoul)||(hasFragile&&hasHustle)||(hasFoul&&hasHustle)) { signalLevel=2; sigCombined++; }
+        else if (has3||hasStar||hasPaint||hasFragile||hasFoul||hasHustle) signalLevel=1;
 
         // Determine bet side and build thesis logic
         if (signalLevel >= 2) {
