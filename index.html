@@ -8,15 +8,15 @@
 
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
     :root {
-      --white: #ffffff; --bg: #f9fafb; --card-bg: #ffffff; --border: #e5e7eb; --border-light: #f3f4f6;
-      --text-primary: #111827; --text-secondary: #4b5563; --text-muted: #9ca3af;
-      --accent: #1e3a5f; --accent-light: #e8eef4;
-      --green: #059669; --green-light: #d1fae5;
+      --white: #ffffff; --bg: #f7f8fa; --card-bg: #ffffff; --border: #e8e8e8; --border-light: #f3f4f6;
+      --text-primary: #1a1a2e; --text-secondary: #4b5563; --text-muted: #9ca3af;
+      --accent: #00d4aa; --accent-light: #e6faf5;
+      --green: #00d4aa; --green-light: #e6faf5;
       --red: #dc2626; --red-light: #fee2e2;
       --orange: #d97706; --orange-light: #fef3c7;
       --purple: #7c3aed; --purple-light: #ede9fe;
-      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05); --shadow-md: 0 2px 8px rgba(0,0,0,0.06); --shadow-lg: 0 4px 16px rgba(0,0,0,0.08);
-      --radius: 10px; --radius-sm: 6px; --radius-lg: 14px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.04); --shadow-md: 0 2px 8px rgba(0,0,0,0.05); --shadow-lg: 0 4px 16px rgba(0,0,0,0.06);
+      --radius: 12px; --radius-sm: 6px; --radius-lg: 16px;
     }
     .team-3pt-avg { font-size: 9px; font-weight: 600; color: var(--accent); opacity: 0.8; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -174,7 +174,7 @@
 .signal-badge.badge-foul{background:#8b5cf6}
 .signal-badge.badge-hustle{background:#f59e0b}
 .signal-badge.badge-ft{background:#ec4899}
-.signal-badge.badge-combined{background:#6366f1}
+.signal-badge.badge-combined{background:#00d4aa}
 .signal-badge.badge-hot{background:#ef4444}
 .signal-badge.badge-warm{background:#f97316}
 .signal-badge.badge-qtr{background:#eab308}
@@ -759,23 +759,9 @@ async function fetchESPNScoreboard() {
           thesis.criteria['fragile_home'] = {met:false, label:`${hA} Lead Composition`, detail:`No fragile lead condition met for ${hA}.`, value:'N/A'};
         }
 
-        // FT INFLATION — fetch FTA from ESPN summary endpoint
-        let aFTA = 0, hFTA = 0;
-        try {
-          const sumUrl = 'https://site.api.espn.com/apis/site/v2/sports/basketball/' + (currentMode === 'nba' ? 'nba' : 'mens-college-basketball') + '/summary?event=' + gid;
-          const sumRes = await fetch(sumUrl, { signal: AbortSignal.timeout(5000) });
-          if (sumRes.ok) {
-            const sumData = await sumRes.json();
-            const boxTeams = sumData.boxscore?.teams || [];
-            for (const bt of boxTeams) {
-              const isHome = bt.homeAway === 'home';
-              const stats = bt.statistics || [];
-              for (const cat of stats) {
-                if (cat.name === 'freeThrowsAttempted' || cat.name === 'freeThrowAttempts') { if (isHome) hFTA = parseInt(cat.displayValue)||0; else aFTA = parseInt(cat.displayValue)||0; }
-              }
-            }
-          }
-        } catch(e) { /* summary fetch failed, FT signals won't fire */ }
+        // FT INFLATION — use FTA from scoreboard stats (already parsed above)
+        let aFTA = parseInt(aStats.freeThrowsAttempted)||0;
+        let hFTA = parseInt(hStats.freeThrowsAttempted)||0;
 
         const ftData = analyzeFTInflation(aFTA, hFTA, aS, hS);
         if (ftData.aInflated) {
