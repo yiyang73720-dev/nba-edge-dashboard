@@ -49,7 +49,7 @@
     .stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
     .stat-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
     .stat-value { font-size: 28px; font-weight: 800; color: var(--text-primary); letter-spacing: -1px; }
-    .signal-strip { display: flex; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--card-bg); box-shadow: var(--shadow-sm); margin-bottom: 20px; }
+    .signal-strip { display: flex; border: 1px solid var(--border); border-radius: var(--radius); overflow: visible; background: var(--card-bg); box-shadow: var(--shadow-sm); margin-bottom: 20px; }
     .signal-chip { flex: 1; padding: 10px 4px; text-align: center; border-right: 1px solid var(--border-light); transition: background 0.15s; cursor: default; position: relative; }
     .signal-chip:last-child { border-right: none; }
     .signal-chip:hover { background: var(--bg); }
@@ -405,7 +405,7 @@
 <script>
 let currentMode='nba';
 const MODE_CONFIG={nba:{title:'ALPHA HUNTER',subtitle:'Live ML Edge Finder \u2022 3PT / Star Pace / Paint Durability / Fouls \u2022 Auto-Updating',sport:'basketball/nba',starLabel:'Star Cold',starTooltip:'When a star player is cold (shooting well below average), their scoring tends to regress upward. The current line undervalues their team.',foulRateThreshold:6.5,foulTotalThreshold:10,foulPeriodMinutes:12},ncaa:{title:'NCAA EDGE SYSTEM',subtitle:'Live ML Edge Finder \u2022 3PT / Team Efficiency / Paint Durability / Fouls \u2022 College',sport:'basketball/mens-college-basketball',starLabel:'Team Slump',starTooltip:'When team offensive efficiency drops 15%+ below season average, regression to mean is likely. Markets overreact to cold stretches.',foulRateThreshold:5.0,foulTotalThreshold:7,foulPeriodMinutes:10}};
-function switchMode(){oddsCache={};oddsCacheTime=0;const avgEl=document.getElementById('league-avg-value');if(avgEl)avgEl.textContent=getLeague3PtAvg()+'%';currentMode=currentMode==='nba'?'ncaa':'nba';var cfg=MODE_CONFIG[currentMode];document.getElementById('main-title').textContent=cfg.title;document.getElementById('main-subtitle').textContent=cfg.subtitle;document.title=cfg.title.replace('SYSTEM','Dashboard');document.getElementById('star-label-text').textContent=cfg.starLabel;var tipEl=document.querySelector('#star-tooltip-wrap .tip');if(tipEl)tipEl.textContent=cfg.starTooltip;document.getElementById('mode-switch').className='mode-switch'+(currentMode==='ncaa'?' ncaa':'');document.getElementById('label-nba').className='mode-label'+(currentMode==='nba'?' active-mode':'');document.getElementById('label-ncaa').className='mode-label'+(currentMode==='ncaa'?' active-mode':'');var nbaG=document.getElementById('nba-guide');var ncaaG=document.getElementById('ncaa-guide');if(nbaG)nbaG.style.display=currentMode==='nba'?'':'none';if(ncaaG)ncaaG.style.display=currentMode==='ncaa'?'':'none';document.getElementById('league-avg-value').textContent=getLeague3PtAvg()+'%';}
+function switchMode(){oddsCache={};oddsCacheTime=0;const avgEl=document.getElementById('league-avg-value');if(avgEl)avgEl.textContent=getLeague3PtAvg()+'%';currentMode=currentMode==='nba'?'ncaa':'nba';var cfg=MODE_CONFIG[currentMode];document.getElementById('main-title').textContent=cfg.title;document.getElementById('main-subtitle').textContent=cfg.subtitle;document.title=cfg.title.replace('SYSTEM','Dashboard');var sLE=document.getElementById('star-label-text');if(sLE)sLE.textContent=cfg.starLabel;var tipEl=document.querySelector('#star-tooltip-wrap .tip');if(tipEl)tipEl.textContent=cfg.starTooltip;document.getElementById('mode-switch').className='mode-switch'+(currentMode==='ncaa'?' ncaa':'');document.getElementById('label-nba').className='mode-label'+(currentMode==='nba'?' active-mode':'');document.getElementById('label-ncaa').className='mode-label'+(currentMode==='ncaa'?' active-mode':'');var nbaG=document.getElementById('nba-guide');var ncaaG=document.getElementById('ncaa-guide');if(nbaG)nbaG.style.display=currentMode==='nba'?'':'none';if(ncaaG)ncaaG.style.display=currentMode==='ncaa'?'':'none';var lavEl=document.getElementById('league-avg-value');if(lavEl)lavEl.textContent=getLeague3PtAvg()+'%';}
 
 // === LIVE ODDS (The Odds API) ===
 let oddsCache={};let oddsCacheTime=0;const ODDS_CACHE_TTL=120000;
@@ -1641,8 +1641,7 @@ function fire3PTAlert(teamAbbr, pct, made, att, gLabel, per, clk) {
   var pairs = [
     ['threept-hot-count', 'threept-hot-count2'],
     ['threept-warm-count', 'threept-warm-count2'],
-    ['threept-qtr-alerts', 'threept-qtr-alerts2'],
-    ['league-avg-value', 'league-avg-value2']
+    ['threept-qtr-alerts', 'threept-qtr-alerts2']
   ];
   function syncStats() {
     pairs.forEach(function(p) {
