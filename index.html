@@ -1883,7 +1883,7 @@ try {
     var cards = document.querySelectorAll('.game-card');
     cards.forEach(function(card) {
       if (card.querySelector('.odds-hist-btn')) return;
-      var teams = card.querySelectorAll('.team-name, .team-abbr, [class*="team"]');
+      var teams = card.querySelectorAll('.team-name');
       var teamTexts = [];
       teams.forEach(function(t) { if (t.textContent.trim()) teamTexts.push(t.textContent.trim()); });
       var awayName = teamTexts[0] || 'Away';
