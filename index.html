@@ -1644,18 +1644,33 @@ function fire3PTAlert(teamAbbr, pct, made, att, gLabel, per, clk) {
 
   // Intercept the live odds fetch to capture the base URL with API key
   var capturedBaseURL = null;
-  var _realFetch = window._origFetchReal || window.fetch;
-  if (!window._origFetchReal) window._origFetchReal = _realFetch;
 
-  window.fetch = function(url) {
-    if (typeof url === 'string' && url.includes('the-odds-api') && url.includes('/v4/sports/')) {
-      capturedBaseURL = url;
+    // Extract API URL from fetchLiveOdds source code
+    try {
+      if (typeof fetchLiveOdds === 'function') {
+        var src = fetchLiveOdds.toString();
+        var keyMatch = src.match(/apiKey[=]([a-f0-9]+)/);
+        if (keyMatch) {
+          var sport = (typeof getOddsSport === 'function') ? getOddsSport() : 'basketball_nba';
+          capturedBaseURL = 'https://api.the-odds-api.com/v4/sports/' + sport + '/odds?apiKey=' + keyMatch[1] + '&regions=us&markets=h2h&oddsFormat=american&bookmakers=fanduel,draftkings,betmgm';
+        }
+      }
+    } catch(e) {}
+
+    // Also wrap fetch calls to capture URL at runtime as backup
+    function _wrapFetchForCapture(orig) {
+      return function(url) {
+        if (typeof url === 'string' && url.indexOf('the-odds-api') > -1 && url.indexOf('v4/sports') > -1) {
+          capturedBaseURL = url;
+        }
+        return orig.apply(this, arguments);
+      };
     }
-    return _realFetch.apply(this, arguments);
-  };
+    if (window._origFetchReal) { window._origFetchReal = _wrapFetchForCapture(window._origFetchReal); }
+    window.fetch = _wrapFetchForCapture(window.fetch);
+    var _realFetch = window._origFetchReal || window.fetch;
 
-  // Build historical URL from the captured live URL
-  function buildHistoricalURL(dateISO) {
+    function buildHistoricalURL(dateISO) {
     if (!capturedBaseURL) return null;
     // Change /v4/sports/ to /v4/historical/sports/ and add date param
     var histURL = capturedBaseURL.replace('/v4/sports/', '/v4/historical/sports/');
