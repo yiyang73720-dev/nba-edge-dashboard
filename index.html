@@ -64,8 +64,6 @@
         .vs-block{padding:0 6px;color:var(--text-muted);font-size:12px;font-weight:500}
         .sound-toggle{display:none!important}
         .scenario-alert-panel{position:fixed;bottom:0;left:0;right:0;z-index:500;background:var(--white);border-top:1px solid var(--border);box-shadow:0 -4px 20px rgba(0,0,0,.08);padding:12px 24px;max-height:160px;overflow-y:auto}
-        .demo-btn{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s}
-        .demo-btn:hover{background:var(--bg);border-color:var(--accent);color:var(--accent)}
         .stat-card{transition:all .2s ease}
         .stat-card:hover{box-shadow:var(--shadow-md);border-color:var(--accent)}
         .stat-label{font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px}
@@ -190,8 +188,7 @@
       <span class="status-dot off" id="statusDot"></span>
       <div class="mode-toggle" onclick="switchMode()" id="mode-toggle" title="Switch between NBA and NCAA mode"><span class="mode-label active-mode" id="label-nba">NBA</span><div class="mode-switch" id="mode-switch"></div><span class="mode-label" id="label-ncaa">NCAA</span></div>
 <span id="statusText" style="font-size:11px;">ESPN Feed</span>
-    </div><button class="sound-toggle" id="soundToggle" onclick="toggleSound()" title="Toggle alert sounds">&#x1F50A; Sound</button><button class="demo-btn" onclick="runDemoScenario()" title="Simulate a live game scenario">&#x1F3AE; Demo</button>
-  </div>
+    </div><button class="sound-toggle" id="soundToggle" onclick="toggleSound()" title="Toggle alert sounds">&#x1F50A; Sound</button></div>
 </div>
 
 <div class="tab-bar">
@@ -302,49 +299,22 @@
   </div>
 
   <!-- ==================== BET LOG TAB ==================== -->
-  <div class="tab-content" id="content-log">
-    <div class="stats-row">
-      <div class="stat-card"><div class="stat-label">Total Bets</div><div class="stat-value" id="log-total">0</div></div>
-      <div class="stat-card"><div class="stat-label">Win Rate</div><div class="stat-value" id="log-winrate">-</div></div>
-      <div class="stat-card"><div class="stat-label">Net Units</div><div class="stat-value" id="log-net-units">0</div></div>
-      <div class="stat-card"><div class="stat-label">ROI</div><div class="stat-value" id="log-roi">-</div></div>
-      <div class="stat-card"><div class="stat-label">Streak</div><div class="stat-value" id="log-streak">-</div></div>
-    </div>
-    <div class="card">
-      <div class="card-header"><span>All Bets</span><div><button class="btn btn-outline btn-sm" onclick="exportLog()">Export CSV</button> <button class="btn btn-red btn-sm" onclick="clearLog()">Clear All</button></div></div>
-      <div class="card-body">
-        <table><thead><tr><th>Date</th><th>Strategy</th><th>Game</th><th>Side</th><th>Line</th><th>Units</th><th>Result</th><th>Profit</th><th>Actions</th></tr></thead>
-        <tbody id="bet-log-body"><tr><td colspan="9" class="empty-state">No bets logged yet.</td></tr></tbody></table>
-      </div>
-    </div>
-  </div>
+  <div class="tab-content" id="content-log" style="display:none">
+<div id="backtest-panel" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px"><div class="stat-box"><div class="stat-value" id="bt-total">0</div><div class="stat-label">TOTAL BETS</div></div><div class="stat-box"><div class="stat-value" id="bt-winrate">-</div><div class="stat-label">WIN RATE</div></div><div class="stat-box"><div class="stat-value" id="bt-roi">-</div><div class="stat-label">ROI</div></div><div class="stat-box"><div class="stat-value" id="bt-edge">-</div><div class="stat-label">AVG EDGE</div></div><div class="stat-box"><div class="stat-value" id="bt-units">0.00</div><div class="stat-label">UNITS P/L</div></div></div>
+<div id="signal-breakdown" style="margin-bottom:20px"></div>
+<div style="display:flex;gap:10px;margin-bottom:15px"><button class="btn btn-orange btn-sm" onclick="exportBetLog()">Export CSV</button><button class="btn btn-sm" onclick="if(confirm('Clear all bet log data?'))clearBetLog()" style="background:#333;color:#aaa">Clear Log</button></div>
+<div id="bet-log-entries" style="overflow-x:auto"></div>
+</div>
 
   <!-- ==================== BANKROLL TAB ==================== -->
-  <div class="tab-content" id="content-bankroll">
-    <div class="card">
-      <div class="card-header">Bankroll Settings</div>
-      <div class="card-body">
-        <div class="form-grid" style="max-width:500px;">
-          <div class="form-group"><label>Starting ($)</label><input type="number" id="bankroll-start" placeholder="1000" onchange="updateBankroll()" /></div>
-          <div class="form-group"><label>Current ($)</label><input type="number" id="bankroll-current" placeholder="1050" onchange="updateBankroll()" /></div>
-        </div>
-      </div>
-    </div>
-    <div class="stats-row">
-      <div class="stat-card"><div class="stat-label">1 Unit (1%)</div><div class="stat-value" id="br-unit">-</div></div>
-      <div class="stat-card"><div class="stat-label">Max (2%)</div><div class="stat-value" id="br-max">-</div></div>
-      <div class="stat-card"><div class="stat-label">Daily (5u)</div><div class="stat-value" id="br-daily">-</div></div>
-      <div class="stat-card"><div class="stat-label">P/L</div><div class="stat-value" id="br-pl">-</div></div>
-      <div class="stat-card"><div class="stat-label">P/L %</div><div class="stat-value" id="br-pl-pct">-</div></div>
-    </div>
-    <div class="card">
-      <div class="card-header">Rules</div>
-      <div class="card-body" style="font-size:13px;line-height:1.8;">
-        <p><strong>Standard:</strong> 1u &bull; <strong>High conviction:</strong> 1.5u &bull; <strong>Max:</strong> 2u</p>
-        <p style="margin-top:6px;padding:8px;background:#fff3cd;border-radius:6px;font-size:12px;"><strong>Stop-loss:</strong> 3 straight L = 1 day off. 20% drawdown = cut to 0.5% units.</p>
-      </div>
-    </div>
-  </div>
+  <div class="tab-content" id="content-bankroll" style="display:none">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+<div class="stat-box" style="padding:20px"><h3 style="color:#ff6b35;margin:0 0 15px">Bankroll Settings</h3><div style="margin-bottom:10px"><label style="color:#aaa;font-size:12px">BANKROLL ($)</label><br><input type="number" id="bankroll-input" value="1000" min="1" style="background:#1a1a2e;border:1px solid #333;color:#fff;padding:8px 12px;border-radius:6px;width:100%;font-size:16px;margin-top:4px" onchange="saveBankrollSettings()"></div><div style="margin-bottom:10px"><label style="color:#aaa;font-size:12px">KELLY FRACTION</label><br><select id="kelly-fraction" style="background:#1a1a2e;border:1px solid #333;color:#fff;padding:8px 12px;border-radius:6px;width:100%;font-size:14px;margin-top:4px" onchange="saveBankrollSettings()"><option value="0.25">Quarter Kelly (25%)</option><option value="0.5" selected>Half Kelly (50%)</option><option value="0.75">Three-Quarter Kelly (75%)</option><option value="1">Full Kelly (100%)</option></select></div><div style="margin-bottom:10px"><label style="color:#aaa;font-size:12px">EDGE ESTIMATE</label><br><select id="edge-mode" style="background:#1a1a2e;border:1px solid #333;color:#fff;padding:8px 12px;border-radius:6px;width:100%;font-size:14px;margin-top:4px" onchange="saveBankrollSettings()"><option value="conservative">Conservative (+3%)</option><option value="moderate" selected>Moderate (+5%)</option><option value="aggressive">Aggressive (+8%)</option><option value="backtest">From Backtest Data</option></select></div></div>
+<div class="stat-box" style="padding:20px"><h3 style="color:#ff6b35;margin:0 0 15px">Kelly Formula</h3><div style="background:#0a0a1a;border-radius:8px;padding:15px;font-family:monospace;font-size:13px;color:#ccc;line-height:1.8">f* = (bp - q) / b<br><br>b = decimal odds - 1<br>p = our estimated true probability<br>q = 1 - p<br><br>Bet = Bankroll x f* x Kelly Fraction<br><br><span style="color:#ff6b35">Edge = Our P - Market Implied P</span></div></div>
+</div>
+<h3 style="color:#ff6b35;margin:0 0 15px">Active Kelly Recommendations</h3>
+<div id="kelly-recs" style="overflow-x:auto"><p style="color:#666;text-align:center;padding:30px">Refresh games to see Kelly-sized recommendations</p></div>
+</div>
 </div>
 
 <!-- LOG BET MODAL -->
@@ -834,6 +804,22 @@ async function fetchESPNScoreboard() {
           thesis.totalMet = allCriteria;
           thesis.signals = signals;
           thesis.signalLevel = signalLevel;
+          const _tOdds = matchOdds(aA, hA, aFull, hFull);
+          if (_tOdds) {
+            const _betML = betTeam === aA ? _tOdds.awayML : _tOdds.homeML;
+            const _implP = _betML < 0 ? Math.abs(_betML)/(Math.abs(_betML)+100) : 100/(_betML+100);
+            thesis.marketOdds = _betML;
+            thesis.impliedP = _implP;
+            const _k = kellySize(_implP, _betML);
+            thesis.kellyPct = _k.fStar;
+            thesis.kellyBet = _k.bet;
+            thesis.estimatedP = _k.p;
+          }
+          thesis.eventId = event.id;
+          thesis.betTeamAbbr = betTeam;
+          if (_tOdds) {
+            autoLogBet(event.id, betTeam, 'ML', signals.filter(x=>x.level===2).map(x=>x.type), _betML, _implP);
+          }
           gameTheses.push(thesis);
         }
       }
@@ -959,7 +945,7 @@ async function fetchESPNScoreboard() {
           <div class="thesis-body">
             <div class="thesis-bet-line">
               <div>
-                <div class="thesis-bet-action">BET ${t.betSide} ML</div>
+                <div class="thesis-bet-action">BET ${t.betSide} ML ${t.marketOdds ? "(" + (t.marketOdds > 0 ? "+" : "") + t.marketOdds + ")" : ""}</div>${t.kellyPct ? '<div style="color:#4ade80;font-size:12px;margin-top:4px">KELLY: ' + t.kellyPct + '% of bankroll ($' + t.kellyBet + ') &bull; Our P: ' + t.estimatedP + '% vs Mkt ' + (t.impliedP * 100).toFixed(1) + '%</div>' : ""}
                 <div class="thesis-bet-side">Fade ${t.fadeSide} &mdash; ${t.confidence.toUpperCase()} confidence</div>
               </div>
               <button class="btn btn-orange btn-sm" onclick="openLogModal('${t.game}','Live ML','Mean Reversion')">Log This Bet</button>
@@ -979,6 +965,10 @@ async function fetchESPNScoreboard() {
     } else { etc.classList.remove('active'); etCards.innerHTML = ''; }
 
     updateStarTracker(events);
+        renderBetLog();
+        updateBacktestPanel();
+        updateKelly();
+
 
   } catch (err) {
     setConnStatus('error');
@@ -1052,15 +1042,248 @@ function confirmLogBet() {
   state.betLog.push({date:new Date().toLocaleDateString(),strategy:document.getElementById('modal-strategy').value,game:document.getElementById('modal-game').value,side:document.getElementById('modal-side').value,price:document.getElementById('modal-price').value,units:parseFloat(document.getElementById('modal-units').value),result:'Pending',profit:0,notes:document.getElementById('modal-notes').value,id:Date.now()});
   localStorage.setItem('betLog',JSON.stringify(state.betLog)); renderBetLog(); closeModal();
 }
+function getEdgeBonus() {
+  const mode = document.getElementById('edge-mode') ? document.getElementById('edge-mode').value : 'moderate';
+  if (mode === 'backtest') {
+    const d = getBacktestData();
+    if (d.total >= 10) return Math.max(0.01, Math.min(0.15, d.edge));
+    return 0.05;
+  }
+  return mode === 'conservative' ? 0.03 : mode === 'aggressive' ? 0.08 : 0.05;
+}
+
+function kellySize(impliedP, odds, fraction) {
+  if (!fraction) {
+    const sel = document.getElementById('kelly-fraction');
+    fraction = sel ? parseFloat(sel.value) : 0.5;
+  }
+  const bankroll = parseFloat((document.getElementById('bankroll-input')||{}).value) || 1000;
+  const edge = getEdgeBonus();
+  const p = Math.min(0.95, impliedP + edge);
+  const q = 1 - p;
+  const b = odds > 0 ? odds / 100 : 100 / Math.abs(odds);
+  let fStar = (b * p - q) / b;
+  if (fStar < 0) fStar = 0;
+  fStar = fStar * fraction;
+  const bet = Math.round(bankroll * fStar);
+  return { bet, fStar: Math.round(fStar * 1000) / 10, p: Math.round(p * 1000) / 10, edge: Math.round(edge * 1000) / 10, fraction, bankroll };
+}
+
+function autoLogBet(gameId, team, side, signals, marketOdds, impliedP) {
+  let log = JSON.parse(localStorage.getItem('betLog') || '[]');
+  const key = gameId + '_' + team;
+  if (log.find(x => x.key === key)) return;
+  const k = kellySize(impliedP, marketOdds);
+  log.push({
+    id: Date.now(),
+    key: key,
+    gameId: gameId,
+    team: team,
+    side: side,
+    signals: signals,
+    marketOdds: marketOdds,
+    impliedP: Math.round(impliedP * 1000) / 10,
+    estimatedP: k.p,
+    kellyPct: k.fStar,
+    kellyBet: k.bet,
+    timestamp: new Date().toISOString(),
+    outcome: null,
+    payout: null
+  });
+  localStorage.setItem('betLog', JSON.stringify(log));
+}
+
+function markOutcome(id, won) {
+  let log = JSON.parse(localStorage.getItem('betLog') || '[]');
+  const entry = log.find(x => x.id === id);
+  if (!entry) return;
+  entry.outcome = won ? 'W' : 'L';
+  if (won) {
+    const b = entry.marketOdds > 0 ? entry.marketOdds / 100 : 100 / Math.abs(entry.marketOdds);
+    entry.payout = Math.round(entry.kellyBet * b * 100) / 100;
+  } else {
+    entry.payout = -entry.kellyBet;
+  }
+  localStorage.setItem('betLog', JSON.stringify(log));
+  renderBetLog();
+  updateBacktestPanel();
+}
+
+function getBacktestData() {
+  const log = JSON.parse(localStorage.getItem('betLog') || '[]');
+  const settled = log.filter(x => x.outcome);
+  const total = settled.length;
+  const wins = settled.filter(x => x.outcome === 'W').length;
+  const winRate = total > 0 ? Math.round(wins / total * 1000) / 10 : 0;
+  const totalPayout = settled.reduce((s, x) => s + (x.payout || 0), 0);
+  const totalRisked = settled.reduce((s, x) => s + x.kellyBet, 0);
+  const roi = totalRisked > 0 ? Math.round(totalPayout / totalRisked * 1000) / 10 : 0;
+  const avgEdge = total > 0 ? Math.round(settled.reduce((s, x) => s + (x.estimatedP - x.impliedP), 0) / total * 10) / 10 : 0;
+  const units = Math.round(totalPayout / 100 * 100) / 100;
+  const bySignal = {};
+  settled.forEach(x => {
+    (x.signals || []).forEach(sig => {
+      if (!bySignal[sig]) bySignal[sig] = { total: 0, wins: 0, payout: 0 };
+      bySignal[sig].total++;
+      if (x.outcome === 'W') bySignal[sig].wins++;
+      bySignal[sig].payout += (x.payout || 0);
+    });
+  });
+  return { total, wins, winRate, roi, edge: avgEdge / 100, units, bySignal };
+}
+
 function renderBetLog() {
-  const tb=document.getElementById('bet-log-body');
-  if (!state.betLog.length) { tb.innerHTML='<tr><td colspan="9" class="empty-state">No bets logged.</td></tr>'; updateLogStats(); return; }
-  tb.innerHTML = state.betLog.slice().reverse().map(b => {
-    const rc=b.result==='W'?'move-up':b.result==='L'?'move-down':'';
-    const sb=b.strategy==='3PT Regression'?'signal-purple':b.strategy==='Paint Durability'?'signal-teal':b.strategy==='Foul Trouble'?'signal-moderate':'signal-strong';
-    return `<tr><td>${b.date}</td><td><span class="signal-badge ${sb}">${b.strategy}</span></td><td>${b.game}</td><td>${b.side}</td><td>${b.price}</td><td>${b.units}</td><td class="${rc}">${b.result}</td><td class="${b.profit>=0?'move-up':'move-down'}">${b.profit>0?'+':''}${b.profit.toFixed(2)}u</td><td>${b.result==='Pending'?`<button class="btn btn-green btn-sm" onclick="resolveBet(${b.id},'W')">W</button> <button class="btn btn-red btn-sm" onclick="resolveBet(${b.id},'L')">L</button> <button class="btn btn-outline btn-sm" onclick="resolveBet(${b.id},'Push')">P</button>`:''}</td></tr>`;
-  }).join('');
-  updateLogStats();
+  const el = document.getElementById('bet-log-entries');
+  if (!el) return;
+  const log = JSON.parse(localStorage.getItem('betLog') || '[]').slice().reverse();
+  if (log.length === 0) {
+    el.innerHTML = '<p style="color:#666;text-align:center;padding:30px">No bets logged yet. Bets are auto-logged when combined signals fire.</p>';
+    return;
+  }
+  let html = '<table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="border-bottom:1px solid #333">';
+  html += '<th style="padding:8px;text-align:left;color:#aaa">TIME</th>';
+  html += '<th style="padding:8px;text-align:left;color:#aaa">TEAM</th>';
+  html += '<th style="padding:8px;text-align:left;color:#aaa">SIGNALS</th>';
+  html += '<th style="padding:8px;text-align:right;color:#aaa">ODDS</th>';
+  html += '<th style="padding:8px;text-align:right;color:#aaa">IMPL P</th>';
+  html += '<th style="padding:8px;text-align:right;color:#aaa">EST P</th>';
+  html += '<th style="padding:8px;text-align:right;color:#aaa">KELLY %</th>';
+  html += '<th style="padding:8px;text-align:right;color:#aaa">BET</th>';
+  html += '<th style="padding:8px;text-align:center;color:#aaa">RESULT</th>';
+  html += '<th style="padding:8px;text-align:right;color:#aaa">P/L</th>';
+  html += '</tr></thead><tbody>';
+  log.forEach(b => {
+    const t = new Date(b.timestamp);
+    const time = (t.getMonth()+1) + '/' + t.getDate() + ' ' + t.getHours() + ':' + String(t.getMinutes()).padStart(2,'0');
+    const oddsStr = b.marketOdds > 0 ? '+' + b.marketOdds : '' + b.marketOdds;
+    let resultCell;
+    if (b.outcome) {
+      const color = b.outcome === 'W' ? '#4ade80' : '#f87171';
+      resultCell = '<span style="color:' + color + ';font-weight:bold">' + b.outcome + '</span>';
+    } else {
+      resultCell = '<button onclick="markOutcome(' + b.id + ',true)" style="background:#166534;color:#4ade80;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:11px;margin-right:4px">W</button>';
+      resultCell += '<button onclick="markOutcome(' + b.id + ',false)" style="background:#7f1d1d;color:#f87171;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:11px">L</button>';
+    }
+    const plStr = b.payout != null ? (b.payout >= 0 ? '+' : '') + b.payout.toFixed(0) : '-';
+    const plColor = b.payout > 0 ? '#4ade80' : b.payout < 0 ? '#f87171' : '#666';
+    html += '<tr style="border-bottom:1px solid #1a1a2e">';
+    html += '<td style="padding:8px;color:#888">' + time + '</td>';
+    html += '<td style="padding:8px;color:#fff;font-weight:bold">' + b.team + ' ' + b.side + '</td>';
+    html += '<td style="padding:8px;color:#ff6b35">' + (b.signals||[]).join(', ') + '</td>';
+    html += '<td style="padding:8px;text-align:right;color:#ccc">' + oddsStr + '</td>';
+    html += '<td style="padding:8px;text-align:right;color:#888">' + b.impliedP + '%</td>';
+    html += '<td style="padding:8px;text-align:right;color:#ff6b35">' + b.estimatedP + '%</td>';
+    html += '<td style="padding:8px;text-align:right;color:#ccc">' + b.kellyPct + '%</td>';
+    html += '<td style="padding:8px;text-align:right;color:#fff">$' + b.kellyBet + '</td>';
+    html += '<td style="padding:8px;text-align:center">' + resultCell + '</td>';
+    html += '<td style="padding:8px;text-align:right;color:' + plColor + '">' + plStr + '</td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  el.innerHTML = html;
+}
+
+function updateBacktestPanel() {
+  const d = getBacktestData();
+  const btTotal = document.getElementById('bt-total');
+  if (!btTotal) return;
+  btTotal.textContent = d.total;
+  document.getElementById('bt-winrate').textContent = d.total > 0 ? d.winRate + '%' : '-';
+  document.getElementById('bt-roi').textContent = d.total > 0 ? d.roi + '%' : '-';
+  document.getElementById('bt-edge').textContent = d.total > 0 ? (d.edge * 100).toFixed(1) + '%' : '-';
+  document.getElementById('bt-units').textContent = d.units.toFixed(2);
+  const bd = document.getElementById('signal-breakdown');
+  if (!bd) return;
+  const sigs = Object.keys(d.bySignal);
+  if (sigs.length === 0) { bd.innerHTML = ''; return; }
+  let html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px">';
+  sigs.forEach(sig => {
+    const sd = d.bySignal[sig];
+    const wr = sd.total > 0 ? Math.round(sd.wins / sd.total * 100) : 0;
+    const wrColor = wr >= 55 ? '#4ade80' : wr >= 45 ? '#fbbf24' : '#f87171';
+    html += '<div class="stat-box" style="padding:12px"><div style="color:#ff6b35;font-size:11px;font-weight:bold;margin-bottom:6px">' + sig.toUpperCase() + '</div>';
+    html += '<div style="color:' + wrColor + ';font-size:18px;font-weight:bold">' + wr + '%</div>';
+    html += '<div style="color:#666;font-size:11px">' + sd.wins + 'W-' + (sd.total - sd.wins) + 'L | $' + Math.round(sd.payout) + '</div></div>';
+  });
+  html += '</div>';
+  bd.innerHTML = html;
+}
+
+function updateKelly() {
+  const el = document.getElementById('kelly-recs');
+  if (!el) return;
+  if (typeof gameTheses === 'undefined' || !gameTheses || gameTheses.length === 0) {
+    el.innerHTML = '<p style="color:#666;text-align:center;padding:30px">Refresh games to see Kelly-sized recommendations</p>';
+    return;
+  }
+  const recs = gameTheses.filter(t => t.marketOdds && t.kellyPct > 0);
+  if (recs.length === 0) {
+    el.innerHTML = '<p style="color:#666;text-align:center;padding:30px">No positive-edge bets found in current games</p>';
+    return;
+  }
+  let html = '<table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr style="border-bottom:1px solid #333">';
+  html += '<th style="padding:8px;text-align:left;color:#aaa">GAME</th>';
+  html += '<th style="padding:8px;text-align:left;color:#aaa">BET</th>';
+  html += '<th style="padding:8px;text-align:right;color:#aaa">ODDS</th>';
+  html += '<th style="padding:8px;text-align:right;color:#aaa">MKT P</th>';
+  html += '<th style="padding:8px;text-align:right;color:#aaa">OUR P</th>';
+  html += '<th style="padding:8px;text-align:right;color:#aaa">KELLY %</th>';
+  html += '<th style="padding:8px;text-align:right;color:#aaa">BET SIZE</th>';
+  html += '</tr></thead><tbody>';
+  recs.forEach(t => {
+    const oddsStr = t.marketOdds > 0 ? '+' + t.marketOdds : '' + t.marketOdds;
+    html += '<tr style="border-bottom:1px solid #1a1a2e">';
+    html += '<td style="padding:8px;color:#fff">' + t.betSide + '</td>';
+    html += '<td style="padding:8px;color:#ff6b35;font-weight:bold">' + t.betSide + ' ML</td>';
+    html += '<td style="padding:8px;text-align:right;color:#ccc">' + oddsStr + '</td>';
+    html += '<td style="padding:8px;text-align:right;color:#888">' + (t.impliedP * 100).toFixed(1) + '%</td>';
+    html += '<td style="padding:8px;text-align:right;color:#4ade80">' + t.estimatedP + '%</td>';
+    html += '<td style="padding:8px;text-align:right;color:#fff;font-weight:bold">' + t.kellyPct + '%</td>';
+    html += '<td style="padding:8px;text-align:right;color:#4ade80;font-weight:bold">$' + t.kellyBet + '</td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  el.innerHTML = html;
+}
+
+function saveBankrollSettings() {
+  localStorage.setItem('bankrollSettings', JSON.stringify({
+    bankroll: document.getElementById('bankroll-input').value,
+    fraction: document.getElementById('kelly-fraction').value,
+    edgeMode: document.getElementById('edge-mode').value
+  }));
+  updateKelly();
+}
+
+function loadBankrollSettings() {
+  const saved = JSON.parse(localStorage.getItem('bankrollSettings') || 'null');
+  if (!saved) return;
+  const bi = document.getElementById('bankroll-input');
+  if (bi) bi.value = saved.bankroll || 1000;
+  const kf = document.getElementById('kelly-fraction');
+  if (kf) kf.value = saved.fraction || '0.5';
+  const em = document.getElementById('edge-mode');
+  if (em) em.value = saved.edgeMode || 'moderate';
+}
+
+function exportBetLog() {
+  const log = JSON.parse(localStorage.getItem('betLog') || '[]');
+  if (log.length === 0) { alert('No bets to export'); return; }
+  let csv = 'Timestamp,Team,Side,Signals,MarketOdds,ImpliedP,EstimatedP,KellyPct,BetSize,Outcome,PL\n';
+  log.forEach(b => {
+    csv += b.timestamp + ',' + b.team + ',' + b.side + ',"' + (b.signals||[]).join(';') + '",' + b.marketOdds + ',' + b.impliedP + ',' + b.estimatedP + ',' + b.kellyPct + ',' + b.kellyBet + ',' + (b.outcome||'') + ',' + (b.payout||0) + '\n';
+  });
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'bet_log_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+function clearBetLog() {
+  localStorage.removeItem('betLog');
+  renderBetLog();
+  updateBacktestPanel();
 }
 function resolveBet(id,r) {
   const b=state.betLog.find(x=>x.id===id); if(!b) return; b.result=r;
@@ -1172,6 +1395,11 @@ function toggleSound() {
 
 // Init sound button state
 document.addEventListener('DOMContentLoaded', function() {
+    loadBankrollSettings();
+    renderBetLog();
+    updateBacktestPanel();
+    updateKelly();
+
   const btn = document.getElementById('soundToggle');
   if (btn) {
     btn.classList.toggle('active', soundEnabled);
@@ -1273,46 +1501,6 @@ function dismissAlert(id) {
 }
 
 // ==================== DEMO SIMULATION MODE ====================
-function runDemoScenario() {
-  // Initialize audio on user gesture
-  initAudio();
-  
-  const scenarios = [
-    {
-      player: 'Jalen Brunson', team: 'NYK &bull; New York Knicks', game: 'NYK @ BOS',
-      quarter: 2, clock: '1:01', currentPts: 3, ppg: 26.3,
-      expectedPts: 14.5, pacePercent: 20.7, type: 'cold',
-      signals: ['Star at 21% pace', 'Mean reversion candidate']
-    },
-    {
-      player: 'Shai Gilgeous-Alexander', team: 'OKC &bull; Oklahoma City Thunder', game: 'OKC @ LAL',
-      quarter: 1, clock: '2:30', currentPts: 2, ppg: 32.2,
-      expectedPts: 7.7, pacePercent: 26.0, type: 'cold',
-      signals: ['Star at 26% Q1 pace', 'Below 60% threshold']
-    },
-    {
-      player: 'Luka Doncic', team: 'DAL &bull; Dallas Mavericks', game: 'DAL @ MIA',
-      quarter: 2, clock: '5:45', currentPts: 4, ppg: 28.1,
-      expectedPts: 11.7, pacePercent: 34.2, type: 'combined',
-      signals: ['Star cold + MIA shooting 55% from 3', 'Multi-signal edge']
-    },
-    {
-      player: 'Jaren Jackson Jr', team: 'MEM \x26bull; Memphis Grizzlies', game: 'MEM @ DEN',
-      quarter: 3, clock: '4:22', currentPts: 78,
-      expectedPts: 85.0, pacePercent: 91.8, type: 'combined',
-      signals: ['MEM out-hustling on boards (12 OREB vs 6)', 'DEN shooting 54% from 3 on 13 att', 'Hustle + 3PT regression edge']
-    }
-  ];
-  
-  // Pick a random scenario or cycle through them
-  const idx = Math.floor(Math.random() * scenarios.length);
-  const s = scenarios[idx];
-  
-  showScenarioAlert(s);
-}
-
-
-
 // ==================== HOOK: FIRE SCENARIO ALERTS FROM LIVE DATA ====================
 // Override the original signal detection to also trigger scenario alerts
 const _origShowQuarterToast = showQuarterToast;
