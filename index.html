@@ -711,7 +711,7 @@ async function fetchESPNScoreboard() {
         }
 
         // HUSTLE EDGE - Offensive Rebound Dominance
-        const reb = analyzeReboundEffort(aOREB, hOREB, aDREB, hDREB, aScore, hScore);
+        const reb = analyzeReboundEffort(aOREB, hOREB, aDREB, hDREB, aS, hS);
         if (reb.totalOreb >= 6) {
           if (reb.diff >= 4 && reb.scoreDiff > 0) {
             signals.push({type:'hustle',text:`${aA} out-hustling on offensive boards (${reb.aOreb} OREB vs ${reb.hOreb}). +${reb.diff} extra possessions while trailing by ${reb.scoreDiff}.`,level:1});
