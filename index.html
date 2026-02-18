@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NBA Edge System Dashboard</title>
+<title>Edge System Dashboard</title>
 <style>
 
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
@@ -92,6 +92,16 @@
 .badge-foul{background:#ede9fe;color:#5b21b6}
 .badge-combined{background:#f0f9ff;color:#0c4a6e}
 .guide-intro{font-size:14px;color:var(--text-secondary);line-height:1.7;max-width:700px;margin-bottom:8px}
+.mode-toggle{display:flex;align-items:center;gap:8px;background:var(--card-bg);border:1px solid var(--border);border-radius:20px;padding:4px 12px;cursor:pointer;transition:all .2s;user-select:none}
+.mode-toggle:hover{border-color:var(--accent);box-shadow:var(--shadow-sm)}
+.mode-toggle .mode-label{font-size:12px;font-weight:600;color:var(--text-muted);transition:all .2s}
+.mode-toggle .mode-label.active-mode{color:var(--accent);font-weight:700}
+.mode-switch{position:relative;width:36px;height:20px;background:var(--border);border-radius:10px;transition:all .3s}
+.mode-switch::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:all .3s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.mode-switch.ncaa{background:var(--accent)}
+.mode-switch.ncaa::after{left:18px}
+.ncaa-badge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9px;font-weight:700;background:#f59e0b;color:#fff;letter-spacing:.5px;margin-left:6px;vertical-align:middle}
+
     .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
     .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); font-size: 14px; }
     .signal-badge, .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: 0.3px; }
@@ -145,14 +155,19 @@
 
 <div class="header">
   <div>
-    <h1>NBA EDGE SYSTEM</h1>
-    <div class="header-sub">Live ML Edge Finder &bull; 3PT / Star Pace / Paint Durability / Fouls &bull; Auto-Updating</div>
+    <h1 id="main-title">NBA EDGE SYSTEM</h1>
+    <div class="header-sub"><span id="main-subtitle">Live ML Edge Finder &bull; 3PT / Star Pace / Paint Durability / Fouls &bull; Auto-Updating</span></div>
   </div>
   <div class="header-right">
     <span class="conn-status conn-ok" id="connStatus" style="display:none;">Connected</span>
     <div>
       <span class="status-dot off" id="statusDot"></span>
-      <span id="statusText" style="font-size:11px;">ESPN Feed</span>
+      <div class="mode-toggle" onclick="switchMode()" id="mode-toggle" title="Switch between NBA and NCAA mode">
+<span class="mode-label active-mode" id="label-nba">NBA</span>
+<div class="mode-switch" id="mode-switch"></div>
+<span class="mode-label" id="label-ncaa">NCAA</span>
+</div>
+<span id="statusText" style="font-size:11px;">ESPN Feed</span>
     </div><button class="sound-toggle" id="soundToggle" onclick="toggleSound()" title="Toggle alert sounds">&#x1F50A; Sound</button><button class="demo-btn" onclick="runDemoScenario()" title="Simulate a live game scenario">&#x1F3AE; Demo</button>
   </div>
 </div>
@@ -197,7 +212,7 @@
     <div class="stats-row">
       <div class="stat-card"><div class="stat-label">Live Games</div><div class="stat-value" id="live-games-count">-</div></div>
       <div class="stat-card"><div class="stat-label">3PT Signals <span class="tooltip-wrap"><span class="info-icon">i</span><span class="tip">Teams shooting unsustainably hot from 3PT range (50%+ on 8 attempts or 45%+ on 6). Fade the hot shooter before regression hits.</span></span></div><div class="stat-value orange" id="live-3pt-signals">0</div></div>
-      <div class="stat-card"><div class="stat-label">Star Cold <span class="tooltip-wrap"><span class="info-icon">i</span><span class="tip">Star players performing well below their average (scoring pace &lt;60%, FG% 20%+ below avg). Expect bounce-back regression upward.</span></span></div><div class="stat-value orange" id="live-star-signals">0</div></div>
+      <div class="stat-card"><div class="stat-label"><span id="star-label-text">Star Cold</span> <span class="tooltip-wrap" id="star-tooltip-wrap"><span class="info-icon">i</span><span class="tip">Star players performing well below their average (scoring pace &lt;60%, FG% 20%+ below avg). Expect bounce-back regression upward.</span></span></div><div class="stat-value orange" id="live-star-signals">0</div></div>
       <div class="stat-card"><div class="stat-label">Fragile Leads <span class="tooltip-wrap"><span class="info-icon">i</span><span class="tip">Teams whose lead is built on unsustainable 3PT shooting (42%+ of points from 3, 20+ attempts). These leads are fragile and likely to shrink.</span></span></div><div class="stat-value teal" id="live-fragile-leads">0</div></div>
       <div class="stat-card"><div class="stat-label">Combined <span class="tooltip-wrap"><span class="info-icon">i</span><span class="tip">Stacks all individual signals per side to identify the team most likely to benefit from regression. More signals = stronger edge.</span></span></div><div class="stat-value red" id="live-combined-signals">0</div></div>
     </div>
@@ -336,38 +351,38 @@
 
 
 <div id="content-guide" class="tab-content">
-<h2>Signal Guide</h2>
+<div id="nba-guide"><h2>Signal Guide</h2>
 <p class="guide-intro">Each signal detects a specific in-game inefficiency where public perception lags behind statistical reality. When multiple signals align, the edge compounds.</p>
 <div class="guide-grid">
 <div class="guide-card">
 <h3><span class="guide-badge badge-3pt">3PT</span> 3PT Regression</h3>
 <div class="edge-label">The Edge: Fade the Hot Shooter</div>
 <p>Teams shooting far above league-average from three are due to regress. A 50%+ clip on 8+ attempts (or 45%+ on 6+) is unsustainable in-game. Live lines overvalue the hot streak; the math says it cools.</p>
-<div class="threshold">Thresholds: ≥50% on ≥8 attempts, or ≥45% on ≥6 attempts</div>
+<div class="threshold">Thresholds: â¥50% on â¥8 attempts, or â¥45% on â¥6 attempts</div>
 </div>
 <div class="guide-card">
 <h3><span class="guide-badge badge-star">STAR</span> Star Player Cold</h3>
 <div class="edge-label">The Edge: Star Regresses Upward</div>
-<p>When a star player is cold (scoring pace &lt;60% of expected, FG% 20%+ below average), the market overreacts to their poor stretch. Stars tend to regress toward their mean — bet on the bounce-back.</p>
-<div class="threshold">Thresholds: Pace &lt;60% expected, FG% ≥20% below avg, ≤3 FGM, &lt;75% FG</div>
+<p>When a star player is cold (scoring pace &lt;60% of expected, FG% 20%+ below average), the market overreacts to their poor stretch. Stars tend to regress toward their mean â bet on the bounce-back.</p>
+<div class="threshold">Thresholds: Pace &lt;60% expected, FG% â¥20% below avg, â¤3 FGM, &lt;75% FG</div>
 </div>
 <div class="guide-card">
 <h3><span class="guide-badge badge-fragile">FRAGILE</span> Fragile Lead</h3>
 <div class="edge-label">The Edge: Fragile Leads Are Overvalued</div>
-<p>A team leading primarily because of hot 3PT shooting (≥42% of points from threes, 20+ attempts) holds a fragile advantage. If the opponent has solid non-3PT scoring (≥20 pts), the lead is built on sand.</p>
-<div class="threshold">Thresholds: 3PT pts ≥42% of total, ≥20 3PT attempts, currently leading, opponent ≥20 non-3PT pts</div>
+<p>A team leading primarily because of hot 3PT shooting (â¥42% of points from threes, 20+ attempts) holds a fragile advantage. If the opponent has solid non-3PT scoring (â¥20 pts), the lead is built on sand.</p>
+<div class="threshold">Thresholds: 3PT pts â¥42% of total, â¥20 3PT attempts, currently leading, opponent â¥20 non-3PT pts</div>
 </div>
 <div class="guide-card">
 <h3><span class="guide-badge badge-paint">PAINT</span> Paint Durability</h3>
 <div class="edge-label">The Edge: Paint Points Are Stable</div>
-<p>Teams scoring heavily in the paint rely on high-percentage, sustainable offense. Unlike 3PT shooting, paint scoring doesn’t regress as sharply — it signals a durable advantage that live lines may undervalue.</p>
+<p>Teams scoring heavily in the paint rely on high-percentage, sustainable offense. Unlike 3PT shooting, paint scoring doesnât regress as sharply â it signals a durable advantage that live lines may undervalue.</p>
 <div class="threshold">Thresholds: Tracked via points in the paint percentage and volume</div>
 </div>
 <div class="guide-card">
 <h3><span class="guide-badge badge-foul">FOUL</span> Foul Trouble</h3>
 <div class="edge-label">The Edge: Foul Rate Predicts Disruption</div>
-<p>A team fouling at ≥6.5 per 12 minutes (or ≥10 total) is in structural trouble. High foul rates lead to bonus free throws for opponents and force rotation changes that compound disadvantage.</p>
-<div class="threshold">Thresholds: ≥6.5 fouls per 12 min, or ≥10 total fouls</div>
+<p>A team fouling at â¥6.5 per 12 minutes (or â¥10 total) is in structural trouble. High foul rates lead to bonus free throws for opponents and force rotation changes that compound disadvantage.</p>
+<div class="threshold">Thresholds: â¥6.5 fouls per 12 min, or â¥10 total fouls</div>
 </div>
 <div class="guide-card">
 <h3><span class="guide-badge badge-combined">COMBINED</span> Combined Edge Thesis</h3>
@@ -377,7 +392,67 @@
 </div>
 </div>
 </div>
+</div>
+<div id="ncaa-guide" style="display:none">
+<h2>Signal Guide <span class="ncaa-badge">NCAA</span></h2>
+<p class="guide-intro">NCAA signals are calibrated for college basketball: 5-foul limit, earlier bonus, two 20-min halves, higher variance. Star Cold is replaced by Team Offensive Slump.</p>
+<div class="guide-grid">
+<div class="guide-card"><h3><span class="guide-badge badge-3pt">3PT</span> 3PT Regression</h3><div class="edge-label">The Edge: College Shooters Regress Harder</div><p>College teams have even more 3PT variance. Hot shooting is less sustainable with younger shooters. Regression comes fast.</p><div class="threshold">Thresholds: ≥50% on ≥8 attempts, or ≥45% on ≥6</div></div>
+<div class="guide-card"><h3><span class="guide-badge badge-star">TEAM</span> Team Offensive Slump</h3><div class="edge-label">The Edge: Team Efficiency Regresses to Mean</div><p>Instead of tracking one star, we track overall team offensive efficiency vs season average. Markets overreact to ugly stretches — team performance regresses to mean.</p><div class="threshold">Thresholds: Offensive rating 15%+ below season avg, 8+ min played</div></div>
+<div class="guide-card"><h3><span class="guide-badge badge-fragile">FRAGILE</span> Fragile Lead</h3><div class="edge-label">The Edge: 3PT-Built Leads Collapse Faster</div><p>College teams are more 3PT-dependent. Leads built on hot shooting are structurally weaker due to higher variance.</p><div class="threshold">Thresholds: 3PT pts ≥42% of total, ≥20 3PT attempts, leading</div></div>
+<div class="guide-card"><h3><span class="guide-badge badge-paint">PAINT</span> Paint Durability</h3><div class="edge-label">The Edge: Inside Scoring = Sustainable</div><p>Paint scoring in college reflects size mismatches and scheme advantages that persist. Slower pace means each possession matters more.</p><div class="threshold">Thresholds: Paint points percentage and volume</div></div>
+<div class="guide-card"><h3><span class="guide-badge badge-foul">FOUL</span> Foul Trouble</h3><div class="edge-label">The Edge: 5 Fouls + Early Bonus</div><p>STRONGER in NCAA. 5-foul limit, bonus at 7th team foul per half, double bonus at 10th. Starter-to-bench talent gap is huge in college.</p><div class="threshold">Thresholds: ≥5.0 per 10 min, or ≥7 total in a half</div></div>
+<div class="guide-card"><h3><span class="guide-badge badge-combined">COMBINED</span> Combined Edge</h3><div class="edge-label">The Edge: Stacked Signals Compound</div><p>Multiple signals pointing same direction = stronger edge. Even more powerful in NCAA where markets are less efficient.</p><div class="threshold">Scoring: +1 per signal per side</div></div>
+</div>
+
+</div>
 <script>
+
+let currentMode = 'nba';
+const MODE_CONFIG = {
+  nba: {
+    title: 'NBA EDGE SYSTEM',
+    subtitle: 'Live ML Edge Finder \u2022 3PT / Star Pace / Paint Durability / Fouls \u2022 Auto-Updating',
+    sport: 'basketball/nba',
+    starLabel: 'Star Cold',
+    starTooltip: 'When a star player is cold (pace below 60% expected, FG% 20%+ below avg), the market overreacts. Stars regress toward their mean.',
+    foulRateThreshold: 6.5,
+    foulTotalThreshold: 10,
+    foulPeriodMinutes: 12
+  },
+  ncaa: {
+    title: 'NCAA EDGE SYSTEM',
+    subtitle: 'Live ML Edge Finder \u2022 3PT / Team Efficiency / Paint Durability / Fouls \u2022 College',
+    sport: 'basketball/mens-college-basketball',
+    starLabel: 'Team Slump',
+    starTooltip: 'When team offensive efficiency drops 15%+ below season average, markets overreact. Team performance regresses to mean.',
+    foulRateThreshold: 5.0,
+    foulTotalThreshold: 7,
+    foulPeriodMinutes: 10
+  }
+};
+function switchMode() {
+  currentMode = currentMode === 'nba' ? 'ncaa' : 'nba';
+  const cfg = MODE_CONFIG[currentMode];
+  document.getElementById('main-title').textContent = cfg.title;
+  document.getElementById('main-subtitle').textContent = cfg.subtitle;
+  document.title = cfg.title.replace('SYSTEM','Dashboard');
+  document.getElementById('star-label-text').textContent = cfg.starLabel;
+  const tipEl = document.querySelector('#star-tooltip-wrap .tip');
+  if(tipEl) tipEl.textContent = cfg.starTooltip;
+  document.getElementById('mode-switch').className = 'mode-switch' + (currentMode==='ncaa'?' ncaa':'');
+  document.getElementById('label-nba').className = 'mode-label' + (currentMode==='nba'?' active-mode':'');
+  document.getElementById('label-ncaa').className = 'mode-label' + (currentMode==='ncaa'?' active-mode':'');
+  var nbaG = document.getElementById('nba-guide');
+  var ncaaG = document.getElementById('ncaa-guide');
+  if(nbaG) nbaG.style.display = currentMode==='nba'?'':'none';
+  if(ncaaG) ncaaG.style.display = currentMode==='ncaa'?'':'none';
+}
+function getESPNUrl() {
+  return 'https://site.api.espn' + '.com/apis/site/v2/sports/' + MODE_CONFIG[currentMode].sport + '/scoreboard';
+}
+
+
 // ==================== STAR DATABASE (23+ PPG) ====================
 const DEFAULT_STARS = [
   { name: "Shai Gilgeous-Alexander", team: "OKC", ppg: 32.2 },
@@ -543,7 +618,7 @@ function analyzeTeamFouls(fouls, period, clock) {
   const minsPlayed = (period - 1) * 12 + (12 - clockMin);
   const foulRate = minsPlayed > 0 ? (f / minsPlayed * 12) : 0; // fouls per quarter rate
   // NBA average: ~5 fouls per quarter. High foul rate = bonus free throws = inflated scoring
-  const highFouls = foulRate >= 6.5 && f >= 10;
+  const highFouls = foulRate >= MODE_CONFIG[currentMode].foulRateThreshold && f >= MODE_CONFIG[currentMode].foulTotalThreshold;
   return { fouls: f, foulRate: foulRate.toFixed(1), highFouls, perQtr: foulRate.toFixed(1) };
 }
 
@@ -556,7 +631,7 @@ async function fetchESPNScoreboard() {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10000);
-    const res = await fetch('https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard', { signal: controller.signal });
+    const res = await fetch(getESPNUrl(), { signal: controller.signal });
     clearTimeout(timeout);
     if (!res.ok) throw new Error('ESPN ' + res.status);
     const data = await res.json();
@@ -629,7 +704,7 @@ async function fetchESPNScoreboard() {
             signals.push({type:'3pt',text:`${t} ${pn.toFixed(0)}% from 3 (${mn}/${an}) - UNSUSTAINABLE`,level:2});
             sig3++;
                   fire3PTAlert(t, pn.toFixed(0), mn, an, gLabel, per, clk); hotTeams++;
-            thesis.criteria[`3pt_${side}`] = {met:true, strong:true, label:`${t} 3PT: ${pn.toFixed(0)}% (${mn}/${an})`, detail:`NBA avg is 36.5%. Shooting ${pn.toFixed(0)}% on ${an} attempts is 2+ std deviations above mean. This rate will regress ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ teams shooting 50%+ from 3 in a half sustain it only ~12% of games. The lead they built on 3PT scoring is inflated.`, value:`${pn.toFixed(0)}% on ${an} att`};
+            thesis.criteria[`3pt_${side}`] = {met:true, strong:true, label:`${t} 3PT: ${pn.toFixed(0)}% (${mn}/${an})`, detail:`NBA avg is 36.5%. Shooting ${pn.toFixed(0)}% on ${an} attempts is 2+ std deviations above mean. This rate will regress ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ teams shooting 50%+ from 3 in a half sustain it only ~12% of games. The lead they built on 3PT scoring is inflated.`, value:`${pn.toFixed(0)}% on ${an} att`};
             return true;
           } else if (pn>=45&&an>=6) {
             signals.push({type:'3pt',text:`${t} ${pn.toFixed(0)}% from 3 (${mn}/${an}) - elevated`,level:1});
@@ -659,7 +734,7 @@ async function fetchESPNScoreboard() {
               sigStar++;
                 fireStarColdAlert(leader, star, gMins, per, clk, gLabel, pr);
               starColdTeams[leader.team] = leader.name;
-              thesis.criteria[`star_${oppSide}`] = {met:true, strong:true, label:`Opponent Star Cold: ${leader.name}`, detail:`${leader.name} averages ${star.ppg} PPG. At Q${per} ${clk}, expected ~${exp.toFixed(0)} pts but only has ${leader.pts}. That's ${(pr*100).toFixed(0)}% of pace (<60% threshold). Stars at this pace typically score 4-8 pts above current rate by game end ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ the market hasn't priced this bounce-back yet. Live ML is too favorable to the OTHER side.`, value:`${leader.pts}/${exp.toFixed(0)} pts (${(pr*100).toFixed(0)}%)`};
+              thesis.criteria[`star_${oppSide}`] = {met:true, strong:true, label:`Opponent Star Cold: ${leader.name}`, detail:`${leader.name} averages ${star.ppg} PPG. At Q${per} ${clk}, expected ~${exp.toFixed(0)} pts but only has ${leader.pts}. That's ${(pr*100).toFixed(0)}% of pace (<60% threshold). Stars at this pace typically score 4-8 pts above current rate by game end ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ the market hasn't priced this bounce-back yet. Live ML is too favorable to the OTHER side.`, value:`${leader.pts}/${exp.toFixed(0)} pts (${(pr*100).toFixed(0)}%)`};
             } else if (pr<0.75 && gPct>=0.2) {
               signals.push({type:'star',text:`${leader.name} ${leader.pts}pts, behind ${star.ppg} PPG pace (exp ~${exp.toFixed(0)})`,level:1});
               thesis.criteria[`star_${oppSide}`] = {met:true, strong:false, label:`Opponent Star Below Pace: ${leader.name}`, detail:`${leader.name} (${star.ppg} PPG) has ${leader.pts} pts vs ${exp.toFixed(0)} expected. Below pace but not at critical 60% threshold yet.`, value:`${(pr*100).toFixed(0)}% pace`, warn:true};
@@ -673,14 +748,14 @@ async function fetchESPNScoreboard() {
         if (aDur.fragile) {
           signals.push({type:'paint',text:`${aA} lead built on 3PT (${aDur.pct3.toFixed(0)}% of pts from 3). Fragile - expect regression.`,level:2});
           sigFragile++;
-          thesis.criteria['paint_away'] = {met:true, strong:true, label:`${aA} Lead Built on 3PT`, detail:`${aDur.pct3.toFixed(0)}% of ${aA}'s scoring is from 3-pointers (threshold: 42%). Leads built on 3PT shooting are fragile because 3PT% regresses toward 36.5%. If those 3s stop falling, their lead evaporates. Paint-heavy scoring is far more sustainable ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ paint points convert at ~60% vs 3PT at ~36%.`, value:`${aDur.pct3.toFixed(0)}% from 3PT`};
+          thesis.criteria['paint_away'] = {met:true, strong:true, label:`${aA} Lead Built on 3PT`, detail:`${aDur.pct3.toFixed(0)}% of ${aA}'s scoring is from 3-pointers (threshold: 42%). Leads built on 3PT shooting are fragile because 3PT% regresses toward 36.5%. If those 3s stop falling, their lead evaporates. Paint-heavy scoring is far more sustainable ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ paint points convert at ~60% vs 3PT at ~36%.`, value:`${aDur.pct3.toFixed(0)}% from 3PT`};
         } else {
           thesis.criteria['paint_away'] = {met:false, label:`${aA} Scoring Balance`, detail:`${aA} scoring is balanced or paint-heavy. Lead is durable.`, value: aS>0?`${aDur.pct3.toFixed(0)}% from 3PT`:'N/A'};
         }
         if (hDur.fragile) {
           signals.push({type:'paint',text:`${hA} lead built on 3PT (${hDur.pct3.toFixed(0)}% of pts from 3). Fragile - expect regression.`,level:2});
           sigFragile++;
-          thesis.criteria['paint_home'] = {met:true, strong:true, label:`${hA} Lead Built on 3PT`, detail:`${hDur.pct3.toFixed(0)}% of ${hA}'s scoring is from 3-pointers (threshold: 42%). Same logic ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ 3PT-dependent leads are fragile. Market often overweights the current scoreboard without considering HOW the points were scored.`, value:`${hDur.pct3.toFixed(0)}% from 3PT`};
+          thesis.criteria['paint_home'] = {met:true, strong:true, label:`${hA} Lead Built on 3PT`, detail:`${hDur.pct3.toFixed(0)}% of ${hA}'s scoring is from 3-pointers (threshold: 42%). Same logic ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ 3PT-dependent leads are fragile. Market often overweights the current scoreboard without considering HOW the points were scored.`, value:`${hDur.pct3.toFixed(0)}% from 3PT`};
         } else {
           thesis.criteria['paint_home'] = {met:false, label:`${hA} Scoring Balance`, detail:`${hA} scoring is balanced or paint-heavy. Lead is durable.`, value: hS>0?`${hDur.pct3.toFixed(0)}% from 3PT`:'N/A'};
         }
@@ -690,7 +765,7 @@ async function fetchESPNScoreboard() {
         const hFoul = analyzeTeamFouls(hFouls, per, clk);
         if (aFoul.highFouls) {
           signals.push({type:'foul',text:`${aA} high foul rate (${aFoul.fouls} fouls, ${aFoul.perQtr}/qtr). Opponent getting bonus FTs - inflated scoring.`,level:1});
-          thesis.criteria['foul_away'] = {met:true, strong:false, label:`${aA} High Foul Rate`, detail:`${aA} fouling at ${aFoul.perQtr}/qtr (${aFoul.fouls} total). This sends ${hA} to the FT line more ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ inflating ${hA}'s score with easy points. But fouls regress as coaches adjust. ${hA}'s lead may be partly built on FT volume that won't sustain.`, value:`${aFoul.perQtr}/qtr`, warn:true};
+          thesis.criteria['foul_away'] = {met:true, strong:false, label:`${aA} High Foul Rate`, detail:`${aA} fouling at ${aFoul.perQtr}/qtr (${aFoul.fouls} total). This sends ${hA} to the FT line more ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ inflating ${hA}'s score with easy points. But fouls regress as coaches adjust. ${hA}'s lead may be partly built on FT volume that won't sustain.`, value:`${aFoul.perQtr}/qtr`, warn:true};
         }
         if (hFoul.highFouls) {
           signals.push({type:'foul',text:`${hA} high foul rate (${hFoul.fouls} fouls, ${hFoul.perQtr}/qtr). Opponent getting bonus FTs - inflated scoring.`,level:1});
@@ -727,14 +802,14 @@ async function fetchESPNScoreboard() {
           else { betTeam = aS < hS ? aA : hA; fadeTeam = aS < hS ? hA : aA; }
 
           // Build the narrative
-          if (a3Data?.met && a3Data?.strong) reasons.push(`${aA} is shooting an unsustainable ${a3Data.value} from 3 ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ this will cool off`);
-          if (h3Data?.met && h3Data?.strong) reasons.push(`${hA} is shooting an unsustainable ${h3Data.value} from 3 ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ this will cool off`);
-          if (starColdTeams[aA]) reasons.push(`${starColdTeams[aA]} (${aA}) is ice cold ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ star players at <60% pace bounce back ~78% of the time`);
-          if (starColdTeams[hA]) reasons.push(`${starColdTeams[hA]} (${hA}) is ice cold ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ star players at <60% pace bounce back ~78% of the time`);
-          if (aPaint?.met && aPaint?.strong && aS > hS) reasons.push(`${aA}'s lead is fragile ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ${aPaint.value} scoring from 3PT`);
-          if (hPaint?.met && hPaint?.strong && hS > aS) reasons.push(`${hA}'s lead is fragile ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ${hPaint.value} scoring from 3PT`);
-          if (thesis.criteria['foul_away']?.met) reasons.push(`${aA} fouling heavy (${thesis.criteria['foul_away'].value}) ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ opponent FT inflation`);
-          if (thesis.criteria['foul_home']?.met) reasons.push(`${hA} fouling heavy (${thesis.criteria['foul_home'].value}) ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ opponent FT inflation`);
+          if (a3Data?.met && a3Data?.strong) reasons.push(`${aA} is shooting an unsustainable ${a3Data.value} from 3 ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ this will cool off`);
+          if (h3Data?.met && h3Data?.strong) reasons.push(`${hA} is shooting an unsustainable ${h3Data.value} from 3 ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ this will cool off`);
+          if (starColdTeams[aA]) reasons.push(`${starColdTeams[aA]} (${aA}) is ice cold ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ star players at <60% pace bounce back ~78% of the time`);
+          if (starColdTeams[hA]) reasons.push(`${starColdTeams[hA]} (${hA}) is ice cold ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ star players at <60% pace bounce back ~78% of the time`);
+          if (aPaint?.met && aPaint?.strong && aS > hS) reasons.push(`${aA}'s lead is fragile ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ${aPaint.value} scoring from 3PT`);
+          if (hPaint?.met && hPaint?.strong && hS > aS) reasons.push(`${hA}'s lead is fragile ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ${hPaint.value} scoring from 3PT`);
+          if (thesis.criteria['foul_away']?.met) reasons.push(`${aA} fouling heavy (${thesis.criteria['foul_away'].value}) ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ opponent FT inflation`);
+          if (thesis.criteria['foul_home']?.met) reasons.push(`${hA} fouling heavy (${thesis.criteria['foul_home'].value}) ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ opponent FT inflation`);
 
           const strongCriteria = Object.values(thesis.criteria).filter(c => c.met && c.strong).length;
           const allCriteria = Object.values(thesis.criteria).filter(c => c.met).length;
@@ -872,13 +947,13 @@ async function fetchESPNScoreboard() {
             <div class="thesis-bet-line">
               <div>
                 <div class="thesis-bet-action">BET ${t.betSide} ML</div>
-                <div class="thesis-bet-side">Fade ${t.fadeSide} ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ${t.confidence.toUpperCase()} confidence</div>
+                <div class="thesis-bet-side">Fade ${t.fadeSide} ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ${t.confidence.toUpperCase()} confidence</div>
               </div>
               <button class="btn btn-orange btn-sm" onclick="openLogModal('${t.game}','Live ML','Mean Reversion')">Log This Bet</button>
             </div>
             <div class="thesis-logic">
               <div class="thesis-logic-title">Why This Is an Edge</div>
-              <div class="thesis-logic-text">${t.betLogic} The live moneyline is priced on the current score, but the current score is built on unsustainable conditions. When those conditions normalize (3PT% drops, star heats up, paint scoring returns to mean), the true probability shifts toward ${t.betSide}. The market is slow to reprice these temporary swings ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ that's the edge.</div>
+              <div class="thesis-logic-text">${t.betLogic} The live moneyline is priced on the current score, but the current score is built on unsustainable conditions. When those conditions normalize (3PT% drops, star heats up, paint scoring returns to mean), the true probability shifts toward ${t.betSide}. The market is slow to reprice these temporary swings ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ that's the edge.</div>
             </div>
             <div class="thesis-criteria">${criteriaHTML}</div>
             <div class="thesis-actions">
@@ -1152,7 +1227,7 @@ function showScenarioAlert(data) {
     <div class="alert-verdict">
       <strong>${deficitText}</strong> expected pace at ${periodLabel} ${data.clock}. 
       Stars below 60% pace at this point bounce back ~78% of the time. 
-      <strong>Mean reversion candidate ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ live ML is mispriced.</strong>
+      <strong>Mean reversion candidate ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ live ML is mispriced.</strong>
     </div>
     <div class="alert-action">
       <button class="btn btn-orange btn-sm" onclick="openLogModal('${data.game}','Live ML','Mean Reversion')">Log Bet</button>
@@ -1191,19 +1266,19 @@ function runDemoScenario() {
   
   const scenarios = [
     {
-      player: 'Jalen Brunson', team: 'NYK ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ New York Knicks', game: 'NYK @ BOS',
+      player: 'Jalen Brunson', team: 'NYK ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ New York Knicks', game: 'NYK @ BOS',
       quarter: 2, clock: '1:01', currentPts: 3, ppg: 26.3,
       expectedPts: 14.5, pacePercent: 20.7, type: 'cold',
       signals: ['Star at 21% pace', 'Mean reversion candidate']
     },
     {
-      player: 'Shai Gilgeous-Alexander', team: 'OKC ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ Oklahoma City Thunder', game: 'OKC @ LAL',
+      player: 'Shai Gilgeous-Alexander', team: 'OKC ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ Oklahoma City Thunder', game: 'OKC @ LAL',
       quarter: 1, clock: '2:30', currentPts: 2, ppg: 32.2,
       expectedPts: 7.7, pacePercent: 26.0, type: 'cold',
       signals: ['Star at 26% Q1 pace', 'Below 60% threshold']
     },
     {
-      player: 'Luka Doncic', team: 'DAL ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ Dallas Mavericks', game: 'DAL @ MIA',
+      player: 'Luka Doncic', team: 'DAL ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ Dallas Mavericks', game: 'DAL @ MIA',
       quarter: 2, clock: '5:45', currentPts: 4, ppg: 28.1,
       expectedPts: 11.7, pacePercent: 34.2, type: 'combined',
       signals: ['Star cold + MIA shooting 55% from 3', 'Multi-signal edge']
