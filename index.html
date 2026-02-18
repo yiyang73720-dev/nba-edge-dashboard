@@ -747,6 +747,8 @@ async function fetchESPNScoreboard() {
       let a3M=aStats.threePointFieldGoalsMade||'-', a3A=aStats.threePointFieldGoalsAttempted||'-';
       let h3M=hStats.threePointFieldGoalsMade||'-', h3A=hStats.threePointFieldGoalsAttempted||'-';
       let aFouls=aStats.fouls||aStats.totalFouls||'0', hFouls=hStats.fouls||hStats.totalFouls||'0';
+      let aFTA = parseInt(aStats.freeThrowsAttempted)||0;
+      let hFTA = parseInt(hStats.freeThrowsAttempted)||0;
 
       if (isLive) { checkQuarterEnd(gid, aA, per, a3P, a3M, a3A, gLabel); checkQuarterEnd(gid, hA, per, h3P, h3M, h3A, gLabel); }
 
@@ -849,9 +851,7 @@ async function fetchESPNScoreboard() {
           thesis.criteria['fragile_home'] = {met:false, label:`${hA} Lead Composition`, detail:`No fragile lead condition met for ${hA}.`, value:'N/A'};
         }
 
-        // FT INFLATION — use FTA from scoreboard stats (already parsed above)
-        let aFTA = parseInt(aStats.freeThrowsAttempted)||0;
-        let hFTA = parseInt(hStats.freeThrowsAttempted)||0;
+        // FT INFLATION — aFTA and hFTA already parsed above in loop scope
 
         const ftData = analyzeFTInflation(aFTA, hFTA, aS, hS);
         if (ftData.aInflated) {
