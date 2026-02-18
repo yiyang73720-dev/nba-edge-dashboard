@@ -147,6 +147,7 @@
 .signal-badge.badge-fragile{background:#ef4444}
 .signal-badge.badge-paint{background:#10b981}
 .signal-badge.badge-foul{background:#8b5cf6}
+.signal-badge.badge-hustle{background:#f59e0b}
 .signal-badge.badge-combined{background:#6366f1}
 </style>
 </head>
@@ -509,7 +510,16 @@ function analyzeScoringDurability(teamAbbr, score, fg3Made, opponentScore) {
 }
 
 // ==================== FOUL TRACKING ====================
-function analyzeTeamFouls(fouls, period, clock) {
+function analyzeReboundEffort(aOREB, hOREB, aDREB, hDREB, aScore, hScore) {
+      const aOreb = parseInt(aOREB)||0, hOreb = parseInt(hOREB)||0;
+      const aDreb = parseInt(aDREB)||0, hDreb = parseInt(hDREB)||0;
+      const diff = aOreb - hOreb;
+      const totalOreb = aOreb + hOreb;
+      const scoreDiff = (parseInt(hScore)||0) - (parseInt(aScore)||0);
+      return { aOreb, hOreb, aDreb, hDreb, diff, totalOreb, scoreDiff };
+    }
+
+    function analyzeTeamFouls(fouls, period, clock) {
   const f = parseInt(fouls) || 0;
   const clockMin = parseFloat(clock?.split(':')[0] || 12);
   const minsPlayed = (period - 1) * 12 + (12 - clockMin);
@@ -663,6 +673,25 @@ async function fetchESPNScoreboard() {
           thesis.criteria['paint_home'] = {met:false, label:`${hA} Scoring Balance`, detail:`${hA} scoring is balanced or paint-heavy. Lead is durable.`, value: hS>0?`${hDur.pct3.toFixed(0)}% from 3PT`:'N/A'};
         }
 
+        // REBOUND DATA (from summary endpoint)
+        let aOREB = 0, hOREB = 0, aDREB = 0, hDREB = 0;
+        try {
+          const sumUrl = 'https://site.api.espn.com/apis/site/v2/sports/basketball/' + (currentMode === 'nba' ? 'nba' : 'mens-college-basketball') + '/summary?event=' + gid;
+          const sumRes = await fetch(sumUrl, { signal: AbortSignal.timeout(5000) });
+          if (sumRes.ok) {
+            const sumData = await sumRes.json();
+            const boxTeams = sumData.boxscore?.teams || [];
+            for (const bt of boxTeams) {
+              const isHome = bt.homeAway === 'home';
+              const stats = bt.statistics || [];
+              for (const cat of stats) {
+                if (cat.name === 'offensiveRebounds') { if (isHome) hOREB = parseInt(cat.displayValue)||0; else aOREB = parseInt(cat.displayValue)||0; }
+                if (cat.name === 'defensiveRebounds') { if (isHome) hDREB = parseInt(cat.displayValue)||0; else aDREB = parseInt(cat.displayValue)||0; }
+              }
+            }
+          }
+        } catch(e) { /* summary fetch failed, OREB signals won\'t fire */ }
+
         // FOUL ANALYSIS
         const aFoul = analyzeTeamFouls(aFouls, per, clk);
         const hFoul = analyzeTeamFouls(hFouls, per, clk);
@@ -681,12 +710,25 @@ async function fetchESPNScoreboard() {
           thesis.criteria['foul_home'] = {met:true, strong:false, label:`${hA} High Foul Rate`, detail:`${hA} fouling at ${hFoul.perQtr}/qtr (${hFoul.fouls} total). ${aA} getting bonus FT trips that inflate their scoring. Foul rates typically normalize as game progresses.`, value:`${hFoul.perQtr}/qtr`, warn:true};
         }
 
+        // HUSTLE EDGE - Offensive Rebound Dominance
+        const reb = analyzeReboundEffort(aOREB, hOREB, aDREB, hDREB, aScore, hScore);
+        if (reb.totalOreb >= 6) {
+          if (reb.diff >= 4 && reb.scoreDiff > 0) {
+            signals.push({type:'hustle',text:`${aA} out-hustling on offensive boards (${reb.aOreb} OREB vs ${reb.hOreb}). +${reb.diff} extra possessions while trailing by ${reb.scoreDiff}.`,level:1});
+            thesis.criteria['hustle_away'] = {met:true, strong:false, label:`${aA} OREB Dominance`, detail:`${aA} has ${reb.aOreb} offensive rebounds vs ${reb.hOreb} for ${hA}. Each OREB is ~1.1 pts of extra value. Effort advantage persists.`, value:'+' + reb.diff + ' OREB'};
+          }
+          if (reb.diff <= -4 && reb.scoreDiff < 0) {
+            signals.push({type:'hustle',text:`${hA} out-hustling on offensive boards (${reb.hOreb} OREB vs ${reb.aOreb}). +${Math.abs(reb.diff)} extra possessions while trailing by ${Math.abs(reb.scoreDiff)}.`,level:1});
+            thesis.criteria['hustle_home'] = {met:true, strong:false, label:`${hA} OREB Dominance`, detail:`${hA} has ${reb.hOreb} offensive rebounds vs ${reb.aOreb} for ${aA}. Each OREB is ~1.1 pts of extra value. Effort advantage persists.`, value:'+' + Math.abs(reb.diff) + ' OREB'};
+          }
+        }
+
         // COMBINED - build thesis per side
         const has3=signals.some(s=>s.type==='3pt'&&s.level===2);
         const hasStar=signals.some(s=>s.type==='star'&&s.level===2);
         const hasPaint=signals.some(s=>s.type==='paint'&&s.level===2);
-        if ((has3&&hasStar)||(has3&&hasPaint)||(hasStar&&hasPaint)) { signalLevel=2; sigCombined++; }
-        else if (has3||hasStar||hasPaint) signalLevel=1;
+        if ((has3&&hasStar)||(has3&&hasPaint)||(hasStar&&hasPaint)||(has3&&hasHustle)||(hasPaint&&hasHustle)||(hasStar&&hasHustle)) { signalLevel=2; sigCombined++; }
+        else if (has3||hasStar||hasPaint||hasHustle) signalLevel=1;
 
         // Determine bet side and build thesis logic
         if (signalLevel >= 2) {
@@ -1191,6 +1233,12 @@ function runDemoScenario() {
       quarter: 2, clock: '5:45', currentPts: 4, ppg: 28.1,
       expectedPts: 11.7, pacePercent: 34.2, type: 'combined',
       signals: ['Star cold + MIA shooting 55% from 3', 'Multi-signal edge']
+    },
+    {
+      player: 'Jaren Jackson Jr', team: 'MEM \x26bull; Memphis Grizzlies', game: 'MEM @ DEN',
+      quarter: 3, clock: '4:22', currentPts: 78,
+      expectedPts: 85.0, pacePercent: 91.8, type: 'combined',
+      signals: ['MEM out-hustling on boards (12 OREB vs 6)', 'DEN shooting 54% from 3 on 13 att', 'Hustle + 3PT regression edge']
     }
   ];
   
@@ -1264,6 +1312,7 @@ function fire3PTAlert(teamAbbr, pct, made, att, gLabel, per, clk) {
 <div class="guide-card"><h3><span class="signal-badge badge-fragile">FRAGILE</span> Fragile Lead</h3><p class="edge-label">The Edge: 3PT-Built Leads Are Structurally Weak</p><p>When 42%+ of points come from 3PT and team is leading, that lead is built on the most volatile shot.</p><div class="threshold">Thresholds: 3PT pts &ge;42% of total, &ge;20 3PT attempts, leading</div></div>
 <div class="guide-card"><h3><span class="signal-badge badge-paint">PAINT</span> Paint Durability</h3><p class="edge-label">The Edge: Inside Scoring = Sustainable Advantage</p><p>Teams scoring heavily in the paint have a structural advantage &mdash; close-range shots don't regress like 3PT.</p><div class="threshold">Thresholds: Paint points percentage and volume above league average</div></div>
 <div class="guide-card"><h3><span class="signal-badge badge-foul">FOUL</span> Foul Trouble</h3><p class="edge-label">The Edge: Foul Rate Predicts Free Throw Swings</p><p>When a team is fouling at an elevated rate, they're on pace to put the opponent in the bonus early.</p><div class="threshold">Thresholds: &ge;6.5 fouls per 12 min, or &ge;10 total</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-hustle">HUSTLE</span> Hustle Edge</h3><p class="edge-label">The Edge: Offensive Rebound Dominance Shows Hidden Effort</p><p>When a trailing team dominates offensive rebounds, they're generating extra possessions through pure effort. Each OREB is worth ~1.1 points of hidden value.</p><div class="threshold">Thresholds: &ge;4 OREB advantage while trailing, minimum 6 total OREB in game</div></div>
 <div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">The Edge: Stacked Signals Compound</p><p>When multiple signals point the same direction, the edge multiplies.</p><div class="threshold">Scoring: +1 per signal per side, 2+ = actionable edge</div></div>
 </div></div>
 <div id="ncaa-guide" style="display:none">
@@ -1274,6 +1323,7 @@ function fire3PTAlert(teamAbbr, pct, made, att, gLabel, per, clk) {
 <div class="guide-card"><h3><span class="signal-badge badge-fragile">FRAGILE</span> Fragile Lead</h3><p class="edge-label">The Edge: 3PT-Built Leads Collapse Faster</p><p>College teams are more 3PT-dependent. Leads built on hot shooting are structurally weaker.</p><div class="threshold">Thresholds: 3PT pts &ge;42% of total, &ge;20 3PT attempts, leading</div></div>
 <div class="guide-card"><h3><span class="signal-badge badge-paint">PAINT</span> Paint Durability</h3><p class="edge-label">The Edge: Inside Scoring = Sustainable</p><p>Paint scoring in college reflects size mismatches and scheme advantages that persist.</p><div class="threshold">Thresholds: Paint points percentage and volume above average</div></div>
 <div class="guide-card"><h3><span class="signal-badge badge-foul">FOUL</span> Foul Trouble</h3><p class="edge-label">The Edge: 5 Fouls + Early Bonus</p><p>STRONGER in NCAA. 5-foul limit, bonus at 7th team foul per half, double bonus at 10th.</p><div class="threshold">Thresholds: &ge;5.0 per 10 min, or &ge;7 total in a half</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-hustle">HUSTLE</span> Hustle Edge</h3><p class="edge-label">The Edge: Offensive Rebound Dominance Shows Hidden Effort</p><p>When a trailing team dominates offensive rebounds, they're generating extra possessions through pure effort. Each OREB is worth ~1.1 points of hidden value.</p><div class="threshold">Thresholds: &ge;4 OREB advantage while trailing, minimum 6 total OREB in game</div></div>
 <div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">The Edge: Stacked Signals Compound</p><p>Multiple signals pointing same direction = stronger edge. More powerful in NCAA where markets are less efficient.</p><div class="threshold">Scoring: +1 per signal per side</div></div>
 </div></div>
 </div></div>
