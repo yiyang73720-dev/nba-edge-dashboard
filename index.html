@@ -1649,10 +1649,10 @@ function fire3PTAlert(teamAbbr, pct, made, att, gLabel, per, clk) {
     try {
       if (typeof fetchLiveOdds === 'function') {
         var src = fetchLiveOdds.toString();
-        var keyMatch = src.match(/apiKey[=]([a-f0-9]+)/);
-        if (keyMatch) {
+        var hexMatch = src.match(/[a-f0-9]{32}/);
+        if (hexMatch) {
           var sport = (typeof getOddsSport === 'function') ? getOddsSport() : 'basketball_nba';
-          capturedBaseURL = 'https://api.the-odds-api.com/v4/sports/' + sport + '/odds?apiKey=' + keyMatch[1] + '&regions=us&markets=h2h&oddsFormat=american&bookmakers=fanduel,draftkings,betmgm';
+          capturedBaseURL = 'https://api.the-odds-api.com/v4/sports/' + sport + '/odds?apiKey=' + hexMatch[0] + '&regions=us&markets=h2h&oddsFormat=american&bookmakers=fanduel,draftkings,betmgm';
         }
       }
     } catch(e) {}
