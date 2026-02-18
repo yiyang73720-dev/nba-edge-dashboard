@@ -1785,7 +1785,7 @@ try {
 
     // Cache
     try {
-      localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: points }));
+      if (points.length > 0) localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: points }));
     } catch(e) {}
 
     return points;
