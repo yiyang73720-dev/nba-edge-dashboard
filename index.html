@@ -18,6 +18,7 @@
       --shadow-sm: 0 1px 2px rgba(0,0,0,0.05); --shadow-md: 0 2px 8px rgba(0,0,0,0.06); --shadow-lg: 0 4px 16px rgba(0,0,0,0.08);
       --radius: 10px; --radius-sm: 6px; --radius-lg: 14px;
     }
+    .team-3pt-avg { font-size: 9px; font-weight: 600; color: var(--accent); opacity: 0.8; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text-primary); line-height: 1.5; -webkit-font-smoothing: antialiased; }
     .header { background: var(--white); border-bottom: none; padding: 14px 28px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 200; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.02); }
@@ -59,6 +60,13 @@
     .signal-chip .chip-value.red { color: var(--red); }
     .signal-chip .chip-value.purple { color: var(--purple); }
     .signal-chip .chip-value.green { color: var(--green); }
+    .signal-chip .chip-label.orange { color: var(--orange); }
+    .signal-chip .chip-label.teal { color: #0d9488; }
+    .signal-chip .chip-label.red { color: var(--red); }
+    .signal-chip .chip-label.purple { color: var(--purple); }
+    .signal-chip .chip-label.green { color: var(--green); }
+    .signal-chip .chip-desc { display:none; position:absolute; bottom:100%; left:50%; transform:translateX(-50%); background:#1e293b; color:#fff; font-size:10px; padding:4px 8px; border-radius:4px; white-space:nowrap; z-index:100; pointer-events:none; margin-bottom:4px; box-shadow:0 2px 6px rgba(0,0,0,.15); }
+    .signal-chip:hover .chip-desc { display:block; }
     .section-divider { height: 1px; background: var(--border-light); margin: 16px 0; }
     .edge-thesis-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
     .edge-thesis-header h2 { font-size: 14px; font-weight: 700; color: var(--text-primary); letter-spacing: 0.5px; text-transform: uppercase; margin: 0; }
@@ -146,7 +154,7 @@
 .mode-toggle .mode-label.active-mode{color:var(--accent);font-weight:700}
 .mode-switch{position:relative;width:36px;height:20px;background:var(--border);border-radius:10px;transition:all .3s}
 .mode-switch::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:all .3s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
-.mode-switch.ncaa{background:var(--accent)}
+.mode-switch.ncaa{background:var(--green)}
 .mode-switch.ncaa::after{left:18px}
 .ncaa-badge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9px;font-weight:700;background:#f59e0b;color:#fff;letter-spacing:.5px;margin-left:6px;vertical-align:middle}
 .guide-section{padding:20px 0}
@@ -248,41 +256,45 @@
     </div>
 
     <div class="signal-strip">
-      <div class="signal-chip" title="Total live games being tracked">
+      <div class="signal-chip">
         <div class="chip-value" id="live-games-count">-</div>
         <div class="chip-label">Games</div>
+        <div class="chip-desc">Total live games tracked</div>
       </div>
-      <div class="signal-chip" title="Teams shooting abnormally hot from 3PT">
+      <div class="signal-chip">
         <div class="chip-value orange" id="live-3pt-signals">0</div>
-        <div class="chip-label">3PT</div>
+        <div class="chip-label orange">3PT</div>
+        <div class="chip-desc">Teams shooting hot from 3PT</div>
       </div>
-      <div class="signal-chip" title="Star players underperforming expected pace">
+      <div class="signal-chip">
         <div class="chip-value orange" id="live-star-signals">0</div>
-        <div class="chip-label">Star Cold</div>
+        <div class="chip-label orange">Star Cold</div>
+        <div class="chip-desc">Stars underperforming pace</div>
       </div>
-      <div class="signal-chip" title="Leads built on unsustainable 3PT shooting">
+      <div class="signal-chip">
         <div class="chip-value teal" id="live-fragile-leads">0</div>
-        <div class="chip-label">Fragile</div>
+        <div class="chip-label teal">Fragile</div>
+        <div class="chip-desc">Leads on unsustainable 3PT</div>
       </div>
-      <div class="signal-chip" title="Multiple signals firing on same game">
+      <div class="signal-chip">
         <div class="chip-value red" id="live-combined-signals">0</div>
-        <div class="chip-label">Combined</div>
+        <div class="chip-label red">Combined</div>
+        <div class="chip-desc">Multiple signals on same game</div>
       </div>
-      <div class="signal-chip" title="Teams shooting 50%+ from three">
+      <div class="signal-chip">
         <div class="chip-value red" id="threept-hot-count2">0</div>
-        <div class="chip-label">Hot 50%</div>
+        <div class="chip-label red">Hot 50%</div>
+        <div class="chip-desc">Teams 50%+ from three</div>
       </div>
-      <div class="signal-chip" title="Teams shooting 45-50% from three">
+      <div class="signal-chip">
         <div class="chip-value orange" id="threept-warm-count2">0</div>
-        <div class="chip-label">Warm 45%</div>
+        <div class="chip-label orange">Warm 45%</div>
+        <div class="chip-desc">Teams 45-50% from three</div>
       </div>
-      <div class="signal-chip" title="Quarter-level 3PT alerts">
+      <div class="signal-chip">
         <div class="chip-value purple" id="threept-qtr-alerts2">0</div>
-        <div class="chip-label">Qtr Alert</div>
-      </div>
-      <div class="signal-chip" title="League average 3PT percentage">
-        <div class="chip-value green" id="league-avg-value2">36.5%</div>
-        <div class="chip-label">Lg Avg</div>
+        <div class="chip-label purple">Qtr Alert</div>
+        <div class="chip-desc">Quarter-level 3PT alerts</div>
       </div>
     </div>
 
@@ -304,8 +316,7 @@
       <div class="stat-card"><div class="stat-label">Teams 50%+ 3PT</div><div class="stat-value red" id="threept-hot-count">0</div></div>
       <div class="stat-card"><div class="stat-label">Teams 45-50%</div><div class="stat-value orange" id="threept-warm-count">0</div></div>
       <div class="stat-card"><div class="stat-label">Qtr Alerts</div><div class="stat-value purple" id="threept-qtr-alerts">0</div></div>
-      <div class="stat-card"><div class="stat-label">League Avg</div><div class="stat-value" style="color:var(--blue);" id="league-avg-value">36.5%</div></div>
-    </div>
+      </div>
     <div class="card">
       <div class="card-header"><span>3-Point Shooting Tracker - Live</span><span style="font-size:10px;color:var(--gray);">Alert: 50%+ on 8+ att</span></div>
       <div class="card-body"><div class="games-grid" id="threept-grid"><div class="empty-state" style="grid-column:1/-1;"><div class="icon">&#x1F3AF;</div><p>3PT tracking populates when live games run.</p></div></div></div>
@@ -596,6 +607,22 @@ function analyzeReboundEffort(aOREB, hOREB, aDREB, hDREB, aScore, hScore) {
 // ==================== ESPN SCOREBOARD ====================
 
 function getLeague3PtAvg() { return currentMode === 'nba' ? 36.5 : 33.4; }
+// Team Season 3PT% Averages
+const TEAM_3PT_AVG = {
+  // NBA (2025-26)
+  BOS:38.1, CLE:37.9, OKC:38.9, HOU:36.2, GSW:37.8, DEN:36.5, DAL:37.6, MIL:36.8,
+  MIN:36.3, NYK:37.8, PHI:36.9, PHX:38.2, LAC:36.5, MEM:35.9, SAC:37.5, MIA:36.8,
+  IND:36.7, ORL:35.4, ATL:37.2, CHI:34.2, BKN:35.4, CHA:34.8, TOR:36.1, POR:35.6,
+  SAS:35.3, DET:35.7, LAL:36.3, WAS:34.5, UTA:37.0, NOP:35.1, NY:37.8, GS:37.8,
+  SA:35.3, NO:35.1,
+  // NCAA (2025-26 D1 avg ~34%)
+  UK:35.2, DUKE:37.2, UNC:35.9, KU:36.1, GONZ:38.5, ARIZ:35.8, AUB:36.1, CONN:34.3,
+  BAYLOR:35.0, PURD:34.2, TENN:34.8, ALA:34.2, TXAM:33.4, ARK:33.9, ISU:35.2,
+  MIZZ:33.1, COLO:33.5, ILL:34.6, MICH:35.7, WISC:34.4, MSU:34.8, OSU:32.9,
+  CUSE:33.2, NOVA:37.9, ND:35.4, WAKE:32.6, VT:33.1, FSU:34.1, CLEM:34.7
+};
+function getTeam3PtAvg(abbr) { return TEAM_3PT_AVG[abbr] || null; }
+
 function getFragile3PtThreshold() { return currentMode === 'nba' ? 42 : 38; }
 function getLeagueName() { return currentMode === 'nba' ? 'NBA' : 'NCAA'; }
 
@@ -909,7 +936,7 @@ async function fetchESPNScoreboard() {
 
       cards += `<div class="game-card ${cc}"><div class="${hc}"><span>${isLive?'LIVE':'UPCOMING'} ${detail}</span><span>${new Date(event.date).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div>
         <div class="game-card-body">
-          <div class="game-teams"><div class="team-block"><div class="team-name">${aA}</div><div class="team-record">${aRec}</div><div class="team-score">${isLive?aS:'-'}</div></div><div class="vs-block"><div class="vs-text">@</div>${isLive?`<div class="game-period">Q${per} ${clk}</div>`:''}</div><div class="team-block"><div class="team-name">${hA}</div><div class="team-record">${hRec}</div><div class="team-score">${isLive?hS:'-'}</div></div></div>
+          <div class="game-teams"><div class="team-block"><div class="team-name">${aA}</div><div class="team-record">${aRec}</div>${getTeam3PtAvg(aA)?`<div class="team-3pt-avg">3PT: ${getTeam3PtAvg(aA)}%</div>`:''}<div class="team-score">${isLive?aS:'-'}</div></div><div class="vs-block"><div class="vs-text">@</div>${isLive?`<div class="game-period">Q${per} ${clk}</div>`:''}</div><div class="team-block"><div class="team-name">${hA}</div><div class="team-record">${hRec}</div>${getTeam3PtAvg(hA)?`<div class="team-3pt-avg">3PT: ${getTeam3PtAvg(hA)}%</div>`:''}<div class="team-score">${isLive?hS:'-'}</div></div></div>
           ${buildOddsHTML(aA,hA,aFull,hFull)}
           ${isLive?`<div class="stat-bars">${bar3(a3P,a3M,a3A,aA)}${bar3(h3P,h3M,h3A,hA)}${foulHTML}${aLeaders.length?`<div class="stat-bar-row"><span class="stat-bar-label">${aA} pts</span><span style="flex:1;font-weight:700;font-size:11px;">${aLeaders[0]?.name}: ${aLeaders[0]?.pts}</span></div>`:''}${hLeaders.length?`<div class="stat-bar-row"><span class="stat-bar-label">${hA} pts</span><span style="flex:1;font-weight:700;font-size:11px;">${hLeaders[0]?.name}: ${hLeaders[0]?.pts}</span></div>`:''}</div>${durabilityHTML}`:''}
           ${signals.length?`<div class="signal-panel ${signalLevel===2?'fire':signalLevel===1?'strong':''}"><div class="signal-title ${signalLevel===2?'fire':'warn'}">${signalLevel===2?'STRONG EDGE SIGNAL':'DEVELOPING SIGNAL'}</div>${signals.map(s=>`<div class="signal-detail">${s.level===2?'&#x1F525;':'&#x26A0;&#xFE0F;'} ${s.text}</div>`).join('')}${signalLevel===2?`<div style="margin-top:5px;"><button class="btn btn-orange btn-sm" onclick="openLogModal('${gLabel}','Live ML','Mean Reversion')">Log Bet</button></div>`:''}</div>`:''}
