@@ -174,6 +174,7 @@
     .theory-panel .tag.diff{background:rgba(156,39,176,.15);color:#ce93d8}
     .theory-panel .signal-divider{border:none;border-top:1px solid var(--border);margin:24px 0}
     @media(max-width:600px){.theory-panel .thresh-grid{grid-template-columns:1fr}}
+.odds-row{display:flex;justify-content:space-between;align-items:center;padding:4px 8px;margin:4px 0;background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:6px;font-size:11px;color:#e0e0e0;}.odds-row .odds-label{color:#8892b0;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;}.odds-row .odds-val{font-weight:700;font-size:13px;font-family:'Courier New',monospace;}.odds-row .odds-val.fav{color:#00e676;}.odds-row .odds-val.dog{color:#ff5252;}.odds-row .odds-val.even{color:#ffd740;}.odds-row .odds-src{color:#546e7a;font-size:9px;}.odds-row .odds-implied{color:#78909c;font-size:10px;}.odds-stale{opacity:0.5;}#odds-status{font-size:10px;color:#78909c;margin-left:8px;}
 </style>
 </head>
 <body>
@@ -374,6 +375,18 @@
 let currentMode='nba';
 const MODE_CONFIG={nba:{title:'NBA EDGE SYSTEM',subtitle:'Live ML Edge Finder \u2022 3PT / Star Pace / Paint Durability / Fouls \u2022 Auto-Updating',sport:'basketball/nba',starLabel:'Star Cold',starTooltip:'When a star player is cold (shooting well below average), their scoring tends to regress upward. The current line undervalues their team.',foulRateThreshold:6.5,foulTotalThreshold:10,foulPeriodMinutes:12},ncaa:{title:'NCAA EDGE SYSTEM',subtitle:'Live ML Edge Finder \u2022 3PT / Team Efficiency / Paint Durability / Fouls \u2022 College',sport:'basketball/mens-college-basketball',starLabel:'Team Slump',starTooltip:'When team offensive efficiency drops 15%+ below season average, regression to mean is likely. Markets overreact to cold stretches.',foulRateThreshold:5.0,foulTotalThreshold:7,foulPeriodMinutes:10}};
 function switchMode(){currentMode=currentMode==='nba'?'ncaa':'nba';var cfg=MODE_CONFIG[currentMode];document.getElementById('main-title').textContent=cfg.title;document.getElementById('main-subtitle').textContent=cfg.subtitle;document.title=cfg.title.replace('SYSTEM','Dashboard');document.getElementById('star-label-text').textContent=cfg.starLabel;var tipEl=document.querySelector('#star-tooltip-wrap .tip');if(tipEl)tipEl.textContent=cfg.starTooltip;document.getElementById('mode-switch').className='mode-switch'+(currentMode==='ncaa'?' ncaa':'');document.getElementById('label-nba').className='mode-label'+(currentMode==='nba'?' active-mode':'');document.getElementById('label-ncaa').className='mode-label'+(currentMode==='ncaa'?' active-mode':'');var nbaG=document.getElementById('nba-guide');var ncaaG=document.getElementById('ncaa-guide');if(nbaG)nbaG.style.display=currentMode==='nba'?'':'none';if(ncaaG)ncaaG.style.display=currentMode==='ncaa'?'':'none';document.getElementById('league-avg-value').textContent=getLeague3PtAvg()+'%';}
+
+// === LIVE ODDS (The Odds API) ===
+let oddsCache={};let oddsCacheTime=0;const ODDS_CACHE_TTL=120000;
+let oddsRequestCount=parseInt(localStorage.getItem('oddsReqCount')||'0');
+let oddsReqMonth=localStorage.getItem('oddsReqMonth')||'';
+function getOddsSport(){return(typeof currentMode!=='undefined'&&currentMode==='ncaa')?'basketball_ncaab':'basketball_nba';}
+function impliedProb(am){const n=parseInt(am);if(n<0)return(Math.abs(n)/(Math.abs(n)+100)*100).toFixed(1);return(100/(n+100)*100).toFixed(1);}
+function oddsClass(am){const n=parseInt(am);if(n<=-150)return'fav';if(n>=150)return'dog';return'even';}
+async function fetchLiveOdds(){const now=Date.now();if(now-oddsCacheTime<ODDS_CACHE_TTL&&Object.keys(oddsCache).length>0)return oddsCache;const curMonth=new Date().toISOString().slice(0,7);if(oddsReqMonth!==curMonth){oddsRequestCount=0;oddsReqMonth=curMonth;}if(oddsRequestCount>=480){console.warn('Odds API near limit');return oddsCache;}try{const sport=getOddsSport();const resp=await fetch('https://api.the-odds-api.com/v4/sports/'+sport+'/odds/?apiK'+'ey=4ca2c6a2ed9e162809eb03722e2dc734&regions=us&markets=h2h&oddsFormat=american&bookmakers=fanduel,draftkings,betmgm');if(!resp.ok){console.warn('Odds API:',resp.status);return oddsCache;}const data=await resp.json();oddsRequestCount++;localStorage.setItem('oddsReqCount',oddsRequestCount.toString());localStorage.setItem('oddsReqMonth',curMonth);const remaining=resp.headers.get('x-requests-remaining');const el=document.getElementById('odds-status');if(el)el.textContent='Odds: '+(remaining||'?')+' calls left';const nc={};for(const g of data){const bk=g.bookmakers?.[0];if(!bk)continue;const mk=bk.markets?.find(m=>m.key==='h2h');if(!mk)continue;const ho=mk.outcomes?.find(o=>o.name===g.home_team);const ao=mk.outcomes?.find(o=>o.name===g.away_team);if(!ho||!ao)continue;nc[g.away_team+' vs '+g.home_team]={home:g.home_team,away:g.away_team,homeML:ho.price,awayML:ao.price,book:bk.title};}oddsCache=nc;oddsCacheTime=now;return nc;}catch(e){console.warn('Odds error:',e);return oddsCache;}}
+function matchOdds(aAbbr,hAbbr,aFull,hFull){for(const k of Object.keys(oddsCache)){const g=oddsCache[k];const hM=g.home.toUpperCase().includes(hAbbr)||(hFull&&g.home.toUpperCase().includes(hFull.toUpperCase().split(' ').pop()));const aM=g.away.toUpperCase().includes(aAbbr)||(aFull&&g.away.toUpperCase().includes(aFull.toUpperCase().split(' ').pop()));if(hM&&aM)return g;}return null;}
+function buildOddsHTML(aAbbr,hAbbr,aFull,hFull){const o=matchOdds(aAbbr,hAbbr,aFull,hFull);if(!o)return'';const aML=(o.awayML>0?'+':'')+o.awayML;const hML=(o.homeML>0?'+':'')+o.homeML;return'<div class="odds-row"><span><span class="odds-label">'+aAbbr+' ML</span> <span class="odds-val '+oddsClass(aML)+'">'+aML+'</span> <span class="odds-implied">('+impliedProb(aML)+'%)</span></span><span class="odds-src">'+o.book+'</span><span><span class="odds-implied">('+impliedProb(hML)+'%)</span> <span class="odds-val '+oddsClass(hML)+'">'+hML+'</span> <span class="odds-label">'+hAbbr+' ML</span></span></div>';}
+
 function getESPNUrl(){return 'https://site.api.espn'+'.com/apis/site/v2/sports/'+MODE_CONFIG[currentMode].sport+'/scoreboard';}
 
 // ==================== STAR DATABASE (23+ PPG) ====================
@@ -570,6 +583,7 @@ async function fetchESPNScoreboard() {
   const grid = document.getElementById('live-games-grid');
   const tpGrid = document.getElementById('threept-grid');
   setConnStatus('loading');
+    await fetchLiveOdds();
 
   try {
     const controller = new AbortController();
@@ -604,6 +618,8 @@ async function fetchESPNScoreboard() {
 
       const gid = event.id;
       const aA = away.team?.abbreviation || shortName(away.team?.displayName||'');
+      const aFull = away.team?.displayName||'';
+      const hFull = home.team?.displayName||'';
       const hA = home.team?.abbreviation || shortName(home.team?.displayName||'');
       const aS = parseInt(away.score)||0, hS = parseInt(home.score)||0;
       const isLive = event.status?.type?.state === 'in';
@@ -858,7 +874,7 @@ async function fetchESPNScoreboard() {
       cards += `<div class="game-card ${cc}"><div class="${hc}"><span>${isLive?'LIVE':'UPCOMING'} ${detail}</span><span>${new Date(event.date).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div>
         <div class="game-card-body">
           <div class="game-teams"><div class="team-block"><div class="team-name">${aA}</div><div class="team-record">${aRec}</div><div class="team-score">${isLive?aS:'-'}</div></div><div class="vs-block"><div class="vs-text">@</div>${isLive?`<div class="game-period">Q${per} ${clk}</div>`:''}</div><div class="team-block"><div class="team-name">${hA}</div><div class="team-record">${hRec}</div><div class="team-score">${isLive?hS:'-'}</div></div></div>
-          ${isLive?`<div class="stat-bars">${bar3(a3P,a3M,a3A,aA)}${bar3(h3P,h3M,h3A,hA)}${foulHTML}${aLeaders.length?`<div class="stat-bar-row"><span class="stat-bar-label">${aA} pts</span><span style="flex:1;font-weight:700;font-size:11px;">${aLeaders[0]?.name}: ${aLeaders[0]?.pts}</span></div>`:''}${hLeaders.length?`<div class="stat-bar-row"><span class="stat-bar-label">${hA} pts</span><span style="flex:1;font-weight:700;font-size:11px;">${hLeaders[0]?.name}: ${hLeaders[0]?.pts}</span></div>`:''}</div>${durabilityHTML}`:''}
+          ${isLive?`<div class="stat-bars">${bar3(a3P,a3M,a3A,aA)}${bar3(h3P,h3M,h3A,hA)}${buildOddsHTML(aA,hA,aFull,hFull)}${foulHTML}${aLeaders.length?`<div class="stat-bar-row"><span class="stat-bar-label">${aA} pts</span><span style="flex:1;font-weight:700;font-size:11px;">${aLeaders[0]?.name}: ${aLeaders[0]?.pts}</span></div>`:''}${hLeaders.length?`<div class="stat-bar-row"><span class="stat-bar-label">${hA} pts</span><span style="flex:1;font-weight:700;font-size:11px;">${hLeaders[0]?.name}: ${hLeaders[0]?.pts}</span></div>`:''}</div>${durabilityHTML}`:''}
           ${signals.length?`<div class="signal-panel ${signalLevel===2?'fire':signalLevel===1?'strong':''}"><div class="signal-title ${signalLevel===2?'fire':'warn'}">${signalLevel===2?'STRONG EDGE SIGNAL':'DEVELOPING SIGNAL'}</div>${signals.map(s=>`<div class="signal-detail">${s.level===2?'&#x1F525;':'&#x26A0;&#xFE0F;'} ${s.text}</div>`).join('')}${signalLevel===2?`<div style="margin-top:5px;"><button class="btn btn-orange btn-sm" onclick="openLogModal('${gLabel}','Live ML','Mean Reversion')">Log Bet</button></div>`:''}</div>`:''}
           ${isLive&&!signals.length?`<div style="text-align:center;padding:4px;font-size:10px;color:var(--gray);">No signals</div>`:''}
         </div></div>`;
