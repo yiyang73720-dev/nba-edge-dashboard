@@ -416,8 +416,8 @@
       </div>
       <div class="signal-chip signal-chip-clickable" onclick="toggleSignalDetail('star')">
         <div class="chip-value" id="live-star-signals">0</div>
-        <div class="chip-label">Star Cold</div>
-        <div class="chip-desc">Stars underperforming pace</div>
+        <div class="chip-label">Star Coil</div>
+        <div class="chip-desc">Star cold + game close + Q2-Q3</div>
         <div class="chip-detail-panel" id="chip-detail-star"></div>
       </div>
       <div class="signal-chip signal-chip-clickable" onclick="toggleSignalDetail('ft')">
@@ -599,7 +599,7 @@
     <div class="form-grid">
       <div class="form-group"><label>Game</label><input type="text" id="modal-game" /></div>
       <div class="form-group"><label>Side</label><input type="text" id="modal-side" /></div>
-      <div class="form-group"><label>Strategy</label><select id="modal-strategy"><option>Mean Reversion</option><option>3PT Fragile</option><option>Star Cold</option><option>FT Inflation</option><option>Combined Edge</option></select></div>
+      <div class="form-group"><label>Strategy</label><select id="modal-strategy"><option>Mean Reversion</option><option>3PT Fragile</option><option>Star Coil</option><option>FT Inflation</option><option>Combined Edge</option></select></div>
       <div class="form-group"><label>Line / Price</label><input type="text" id="modal-price" /></div>
       <div class="form-group"><label>Units</label><input type="number" id="modal-units" value="1" step="0.5" min="0.5" max="2" /></div>
       <div class="form-group"><label>Notes</label><input type="text" id="modal-notes" /></div>
@@ -773,7 +773,10 @@ function sendSignalNotification(title, body, gameId, signalType) {
   notifiedSignals.add(key);
   if (notifiedSignals.size > 200) notifiedSignals = new Set([...notifiedSignals].slice(-100));
   localStorage.setItem('notifiedSignals', JSON.stringify([...notifiedSignals]));
-  // No toast, no popup — just track that we saw this signal
+  // Play pleasant chime for new signals
+  if (signalType.startsWith('star_')) playAlertSound('coil');
+  else if (signalType.startsWith('3ptfragile')) playAlertSound('hot3pt');
+  else if (signalType.startsWith('ft_')) playAlertSound('ft');
 }
 
 // ==================== TABS ====================
@@ -803,7 +806,7 @@ function toggleSignalDetail(type) {
 
   // Build panel content from stored signal games
   const games = window._signalGames ? window._signalGames[type] : [];
-  const labels = { '3ptfragile': '3PT Fragile', 'star': 'Star Cold', 'ft': 'FT Inflation', 'combined': 'Combined Edge' };
+  const labels = { '3ptfragile': '3PT Fragile', 'star': 'Star Coil', 'ft': 'FT Inflation', 'combined': 'Combined Edge' };
 
   if (!games || games.length === 0) {
     panel.innerHTML = `<div class="chip-detail-header">${labels[type] || type} Games</div><div class="chip-detail-empty">No active ${labels[type] || ''} signals right now</div>`;
@@ -1092,12 +1095,21 @@ async function fetchESPNScoreboard() {
         const _aD = teamDisplay(aA, aFull), _hD = teamDisplay(hA, hFull);
 
         // Away team: both hot 3PT AND fragile lead
-        if (a3Check.isHot && aFragileData) {
-          signals.push({type:'3ptFragile', text:`${_aD} 3PT FRAGILE: shooting ${a3Check.pn.toFixed(0)}% from 3 (${a3Check.mn}/${a3Check.an}) AND lead is ${aFragileData.pct3.toFixed(0)}% 3PT-dependent. ${_hD} scores from paint (${aFragileData.oppPaintPct.toFixed(0)}%). Classic fade.`, level:2});
+        const awayLead = aS - hS;
+        if (a3Check.isHot && aFragileData && awayLead >= 3 && awayLead <= 15) {
+          signals.push({type:'3ptFragile', text:`${_aD} 3PT FRAGILE: shooting ${a3Check.pn.toFixed(0)}% from 3 (${a3Check.mn}/${a3Check.an}) AND lead is ${aFragileData.pct3.toFixed(0)}% 3PT-dependent. Lead: ${awayLead}pts. ${_hD} scores from paint (${aFragileData.oppPaintPct.toFixed(0)}%). Classic fade.`, level:2});
           sig3Fragile++;
-          sendSignalNotification('🔥 3PT Fragile: ' + _aD, aA + ' shooting ' + a3Check.pn.toFixed(0) + '% from 3 AND lead is fragile', gid, '3ptfragile_away');
+          sendSignalNotification('🔥 3PT Fragile: ' + _aD, aA + ' shooting ' + a3Check.pn.toFixed(0) + '% from 3 AND lead is fragile (' + awayLead + 'pts)', gid, '3ptfragile_away');
           if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
-          thesis.criteria['3ptfragile_away'] = {met:true, strong:true, label:`${_aD} 3PT Fragile Lead`, detail:`<strong>3PT Shooting:</strong> ${_aD} is shooting ${a3Check.pn.toFixed(0)}% from 3 on ${a3Check.an} attempts (${getLeagueName()} avg: ${getLeague3PtAvg()}%).<br><strong>Lead Composition:</strong> ${aFragileData.pct3.toFixed(0)}% of ${_aD}'s scoring comes from 3PT (threshold: ${getFragile3PtThreshold()}%).<br><strong>Opponent Durability:</strong> ${_hD} has ${aFragileData.oppPaintPct.toFixed(0)}% non-3PT scoring — paint-heavy and sustainable.<br><strong>Signal:</strong> Both conditions confirmed — the 3PT shooting is unsustainable AND the lead depends on it. When the shooting cools, the lead evaporates.`, value:`${a3Check.pn.toFixed(0)}% 3PT + ${aFragileData.pct3.toFixed(0)}% fragile`};
+          thesis.criteria['3ptfragile_away'] = {met:true, strong:true, label:`${_aD} 3PT Fragile Lead`, detail:`<strong>3PT Shooting:</strong> ${_aD} is shooting ${a3Check.pn.toFixed(0)}% from 3 on ${a3Check.an} attempts (${getLeagueName()} avg: ${getLeague3PtAvg()}%).<br><strong>Lead Composition:</strong> ${aFragileData.pct3.toFixed(0)}% of ${_aD}'s scoring comes from 3PT (threshold: ${getFragile3PtThreshold()}%).<br><strong>Score Margin:</strong> ${awayLead} pts — in the 3-15pt sweet spot where regression flips the game.<br><strong>Opponent Durability:</strong> ${_hD} has ${aFragileData.oppPaintPct.toFixed(0)}% non-3PT scoring — paint-heavy and sustainable.<br><strong>Signal:</strong> Hot 3PT + fragile lead + competitive margin. When shooting cools, lead evaporates.`, value:`${a3Check.pn.toFixed(0)}% 3PT + ${aFragileData.pct3.toFixed(0)}% fragile | Lead: ${awayLead}`};
+        } else if (a3Check.isHot && aFragileData && awayLead > 15) {
+          // Hot + fragile but blowout — too large a margin for reliable fade
+          signals.push({type:'3ptFragile', text:`${_aD} 3PT fragile but lead too large (${awayLead}pts) — blowout territory.`, level:1});
+          thesis.criteria['3ptfragile_away'] = {met:true, strong:false, label:`${_aD} 3PT Fragile (Blowout)`, detail:`${_aD} has a fragile 3PT lead (${aFragileData.pct3.toFixed(0)}% from 3PT) but the ${awayLead}pt margin is too large. Signal needs 3-15pt lead to fire. Even if 3PT% regresses, blowout margin provides too much cushion.`, value:`${awayLead}pt lead — too wide`, warn:true};
+        } else if (a3Check.isHot && aFragileData && awayLead < 3) {
+          // Hot + fragile but lead too small — not enough edge
+          signals.push({type:'3ptFragile', text:`${_aD} shooting hot (${a3Check.pn.toFixed(0)}%) + fragile lead but only ${awayLead}pt lead — needs 3+ pts.`, level:1});
+          thesis.criteria['3ptfragile_away'] = {met:true, strong:false, label:`${_aD} 3PT Fragile (Tight)`, detail:`${_aD} has both conditions but only a ${awayLead}pt lead. Signal needs 3-15pt margin to ensure meaningful edge from 3PT regression.`, value:`${awayLead}pt lead — too tight`, warn:true};
         } else if (a3Check.isHot && !aFragileData) {
           // Hot shooting but lead not fragile enough — informational only
           signals.push({type:'3ptFragile', text:`${_aD} shooting hot: ${a3Check.pn.toFixed(0)}% from 3 (${a3Check.mn}/${a3Check.an}) — but lead not fragile enough for full signal.`, level:1});
@@ -1113,12 +1125,19 @@ async function fetchESPNScoreboard() {
         }
 
         // Home team: both hot 3PT AND fragile lead
-        if (h3Check.isHot && hFragileData) {
-          signals.push({type:'3ptFragile', text:`${_hD} 3PT FRAGILE: shooting ${h3Check.pn.toFixed(0)}% from 3 (${h3Check.mn}/${h3Check.an}) AND lead is ${hFragileData.pct3.toFixed(0)}% 3PT-dependent. ${_aD} scores from paint (${hFragileData.oppPaintPct.toFixed(0)}%). Classic fade.`, level:2});
+        const homeLead = hS - aS;
+        if (h3Check.isHot && hFragileData && homeLead >= 3 && homeLead <= 15) {
+          signals.push({type:'3ptFragile', text:`${_hD} 3PT FRAGILE: shooting ${h3Check.pn.toFixed(0)}% from 3 (${h3Check.mn}/${h3Check.an}) AND lead is ${hFragileData.pct3.toFixed(0)}% 3PT-dependent. Lead: ${homeLead}pts. ${_aD} scores from paint (${hFragileData.oppPaintPct.toFixed(0)}%). Classic fade.`, level:2});
           sig3Fragile++;
-          sendSignalNotification('🔥 3PT Fragile: ' + _hD, hA + ' shooting ' + h3Check.pn.toFixed(0) + '% from 3 AND lead is fragile', gid, '3ptfragile_home');
+          sendSignalNotification('🔥 3PT Fragile: ' + _hD, hA + ' shooting ' + h3Check.pn.toFixed(0) + '% from 3 AND lead is fragile (' + homeLead + 'pts)', gid, '3ptfragile_home');
           if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
-          thesis.criteria['3ptfragile_home'] = {met:true, strong:true, label:`${_hD} 3PT Fragile Lead`, detail:`<strong>3PT Shooting:</strong> ${_hD} is shooting ${h3Check.pn.toFixed(0)}% from 3 on ${h3Check.an} attempts (${getLeagueName()} avg: ${getLeague3PtAvg()}%).<br><strong>Lead Composition:</strong> ${hFragileData.pct3.toFixed(0)}% of ${_hD}'s scoring comes from 3PT (threshold: ${getFragile3PtThreshold()}%).<br><strong>Opponent Durability:</strong> ${_aD} has ${hFragileData.oppPaintPct.toFixed(0)}% non-3PT scoring — paint-heavy and sustainable.<br><strong>Signal:</strong> Both conditions confirmed — the 3PT shooting is unsustainable AND the lead depends on it. When the shooting cools, the lead evaporates.`, value:`${h3Check.pn.toFixed(0)}% 3PT + ${hFragileData.pct3.toFixed(0)}% fragile`};
+          thesis.criteria['3ptfragile_home'] = {met:true, strong:true, label:`${_hD} 3PT Fragile Lead`, detail:`<strong>3PT Shooting:</strong> ${_hD} is shooting ${h3Check.pn.toFixed(0)}% from 3 on ${h3Check.an} attempts (${getLeagueName()} avg: ${getLeague3PtAvg()}%).<br><strong>Lead Composition:</strong> ${hFragileData.pct3.toFixed(0)}% of ${_hD}'s scoring comes from 3PT (threshold: ${getFragile3PtThreshold()}%).<br><strong>Score Margin:</strong> ${homeLead} pts — in the 3-15pt sweet spot where regression flips the game.<br><strong>Opponent Durability:</strong> ${_aD} has ${hFragileData.oppPaintPct.toFixed(0)}% non-3PT scoring — paint-heavy and sustainable.<br><strong>Signal:</strong> Hot 3PT + fragile lead + competitive margin. When shooting cools, lead evaporates.`, value:`${h3Check.pn.toFixed(0)}% 3PT + ${hFragileData.pct3.toFixed(0)}% fragile | Lead: ${homeLead}`};
+        } else if (h3Check.isHot && hFragileData && homeLead > 15) {
+          signals.push({type:'3ptFragile', text:`${_hD} 3PT fragile but lead too large (${homeLead}pts) — blowout territory.`, level:1});
+          thesis.criteria['3ptfragile_home'] = {met:true, strong:false, label:`${_hD} 3PT Fragile (Blowout)`, detail:`${_hD} has a fragile 3PT lead (${hFragileData.pct3.toFixed(0)}% from 3PT) but the ${homeLead}pt margin is too large. Signal needs 3-15pt lead to fire. Even if 3PT% regresses, blowout margin provides too much cushion.`, value:`${homeLead}pt lead — too wide`, warn:true};
+        } else if (h3Check.isHot && hFragileData && homeLead < 3) {
+          signals.push({type:'3ptFragile', text:`${_hD} shooting hot (${h3Check.pn.toFixed(0)}%) + fragile lead but only ${homeLead}pt lead — needs 3+ pts.`, level:1});
+          thesis.criteria['3ptfragile_home'] = {met:true, strong:false, label:`${_hD} 3PT Fragile (Tight)`, detail:`${_hD} has both conditions but only a ${homeLead}pt lead. Signal needs 3-15pt margin to ensure meaningful edge from 3PT regression.`, value:`${homeLead}pt lead — too tight`, warn:true};
         } else if (h3Check.isHot && !hFragileData) {
           signals.push({type:'3ptFragile', text:`${_hD} shooting hot: ${h3Check.pn.toFixed(0)}% from 3 (${h3Check.mn}/${h3Check.an}) — but lead not fragile enough for full signal.`, level:1});
           thesis.criteria['3ptfragile_home'] = {met:true, strong:false, label:`${_hD} 3PT Hot (no fragile lead)`, detail:`${_hD} is shooting ${h3Check.pn.toFixed(0)}% from 3 on ${h3Check.an} attempts — elevated, but the lead composition isn't fragile enough. Monitoring only.`, value:`${h3Check.pn.toFixed(0)}% 3PT`, warn:true};
@@ -1131,10 +1150,11 @@ async function fetchESPNScoreboard() {
           thesis.criteria['3ptfragile_home'] = {met:false, label:`${_hD} 3PT Fragile`, detail:`No 3PT fragile signal. Normal shooting and/or no fragile lead composition.`, value:'N/A'};
         }
 
-        // STAR PACE CHECK (60% threshold)
+        // STAR COIL CHECK — Star cold (<60% pace) + competitive game (within 15 pts) + Q2-Q3 only
         const cM = parseFloat(clk?.split(':')[0]||12), cS = parseFloat(clk?.split(':')[1]||0);
         const gMins = getElapsedMinutes(per, clk), gPct = getGamePct(per, clk);
-        let starColdTeams = {};
+        const scoreMargin = Math.abs(aS - hS);
+        let starCoilTeams = {};
         [...aLeaders,...hLeaders].forEach(leader => {
           const star = state.stars.find(s => leader.name.toLowerCase().includes(s.name.split(' ').pop().toLowerCase()) && s.team===leader.team);
           if (star) {
@@ -1142,16 +1162,23 @@ async function fetchESPNScoreboard() {
             const pr = exp>0 ? leader.pts/exp : 1;
             const side = leader.team===aA?'away':'home';
             const oppSide = side==='away'?'home':'away';
-            if (pr<0.6 && gPct>=0.2 && per<=3) {
-              let ctx = per===1?` Q1 exp: ${getQ1Expected(star.ppg).toFixed(0)}`:per===2?` Half exp: ${getHalfExpected(star.ppg).toFixed(0)}`:'';
-              signals.push({type:'star',text:`${leader.name} ${leader.pts}pts (exp ~${exp.toFixed(0)}, threshold ${(exp*0.6).toFixed(0)}).${ctx} MR candidate.`,level:2});
+            // Star Coil: <60% pace + Q2-Q3 + game within 15 pts (competitive)
+            if (pr<0.6 && per>=2 && per<=3 && scoreMargin<=15) {
+              let ctx = per===2?` Half exp: ${getHalfExpected(star.ppg).toFixed(0)}`:'';
+              signals.push({type:'star',text:`🌀 ${leader.name} ${leader.pts}pts (exp ~${exp.toFixed(0)}, ${(pr*100).toFixed(0)}% pace). Game within ${scoreMargin}pts — coiled for breakout.${ctx}`,level:2});
               sigStar++;
-                fireStarColdAlert(leader, star, gMins, per, clk, gLabel, pr);
-              sendSignalNotification('⭐ Star Cold: ' + leader.name, leader.name + ' only ' + leader.pts + 'pts (exp ~' + exp.toFixed(0) + '). Mean reversion candidate.', gid, 'star_' + leader.team);
+              fireStarCoilAlert(leader, star, gMins, per, clk, gLabel, pr, scoreMargin);
+              sendSignalNotification('🌀 Star Coil: ' + leader.name, leader.name + ' only ' + leader.pts + 'pts (exp ~' + exp.toFixed(0) + '). Game within ' + scoreMargin + 'pts — compressed spring.', gid, 'star_' + leader.team);
               if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
-              starColdTeams[leader.team] = leader.name;
+              starCoilTeams[leader.team] = leader.name;
               const starTeamFull = leader.team===aA ? aFull : hFull;
-              thesis.criteria[`star_${oppSide}`] = {met:true, strong:true, label:`Star Cold: ${leader.name} (${teamDisplay(leader.team, starTeamFull)})`, detail:`<strong>Player:</strong> ${leader.name} — averages ${star.ppg} PPG.<br><strong>Current:</strong> ${leader.pts} pts at Q${per} ${clk} (expected ~${exp.toFixed(0)}).<br><strong>Pace:</strong> ${(pr*100).toFixed(0)}% of expected — below the 60% threshold.<br><strong>Why it matters:</strong> Star players this far below expected pace tend to regress upward. The live ML hasn't priced in their scoring recovery yet.`, value:`${leader.pts}/${exp.toFixed(0)} pts (${(pr*100).toFixed(0)}%)`};
+              thesis.criteria[`star_${oppSide}`] = {met:true, strong:true, label:`Star Coil: ${leader.name} (${teamDisplay(leader.team, starTeamFull)})`, detail:`<strong>Player:</strong> ${leader.name} — averages ${star.ppg} PPG.<br><strong>Current:</strong> ${leader.pts} pts at Q${per} ${clk} (expected ~${exp.toFixed(0)}).<br><strong>Pace:</strong> ${(pr*100).toFixed(0)}% of expected — below the 60% threshold.<br><strong>Game Context:</strong> Score margin is ${scoreMargin} pts — game is competitive.<br><strong>Timing:</strong> Q${per} — prime window for star breakout.<br><strong>Why it matters:</strong> Star is cold but the game is close. When the star heats up (and they will), the ML swings hard. The market hasn't priced in the breakout.`, value:`${leader.pts}/${exp.toFixed(0)} pts (${(pr*100).toFixed(0)}%) | Margin: ${scoreMargin}`};
+            } else if (pr<0.6 && per<=3) {
+              // Star is cold but game not competitive or wrong quarter — monitoring only
+              const starTeamFull2 = leader.team===aA ? aFull : hFull;
+              const reason = per<2 ? 'too early (Q1)' : scoreMargin>15 ? `blowout (${scoreMargin}pt margin)` : '';
+              signals.push({type:'star',text:`${leader.name} (${teamDisplay(leader.team, starTeamFull2)}) cold at ${(pr*100).toFixed(0)}% pace — but ${reason}. No coil.`,level:1});
+              thesis.criteria[`star_${oppSide}`] = {met:true, strong:false, label:`Star Cold (No Coil): ${leader.name}`, detail:`${leader.name} (${star.ppg} PPG) is at ${(pr*100).toFixed(0)}% pace but signal doesn't fire: ${reason || 'conditions not met'}. Star Coil needs Q2-Q3 + game within 15 pts.`, value:`${(pr*100).toFixed(0)}% pace`, warn:true};
             } else if (pr<0.75 && gPct>=0.2) {
               const starTeamFull2 = leader.team===aA ? aFull : hFull;
               signals.push({type:'star',text:`${leader.name} (${teamDisplay(leader.team, starTeamFull2)}) ${leader.pts}pts, behind ${star.ppg} PPG pace (exp ~${exp.toFixed(0)})`,level:1});
@@ -1180,7 +1207,7 @@ async function fetchESPNScoreboard() {
         }
 
         // COMBINED - 2+ of the 3 independent signals on same game = combined edge
-        // The 3 independent signals: 3PT Fragile, Star Cold, FT Inflation
+        // The 3 independent signals: 3PT Fragile, Star Coil, FT Inflation
         const has3ptFragile=signals.some(s=>s.type==='3ptFragile'&&s.level===2);
         const hasStar=signals.some(s=>s.type==='star'&&s.level===2);
         const hasFT=signals.some(s=>s.type==='ft'&&s.level>=2);
@@ -1193,7 +1220,7 @@ async function fetchESPNScoreboard() {
         if (has3ptFragile) signalGames['3ptfragile'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='3ptFragile'&&s.level===2).map(s=>s.text).join('; ') });
         if (hasStar) signalGames['star'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='star'&&s.level===2).map(s=>s.text).join('; ') });
         if (hasFT) signalGames['ft'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='ft'&&s.level>=2).map(s=>s.text).join('; ') });
-        if (activeSignals >= 2) signalGames['combined'].push({ ..._gameInfo, sigDetail: `${activeSignals} signals active: ${[has3ptFragile?'3PT Fragile':'',hasStar?'Star Cold':'',hasFT?'FT':''].filter(Boolean).join(' + ')}` });
+        if (activeSignals >= 2) signalGames['combined'].push({ ..._gameInfo, sigDetail: `${activeSignals} signals active: ${[has3ptFragile?'3PT Fragile':'',hasStar?'Star Coil':'',hasFT?'FT':''].filter(Boolean).join(' + ')}` });
 
         // Determine bet side and build thesis logic
         if (signalLevel >= 2) {
@@ -1208,9 +1235,9 @@ async function fetchESPNScoreboard() {
           if (h3F?.met && h3F?.strong) homeFade++;  // home has 3PT fragile lead = fade home
           if (aFTData?.met && aFTData?.strong) awayFade++;  // away lead FT-inflated
           if (hFTData?.met && hFTData?.strong) homeFade++;  // home lead FT-inflated
-          // Star cold on a team = bet ON that team (star will regress up)
-          if (starColdTeams[aA]) homeFade++;  // away star cold = away bounces back = fade home
-          if (starColdTeams[hA]) awayFade++;  // home star cold = home bounces back = fade away
+          // Star coil on a team = bet ON that team (star will regress up)
+          if (starCoilTeams[aA]) homeFade++;  // away star coil = away bounces back = fade home
+          if (starCoilTeams[hA]) awayFade++;  // home star coil = home bounces back = fade away
 
           if (awayFade > homeFade) { betTeam = hA; fadeTeam = aA; }
           else if (homeFade > awayFade) { betTeam = aA; fadeTeam = hA; }
@@ -1221,8 +1248,8 @@ async function fetchESPNScoreboard() {
           // NOTE: _aD and _hD already declared above in 3PT Fragile section
           if (a3F?.met && a3F?.strong) reasons.push(`${_aD} has a 3PT Fragile Lead — shooting hot from 3 AND lead depends on it (${a3F.value}). Both will regress.`);
           if (h3F?.met && h3F?.strong) reasons.push(`${_hD} has a 3PT Fragile Lead — shooting hot from 3 AND lead depends on it (${h3F.value}). Both will regress.`);
-          if (starColdTeams[aA]) reasons.push(`${starColdTeams[aA]} (${_aD}) is ice cold — star at <60% expected pace, regression likely`);
-          if (starColdTeams[hA]) reasons.push(`${starColdTeams[hA]} (${_hD}) is ice cold — star at <60% expected pace, regression likely`);
+          if (starCoilTeams[aA]) reasons.push(`${starCoilTeams[aA]} (${_aD}) is coiled — star at <60% pace in a close game, breakout incoming`);
+          if (starCoilTeams[hA]) reasons.push(`${starCoilTeams[hA]} (${_hD}) is coiled — star at <60% pace in a close game, breakout incoming`);
           if (aFTData?.met && aFTData?.strong) reasons.push(`${_aD}'s lead is FT-inflated (${aFTData.value}) — this FT volume will regress`);
           if (hFTData?.met && hFTData?.strong) reasons.push(`${_hD}'s lead is FT-inflated (${hFTData.value}) — this FT volume will regress`);
 
@@ -1969,49 +1996,51 @@ function initAudio() {
   return audioCtx;
 }
 
-function playAlertSound(type) {
-  return; // No sounds — alerts disabled
-  if (!soundEnabled) return;
-  const ctx = initAudio();
+function playNote(ctx, freq, startTime, duration, vol, waveType) {
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
+  osc.type = waveType || 'sine';
+  osc.frequency.setValueAtTime(freq, startTime);
+  gain.gain.setValueAtTime(0, startTime);
+  gain.gain.linearRampToValueAtTime(vol, startTime + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
   osc.connect(gain);
   gain.connect(ctx.destination);
-  
-  if (type === 'cold') {
-    // Descending alert: urgent but not annoying
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(880, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.15);
-    osc.frequency.setValueAtTime(880, ctx.currentTime + 0.2);
-    osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.35);
-    gain.gain.setValueAtTime(0.3, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.5);
+  osc.start(startTime);
+  osc.stop(startTime + duration);
+}
+
+function playAlertSound(type) {
+  if (!soundEnabled) return;
+  const ctx = initAudio();
+  const t = ctx.currentTime;
+
+  if (type === 'coil' || type === 'cold') {
+    // Star Coil — gentle ascending chime (C5 → E5 → G5 major chord arpeggio)
+    playNote(ctx, 523.25, t, 0.35, 0.15, 'sine');        // C5
+    playNote(ctx, 659.25, t + 0.12, 0.35, 0.12, 'sine'); // E5
+    playNote(ctx, 783.99, t + 0.24, 0.5, 0.1, 'sine');   // G5
+    // Soft harmonic shimmer on top
+    playNote(ctx, 1046.5, t + 0.3, 0.4, 0.04, 'sine');   // C6 (octave shimmer)
   } else if (type === 'hot3pt') {
-    // Triple beep for 3PT
-    osc.type = 'square';
-    gain.gain.setValueAtTime(0, ctx.currentTime);
-    for (let i = 0; i < 3; i++) {
-      const t = ctx.currentTime + i * 0.15;
-      osc.frequency.setValueAtTime(660, t);
-      gain.gain.setValueAtTime(0.2, t);
-      gain.gain.setValueAtTime(0, t + 0.08);
-    }
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.5);
+    // 3PT Fragile — two-tone notification (D5 → A5, clean and crisp)
+    playNote(ctx, 587.33, t, 0.25, 0.12, 'sine');         // D5
+    playNote(ctx, 880.00, t + 0.15, 0.4, 0.10, 'sine');   // A5
+    playNote(ctx, 1174.66, t + 0.25, 0.3, 0.04, 'sine');  // D6 shimmer
   } else if (type === 'combined') {
-    // Epic alert for combined signals
-    osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(440, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.2);
-    osc.frequency.setValueAtTime(440, ctx.currentTime + 0.25);
-    osc.frequency.exponentialRampToValueAtTime(1100, ctx.currentTime + 0.45);
-    gain.gain.setValueAtTime(0.2, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.6);
+    // Combined Edge — triumphant major chord (C → E → G → C, all at once then arpeggiated)
+    playNote(ctx, 523.25, t, 0.6, 0.08, 'sine');          // C5
+    playNote(ctx, 659.25, t + 0.08, 0.55, 0.08, 'sine');  // E5
+    playNote(ctx, 783.99, t + 0.16, 0.5, 0.08, 'sine');   // G5
+    playNote(ctx, 1046.5, t + 0.24, 0.6, 0.10, 'sine');   // C6
+    // Sustain chord
+    playNote(ctx, 523.25, t + 0.35, 0.5, 0.05, 'triangle'); // C5 pad
+    playNote(ctx, 659.25, t + 0.35, 0.5, 0.05, 'triangle'); // E5 pad
+    playNote(ctx, 783.99, t + 0.35, 0.5, 0.05, 'triangle'); // G5 pad
+  } else if (type === 'ft') {
+    // FT Inflation — soft double chime (F5 → A5)
+    playNote(ctx, 698.46, t, 0.3, 0.10, 'sine');          // F5
+    playNote(ctx, 880.00, t + 0.18, 0.35, 0.08, 'sine');  // A5
   }
 }
 
@@ -2021,7 +2050,7 @@ function toggleSound() {
   const btn = document.getElementById('soundToggle');
   btn.classList.toggle('active', soundEnabled);
   btn.innerHTML = soundEnabled ? '&#x1F50A; Sound' : '&#x1F507; Muted';
-  if (soundEnabled) playAlertSound('cold'); // test beep
+  if (soundEnabled) playAlertSound('coil'); // test chime
 }
 // Favorites / Watchlist
 function toggleFavorite(gameId) {
@@ -2121,13 +2150,13 @@ function dismissAlert(id) {
 const _origShowQuarterToast = showQuarterToast;
 const _firedAlerts = new Set(); // prevent duplicate alerts per game refresh
 
-function fireStarColdAlert(leader, star, gMins, per, clk, gLabel, paceRatio) {
+function fireStarCoilAlert(leader, star, gMins, per, clk, gLabel, paceRatio, margin) {
   const alertKey = star.name + '_' + per + '_' + Math.floor(gMins);
   if (_firedAlerts.has(alertKey)) return;
   _firedAlerts.add(alertKey);
   // Clear old keys every 5 minutes
   setTimeout(() => _firedAlerts.delete(alertKey), 300000);
-  
+
   const exp = getExpectedByTime(star.ppg, gMins);
   showScenarioAlert({
     player: leader.name,
@@ -2139,8 +2168,8 @@ function fireStarColdAlert(leader, star, gMins, per, clk, gLabel, paceRatio) {
     expectedPts: exp,
     ppg: star.ppg,
     pacePercent: paceRatio * 100,
-    type: 'cold',
-    signals: ['Star at ' + (paceRatio * 100).toFixed(0) + '% pace', 'Below 60% threshold']
+    type: 'coil',
+    signals: ['Star at ' + (paceRatio * 100).toFixed(0) + '% pace', 'Below 60% threshold', 'Game within ' + margin + ' pts', 'Q' + per + ' — prime window']
   });
 }
 
@@ -2534,9 +2563,9 @@ try {
 <td style="padding:10px 6px;font-weight:700;color:var(--green);">Bet the <strong>other team's moneyline</strong> (the one behind). Their opponent's lead is fake.</td>
 </tr>
 <tr style="border-bottom:1px solid var(--border-light);">
-<td style="padding:10px 6px;"><span class="signal-badge badge-star" style="font-size:10px;">STAR COLD</span></td>
-<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">A star player (25+ PPG) is having a cold game — way below their normal pace. Stars <strong>almost always bounce back</strong>.</td>
-<td style="padding:10px 6px;font-weight:700;color:var(--green);">Bet the <strong>star's team moneyline</strong>. They're undervalued because their best player is cold right now.</td>
+<td style="padding:10px 6px;"><span class="signal-badge badge-star" style="font-size:10px;">STAR COIL</span></td>
+<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">A star player (25+ PPG) is cold (<60% pace) AND the game is close (within 15pts) in Q2-Q3. <strong>Compressed spring</strong> — breakout incoming.</td>
+<td style="padding:10px 6px;font-weight:700;color:var(--green);">Bet the <strong>star's team moneyline</strong>. Star is cold, game is close, timing is right — the market hasn't priced in the breakout.</td>
 </tr>
 <tr style="border-bottom:1px solid var(--border-light);">
 <td style="padding:10px 6px;"><span class="signal-badge badge-ft" style="font-size:10px;">FT</span></td>
@@ -2555,15 +2584,15 @@ try {
 <div id="nba-guide">
 <p class="guide-intro" style="margin-bottom:12px;"><strong>Core thesis:</strong> The current score was built on something unsustainable, so the live odds are mispriced. We bet on regression.</p>
 <div class="guide-grid">
-<div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT FRAGILE</span> 3PT Fragile Lead</h3><p class="edge-label">Team is winning because of hot 3PT shooting — and the lead depends on it</p><p>Fires when BOTH are true: (1) a team is shooting 50%+ from 3 on 12+ attempts, AND (2) their lead is built on that 3PT shooting while the opponent scores from paint. When the shooting cools off (and it will), the lead shrinks fast.</p><div class="threshold">Trigger: 50%+ on 12+ att AND lead 42%+ from 3PT AND opponent 58%+ non-3PT.</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-star">STAR</span> Star Cold</h3><p class="edge-label">A star player is way below their normal scoring pace — they'll bounce back</p><p>When a 25+ PPG star has scored way less than expected through Q2-Q3, history says they heat up. The market undervalues their team while the star is cold. That's the buy window.</p><div class="threshold">Trigger: Star at &lt;60% of expected scoring pace, at least 20% of game elapsed.</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT FRAGILE</span> 3PT Fragile Lead</h3><p class="edge-label">Team is winning because of hot 3PT shooting — and the lead depends on it</p><p>Fires when ALL are true: (1) a team is shooting 50%+ from 3 on 12+ attempts, (2) their lead is built on that 3PT shooting while the opponent scores from paint, AND (3) the lead is 3-15 points. Not too tight (no edge), not a blowout (cushion absorbs regression). The sweet spot where 3PT cooling flips the game.</p><div class="threshold">Trigger: 50%+ on 12+ att AND lead 42%+ from 3PT AND opponent 58%+ non-3PT AND lead 3-15 pts.</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-star">STAR</span> Star Coil</h3><p class="edge-label">Star is cold + game is close + Q2-Q3 timing = compressed spring ready to explode</p><p>When a 25+ PPG star is at &lt;60% of expected pace AND the game is within 15 points during Q2-Q3, this is the highest-edge version of the star cold signal. The star will regress upward, and because the game is competitive, that regression actually changes the outcome. The market hasn't priced in the breakout.</p><div class="threshold">Trigger: Star at &lt;60% pace + score margin ≤15 pts + Q2 or Q3.</div></div>
 <div class="guide-card"><h3><span class="signal-badge badge-ft">FT</span> FT Inflation</h3><p class="edge-label">Leading team got way more free throws than the other team — refs will even out</p><p>If Team A has 10+ more free throw attempts than Team B, part of that lead is from unsustainable ref treatment. Refs tend to balance calls — the FT advantage will shrink.</p><div class="threshold">Trigger: Leading team has 10+ more FTA than trailing team.</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">2+ signals firing on the same game = strongest edge, most confidence</p><p>When multiple signals agree on the same game, the live odds are wrong from multiple angles. Each signal catches something different — so when 2+ fire together, the mispricing is larger.</p><div class="threshold">Trigger: 2+ of {3PT Fragile, Star Cold, FT Inflation} on same game.</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">2+ signals firing on the same game = strongest edge, most confidence</p><p>When multiple signals agree on the same game, the live odds are wrong from multiple angles. Each signal catches something different — so when 2+ fire together, the mispricing is larger.</p><div class="threshold">Trigger: 2+ of {3PT Fragile, Star Coil, FT Inflation} on same game.</div></div>
 
 </div></div>
 <div id="theory-panel" class="theory-panel">
   <h4>How This Dashboard Works</h4>
-  <p>Every signal in this dashboard shares one thesis: <strong>the current score was built on something unsustainable, so the live moneyline is mispriced.</strong> Live odds react to the scoreboard, but they fail to distinguish between sustainable scoring (paint, mid-range) and unsustainable scoring (hot 3PT streaks, FT inflation). The 3-signal system (3PT Fragile, Star Cold, FT Inflation) plus Combined Edge identifies when these unsustainable conditions exist — that is the edge.</p>
+  <p>Every signal in this dashboard shares one thesis: <strong>the current score was built on something unsustainable, so the live moneyline is mispriced.</strong> Live odds react to the scoreboard, but they fail to distinguish between sustainable scoring (paint, mid-range) and unsustainable scoring (hot 3PT streaks, FT inflation). The 3-signal system (3PT Fragile, Star Coil, FT Inflation) plus Combined Edge identifies when these unsustainable conditions exist — that is the edge.</p>
   <hr class="signal-divider">
   <h4>1. 3PT Fragile Lead (Merged Signal)</h4>
   <p><strong>What it detects:</strong> This is the most selective signal — it requires BOTH of two conditions to be true simultaneously:</p>
@@ -2571,15 +2600,15 @@ try {
   <p><strong>Condition 2 — Fragile Lead Composition:</strong> The same team's lead is 42%+ dependent on 3PT scoring AND the trailing team scores from the paint (58%+ non-3PT). The lead is not just hot — it's structurally dependent on that hot shooting.</p>
   <p><strong>Why both conditions matter:</strong> Hot 3PT shooting alone doesn't mean the lead is fragile — the team might also be scoring from the paint. And a fragile lead composition alone doesn't mean the shooting will regress — the percentage might be within normal range. Only when BOTH are true is the edge genuine: the shooting WILL cool off AND the lead DEPENDS on it.</p>
   <div class="edge-box">
-    <p><strong>Trigger:</strong> 3PT% &ge;50% on &ge;12 attempts (or 55%+ on 8+) AND lead composition &ge;42% from 3PT AND opponent &ge;58% non-3PT AND &ge;20 total points. All conditions must be met for Level 2 (strong) signal.</p>
+    <p><strong>Trigger:</strong> 3PT% &ge;50% on &ge;12 attempts (or 55%+ on 8+) AND lead composition &ge;42% from 3PT AND opponent &ge;58% non-3PT AND &ge;20 total points AND lead between 3-15 pts. All conditions must be met for Level 2 (strong) signal. The 3-15pt margin filter ensures the lead is real but erasable — not a blowout, not a dead heat.</p>
   </div>
   <p><strong>When only one condition is met:</strong> If only the 3PT shooting is hot (no fragile lead) or only the lead is fragile (shooting not extreme), the system shows a Level 1 warning but does NOT fire the full signal. This eliminates false positives from the old system where 3PT and Fragile were counted as separate signals despite measuring the same underlying phenomenon.</p>
   <hr class="signal-divider">
-  <h4>2. Star Player Cold / Below Pace</h4>
-  <p><strong>What it detects:</strong> A franchise-caliber player performing well below their expected scoring pace early in the game (Q1-Q3 for NBA). The system tracks each team's leading scorer and compares their actual output to their per-minute expected production.</p>
-  <p><strong>Why it is an edge:</strong> Star players regress <em>upward</em>. A player averaging 28 PPG who has 6 points through two quarters is not suddenly a bad player — they are having an off stretch that will likely correct. If their team is losing partly because their star is cold, the market is undervaluing that team's true offensive potential.</p>
+  <h4>2. Star Coil (Upgraded Star Cold)</h4>
+  <p><strong>What it detects:</strong> A franchise-caliber player performing well below their expected scoring pace (<60%) during Q2-Q3 AND the game is competitive (within 15 points). This is the "compressed spring" — the star is coiled and will break out, and because the game is close, that breakout changes the outcome.</p>
+  <p><strong>Why it is an edge:</strong> Star players regress <em>upward</em>. But the old Star Cold signal fired even in blowouts or Q1 (too early). Star Coil adds two critical filters: (1) game must be competitive so the star's breakout actually impacts the result, and (2) timing must be Q2-Q3 — the sweet spot where regression has time to play out.</p>
   <div class="edge-box green">
-    <p><strong>Trigger:</strong> Star's actual production &lt;60% of expected pace AND Q3 or earlier. The system calculates expected output using per-minute projections from season averages. Example: A 30 PPG scorer expected to have 20 pts by halftime who only has 8 — that gap will likely close.</p>
+    <p><strong>Trigger:</strong> Star's actual production &lt;60% of expected pace AND Q2 or Q3 AND score margin ≤15 pts. Example: A 30 PPG scorer has 8 pts at halftime, team is down 7 — the market undervalues this team's chances because their best player hasn't shown up yet. But he will.</p>
   </div>
   <hr class="signal-divider">
   <h4>3. FT Inflation</h4>
@@ -2590,17 +2619,17 @@ try {
   </div>
   <hr class="signal-divider">
   <h4>4. Combined Edge</h4>
-  <p><strong>What it detects:</strong> When 2+ of the 3 independent signals (3PT Fragile, Star Cold, FT Inflation) fire on the same game. Each signal measures a genuinely different dimension of unsustainability — no overlap or double-counting.</p>
+  <p><strong>What it detects:</strong> When 2+ of the 3 independent signals (3PT Fragile, Star Coil, FT Inflation) fire on the same game. Each signal measures a genuinely different dimension of unsustainability — no overlap or double-counting.</p>
   <div class="edge-box purple">
     <p><strong>How stacking works:</strong> The system checks for Level 2 signals across all 3 types. Any 2+ active signals elevates the thesis to signalLevel = 2 (strong combined).</p>
     <p style="margin-top:6px"><strong>Strongest combos:</strong></p>
-    <p style="margin-top:4px"><strong>3PT Fragile + Star Cold:</strong> Opponent's lead is built on hot 3PT shooting AND their star is cold. When the star heats up and 3PT% drops, momentum shifts hard.</p>
+    <p style="margin-top:4px"><strong>3PT Fragile + Star Coil:</strong> Opponent's lead is built on hot 3PT shooting AND their star is cold in a close game. When the star heats up and 3PT% drops, momentum shifts hard.</p>
     <p style="margin-top:4px"><strong>3PT Fragile + FT Inflation:</strong> Lead is both 3PT-dependent AND FT-inflated. Two genuinely independent unsustainable foundations.</p>
-    <p style="margin-top:4px"><strong>Star Cold + FT Inflation:</strong> Star underperforming AND opponent lead inflated by FTs. Both forces favor the trailing team.</p>
+    <p style="margin-top:4px"><strong>Star Coil + FT Inflation:</strong> Star underperforming in a close game AND opponent lead inflated by FTs. Both forces favor the trailing team.</p>
   </div>
   <hr class="signal-divider">
   <h4>Bet Side Logic (ML Signals)</h4>
-  <p>The system scores each side's "unsustainability count." Away has 3PT Fragile lead = awayFade++. Away lead FT-inflated = awayFade++. Star cold on a team = bet ON that team (star regresses upward = fade the other side). The side with more fade reasons gets faded; the system recommends the opposite side — the team whose advantages are real, sustainable, and undervalued.</p>
+  <p>The system scores each side's "unsustainability count." Away has 3PT Fragile lead = awayFade++. Away lead FT-inflated = awayFade++. Star Coil on a team = bet ON that team (star regresses upward = fade the other side). The side with more fade reasons gets faded; the system recommends the opposite side — the team whose advantages are real, sustainable, and undervalued.</p>
   <hr class="signal-divider">
   <h4>Data Sources &amp; Limitations</h4>
   <p>All data comes from ESPN's live scoreboard API (scores, period/clock, team stats, leader boards) and ESPN's summary endpoint (FTA, box score details). Refreshes on configurable interval (default 30s).</p>
@@ -2611,5 +2640,3 @@ try {
 </body>
 </html>
 
-
-    
