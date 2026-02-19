@@ -128,7 +128,7 @@
     .card:hover { box-shadow: var(--shadow-md); }
     .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: 700; font-size: 15px; color: var(--text-primary); }
     .card-body { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
-    .games-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 12px; }
         .game-card{background:var(--card-bg);border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:box-shadow .2s ease}
         .game-card:hover{box-shadow:var(--shadow-md)}
         .game-card-header{display:flex;justify-content:space-between;align-items:center;padding:6px 12px;background:var(--bg);border-bottom:1px solid var(--border-light);font-size:11px;color:var(--text-muted);font-weight:500;letter-spacing:.3px}
@@ -528,7 +528,7 @@
   <div class="tab-content" id="content-log">
     <div style="margin-bottom:20px">
       <h2 style="font-size:18px;font-weight:800;margin-bottom:4px">Bet Tracker</h2>
-      <p style="font-size:12px;color:var(--text-muted)">Auto-logged from signal detections. Mark outcomes to track performance.</p>
+      <p style="font-size:12px;color:var(--text-muted)">Auto-logged when signals fire. Results auto-resolved from ESPN final scores.</p>
     </div>
     <div id="backtest-panel" style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px">
       <div class="stat-card"><div class="stat-label">TOTAL BETS</div><div class="stat-value" id="bt-total" style="font-size:24px">0</div></div>
@@ -1464,14 +1464,63 @@ async function fetchESPNScoreboard() {
       }
 
       const isFav = state.favorites.includes(gid);
-      cards += `<div class="game-card ${cc}" data-game-id="${gid}"><div class="${hc}"><span>${isLive?'LIVE':'UPCOMING'} ${detail}</span><span class="fav-star" onclick="toggleFavorite('${gid}')" style="cursor:pointer;font-size:16px;margin-left:6px;">${isFav?'\u2605':'\u2606'}</span><span>${new Date(event.date).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div>
+      const periodLabel = currentMode === 'ncaa' ? `H${per}` : `Q${per}`;
+      const _oddsHTML = buildOddsHTML(aA,hA,aFull,hFull);
+
+      // Signal summary for card header
+      const sigSummary = signals.filter(s=>s.level===2).map(s => {
+        const icons = {'3pt':'3PT','star':'STAR','fragile':'FRAG','ft':'FT','combined':'COMBO'};
+        return icons[s.type] || s.type.toUpperCase();
+      });
+
+      cards += `<div class="game-card ${cc}" data-game-id="${gid}">
+        <div class="${hc}">
+          <span>${isLive ? '<span style="color:var(--red);font-weight:700;">LIVE</span> ' + periodLabel + ' ' + clk : 'UPCOMING'}</span>
+          <span style="display:flex;align-items:center;gap:6px;">
+            ${sigSummary.length ? '<span style="font-size:9px;font-weight:700;color:var(--accent);background:var(--accent-light);padding:1px 6px;border-radius:3px;">' + sigSummary.join(' + ') + '</span>' : ''}
+            <span class="fav-star" onclick="toggleFavorite('${gid}')" style="cursor:pointer;font-size:14px;">${isFav?'\u2605':'\u2606'}</span>
+          </span>
+        </div>
         <div class="game-card-body">
-          <div class="game-teams"><div class="team-block"><div class="team-name">${teamDisplayShort(aA, aFull)}</div><div class="team-abbr" style="font-size:10px;color:var(--text-muted);font-weight:600;">${currentMode==='ncaa'?aA:''}</div><div class="team-record">${aRec}</div>${getTeam3PtAvg(aA)?`<div class="team-3pt-avg">3PT: ${getTeam3PtAvg(aA)}%</div>`:''}<div class="team-score">${isLive?aS:'-'}</div></div><div class="vs-block"><div class="vs-text">@</div>${isLive?`<div class="game-period">Q${per} ${clk}</div>`:''}</div><div class="team-block"><div class="team-name">${teamDisplayShort(hA, hFull)}</div><div class="team-abbr" style="font-size:10px;color:var(--text-muted);font-weight:600;">${currentMode==='ncaa'?hA:''}</div><div class="team-record">${hRec}</div>${getTeam3PtAvg(hA)?`<div class="team-3pt-avg">3PT: ${getTeam3PtAvg(hA)}%</div>`:''}<div class="team-score">${isLive?hS:'-'}</div></div></div>
-          ${buildOddsHTML(aA,hA,aFull,hFull)}
-          ${isLive?`<div class="stat-bars">${bar3(a3P,a3M,a3A,aA)}${bar3(h3P,h3M,h3A,hA)}${foulHTML}${aLeaders.length?`<div class="stat-bar-row"><span class="stat-bar-label">${aA} pts</span><span style="flex:1;font-weight:700;font-size:11px;">${aLeaders[0]?.name}: ${aLeaders[0]?.pts}</span></div>`:''}${hLeaders.length?`<div class="stat-bar-row"><span class="stat-bar-label">${hA} pts</span><span style="flex:1;font-weight:700;font-size:11px;">${hLeaders[0]?.name}: ${hLeaders[0]?.pts}</span></div>`:''}</div>${durabilityHTML}`:''}
-          ${signals.length?`<div class="signal-panel ${signalLevel===2?'fire':signalLevel===1?'strong':''}"><div class="signal-title ${signalLevel===2?'fire':'warn'}">${signalLevel===2?'STRONG EDGE SIGNAL':'DEVELOPING SIGNAL'}</div>${signals.map(s=>`<div class="signal-detail">${s.level===2?'&#x1F525;':'&#x26A0;&#xFE0F;'} ${s.text}</div>`).join('')}${state.signalFirstSeen[gid]?`<div style="font-size:9px;color:var(--text-muted);margin-top:4px;">\u23F1 Signal active ${Math.floor((Date.now()-state.signalFirstSeen[gid])/60000)}m ago</div>`:''}${signalLevel===2?`<div style="margin-top:5px;"><button class="btn btn-orange btn-sm" onclick="openLogModal('${gLabel}','Live ML','Mean Reversion')">Log Bet</button></div>`:''}</div>`:''}
-          ${isLive&&!signals.length?`<div style="text-align:center;padding:4px;font-size:10px;color:var(--gray);">No signals</div>`:''}
-        </div></div>`;
+          <!-- SCOREBOARD -->
+          <div class="game-teams">
+            <div class="team-block">
+              <div class="team-name">${teamDisplayShort(aA, aFull)}</div>
+              ${currentMode==='ncaa'?`<div style="font-size:9px;color:var(--text-muted);font-weight:600;">${aA}</div>`:''}
+              <div class="team-record">${aRec}</div>
+              <div class="team-score">${isLive?aS:'-'}</div>
+            </div>
+            <div class="vs-block">
+              <div class="vs-text">@</div>
+            </div>
+            <div class="team-block">
+              <div class="team-name">${teamDisplayShort(hA, hFull)}</div>
+              ${currentMode==='ncaa'?`<div style="font-size:9px;color:var(--text-muted);font-weight:600;">${hA}</div>`:''}
+              <div class="team-record">${hRec}</div>
+              <div class="team-score">${isLive?hS:'-'}</div>
+            </div>
+          </div>
+          <!-- ODDS -->
+          ${_oddsHTML}
+          <!-- LIVE STATS -->
+          ${isLive?`<div class="stat-bars">
+            ${bar3(a3P,a3M,a3A,aA)}
+            ${bar3(h3P,h3M,h3A,hA)}
+            ${foulHTML}
+          </div>
+          ${durabilityHTML}
+          ${aLeaders.length||hLeaders.length?`<div style="display:flex;gap:8px;margin-top:6px;font-size:11px;">
+            ${aLeaders.length?`<div style="flex:1;padding:4px 8px;background:var(--bg);border-radius:4px;"><span style="color:var(--text-muted);">${aA}</span> <strong>${aLeaders[0]?.name?.split(' ').pop()}: ${aLeaders[0]?.pts}pts</strong></div>`:''}
+            ${hLeaders.length?`<div style="flex:1;padding:4px 8px;background:var(--bg);border-radius:4px;"><span style="color:var(--text-muted);">${hA}</span> <strong>${hLeaders[0]?.name?.split(' ').pop()}: ${hLeaders[0]?.pts}pts</strong></div>`:''}
+          </div>`:''}`:''}
+          <!-- SIGNALS -->
+          ${signals.length?`<div style="margin-top:8px;padding:8px 10px;border-radius:6px;background:${signalLevel===2?'var(--accent-light)':'var(--orange-light)'};border-left:3px solid ${signalLevel===2?'var(--accent)':'var(--orange)'};">
+            <div style="font-size:10px;font-weight:800;color:${signalLevel===2?'var(--accent)':'var(--orange)'};margin-bottom:4px;letter-spacing:0.5px;">${signalLevel===2?'EDGE DETECTED':'DEVELOPING'}</div>
+            ${signals.map(s=>`<div style="font-size:11px;color:var(--text-secondary);line-height:1.5;">${s.level===2?'&#x1F525;':'&#x26A0;&#xFE0F;'} ${s.text}</div>`).join('')}
+            ${state.signalFirstSeen[gid]?`<div style="font-size:9px;color:var(--text-muted);margin-top:4px;">\u23F1 ${Math.floor((Date.now()-state.signalFirstSeen[gid])/60000)}m ago</div>`:''}
+          </div>`:''}
+        </div>
+      </div>`;
 
       // 3PT TRACKER CARD
       if (isLive) {
@@ -1727,6 +1776,7 @@ async function fetchESPNScoreboard() {
         renderBetLog();
         updateBacktestPanel();
         updateKelly();
+        autoResolveBets(); // Check for final scores and auto-mark W/L
 
 
   } catch (err) {
@@ -1844,7 +1894,7 @@ function autoLogBet(gameId, team, side, signals, marketOdds, impliedP) {
     gameId: gameId,
     team: team,
     side: side,
-    signals: signals,
+    signals: signals.map(s => typeof s === 'object' ? s.type : s),
     marketOdds: marketOdds,
     impliedP: Math.round(impliedP * 1000) / 10,
     estimatedP: k.p,
@@ -1852,9 +1902,79 @@ function autoLogBet(gameId, team, side, signals, marketOdds, impliedP) {
     kellyBet: k.bet,
     timestamp: new Date().toISOString(),
     outcome: null,
-    payout: null
+    payout: null,
+    mode: currentMode || 'nba'
   });
   localStorage.setItem('betLog', JSON.stringify(log));
+}
+
+// ==================== AUTO-RESOLVE BETS FROM ESPN FINAL SCORES ====================
+async function autoResolveBets() {
+  let log = JSON.parse(localStorage.getItem('betLog') || '[]');
+  const pending = log.filter(b => !b.outcome && b.gameId);
+  if (pending.length === 0) return;
+
+  try {
+    // Fetch scoreboard — it includes completed games from today
+    const url = getESPNUrl();
+    const resp = await fetch(url);
+    if (!resp.ok) return;
+    const data = await resp.json();
+    const events = data.events || [];
+
+    let changed = false;
+    pending.forEach(bet => {
+      // Find the matching game by gameId
+      const event = events.find(e => e.id === bet.gameId || e.id === String(bet.gameId));
+      if (!event) return;
+
+      // Only resolve if game is FINAL
+      const gameState = event.status?.type?.state;
+      if (gameState !== 'post') return;
+
+      const comp = event.competitions?.[0];
+      if (!comp) return;
+      const away = comp.competitors?.find(c => c.homeAway === 'away');
+      const home = comp.competitors?.find(c => c.homeAway === 'home');
+      if (!away || !home) return;
+
+      const aScore = parseInt(away.score) || 0;
+      const hScore = parseInt(home.score) || 0;
+      const aAbbr = away.team?.abbreviation || '';
+      const hAbbr = home.team?.abbreviation || '';
+
+      // Determine winner abbreviation
+      const winner = aScore > hScore ? aAbbr : hAbbr;
+
+      // Check if our bet team won
+      // bet.team could be abbreviation like "BOS" or display name
+      const betTeamUpper = bet.team.toUpperCase();
+      const betWon = betTeamUpper === winner.toUpperCase() ||
+                     winner.toUpperCase().includes(betTeamUpper) ||
+                     betTeamUpper.includes(winner.toUpperCase());
+
+      bet.outcome = betWon ? 'W' : 'L';
+      bet.finalScore = aAbbr + ' ' + aScore + ' - ' + hScore + ' ' + hAbbr;
+
+      if (betWon) {
+        const odds = bet.marketOdds;
+        const multiplier = odds > 0 ? odds / 100 : 100 / Math.abs(odds);
+        bet.payout = Math.round(bet.kellyBet * multiplier * 100) / 100;
+      } else {
+        bet.payout = -bet.kellyBet;
+      }
+
+      changed = true;
+    });
+
+    if (changed) {
+      localStorage.setItem('betLog', JSON.stringify(log));
+      renderBetLog();
+      updateBacktestPanel();
+    }
+  } catch (e) {
+    console.warn('Auto-resolve error:', e);
+  }
 }
 
 function markOutcome(id, won) {
@@ -1926,9 +2046,11 @@ function renderBetLog() {
       const color = b.outcome === 'W' ? 'var(--green)' : 'var(--red)';
       const bg = b.outcome === 'W' ? 'var(--green-light)' : 'var(--red-light)';
       resultCell = '<span style="color:' + color + ';background:' + bg + ';font-weight:700;padding:2px 10px;border-radius:4px;font-size:11px">' + b.outcome + '</span>';
+      if (b.finalScore) resultCell += '<div style="font-size:9px;color:var(--text-muted);margin-top:2px">' + b.finalScore + '</div>';
     } else {
-      resultCell = '<button onclick="markOutcome(' + b.id + ',true)" style="background:var(--green-light);color:var(--green);border:none;padding:3px 10px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:700;margin-right:4px">W</button>';
-      resultCell += '<button onclick="markOutcome(' + b.id + ',false)" style="background:var(--red-light);color:var(--red);border:none;padding:3px 10px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:700">L</button>';
+      resultCell = '<span style="font-size:10px;color:var(--orange);font-weight:600">PENDING</span>';
+      resultCell += '<div style="margin-top:3px"><button onclick="markOutcome(' + b.id + ',true)" style="background:var(--green-light);color:var(--green);border:none;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:10px;font-weight:700;margin-right:3px">W</button>';
+      resultCell += '<button onclick="markOutcome(' + b.id + ',false)" style="background:var(--red-light);color:var(--red);border:none;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:10px;font-weight:700">L</button></div>';
     }
     const plStr = b.payout != null ? (b.payout >= 0 ? '+$' : '-$') + Math.abs(b.payout).toFixed(0) : '-';
     const plColor = b.payout > 0 ? 'var(--green)' : b.payout < 0 ? 'var(--red)' : 'var(--text-muted)';
