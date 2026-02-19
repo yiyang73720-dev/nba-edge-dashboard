@@ -473,9 +473,9 @@
     <!-- ==================== PACE MIRAGE O/U SECTION ==================== -->
     <div id="paceMirageContainer" style="display:none;margin-top:20px;">
       <div class="edge-thesis-header" style="margin-bottom:12px;">
-        <h2 style="display:flex;align-items:center;gap:8px;">📊 PACE MIRAGE — O/U SIGNALS <span class="thesis-count" id="paceMirageCount" style="background:var(--purple);color:white;font-size:12px;font-weight:700;padding:2px 10px;border-radius:12px;">0</span></h2>
+        <h2 style="display:flex;align-items:center;gap:8px;">📊 OVER / UNDER SIGNALS <span class="thesis-count" id="paceMirageCount" style="background:var(--purple);color:white;font-size:12px;font-weight:700;padding:2px 10px;border-radius:12px;">0</span></h2>
       </div>
-      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;line-height:1.5;">Separate from ML signals — detects when scoring pace is unsustainable for Over/Under bets. Fires when 2 of 3 conditions are met: (1) combined 3PT% extreme, (2) FT rate abnormal, (3) projected total diverges from O/U line.</p>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;line-height:1.5;">These are separate from moneyline signals. We detect when the scoring pace is fake — running too hot or too cold because of temporary factors. The total will regress back toward the line.</p>
       <div id="paceMirageCards"></div>
     </div>
   </div>
@@ -1612,13 +1612,29 @@ async function fetchESPNScoreboard() {
         const periodLabel = currentMode === 'ncaa' ? `H${pm.per}` : `Q${pm.per}`;
 
         const condHTML = pm.conditions.map(c => {
-          const icon = c.met ? '✅' : '❌';
+          const icon = c.met ? '✅' : '⬜';
+          // Plain English explanations per condition
+          let plainText = c.detail;
+          if (c.name === '3PT Pace') {
+            if (c.met && c.direction === 'UNDER') plainText = `Both teams combined are shooting ${c.detail.match(/[\d.]+%/)?.[0] || '42%+'} from 3 — way above the ~35% average. This hot streak is inflating the score and won't last → points will drop → UNDER.`;
+            else if (c.met && c.direction === 'OVER') plainText = `Both teams combined are only shooting ${c.detail.match(/[\d.]+%/)?.[0] || '28%-'} from 3 — way below average. This cold streak is holding the score down and won't last → points will rise → OVER.`;
+            else plainText = `3PT shooting is in normal range (${c.detail.match(/[\d.]+%/)?.[0] || '~35%'}) — no edge here.`;
+          } else if (c.name === 'FT Rate') {
+            if (c.met && c.direction === 'UNDER') plainText = `Teams have shot ${c.detail.match(/\d+ /)?.[0]?.trim() || 'a lot of'} free throws — ${c.detail.match(/\d+% of expected/)?.[0] || '140%+ of expected'}. Refs are calling too many fouls. This inflates the score and will slow down → UNDER.`;
+            else if (c.met && c.direction === 'OVER') plainText = `Very few free throws so far — ${c.detail.match(/\d+% of expected/)?.[0] || '60%- of expected'}. The low foul rate is suppressing the score. Fouls will pick up → more points → OVER.`;
+            else plainText = `Free throw rate is normal — no edge here.`;
+          } else if (c.name === 'Pace vs Line') {
+            if (c.met && c.direction === 'UNDER') plainText = `At this scoring rate, the game projects to ~${pm.extrapolatedTotal} total points — that's ${Math.abs(pm.paceGap)} points ABOVE the betting line of ${pm.ouLine}. The pace is too hot to sustain → UNDER.`;
+            else if (c.met && c.direction === 'OVER') plainText = `At this scoring rate, the game projects to ~${pm.extrapolatedTotal} total points — that's ${Math.abs(pm.paceGap)} points BELOW the betting line of ${pm.ouLine}. The pace is too slow to continue → OVER.`;
+            else if (pm.ouLine) plainText = `Projected total (~${pm.extrapolatedTotal}) is close to the O/U line (${pm.ouLine}) — no significant gap.`;
+            else plainText = `O/U line not available from odds API — can't compare.`;
+          }
           return `<div class="criteria-item ${c.met ? 'met' : 'not-met'}">
             <span class="criteria-check">${icon}</span>
             <div class="criteria-text">
               <span class="criteria-label">${c.name}</span>
-              <span class="criteria-value ${c.met ? '' : 'neg'}">${c.met ? c.direction : 'N/A'}</span>
-              <span class="criteria-detail">${c.detail}</span>
+              <span class="criteria-value ${c.met ? '' : 'neg'}">${c.met ? c.direction : '—'}</span>
+              <span class="criteria-detail">${plainText}</span>
             </div>
           </div>`;
         }).join('');
@@ -1636,24 +1652,29 @@ async function fetchESPNScoreboard() {
           </div>
           <div class="thesis-body">
             <div class="thesis-bet-line" style="background:${dirBg};">
-              <div>
-                <div class="thesis-bet-action" style="color:${dirColor};">PACE MIRAGE ${pm.direction} ${pm.ouLine ? '(O/U ' + pm.ouLine + ')' : ''}</div>
-                <div class="thesis-bet-side">Projected total: ${pm.extrapolatedTotal}${pm.ouLine ? ' vs line ' + pm.ouLine + ' (' + (pm.paceGap > 0 ? '+' : '') + pm.paceGap + ')' : ''}</div>
+              <div style="flex:1;">
+                <div class="thesis-bet-action" style="color:${dirColor};font-size:15px;font-weight:800;">🎯 BET ${pm.direction} ${pm.ouLine ? pm.ouLine : ''}</div>
+                <div class="thesis-bet-side" style="font-size:12px;margin-top:2px;">Current pace → ~${pm.extrapolatedTotal} pts total${pm.ouLine ? ' | The book set the line at ' + pm.ouLine + ' (' + (pm.paceGap > 0 ? '+' : '') + pm.paceGap + ' off)' : ''}</div>
               </div>
-              <button class="btn btn-sm" style="background:${dirColor};color:white;" onclick="openLogModal('${pm.game}','O/U ${pm.direction}','Pace Mirage')">Log Bet</button>
             </div>
             <div class="thesis-logic">
-              <div class="thesis-logic-title">Why This Pace Is Unsustainable</div>
+              <div class="thesis-logic-title">Why Bet ${pm.direction}?</div>
               <div class="thesis-logic-text" style="line-height:1.7;">
-                <div style="margin-bottom:6px;">The current scoring pace in ${pm.gameFull || pm.game} is built on unsustainable factors. ${pm.conditionsMet} of 3 regression indicators are active — when these normalize, the total ${pm.direction === 'UNDER' ? 'comes down' : 'goes up'}.</div>
-                <div style="padding:8px 10px;background:${dirBg};border-radius:6px;border-left:3px solid ${dirColor};margin-top:6px;font-size:11px;line-height:1.6;">
-                  <strong>The Thesis:</strong> ${pm.direction === 'UNDER' ? 'The score is inflated by hot 3PT shooting and/or elevated FT volume — both of which regress hard. When the shooting cools and foul calls normalize, the scoring pace drops well below the current projection.' : 'The score is suppressed by cold shooting and/or low FT volume — both of which regress upward. When the shooting normalizes and natural foul rates resume, the scoring pace rises above the current projection.'}
+                <div style="margin-bottom:6px;font-size:12px;">${pm.direction === 'UNDER'
+                  ? `<strong>The score is running too high right now.</strong> At the current pace, both teams would combine for ~${pm.extrapolatedTotal} points${pm.ouLine ? ' — but the betting line is only ' + pm.ouLine : ''}. The reason it's so high? Temporary stuff like hot 3PT streaks or too many free throws. Those things ALWAYS cool off as the game goes on.`
+                  : `<strong>The score is running too low right now.</strong> At the current pace, both teams would only combine for ~${pm.extrapolatedTotal} points${pm.ouLine ? ' — but the betting line is ' + pm.ouLine : ''}. The reason it's so low? Temporary stuff like cold 3PT shooting or unusually few free throws. Those things ALWAYS bounce back as the game goes on.`
+                }</div>
+                <div style="padding:10px 12px;background:${dirBg};border-radius:6px;border-left:3px solid ${dirColor};margin-top:8px;font-size:12px;line-height:1.6;">
+                  <strong>Simple version:</strong> ${pm.direction === 'UNDER'
+                  ? 'Teams are scoring at an unsustainable rate. The hot shooting and/or high foul rate will cool off → final score will be LOWER than the current pace suggests → bet UNDER.'
+                  : 'Teams are scoring at an unsustainably slow rate. The cold shooting and/or low foul rate will normalize → final score will be HIGHER than the current pace suggests → bet OVER.'}
                 </div>
               </div>
             </div>
             <div class="thesis-criteria">${condHTML}</div>
             <div class="thesis-actions">
-              <span style="font-size:10px;color:#666;">${pm.detail}</span>
+              <span style="font-size:10px;color:var(--text-muted);">${_aD} ${pm.aScore} - ${pm.hScore} ${_hD} | ${periodLabel} ${pm.clk} | ${pctPlayed}% of game played</span>
+              <button class="btn btn-sm" style="background:${dirColor};color:white;" onclick="openLogModal('${pm.game}','O/U ${pm.direction}','Pace Mirage')">Log Bet</button>
             </div>
           </div>
         </div>`;
