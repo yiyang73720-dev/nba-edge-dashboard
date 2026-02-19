@@ -115,12 +115,7 @@
     .chip-detail-empty { padding:12px; text-align:center; font-size:11px; color:var(--text-muted); }
     @keyframes signalFlash { 0%{box-shadow:0 0 0 0 rgba(0,212,170,0.6);} 30%{box-shadow:0 0 20px 4px rgba(0,212,170,0.4);} 100%{box-shadow:var(--shadow-sm);} }
     .signal-highlight-flash { animation:signalFlash 2.5s ease; border-color:var(--accent) !important; }
-    #toast-container { position:fixed; top:70px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:8px; pointer-events:none; max-width:340px; }
-    .toast-notification { pointer-events:auto; background:var(--card-bg); border:1px solid var(--accent); border-left:4px solid var(--accent); border-radius:var(--radius-sm); padding:12px 16px; box-shadow:0 8px 24px rgba(0,0,0,0.25); opacity:0; transform:translateX(100%); transition:all 0.35s cubic-bezier(0.4,0,0.2,1); }
-    .toast-notification.toast-show { opacity:1; transform:translateX(0); }
-    .toast-notification.toast-hide { opacity:0; transform:translateX(100%); }
-    .toast-title { font-size:12px; font-weight:700; color:var(--accent); margin-bottom:3px; }
-    .toast-body { font-size:11px; color:var(--text-secondary); line-height:1.4; }
+    /* Toast CSS removed — no popup notifications */
     .section-divider { height: 1px; background: var(--border-light); margin: 16px 0; }
     .edge-thesis-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
     .edge-thesis-header h2 { font-size: 14px; font-weight: 700; color: var(--text-primary); letter-spacing: 0.5px; text-transform: uppercase; margin: 0; }
@@ -640,7 +635,7 @@
 
   <div id="scenario-alert-panel" class="scenario-alert-panel"></div>
 
-  <div id="toast-container" style="position:fixed;top:70px;right:20px;z-index:150;display:flex;flex-direction:column;gap:6px;"></div>
+  <!-- No toast container — signals show on chips and game cards only -->
 
 <script>
 const TEAM_3PT_AVG = {
@@ -750,39 +745,19 @@ if (_bsEl) _bsEl.value = state.bankroll.start || '';
 if (_bcEl) _bcEl.value = state.bankroll.current || '';
 renderBetLog(); renderStarDB(); renderQtrAlerts(); loadBankrollSettings();
 
+// Kill browser notifications permanently — we use in-app toasts only
+if (window.Notification) { window.Notification = function(){}; window.Notification.permission = 'denied'; window.Notification.requestPermission = function(){ return Promise.resolve('denied'); }; }
+
 // In-app toast notification system
 let notifiedSignals = new Set(JSON.parse(localStorage.getItem('notifiedSignals') || '[]'));
 function sendSignalNotification(title, body, gameId, signalType) {
+  // No popups — signals show on chips and game cards only
   const key = gameId + '_' + signalType + '_' + new Date().getHours();
   if (notifiedSignals.has(key)) return;
   notifiedSignals.add(key);
   if (notifiedSignals.size > 200) notifiedSignals = new Set([...notifiedSignals].slice(-100));
   localStorage.setItem('notifiedSignals', JSON.stringify([...notifiedSignals]));
-  showToast(title, body, gameId);
-}
-function showToast(title, body, gameId) {
-  let container = document.getElementById('toast-container');
-  if (!container) {
-    container = document.createElement('div');
-    container.id = 'toast-container';
-    document.body.appendChild(container);
-  }
-  const toast = document.createElement('div');
-  toast.className = 'toast-notification';
-  toast.innerHTML = `<div class="toast-title">${title}</div><div class="toast-body">${body}</div>`;
-  if (gameId) {
-    toast.style.cursor = 'pointer';
-    toast.onclick = function() { scrollToGame(gameId); toast.remove(); };
-  }
-  container.appendChild(toast);
-  // Animate in
-  requestAnimationFrame(() => toast.classList.add('toast-show'));
-  // Auto-dismiss after 6s
-  setTimeout(() => {
-    toast.classList.remove('toast-show');
-    toast.classList.add('toast-hide');
-    setTimeout(() => toast.remove(), 400);
-  }, 6000);
+  // No toast, no popup — just track that we saw this signal
 }
 
 // ==================== TABS ====================
@@ -1042,7 +1017,9 @@ function analyzePaceMirage(aS, hS, a3P, a3A, a3M, h3P, h3A, h3M, aFTA, hFTA, per
   let cond2 = cond2_high || cond2_low;
   let cond2_direction = cond2_high ? 'UNDER' : cond2_low ? 'OVER' : null;
 
-  // === CONDITION 3: Extrapolated total significantly diverges from O/U line ===
+  // === CONDITION 3: Magnitude check — how far has the inflated/deflated pace pushed the projected total from the book line? ===
+  // NOTE: This is NOT independent from conditions 1-2. The projection IS inflated by the same factors.
+  // Its role is to confirm the distortion is large enough (8+ pts) that the live line has likely moved, creating a real betting edge.
   let cond3 = false;
   let cond3_direction = null;
   const gapThreshold = currentMode === 'ncaa' ? 7 : 8; // NCAA games lower scoring so smaller gap meaningful
@@ -1624,10 +1601,10 @@ async function fetchESPNScoreboard() {
             else if (c.met && c.direction === 'OVER') plainText = `Very few free throws so far — ${c.detail.match(/\d+% of expected/)?.[0] || '60%- of expected'}. The low foul rate is suppressing the score. Fouls will pick up → more points → OVER.`;
             else plainText = `Free throw rate is normal — no edge here.`;
           } else if (c.name === 'Pace vs Line') {
-            if (c.met && c.direction === 'UNDER') plainText = `Current pace projects ~${pm.extrapolatedTotal} total — that's ${Math.abs(pm.paceGap)} pts above the pre-game line of ${pm.ouLine}. Live books have likely raised the O/U to match. That inflated live line is your target → bet UNDER it.`;
-            else if (c.met && c.direction === 'OVER') plainText = `Current pace projects only ~${pm.extrapolatedTotal} total — that's ${Math.abs(pm.paceGap)} pts below the pre-game line of ${pm.ouLine}. Live books have likely dropped the O/U to match. That deflated live line is your target → bet OVER it.`;
-            else if (pm.ouLine) plainText = `Projected total (~${pm.extrapolatedTotal}) is close to the O/U line (${pm.ouLine}) — no significant gap.`;
-            else plainText = `O/U line not available from odds API — can't compare.`;
+            if (c.met && c.direction === 'UNDER') plainText = `The gap confirms it: projected ~${pm.extrapolatedTotal} is ${Math.abs(pm.paceGap)} pts above the pre-game line of ${pm.ouLine}. This gap exists BECAUSE of the hot 3PT/FT factors above. The bigger the gap, the more the live line has moved → the bigger your UNDER edge.`;
+            else if (c.met && c.direction === 'OVER') plainText = `The gap confirms it: projected ~${pm.extrapolatedTotal} is ${Math.abs(pm.paceGap)} pts below the pre-game line of ${pm.ouLine}. This gap exists BECAUSE of the cold 3PT/low FT factors above. The bigger the gap, the more the live line has dropped → the bigger your OVER edge.`;
+            else if (pm.ouLine) plainText = `Projected total (~${pm.extrapolatedTotal}) is close to the O/U line (${pm.ouLine}) — the factors above have not distorted the score enough yet for a big edge.`;
+            else plainText = `O/U line not available from odds API — cannot measure the gap.`;
           }
           return `<div class="criteria-item ${c.met ? 'met' : 'not-met'}">
             <span class="criteria-check">${icon}</span>
