@@ -107,10 +107,14 @@
     .chip-detail-header { padding:8px 12px; background:var(--bg); border-bottom:1px solid var(--border-light); font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; }
     .chip-detail-item { padding:8px 12px; border-bottom:1px solid var(--border-light); font-size:12px; }
     .chip-detail-item:last-child { border-bottom:none; }
+    .chip-detail-clickable { cursor:pointer; transition:background 0.15s ease; }
+    .chip-detail-clickable:hover { background:var(--accent-light); }
     .chip-detail-game { font-weight:700; color:var(--text-primary); font-size:12px; }
     .chip-detail-score { font-size:11px; color:var(--text-muted); margin-top:1px; }
     .chip-detail-sig { font-size:11px; color:var(--text-secondary); margin-top:3px; line-height:1.4; }
     .chip-detail-empty { padding:12px; text-align:center; font-size:11px; color:var(--text-muted); }
+    @keyframes signalFlash { 0%{box-shadow:0 0 0 0 rgba(0,212,170,0.6);} 30%{box-shadow:0 0 20px 4px rgba(0,212,170,0.4);} 100%{box-shadow:var(--shadow-sm);} }
+    .signal-highlight-flash { animation:signalFlash 2.5s ease; border-color:var(--accent) !important; }
     .section-divider { height: 1px; background: var(--border-light); margin: 16px 0; }
     .edge-thesis-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
     .edge-thesis-header h2 { font-size: 14px; font-weight: 700; color: var(--text-primary); letter-spacing: 0.5px; text-transform: uppercase; margin: 0; }
@@ -795,8 +799,9 @@ function toggleSignalDetail(type) {
     panel.innerHTML = `<div class="chip-detail-header">${labels[type] || type} — ${games.length} game${games.length>1?'s':''}</div>` +
       games.map(g => {
         const truncDetail = g.sigDetail && g.sigDetail.length > 120 ? g.sigDetail.substring(0, 120) + '...' : (g.sigDetail || '');
-        return `<div class="chip-detail-item">
-          <div class="chip-detail-game">${g.gameFull || g.game}</div>
+        const eid = g.eventId || '';
+        return `<div class="chip-detail-item chip-detail-clickable" onclick="scrollToGame('${eid}')" title="Click to jump to game">
+          <div class="chip-detail-game">${g.gameFull || g.game} <span style="font-size:9px;color:var(--accent);margin-left:4px;">↗ go</span></div>
           <div class="chip-detail-score">${g.aScore} - ${g.hScore} | ${periodLabel(g.per)} ${g.clk}</div>
           <div class="chip-detail-sig">${truncDetail}</div>
         </div>`;
@@ -804,6 +809,22 @@ function toggleSignalDetail(type) {
   }
 
   panel.classList.add('active');
+}
+
+// Scroll to a game card when clicking from signal dropdown
+function scrollToGame(eventId) {
+  if (!eventId) return;
+  // Close all chip detail panels
+  document.querySelectorAll('.chip-detail-panel.active').forEach(p => p.classList.remove('active'));
+  // Find the game card
+  const card = document.querySelector(`.game-card[data-game-id="${eventId}"]`);
+  if (card) {
+    // Smooth scroll to the card
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Flash highlight effect
+    card.classList.add('signal-highlight-flash');
+    setTimeout(() => card.classList.remove('signal-highlight-flash'), 2500);
+  }
 }
 
 // Close signal detail panels when clicking outside
@@ -1285,7 +1306,7 @@ async function fetchESPNScoreboard() {
         else if (activeSignals === 1) signalLevel=1;
 
         // Track which games have which signals for chip click-to-expand
-        const _gameInfo = { game: gLabel, gameFull: gLabelFull, aScore: aS, hScore: hS, per, clk, detail };
+        const _gameInfo = { game: gLabel, gameFull: gLabelFull, aScore: aS, hScore: hS, per, clk, detail, eventId: gid };
         if (has3ptFragile) signalGames['3ptfragile'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='3ptFragile'&&s.level===2).map(s=>s.text).join('; ') });
         if (hasStar) signalGames['star'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='star'&&s.level===2).map(s=>s.text).join('; ') });
         if (hasFT) signalGames['ft'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='ft'&&s.level>=2).map(s=>s.text).join('; ') });
@@ -2610,23 +2631,83 @@ try {
 <div id="content-guide" class="tab-content">
 <div class="guide-section">
 <h2 style="font-size:22px;font-weight:700;margin-bottom:4px">Signal Guide</h2>
+
+<!-- ===== QUICK START - HOW TO USE ===== -->
+<div style="background:linear-gradient(135deg, var(--accent-light), var(--purple-light));border:2px solid var(--accent);border-radius:var(--radius);padding:20px;margin:16px 0 24px;">
+<h3 style="font-size:16px;font-weight:800;margin-bottom:12px;">🎯 How This Works (Quick Start)</h3>
+<div style="font-size:13px;line-height:1.7;color:var(--text-primary);">
+<p style="margin-bottom:10px;"><strong>The idea is simple:</strong> Sometimes a team is winning because of things that won't last — like making every 3-pointer, or getting way more free throws than normal. When that happens, the live betting odds are wrong because they think the score is "real." We catch that.</p>
+<p style="margin-bottom:14px;"><strong>How to use it:</strong></p>
+<div style="display:grid;grid-template-columns:1fr;gap:10px;">
+<div style="background:var(--card-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--accent);">
+<strong style="font-size:12px;">Step 1:</strong> <span style="font-size:13px;">Hit <strong>Start</strong> to auto-refresh. The dashboard watches every live game.</span>
+</div>
+<div style="background:var(--card-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--orange);">
+<strong style="font-size:12px;">Step 2:</strong> <span style="font-size:13px;">When a signal fires, the chip turns on and shows a number. <strong>Click it</strong> to see which game, then <strong>click the game</strong> to jump to it.</span>
+</div>
+<div style="background:var(--card-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--green);">
+<strong style="font-size:12px;">Step 3:</strong> <span style="font-size:13px;">The game card tells you <strong>who to bet on</strong> and <strong>why</strong>. Green = bet this team's moneyline. Purple = bet Over or Under.</span>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ===== WHAT EACH SIGNAL MEANS (PLAIN ENGLISH) ===== -->
+<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:24px;">
+<h3 style="font-size:15px;font-weight:800;margin-bottom:14px;">📋 What Each Signal Means</h3>
+<table style="width:100%;font-size:12px;border-collapse:collapse;">
+<thead><tr style="border-bottom:2px solid var(--border);text-align:left;">
+<th style="padding:8px 6px;font-weight:700;color:var(--text-muted);font-size:10px;text-transform:uppercase;">Signal</th>
+<th style="padding:8px 6px;font-weight:700;color:var(--text-muted);font-size:10px;text-transform:uppercase;">In Plain English</th>
+<th style="padding:8px 6px;font-weight:700;color:var(--text-muted);font-size:10px;text-transform:uppercase;">What to Bet</th>
+</tr></thead>
+<tbody>
+<tr style="border-bottom:1px solid var(--border-light);">
+<td style="padding:10px 6px;"><span class="signal-badge badge-3pt" style="font-size:10px;">3PT FRAGILE</span></td>
+<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">A team is <strong>way too hot from 3</strong> (50%+) and their entire lead depends on it. That shooting will cool off → lead will shrink.</td>
+<td style="padding:10px 6px;font-weight:700;color:var(--green);">Bet the <strong>other team's moneyline</strong> (the one behind). Their opponent's lead is fake.</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-light);">
+<td style="padding:10px 6px;"><span class="signal-badge badge-star" style="font-size:10px;">STAR COLD</span></td>
+<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">A star player (25+ PPG) is having a cold game — way below their normal pace. Stars <strong>almost always bounce back</strong>.</td>
+<td style="padding:10px 6px;font-weight:700;color:var(--green);">Bet the <strong>star's team moneyline</strong>. They're undervalued because their best player is cold right now.</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-light);">
+<td style="padding:10px 6px;"><span class="signal-badge badge-ft" style="font-size:10px;">FT</span></td>
+<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">The leading team has <strong>way more free throws</strong> (10+ more FTA). Refs tend to even out the calls — that FT advantage won't last.</td>
+<td style="padding:10px 6px;font-weight:700;color:var(--green);">Bet the <strong>trailing team's moneyline</strong>. Part of the lead is built on ref luck.</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-light);">
+<td style="padding:10px 6px;"><span class="signal-badge badge-combined" style="font-size:10px;">COMBINED</span></td>
+<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;"><strong>2+ signals firing on the same game.</strong> Multiple things are unsustainable at once — strongest edge.</td>
+<td style="padding:10px 6px;font-weight:700;color:var(--green);">Same as the individual signals — bet the team that benefits when things regress. <strong>Highest confidence.</strong></td>
+</tr>
+<tr>
+<td style="padding:10px 6px;"><span class="signal-badge" style="background:var(--purple);font-size:10px;">O/U PACE</span></td>
+<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">The scoring pace is <strong>fake</strong> — teams are scoring way too fast or too slow because of hot/cold 3PT or unusual FT rates. The total will regress.</td>
+<td style="padding:10px 6px;font-weight:700;color:var(--purple);">Bet <strong>UNDER</strong> if pace is fake-high, <strong>OVER</strong> if pace is fake-low. The signal tells you which one.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
 <div id="nba-guide">
-<p class="guide-intro">All signals share one thesis: the current score was built on something unsustainable, so the live moneyline is mispriced.</p>
+<p class="guide-intro" style="margin-bottom:12px;"><strong>Core thesis:</strong> The current score was built on something unsustainable, so the live odds are mispriced. We bet on regression.</p>
 <div class="guide-grid">
-<div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT FRAGILE</span> 3PT Fragile Lead</h3><p class="edge-label">The Edge: Hot 3PT Shooting + Lead Depends On It</p><p>The most selective signal. Fires ONLY when BOTH conditions are met: (1) a team is shooting unsustainably hot from 3PT, AND (2) their lead composition is fragile — built on that 3PT shooting while the opponent scores from the paint. This eliminates false positives from hot shooting alone.</p><div class="threshold">Trigger: Team shoots 50%+ on 12+ att (or 55%+ on 8+) AND their lead is 42%+ from 3PT AND opponent is 58%+ non-3PT. Both conditions required.</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-star">STAR</span> Star Cold</h3><p class="edge-label">The Edge: Cold Stars Regress Upward</p><p>When a star player (23+ PPG) is significantly below their expected scoring pace, regression upward is likely. The market undervalues their team while the star is cold, creating a buy-low window.</p><div class="threshold">Trigger: Star at &lt;60% of expected scoring pace, at least 20% of game elapsed, Q1-Q3.</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-ft">FT</span> FT Inflation</h3><p class="edge-label">The Edge: Leads Built on Free Throw Volume Regress</p><p>When a leading team has significantly more free throw attempts than the trailing team, part of their lead is built on unsustainable FT volume. FT rates regress within a game — refs tend to even out calls.</p><div class="threshold">Trigger: Leading team has 10+ more FTA than trailing team. FTA data from ESPN summary endpoint.</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">The Edge: Independent Signals Compound the Mispricing</p><p>When 2+ of the 3 independent signals fire on the same game, the live ML is mispriced on multiple dimensions. Each signal is a truly independent confirmation — no overlapping conditions.</p><div class="threshold">Trigger: 2+ of {3PT Fragile, Star Cold, FT Inflation} active on same game = strong combined edge.</div></div>
-<div class="guide-card" style="border-left:3px solid var(--purple);"><h3><span class="signal-badge" style="background:var(--purple);">O/U</span> Pace Mirage (Over/Under)</h3><p class="edge-label">The Edge: Unsustainable Scoring Pace Detection</p><p>A separate signal for Over/Under bets (not ML). Detects when the current scoring pace is built on unsustainable factors: hot combined 3PT shooting, inflated FT volume, or pace diverging from the O/U line. When 2 of 3 conditions fire, the total will regress.</p><div class="threshold">Trigger: 2 of 3 conditions: (1) Combined 3PT% &ge;42% or &le;28% on 14+ att, (2) Combined FTA 40%+ above/below expected, (3) Projected total &ge;8pts above/below O/U line. NBA: Q2-Q3 window. NCAA: mid-1st to mid-2nd half.</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT FRAGILE</span> 3PT Fragile Lead</h3><p class="edge-label">Team is winning because of hot 3PT shooting — and the lead depends on it</p><p>Fires when BOTH are true: (1) a team is shooting 50%+ from 3 on 12+ attempts, AND (2) their lead is built on that 3PT shooting while the opponent scores from paint. When the shooting cools off (and it will), the lead shrinks fast.</p><div class="threshold">Trigger: 50%+ on 12+ att AND lead 42%+ from 3PT AND opponent 58%+ non-3PT.</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-star">STAR</span> Star Cold</h3><p class="edge-label">A star player is way below their normal scoring pace — they'll bounce back</p><p>When a 25+ PPG star has scored way less than expected through Q2-Q3, history says they heat up. The market undervalues their team while the star is cold. That's the buy window.</p><div class="threshold">Trigger: Star at &lt;60% of expected scoring pace, at least 20% of game elapsed.</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-ft">FT</span> FT Inflation</h3><p class="edge-label">Leading team got way more free throws than the other team — refs will even out</p><p>If Team A has 10+ more free throw attempts than Team B, part of that lead is from unsustainable ref treatment. Refs tend to balance calls — the FT advantage will shrink.</p><div class="threshold">Trigger: Leading team has 10+ more FTA than trailing team.</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">2+ signals firing on the same game = strongest edge, most confidence</p><p>When multiple signals agree on the same game, the live odds are wrong from multiple angles. Each signal catches something different — so when 2+ fire together, the mispricing is larger.</p><div class="threshold">Trigger: 2+ of {3PT Fragile, Star Cold, FT Inflation} on same game.</div></div>
+<div class="guide-card" style="border-left:3px solid var(--purple);"><h3><span class="signal-badge" style="background:var(--purple);">O/U</span> Pace Mirage (Over/Under)</h3><p class="edge-label">Scoring pace is fake — total will regress toward the O/U line</p><p>This is for Over/Under bets, not moneyline. Detects when teams are scoring too fast or too slow because of temporary factors (hot 3PT, weird FT rates). When 2 of 3 conditions are met, the total will regress.</p><div class="threshold">Trigger: 2 of 3: (1) Combined 3PT% &ge;42% or &le;28%, (2) FT rate 40%+ abnormal, (3) Projected total 8+ pts off O/U line. Window: Q2-Q3.</div></div>
 </div></div>
 <div id="ncaa-guide" style="display:none">
-<p class="guide-intro">All signals share one thesis: the current score was built on something unsustainable, so the live moneyline is mispriced. NCAA-calibrated thresholds for college basketball.</p>
+<p class="guide-intro" style="margin-bottom:12px;"><strong>Core thesis:</strong> The current score was built on something unsustainable. NCAA thresholds are calibrated for college basketball.</p>
 <div class="guide-grid">
-<div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT FRAGILE</span> 3PT Fragile Lead</h3><p class="edge-label">The Edge: College 3PT Leads Collapse Even Faster</p><p>The most selective signal, requiring BOTH conditions: (1) team shooting 50%+ from 3 on 12+ attempts, AND (2) their lead is 3PT-dependent (38%+ NCAA threshold) while opponent scores from paint. College shooters are less consistent, making these leads extremely fragile.</p><div class="threshold">Trigger: 50%+ on 12+ att AND lead 38%+ from 3PT AND opponent 58%+ non-3PT. Both conditions required.</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-star">TEAM</span> Team Offensive Slump</h3><p class="edge-label">The Edge: College Teams Lack Depth to Compensate</p><p>In NCAA, when the primary scorer goes cold, the bench drop-off is severe. College teams lack NBA-level depth, making individual cold stretches more impactful on game outcomes.</p><div class="threshold">Trigger: Key scorer at &lt;60% expected pace, at least 20% of game elapsed.</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-ft">FT</span> FT Inflation</h3><p class="edge-label">The Edge: FT Disparity Inflates Scores in College</p><p>NCAA's earlier bonus situation (7th foul) and 5-foul limit create more FT opportunities. When a leading team has a large FTA advantage, that lead is partially built on unsustainable free throw volume.</p><div class="threshold">Trigger: Leading team has 10+ more FTA than trailing team. Refs tend to even out calls over the game.</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">The Edge: Signal Stacking in Higher-Variance Games</p><p>NCAA games have more variance, making combined signals even more powerful. When 2+ independent signals fire on the same game, the mispricing compounds.</p><div class="threshold">Trigger: 2+ of {3PT Fragile, Star Cold, FT Inflation} active on same game.</div></div>
-<div class="guide-card" style="border-left:3px solid var(--purple);"><h3><span class="signal-badge" style="background:var(--purple);">O/U</span> Pace Mirage (Over/Under)</h3><p class="edge-label">The Edge: College Scoring Pace Is Even More Volatile</p><p>NCAA games have wider shooting variance and more aggressive fouling. When the combined scoring pace diverges from sustainable levels, O/U regression is even more pronounced in college. 2 of 3 conditions trigger the signal.</p><div class="threshold">Trigger: 2 of 3 conditions: (1) Combined 3PT% &ge;42% or &le;28% on 12+ att, (2) Combined FTA 40%+ above/below expected, (3) Projected total &ge;7pts above/below O/U line. Window: 25%-80% of game elapsed (two 20-min halves).</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT FRAGILE</span> 3PT Fragile Lead</h3><p class="edge-label">College teams go cold from 3 even faster than the pros</p><p>Fires when BOTH are true: (1) shooting 50%+ from 3 on 12+ attempts, AND (2) lead depends on that 3PT shooting (38%+ NCAA threshold). College shooters are less consistent — these leads collapse faster.</p><div class="threshold">Trigger: 50%+ on 12+ att AND lead 38%+ from 3PT AND opponent 58%+ non-3PT.</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-star">TEAM</span> Team Offensive Slump</h3><p class="edge-label">When the best player goes cold, college teams can't make up for it</p><p>College teams lack NBA depth. When the go-to scorer is cold, there's no "next man up." That slump won't last, but the market already priced in the bad performance.</p><div class="threshold">Trigger: Key scorer at &lt;60% expected pace, 20%+ of game elapsed.</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-ft">FT</span> FT Inflation</h3><p class="edge-label">College has more fouls and easier bonus — FT gaps are even less sustainable</p><p>NCAA's 7th-foul bonus and 5-foul limit create bigger FT swings. When one team has 10+ more FTA, that advantage is temporary — refs even out.</p><div class="threshold">Trigger: Leading team has 10+ more FTA than trailing team.</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">Multiple signals = strongest bet in high-variance college games</p><p>College games are more volatile, so combined signals carry even more weight. When 2+ independent signals fire on the same game, the edge is compounding.</p><div class="threshold">Trigger: 2+ of {3PT Fragile, Star Cold, FT Inflation} on same game.</div></div>
+<div class="guide-card" style="border-left:3px solid var(--purple);"><h3><span class="signal-badge" style="background:var(--purple);">O/U</span> Pace Mirage (Over/Under)</h3><p class="edge-label">College scoring pace is even more volatile — easier to spot fake totals</p><p>NCAA games have wilder shooting streaks and more fouls. When the pace diverges from the O/U line because of temporary hot/cold streaks, the regression is sharp.</p><div class="threshold">Trigger: 2 of 3: (1) Combined 3PT% &ge;42% or &le;28% on 12+ att, (2) FT rate 40%+ abnormal, (3) Projected total 7+ pts off O/U line. Window: 25%-80% of game.</div></div>
 </div></div><div id="theory-panel" class="theory-panel">
   <h4>How This Dashboard Works</h4>
   <p>Every signal in this dashboard shares one thesis: <strong>the current score was built on something unsustainable, so the live moneyline is mispriced.</strong> Live odds react to the scoreboard, but they fail to distinguish between sustainable scoring (paint, mid-range) and unsustainable scoring (hot 3PT streaks, FT inflation). The 3-signal system (3PT Fragile, Star Cold, FT Inflation) plus Combined Edge identifies when these unsustainable conditions exist — that is the edge.</p>
