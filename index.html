@@ -97,6 +97,20 @@
     .signal-chip .chip-label.green { color: var(--green); }
     .signal-chip .chip-desc { display:none; position:absolute; bottom:100%; left:50%; transform:translateX(-50%); background:#1e293b; color:#fff; font-size:10px; padding:4px 8px; border-radius:4px; white-space:nowrap; z-index:100; pointer-events:none; margin-bottom:4px; box-shadow:0 2px 6px rgba(0,0,0,.15); }
     .signal-chip:hover .chip-desc { display:block; }
+    .signal-chip-clickable { cursor: pointer; transition: all 0.15s ease; }
+    .signal-chip-clickable:hover { background: var(--accent-light); }
+    .signal-chip-clickable:active { transform: scale(0.97); }
+    .chip-detail-panel { display:none; position:absolute; top:100%; left:50%; transform:translateX(-50%); background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius-sm); box-shadow:var(--shadow-lg); z-index:150; min-width:280px; max-width:360px; padding:0; margin-top:6px; text-align:left; overflow:hidden; animation:slideUp 0.2s ease; }
+    .chip-detail-panel.active { display:block; }
+    .chip-detail-panel::before { content:''; position:absolute; top:-6px; left:50%; transform:translateX(-50%); border-left:6px solid transparent; border-right:6px solid transparent; border-bottom:6px solid var(--border); }
+    .chip-detail-panel::after { content:''; position:absolute; top:-5px; left:50%; transform:translateX(-50%); border-left:5px solid transparent; border-right:5px solid transparent; border-bottom:5px solid var(--card-bg); }
+    .chip-detail-header { padding:8px 12px; background:var(--bg); border-bottom:1px solid var(--border-light); font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; }
+    .chip-detail-item { padding:8px 12px; border-bottom:1px solid var(--border-light); font-size:12px; }
+    .chip-detail-item:last-child { border-bottom:none; }
+    .chip-detail-game { font-weight:700; color:var(--text-primary); font-size:12px; }
+    .chip-detail-score { font-size:11px; color:var(--text-muted); margin-top:1px; }
+    .chip-detail-sig { font-size:11px; color:var(--text-secondary); margin-top:3px; line-height:1.4; }
+    .chip-detail-empty { padding:12px; text-align:center; font-size:11px; color:var(--text-muted); }
     .section-divider { height: 1px; background: var(--border-light); margin: 16px 0; }
     .edge-thesis-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
     .edge-thesis-header h2 { font-size: 14px; font-weight: 700; color: var(--text-primary); letter-spacing: 0.5px; text-transform: uppercase; margin: 0; }
@@ -397,30 +411,35 @@
         <div class="chip-label">Games</div>
         <div class="chip-desc">Total live games tracked</div>
       </div>
-      <div class="signal-chip">
+      <div class="signal-chip signal-chip-clickable" onclick="toggleSignalDetail('3ptfragile')">
         <div class="chip-value" id="live-3ptfragile-signals">0</div>
         <div class="chip-label">3PT Fragile</div>
         <div class="chip-desc">Hot 3PT shooting + fragile lead composition</div>
+        <div class="chip-detail-panel" id="chip-detail-3ptfragile"></div>
       </div>
-      <div class="signal-chip">
+      <div class="signal-chip signal-chip-clickable" onclick="toggleSignalDetail('star')">
         <div class="chip-value" id="live-star-signals">0</div>
         <div class="chip-label">Star Cold</div>
         <div class="chip-desc">Stars underperforming pace</div>
+        <div class="chip-detail-panel" id="chip-detail-star"></div>
       </div>
-      <div class="signal-chip">
+      <div class="signal-chip signal-chip-clickable" onclick="toggleSignalDetail('ft')">
         <div class="chip-value" id="live-ft-signals">0</div>
         <div class="chip-label">FT</div>
         <div class="chip-desc">Lead inflated by FT disparity</div>
+        <div class="chip-detail-panel" id="chip-detail-ft"></div>
       </div>
-      <div class="signal-chip">
+      <div class="signal-chip signal-chip-clickable" onclick="toggleSignalDetail('combined')">
         <div class="chip-value" id="live-combined-signals">0</div>
         <div class="chip-label">Combined</div>
         <div class="chip-desc">2+ signals on same side</div>
+        <div class="chip-detail-panel" id="chip-detail-combined"></div>
       </div>
-      <div class="signal-chip">
+      <div class="signal-chip signal-chip-clickable" onclick="toggleSignalDetail('pace')">
         <div class="chip-value purple" id="live-pace-mirage-count">0</div>
         <div class="chip-label purple">O/U Pace</div>
         <div class="chip-desc">Pace Mirage O/U signals (separate from ML)</div>
+        <div class="chip-detail-panel" id="chip-detail-pace"></div>
       </div>
     </div>
 
@@ -748,6 +767,52 @@ function switchTab(t) {
   document.getElementById('content-'+t).classList.add('active');
 }
 
+// ==================== SIGNAL CHIP CLICK-TO-EXPAND ====================
+function toggleSignalDetail(type) {
+  const panel = document.getElementById('chip-detail-' + type);
+  if (!panel) return;
+
+  // Close all other panels first
+  document.querySelectorAll('.chip-detail-panel.active').forEach(p => {
+    if (p.id !== 'chip-detail-' + type) p.classList.remove('active');
+  });
+
+  // Toggle this panel
+  const isOpen = panel.classList.contains('active');
+  if (isOpen) {
+    panel.classList.remove('active');
+    return;
+  }
+
+  // Build panel content from stored signal games
+  const games = window._signalGames ? window._signalGames[type] : [];
+  const labels = { '3ptfragile': '3PT Fragile', 'star': 'Star Cold', 'ft': 'FT Inflation', 'combined': 'Combined Edge', 'pace': 'Pace Mirage O/U' };
+
+  if (!games || games.length === 0) {
+    panel.innerHTML = `<div class="chip-detail-header">${labels[type] || type} Games</div><div class="chip-detail-empty">No active ${labels[type] || ''} signals right now</div>`;
+  } else {
+    const periodLabel = (per) => currentMode === 'ncaa' ? `H${per}` : `Q${per}`;
+    panel.innerHTML = `<div class="chip-detail-header">${labels[type] || type} — ${games.length} game${games.length>1?'s':''}</div>` +
+      games.map(g => {
+        const truncDetail = g.sigDetail && g.sigDetail.length > 120 ? g.sigDetail.substring(0, 120) + '...' : (g.sigDetail || '');
+        return `<div class="chip-detail-item">
+          <div class="chip-detail-game">${g.gameFull || g.game}</div>
+          <div class="chip-detail-score">${g.aScore} - ${g.hScore} | ${periodLabel(g.per)} ${g.clk}</div>
+          <div class="chip-detail-sig">${truncDetail}</div>
+        </div>`;
+      }).join('');
+  }
+
+  panel.classList.add('active');
+}
+
+// Close signal detail panels when clicking outside
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.signal-chip-clickable')) {
+    document.querySelectorAll('.chip-detail-panel.active').forEach(p => p.classList.remove('active'));
+  }
+});
+
 // ==================== AUTO REFRESH ====================
 function toggleAutoRefresh() {
   state.autoRefresh = !state.autoRefresh;
@@ -1023,6 +1088,8 @@ async function fetchESPNScoreboard() {
 
     let sig3Fragile=0, sigStar=0, sigCombined=0, sigFT=0, hotTeams=0, warmTeams=0, sigPaceMirage=0;
     let cards='', tpCards='', gameTheses=[], paceMirageResults=[];
+    // Per-signal game tracking for chip click-to-expand
+    let signalGames = { '3ptfragile': [], 'star': [], 'ft': [], 'combined': [], 'pace': [] };
 
     for (const event of liveEvents) {
       const comp = event.competitions?.[0]; if (!comp) continue;
@@ -1216,6 +1283,14 @@ async function fetchESPNScoreboard() {
         const activeSignals = [has3ptFragile, hasStar, hasFT].filter(Boolean).length;
         if (activeSignals >= 2) { signalLevel=2; sigCombined++; }
         else if (activeSignals === 1) signalLevel=1;
+
+        // Track which games have which signals for chip click-to-expand
+        const _gameInfo = { game: gLabel, gameFull: gLabelFull, aScore: aS, hScore: hS, per, clk, detail };
+        if (has3ptFragile) signalGames['3ptfragile'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='3ptFragile'&&s.level===2).map(s=>s.text).join('; ') });
+        if (hasStar) signalGames['star'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='star'&&s.level===2).map(s=>s.text).join('; ') });
+        if (hasFT) signalGames['ft'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='ft'&&s.level>=2).map(s=>s.text).join('; ') });
+        if (activeSignals >= 2) signalGames['combined'].push({ ..._gameInfo, sigDetail: `${activeSignals} signals active: ${[has3ptFragile?'3PT Fragile':'',hasStar?'Star Cold':'',hasFT?'FT':''].filter(Boolean).join(' + ')}` });
+        if (pmResult.level === 2) signalGames['pace'].push({ ..._gameInfo, sigDetail: pmResult.detail });
 
         // Determine bet side and build thesis logic
         if (signalLevel >= 2) {
@@ -1544,6 +1619,9 @@ async function fetchESPNScoreboard() {
       pmContainer.style.display = 'none';
       pmCards.innerHTML = '';
     }
+
+    // Store signal games globally for chip click-to-expand
+    window._signalGames = signalGames;
 
     updateStarTracker(events);
         renderBetLog();
