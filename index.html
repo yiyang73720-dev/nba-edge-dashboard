@@ -664,8 +664,65 @@ let oddsReqMonth=localStorage.getItem('oddsReqMonth')||'';
 function getOddsSport(){return(typeof currentMode!=='undefined'&&currentMode==='ncaa')?'basketball_ncaab':'basketball_nba';}
 function impliedProb(am){const n=parseInt(am);if(n<0)return(Math.abs(n)/(Math.abs(n)+100)*100).toFixed(1);return(100/(n+100)*100).toFixed(1);}
 function oddsClass(am){const n=parseInt(am);if(n<=-150)return'fav';if(n>=150)return'dog';return'even';}
-async function fetchLiveOdds(){const now=Date.now();if(now-oddsCacheTime<ODDS_CACHE_TTL&&Object.keys(oddsCache).length>0)return oddsCache;const curMonth=new Date().toISOString().slice(0,7);if(oddsReqMonth!==curMonth){oddsRequestCount=0;oddsReqMonth=curMonth;}if(oddsRequestCount>=480){console.warn('Odds API near limit');return oddsCache;}try{const sport=getOddsSport();const resp=await fetch('https://api.the-odds-api.com/v4/sports/'+sport+'/odds/?apiK'+'ey=4ca2c6a2ed9e162809eb03722e2dc734&regions=us&markets=h2h,totals&oddsFormat=american&bookmakers=fanduel,draftkings,betmgm');if(!resp.ok){console.warn('Odds API:',resp.status);return oddsCache;}const data=await resp.json();oddsRequestCount++;localStorage.setItem('oddsReqCount',oddsRequestCount.toString());localStorage.setItem('oddsReqMonth',curMonth);const remaining=resp.headers.get('x-requests-remaining');const el=document.getElementById('odds-status');if(el)el.textContent='Odds: '+(remaining||'?')+' calls left';const nc={};for(const g of data){const bk=g.bookmakers?.[0];if(!bk)continue;const mk=bk.markets?.find(m=>m.key==='h2h');if(!mk)continue;const ho=mk.outcomes?.find(o=>o.name===g.home_team);const ao=mk.outcomes?.find(o=>o.name===g.away_team);if(!ho||!ao)continue;let ouLine=null,overPrice=null,underPrice=null;const totMkt=bk.markets?.find(m=>m.key==='totals');if(totMkt){const overO=totMkt.outcomes?.find(o=>o.name==='Over');const underO=totMkt.outcomes?.find(o=>o.name==='Under');if(overO){ouLine=overO.point;overPrice=overO.price;}if(underO){underPrice=underO.price;if(!ouLine)ouLine=underO.point;}}nc[g.away_team+' vs '+g.home_team]={home:g.home_team,away:g.away_team,homeML:ho.price,awayML:ao.price,book:bk.title,ouLine,overPrice,underPrice};}oddsCache=nc;oddsCacheTime=now;return nc;}catch(e){console.warn('Odds error:',e);return oddsCache;}}
-function matchOdds(aAbbr,hAbbr,aFull,hFull){for(const k of Object.keys(oddsCache)){const g=oddsCache[k];const hM=g.home.toUpperCase().includes(hAbbr)||(hFull&&g.home.toUpperCase().includes(hFull.toUpperCase().split(' ').pop()));const aM=g.away.toUpperCase().includes(aAbbr)||(aFull&&g.away.toUpperCase().includes(aFull.toUpperCase().split(' ').pop()));if(hM&&aM)return g;}return null;}
+async function fetchLiveOdds(){
+  const now=Date.now();
+  if(now-oddsCacheTime<ODDS_CACHE_TTL&&Object.keys(oddsCache).length>0)return oddsCache;
+  const curMonth=new Date().toISOString().slice(0,7);
+  if(oddsReqMonth!==curMonth){oddsRequestCount=0;oddsReqMonth=curMonth;}
+  if(oddsRequestCount>=480){console.warn('Odds API near limit');return oddsCache;}
+  try{
+    const sport=getOddsSport();
+    const resp=await fetch('https://api.the-odds-api.com/v4/sports/'+sport+'/odds/?apiK'+'ey=4ca2c6a2ed9e162809eb03722e2dc734&regions=us&markets=h2h,totals&oddsFormat=american&bookmakers=fanduel,draftkings,betmgm');
+    if(!resp.ok){console.warn('Odds API:',resp.status);return oddsCache;}
+    const data=await resp.json();
+    oddsRequestCount++;
+    localStorage.setItem('oddsReqCount',oddsRequestCount.toString());
+    localStorage.setItem('oddsReqMonth',curMonth);
+    const remaining=resp.headers.get('x-requests-remaining');
+    const el=document.getElementById('odds-status');
+    if(el)el.textContent='Odds: '+(remaining||'?')+' calls left';
+    const nc={};
+    for(const g of data){
+      // Find h2h from any bookmaker
+      let homeML=null,awayML=null,bookName='';
+      for(const bk of (g.bookmakers||[])){
+        const mk=bk.markets?.find(m=>m.key==='h2h');
+        if(mk){
+          const ho=mk.outcomes?.find(o=>o.name===g.home_team);
+          const ao=mk.outcomes?.find(o=>o.name===g.away_team);
+          if(ho&&ao){homeML=ho.price;awayML=ao.price;bookName=bk.title;break;}
+        }
+      }
+      if(homeML===null||awayML===null)continue;
+      // Find totals from ANY bookmaker (not just the first one)
+      let ouLine=null,overPrice=null,underPrice=null;
+      for(const bk of (g.bookmakers||[])){
+        const totMkt=bk.markets?.find(m=>m.key==='totals');
+        if(totMkt){
+          const overO=totMkt.outcomes?.find(o=>o.name==='Over');
+          const underO=totMkt.outcomes?.find(o=>o.name==='Under');
+          if(overO){ouLine=overO.point;overPrice=overO.price;}
+          if(underO){underPrice=underO.price;if(!ouLine)ouLine=underO.point;}
+          if(ouLine)break; // found it, stop searching
+        }
+      }
+      nc[g.away_team+' vs '+g.home_team]={home:g.home_team,away:g.away_team,homeML,awayML,book:bookName,ouLine,overPrice,underPrice};
+    }
+    oddsCache=nc;oddsCacheTime=now;return nc;
+  }catch(e){console.warn('Odds error:',e);return oddsCache;}
+}
+function matchOdds(aAbbr,hAbbr,aFull,hFull){
+  for(const k of Object.keys(oddsCache)){
+    const g=oddsCache[k];
+    const gH=g.home.toUpperCase();
+    const gA=g.away.toUpperCase();
+    // Try multiple matching strategies: abbreviation, last word of full name, full name contains
+    const hM=gH.includes(hAbbr)||(hFull&&(gH.includes(hFull.toUpperCase().split(' ').pop())||gH.includes(hFull.toUpperCase().split(' ')[0])));
+    const aM=gA.includes(aAbbr)||(aFull&&(gA.includes(aFull.toUpperCase().split(' ').pop())||gA.includes(aFull.toUpperCase().split(' ')[0])));
+    if(hM&&aM)return g;
+  }
+  return null;
+}
 function buildOddsHTML(aAbbr,hAbbr,aFull,hFull){const o=matchOdds(aAbbr,hAbbr,aFull,hFull);if(!o)return'';const aML=(o.awayML>0?'+':'')+o.awayML;const hML=(o.homeML>0?'+':'')+o.homeML;return'<div class="odds-row"><span><span class="odds-label">'+aAbbr+' ML</span> <span class="odds-val '+oddsClass(aML)+'">'+aML+'</span> <span class="odds-implied">('+impliedProb(aML)+'%)</span></span><span class="odds-src">'+o.book+'</span><span><span class="odds-implied">('+impliedProb(hML)+'%)</span> <span class="odds-val '+oddsClass(hML)+'">'+hML+'</span> <span class="odds-label">'+hAbbr+' ML</span></span></div>';}
 
 function getESPNUrl(){const base='https://site.api.espn'+'.com/apis/site/v2/sports/'+MODE_CONFIG[currentMode].sport+'/scoreboard';return currentMode==='ncaa'?base+'?limit=200&groups=50':base;}
