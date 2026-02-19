@@ -633,7 +633,7 @@
 </div>
 
 
-  <div id="scenario-alert-panel" class="scenario-alert-panel"></div>
+  <div id="scenario-alert-panel" class="scenario-alert-panel" style="display:none;"></div>
 
   <!-- No toast container — signals show on chips and game cards only -->
 
@@ -923,11 +923,7 @@ function checkQuarterEnd(gameId, teamAbbr, currentPeriod, pct, made, att, gameLa
 }
 
 function showQuarterToast(a) {
-  const c = document.getElementById('toast-container'), t = document.createElement('div');
-  t.className = 'quarter-alert-toast';
-  t.innerHTML = `<div class="toast-title">Q${a.quarter} END - ${a.team}</div><div class="toast-body">${a.team} shot ${a.pct}% from 3 (${a.made}/${a.att}) in Q${a.quarter}! ${a.game}</div>`;
-  t.onclick = () => t.remove(); c.appendChild(t);
-  setTimeout(() => { if (t.parentNode) t.remove(); }, 11000);
+  // No popup — just update the badge count silently
   const badge = document.getElementById('threept-badge');
   if (state.quarterAlerts.length > 0) { badge.style.display = 'inline'; badge.textContent = state.quarterAlerts.length; }
 }
@@ -1585,6 +1581,7 @@ async function fetchESPNScoreboard() {
         const _aD = teamDisplay(pm.aTeam, pm.aTeamFull);
         const _hD = teamDisplay(pm.hTeam, pm.hTeamFull);
         const elapsed = getElapsedMinutes(pm.per, pm.clk);
+        const totalMin = getTotalGameMinutes();
         const pctPlayed = (getGamePct(pm.per, pm.clk) * 100).toFixed(0);
         const periodLabel = currentMode === 'ncaa' ? `H${pm.per}` : `Q${pm.per}`;
 
@@ -2059,6 +2056,7 @@ function initAudio() {
 }
 
 function playAlertSound(type) {
+  return; // No sounds — alerts disabled
   if (!soundEnabled) return;
   const ctx = initAudio();
   const osc = ctx.createOscillator();
@@ -2187,79 +2185,8 @@ let alertIdCounter = 0;
 const ALERT_HISTORY = JSON.parse(localStorage.getItem('alertHistory') || '[]');
 
 function showScenarioAlert(data) {
-  // data: { player, team, game, quarter, clock, currentPts, expectedPts, ppg, pacePercent, type, signals }
-  const panel = document.getElementById('scenario-alert-panel');
-  if (!panel) return;
-  
-  const id = 'alert-' + (++alertIdCounter);
-  const paceColor = data.pacePercent < 50 ? '#4fc3f7' : data.pacePercent < 75 ? 'var(--orange)' : 'var(--green)';
-  const paceFill = Math.min(data.pacePercent, 100);
-  const deficit = data.expectedPts - data.currentPts;
-  const deficitText = deficit > 0 ? deficit.toFixed(1) + ' pts behind' : Math.abs(deficit).toFixed(1) + ' pts ahead';
-  
-  let badge = 'COLD ALERT';
-  let badgeBg = 'var(--red)';
-  let soundType = 'cold';
-  if (data.type === 'hot3pt') { badge = '3PT FIRE'; badgeBg = 'var(--orange)'; soundType = 'hot3pt'; }
-  else if (data.type === 'combined') { badge = 'MULTI-SIGNAL'; badgeBg = 'linear-gradient(90deg, var(--red), var(--orange))'; soundType = 'combined'; }
-  else if (data.type === 'fragile') { badge = 'FRAGILE LEAD'; badgeBg = '#e91e63'; soundType = 'cold'; }
-  
-  const q1Exp = (data.ppg * 0.25).toFixed(1);
-  const halfExp = (data.ppg * 0.5).toFixed(1);
-  const periodLabel = data.quarter <= 2 ? 'Q' + data.quarter : data.quarter <= 4 ? 'Q' + data.quarter : 'OT';
-  const periodExp = data.quarter === 1 ? q1Exp : data.quarter === 2 ? halfExp : data.expectedPts.toFixed(1);
-  const periodExpLabel = data.quarter === 1 ? 'Q1 Exp' : data.quarter === 2 ? 'Half Exp' : 'Exp Now';
-  
-  const alertEl = document.createElement('div');
-  alertEl.className = 'scenario-alert';
-  alertEl.id = id;
-  alertEl.innerHTML = `
-    <button class="alert-dismiss" onclick="dismissAlert('${id}')">&times;</button>
-    <div class="alert-header">
-      <span class="alert-badge" style="background:${badgeBg};">${badge}</span>
-      <span class="alert-game-time">${data.game} &bull; ${periodLabel} ${data.clock}</span>
-    </div>
-    <div class="alert-player">${data.player}</div>
-    <div class="alert-team">${data.team} &bull; ${data.ppg} PPG season avg</div>
-    <div class="alert-stats">
-      <div class="alert-stat">
-        <div class="alert-stat-label">Current</div>
-        <div class="alert-stat-value cold">${data.currentPts}</div>
-      </div>
-      <div class="alert-stat">
-        <div class="alert-stat-label">${periodExpLabel}</div>
-        <div class="alert-stat-value neutral">${periodExp}</div>
-      </div>
-      <div class="alert-stat">
-        <div class="alert-stat-label">Pace</div>
-        <div class="alert-stat-value ${data.pacePercent < 60 ? 'cold' : data.pacePercent < 80 ? 'neutral' : 'hot'}">${data.pacePercent.toFixed(0)}%</div>
-      </div>
-    </div>
-    <div class="alert-pace-bar">
-      <div class="alert-pace-fill" style="width:${paceFill}%;background:${paceColor};"></div>
-      <div class="alert-pace-marker" style="left:60%;" title="60% threshold"></div>
-    </div>
-    <div class="alert-verdict">
-      <strong>${deficitText}</strong> expected pace at ${periodLabel} ${data.clock}. 
-      Stars below 60% pace tend to regress upward as the game progresses.
-      <strong>Mean reversion candidate &mdash; live ML is mispriced.</strong>
-    </div>
-    <div class="alert-action">
-      <button class="btn btn-orange btn-sm" onclick="openLogModal('${data.game}','Live ML','Mean Reversion')">Log Bet</button>
-      <button class="btn btn-outline btn-sm" onclick="dismissAlert('${id}')">Dismiss</button>
-    </div>
-  `;
-  
-  panel.appendChild(alertEl);
-  activeAlerts.push(id);
-  
-  // Play sound
-  playAlertSound(soundType);
-  
-  // Auto-dismiss after 30s
-  setTimeout(() => dismissAlert(id), 30000);
-  
-  // Save to history
+  // No popup alerts — signals show on chips and game cards only
+  // Just save to history silently
   ALERT_HISTORY.unshift({ ...data, time: new Date().toISOString() });
   if (ALERT_HISTORY.length > 50) ALERT_HISTORY.length = 50;
   localStorage.setItem('alertHistory', JSON.stringify(ALERT_HISTORY));
