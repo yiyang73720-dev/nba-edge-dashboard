@@ -998,19 +998,21 @@ async function fetchESPNScoreboard() {
           thesis.signals = signals;
           thesis.signalLevel = signalLevel;
           const _tOdds = matchOdds(aA, hA, aFull, hFull);
+          let _betML = null, _implP = 0;
           if (_tOdds) {
-            const _betML = betTeam === aA ? _tOdds.awayML : _tOdds.homeML;
-            const _implP = _betML < 0 ? Math.abs(_betML)/(Math.abs(_betML)+100) : 100/(_betML+100);
+            _betML = betTeam === aA ? _tOdds.awayML : _tOdds.homeML;
+            _implP = _betML < 0 ? Math.abs(_betML)/(Math.abs(_betML)+100) : 100/(_betML+100);
             thesis.marketOdds = _betML;
             thesis.impliedP = _implP;
             const _k = kellySize(_implP, _betML);
             thesis.kellyPct = _k.fStar;
             thesis.kellyBet = _k.bet;
+            thesis.kellyEdge = _k.edge;
             thesis.estimatedP = _k.p;
           }
           thesis.eventId = event.id;
           thesis.betTeamAbbr = betTeam;
-          if (_tOdds) {
+          if (_tOdds && _betML) {
             autoLogBet(event.id, betTeam, 'ML', signals.filter(x=>x.level===2).map(x=>x.type), _betML, _implP);
           }
           gameTheses.push(thesis);
