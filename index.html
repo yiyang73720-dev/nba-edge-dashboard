@@ -398,19 +398,14 @@
         <div class="chip-desc">Total live games tracked</div>
       </div>
       <div class="signal-chip">
-        <div class="chip-value" id="live-3pt-signals">0</div>
-        <div class="chip-label">3PT</div>
-        <div class="chip-desc">Teams shooting hot from 3PT</div>
+        <div class="chip-value" id="live-3ptfragile-signals">0</div>
+        <div class="chip-label">3PT Fragile</div>
+        <div class="chip-desc">Hot 3PT shooting + fragile lead composition</div>
       </div>
       <div class="signal-chip">
         <div class="chip-value" id="live-star-signals">0</div>
         <div class="chip-label">Star Cold</div>
         <div class="chip-desc">Stars underperforming pace</div>
-      </div>
-      <div class="signal-chip">
-        <div class="chip-value" id="live-fragile-leads">0</div>
-        <div class="chip-label">Fragile</div>
-        <div class="chip-desc">3PT-heavy lead vs paint-heavy trail</div>
       </div>
       <div class="signal-chip">
         <div class="chip-value" id="live-ft-signals">0</div>
@@ -587,7 +582,7 @@
     <div class="form-grid">
       <div class="form-group"><label>Game</label><input type="text" id="modal-game" /></div>
       <div class="form-group"><label>Side</label><input type="text" id="modal-side" /></div>
-      <div class="form-group"><label>Strategy</label><select id="modal-strategy"><option>Mean Reversion</option><option>3PT Regression</option><option>Star Cold</option><option>Fragile Lead</option><option>FT Inflation</option><option>Combined Edge</option></select></div>
+      <div class="form-group"><label>Strategy</label><select id="modal-strategy"><option>Mean Reversion</option><option>3PT Fragile</option><option>Star Cold</option><option>FT Inflation</option><option>Combined Edge</option></select></div>
       <div class="form-group"><label>Line / Price</label><input type="text" id="modal-price" /></div>
       <div class="form-group"><label>Units</label><input type="number" id="modal-units" value="1" step="0.5" min="0.5" max="2" /></div>
       <div class="form-group"><label>Notes</label><input type="text" id="modal-notes" /></div>
@@ -884,7 +879,7 @@ async function fetchESPNScoreboard() {
       return;
     }
 
-    let sig3=0, sigStar=0, sigCombined=0, sigFragile=0, sigFT=0, hotTeams=0, warmTeams=0;
+    let sig3Fragile=0, sigStar=0, sigCombined=0, sigFT=0, hotTeams=0, warmTeams=0;
     let cards='', tpCards='', gameTheses=[];
 
     for (const event of liveEvents) {
@@ -936,28 +931,78 @@ async function fetchESPNScoreboard() {
       let thesis = { game: gLabel, gameFull: gLabelFull, aTeam: aA, hTeam: hA, aTeamFull: aFull, hTeamFull: hFull, aScore: aS, hScore: hS, per, clk, detail, criteria: {}, betSide: '', betSideFull: '', betLogic: '', signals: [] };
 
       if (isLive) {
-        // 3PT CHECK
+        // 3PT CHECK — evaluate shooting stats (used as input for 3PT Fragile signal)
         const chk3 = (p,m,a,t,side,tFull) => {
           const pn=parseFloat(p), an=parseInt(a), mn=parseInt(m);
           const tD = teamDisplay(t, tFull);
-          if ((pn>=50&&an>=12)||(pn>=55&&an>=8)) {
-            signals.push({type:'3pt',text:`${tD} ${pn.toFixed(0)}% from 3 (${mn}/${an}) - UNSUSTAINABLE`,level:2});
-            sig3++;
-                  fire3PTAlert(t, pn.toFixed(0), mn, an, gLabel, per, clk); hotTeams++;
-            sendSignalNotification('🔥 3PT Signal: ' + tD, t + ' shooting ' + pn.toFixed(0) + '% from 3 (' + mn + '/' + an + ') - UNSUSTAINABLE', gid, '3pt_' + side);
-            if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
-            thesis.criteria[`3pt_${side}`] = {met:true, strong:true, label:`${tD} 3PT: ${pn.toFixed(0)}% (${mn}/${an})`, detail:`<strong>${tD}</strong> is shooting ${pn.toFixed(0)}% from 3 on ${an} attempts.<br><strong>${getLeagueName()} average:</strong> ${getLeague3PtAvg()}%.<br><strong>Why it matters:</strong> This is 2+ standard deviations above the mean. Teams shooting 50%+ from 3 in a half sustain it only ~12% of games. The lead built on this 3PT shooting is inflated and will regress.`, value:`${pn.toFixed(0)}% on ${an} att`};
-            return true;
-          } else if (pn>=45&&an>=10) {
-            signals.push({type:'3pt',text:`${tD} ${pn.toFixed(0)}% from 3 (${mn}/${an}) - elevated`,level:1});
-            warmTeams++;
-            thesis.criteria[`3pt_${side}`] = {met:true, strong:false, label:`${tD} 3PT: ${pn.toFixed(0)}% (${mn}/${an})`, detail:`Elevated but not yet extreme. Watch for further increase.`, value:`${pn.toFixed(0)}% on ${an} att`, warn:true};
-          } else {
-            thesis.criteria[`3pt_${side}`] = {met:false, label:`${tD} 3PT: ${pn?pn.toFixed(0):'0'}%`, detail:`Normal shooting range, no 3PT regression signal.`, value:'Normal'};
-          }
-          return false;
+          const isHot = (pn>=50&&an>=12)||(pn>=55&&an>=8);
+          const isWarm = !isHot && pn>=45&&an>=10;
+          if (isHot) {
+            fire3PTAlert(t, pn.toFixed(0), mn, an, gLabel, per, clk); hotTeams++;
+          } else if (isWarm) { warmTeams++; }
+          // NOTE: 3PT alone no longer fires as a level 2 signal.
+          // It will be combined with Fragile Lead below into "3PT Fragile"
+          return { isHot, isWarm, pn, an, mn, tD };
         };
-        const a3Hot = chk3(a3P,a3M,a3A,aA,'away',aFull), h3Hot = chk3(h3P,h3M,h3A,hA,'home',hFull);
+        const a3Check = chk3(a3P,a3M,a3A,aA,'away',aFull), h3Check = chk3(h3P,h3M,h3A,hA,'home',hFull);
+
+        // FRAGILE LEAD CHECK — evaluate lead composition (used as input for 3PT Fragile signal)
+        const aDur = analyzeScoringDurability(aA, aS, a3M, hS);
+        const hDur = analyzeScoringDurability(hA, hS, h3M, aS);
+        let aFragileData = null, hFragileData = null;
+        if (aS > hS && aDur.pct3 >= getFragile3PtThreshold() && aS >= 20) {
+          const hNon3Pct = hS > 0 ? ((hS - (parseInt(h3M)||0)*3) / hS * 100) : 0;
+          if (hNon3Pct >= 58) aFragileData = { pct3: aDur.pct3, oppPaintPct: hNon3Pct };
+        }
+        if (hS > aS && hDur.pct3 >= getFragile3PtThreshold() && hS >= 20) {
+          const aNon3Pct = aS > 0 ? ((aS - (parseInt(a3M)||0)*3) / aS * 100) : 0;
+          if (aNon3Pct >= 58) hFragileData = { pct3: hDur.pct3, oppPaintPct: aNon3Pct };
+        }
+
+        // ========== 3PT FRAGILE SIGNAL — fires ONLY when BOTH conditions are met ==========
+        // Condition 1: Team shooting hot from 3 (50%+ on 12+ att or 55%+ on 8+ att)
+        // Condition 2: Their lead is fragile (3PT-heavy) AND trailing team scores from paint
+        const _aD = teamDisplay(aA, aFull), _hD = teamDisplay(hA, hFull);
+
+        // Away team: both hot 3PT AND fragile lead
+        if (a3Check.isHot && aFragileData) {
+          signals.push({type:'3ptFragile', text:`${_aD} 3PT FRAGILE: shooting ${a3Check.pn.toFixed(0)}% from 3 (${a3Check.mn}/${a3Check.an}) AND lead is ${aFragileData.pct3.toFixed(0)}% 3PT-dependent. ${_hD} scores from paint (${aFragileData.oppPaintPct.toFixed(0)}%). Classic fade.`, level:2});
+          sig3Fragile++;
+          sendSignalNotification('🔥 3PT Fragile: ' + _aD, aA + ' shooting ' + a3Check.pn.toFixed(0) + '% from 3 AND lead is fragile', gid, '3ptfragile_away');
+          if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
+          thesis.criteria['3ptfragile_away'] = {met:true, strong:true, label:`${_aD} 3PT Fragile Lead`, detail:`<strong>3PT Shooting:</strong> ${_aD} is shooting ${a3Check.pn.toFixed(0)}% from 3 on ${a3Check.an} attempts (${getLeagueName()} avg: ${getLeague3PtAvg()}%).<br><strong>Lead Composition:</strong> ${aFragileData.pct3.toFixed(0)}% of ${_aD}'s scoring comes from 3PT (threshold: ${getFragile3PtThreshold()}%).<br><strong>Opponent Durability:</strong> ${_hD} has ${aFragileData.oppPaintPct.toFixed(0)}% non-3PT scoring — paint-heavy and sustainable.<br><strong>Signal:</strong> Both conditions confirmed — the 3PT shooting is unsustainable AND the lead depends on it. When the shooting cools, the lead evaporates.`, value:`${a3Check.pn.toFixed(0)}% 3PT + ${aFragileData.pct3.toFixed(0)}% fragile`};
+        } else if (a3Check.isHot && !aFragileData) {
+          // Hot shooting but lead not fragile enough — informational only
+          signals.push({type:'3ptFragile', text:`${_aD} shooting hot: ${a3Check.pn.toFixed(0)}% from 3 (${a3Check.mn}/${a3Check.an}) — but lead not fragile enough for full signal.`, level:1});
+          thesis.criteria['3ptfragile_away'] = {met:true, strong:false, label:`${_aD} 3PT Hot (no fragile lead)`, detail:`${_aD} is shooting ${a3Check.pn.toFixed(0)}% from 3 on ${a3Check.an} attempts — elevated, but the lead composition isn't fragile enough (needs 3PT-heavy lead vs paint-heavy opponent). Monitoring only.`, value:`${a3Check.pn.toFixed(0)}% 3PT`, warn:true};
+        } else if (!a3Check.isHot && aFragileData) {
+          // Fragile lead but shooting not extreme — informational only
+          thesis.criteria['3ptfragile_away'] = {met:true, strong:false, label:`${_aD} Fragile Lead (not hot enough)`, detail:`${_aD}'s lead is ${aFragileData.pct3.toFixed(0)}% from 3PT — fragile composition detected, but current 3PT shooting rate isn't extreme enough to trigger. Needs 50%+ on 12+ attempts.`, value:`${aFragileData.pct3.toFixed(0)}% fragile`, warn:true};
+        } else if (a3Check.isWarm) {
+          signals.push({type:'3ptFragile', text:`${_aD} ${a3Check.pn.toFixed(0)}% from 3 (${a3Check.mn}/${a3Check.an}) — elevated, watch for increase.`, level:1});
+          thesis.criteria['3ptfragile_away'] = {met:false, label:`${_aD} 3PT: ${a3Check.pn.toFixed(0)}%`, detail:`Elevated but no fragile lead. Both conditions needed.`, value:'Watching'};
+        } else {
+          thesis.criteria['3ptfragile_away'] = {met:false, label:`${_aD} 3PT Fragile`, detail:`No 3PT fragile signal. Normal shooting range and/or no fragile lead composition.`, value:'N/A'};
+        }
+
+        // Home team: both hot 3PT AND fragile lead
+        if (h3Check.isHot && hFragileData) {
+          signals.push({type:'3ptFragile', text:`${_hD} 3PT FRAGILE: shooting ${h3Check.pn.toFixed(0)}% from 3 (${h3Check.mn}/${h3Check.an}) AND lead is ${hFragileData.pct3.toFixed(0)}% 3PT-dependent. ${_aD} scores from paint (${hFragileData.oppPaintPct.toFixed(0)}%). Classic fade.`, level:2});
+          sig3Fragile++;
+          sendSignalNotification('🔥 3PT Fragile: ' + _hD, hA + ' shooting ' + h3Check.pn.toFixed(0) + '% from 3 AND lead is fragile', gid, '3ptfragile_home');
+          if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
+          thesis.criteria['3ptfragile_home'] = {met:true, strong:true, label:`${_hD} 3PT Fragile Lead`, detail:`<strong>3PT Shooting:</strong> ${_hD} is shooting ${h3Check.pn.toFixed(0)}% from 3 on ${h3Check.an} attempts (${getLeagueName()} avg: ${getLeague3PtAvg()}%).<br><strong>Lead Composition:</strong> ${hFragileData.pct3.toFixed(0)}% of ${_hD}'s scoring comes from 3PT (threshold: ${getFragile3PtThreshold()}%).<br><strong>Opponent Durability:</strong> ${_aD} has ${hFragileData.oppPaintPct.toFixed(0)}% non-3PT scoring — paint-heavy and sustainable.<br><strong>Signal:</strong> Both conditions confirmed — the 3PT shooting is unsustainable AND the lead depends on it. When the shooting cools, the lead evaporates.`, value:`${h3Check.pn.toFixed(0)}% 3PT + ${hFragileData.pct3.toFixed(0)}% fragile`};
+        } else if (h3Check.isHot && !hFragileData) {
+          signals.push({type:'3ptFragile', text:`${_hD} shooting hot: ${h3Check.pn.toFixed(0)}% from 3 (${h3Check.mn}/${h3Check.an}) — but lead not fragile enough for full signal.`, level:1});
+          thesis.criteria['3ptfragile_home'] = {met:true, strong:false, label:`${_hD} 3PT Hot (no fragile lead)`, detail:`${_hD} is shooting ${h3Check.pn.toFixed(0)}% from 3 on ${h3Check.an} attempts — elevated, but the lead composition isn't fragile enough. Monitoring only.`, value:`${h3Check.pn.toFixed(0)}% 3PT`, warn:true};
+        } else if (!h3Check.isHot && hFragileData) {
+          thesis.criteria['3ptfragile_home'] = {met:true, strong:false, label:`${_hD} Fragile Lead (not hot enough)`, detail:`${_hD}'s lead is ${hFragileData.pct3.toFixed(0)}% from 3PT — fragile composition detected, but 3PT shooting rate isn't extreme enough. Needs 50%+ on 12+ attempts.`, value:`${hFragileData.pct3.toFixed(0)}% fragile`, warn:true};
+        } else if (h3Check.isWarm) {
+          signals.push({type:'3ptFragile', text:`${_hD} ${h3Check.pn.toFixed(0)}% from 3 (${h3Check.mn}/${h3Check.an}) — elevated, watch for increase.`, level:1});
+          thesis.criteria['3ptfragile_home'] = {met:false, label:`${_hD} 3PT: ${h3Check.pn.toFixed(0)}%`, detail:`Elevated but no fragile lead. Both conditions needed.`, value:'Watching'};
+        } else {
+          thesis.criteria['3ptfragile_home'] = {met:false, label:`${_hD} 3PT Fragile`, detail:`No 3PT fragile signal. Normal shooting and/or no fragile lead composition.`, value:'N/A'};
+        }
 
         // STAR PACE CHECK (60% threshold)
         const cM = parseFloat(clk?.split(':')[0]||12), cS = parseFloat(clk?.split(':')[1]||0);
@@ -988,41 +1033,6 @@ async function fetchESPNScoreboard() {
           }
         });
 
-        // FRAGILE LEAD — dual condition: leading team 3PT-heavy AND trailing team paint-heavy
-        const aDur = analyzeScoringDurability(aA, aS, a3M, hS);
-        const hDur = analyzeScoringDurability(hA, hS, h3M, aS);
-        // Away leads: check if away is 3PT-heavy (42%+) AND home (trailing) is paint-heavy (58%+ non-3PT)
-        if (aS > hS && aDur.pct3 >= getFragile3PtThreshold() && aS >= 20) {
-          const hNon3Pct = hS > 0 ? ((hS - (parseInt(h3M)||0)*3) / hS * 100) : 0;
-          if (hNon3Pct >= 58) {
-            const _aDisp = teamDisplay(aA, aFull), _hDisp = teamDisplay(hA, hFull);
-            signals.push({type:'fragile',text:`${_aDisp} lead is FRAGILE: ${aDur.pct3.toFixed(0)}% from 3PT. ${_hDisp} scoring is durable (${hNon3Pct.toFixed(0)}% paint/mid). Fade the lead.`,level:2});
-            sigFragile++;
-            sendSignalNotification('⚠️ Fragile Lead: ' + teamDisplay(aA, aFull), aA + ' lead fragile - ' + aDur.pct3.toFixed(0) + '% from 3PT vs ' + hA + ' paint', gid, 'fragile_away');
-            if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
-            thesis.criteria['fragile_away'] = {met:true, strong:true, label:`${teamDisplay(aA,aFull)} Fragile Lead`, detail:`<strong>Leading team:</strong> ${teamDisplay(aA,aFull)} — ${aDur.pct3.toFixed(0)}% of scoring from 3PT (threshold: ${getFragile3PtThreshold()}%).<br><strong>Trailing team:</strong> ${teamDisplay(hA,hFull)} — ${hNon3Pct.toFixed(0)}% non-3PT scoring (paint-heavy, sustainable).<br><strong>Signal:</strong> The lead is inflated by hot 3PT shooting AND the trailing team's offense is sustainable. Classic fade setup.`, value:`${aDur.pct3.toFixed(0)}% 3PT vs ${hNon3Pct.toFixed(0)}% paint`};
-          } else {
-            thesis.criteria['fragile_away'] = {met:false, label:`${teamDisplay(aA,aFull)} Lead Composition`, detail:`${teamDisplay(aA,aFull)} is 3PT-heavy but ${teamDisplay(hA,hFull)} is not paint-heavy enough. Fragile not triggered.`, value:'Partial'};
-          }
-        } else {
-          thesis.criteria['fragile_away'] = {met:false, label:`${teamDisplay(aA,aFull)} Lead Composition`, detail:`No fragile lead condition met for ${teamDisplay(aA,aFull)}.`, value:'N/A'};
-        }
-        // Home leads: check if home is 3PT-heavy AND away (trailing) is paint-heavy
-        if (hS > aS && hDur.pct3 >= getFragile3PtThreshold() && hS >= 20) {
-          const aNon3Pct = aS > 0 ? ((aS - (parseInt(a3M)||0)*3) / aS * 100) : 0;
-          if (aNon3Pct >= 58) {
-            signals.push({type:'fragile',text:`${teamDisplay(hA,hFull)} lead is FRAGILE: ${hDur.pct3.toFixed(0)}% from 3PT. ${teamDisplay(aA,aFull)} scoring is durable (${aNon3Pct.toFixed(0)}% paint/mid). Fade the lead.`,level:2});
-            sigFragile++;
-            sendSignalNotification('⚠️ Fragile Lead: ' + teamDisplay(hA,hFull), hA + ' lead fragile - ' + hDur.pct3.toFixed(0) + '% from 3PT vs ' + aA + ' paint', gid, 'fragile_home');
-            if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
-            thesis.criteria['fragile_home'] = {met:true, strong:true, label:`${teamDisplay(hA,hFull)} Fragile Lead`, detail:`<strong>Leading team:</strong> ${teamDisplay(hA,hFull)} — ${hDur.pct3.toFixed(0)}% of scoring from 3PT (threshold: ${getFragile3PtThreshold()}%).<br><strong>Trailing team:</strong> ${teamDisplay(aA,aFull)} — ${aNon3Pct.toFixed(0)}% non-3PT scoring (paint-heavy, sustainable).<br><strong>Signal:</strong> The lead is inflated by hot 3PT shooting AND the trailing team's offense is sustainable. Classic fade setup.`, value:`${hDur.pct3.toFixed(0)}% 3PT vs ${aNon3Pct.toFixed(0)}% paint`};
-          } else {
-            thesis.criteria['fragile_home'] = {met:false, label:`${teamDisplay(hA,hFull)} Lead Composition`, detail:`${teamDisplay(hA,hFull)} is 3PT-heavy but ${teamDisplay(aA,aFull)} is not paint-heavy enough. Fragile not triggered.`, value:'Partial'};
-          }
-        } else {
-          thesis.criteria['fragile_home'] = {met:false, label:`${teamDisplay(hA,hFull)} Lead Composition`, detail:`No fragile lead condition met for ${teamDisplay(hA,hFull)}.`, value:'N/A'};
-        }
-
         // FT INFLATION — aFTA and hFTA already parsed above in loop scope
 
         const ftData = analyzeFTInflation(aFTA, hFTA, aS, hS);
@@ -1042,12 +1052,12 @@ async function fetchESPNScoreboard() {
           thesis.criteria['ft_away'] = {met:false, label:`FT Balance`, detail:`No significant FT disparity between teams.`, value:'Normal'};
         }
 
-        // COMBINED - 2+ of the 4 signals on same game = combined edge
-        const has3=signals.some(s=>s.type==='3pt'&&s.level===2);
+        // COMBINED - 2+ of the 3 independent signals on same game = combined edge
+        // The 3 independent signals: 3PT Fragile, Star Cold, FT Inflation
+        const has3ptFragile=signals.some(s=>s.type==='3ptFragile'&&s.level===2);
         const hasStar=signals.some(s=>s.type==='star'&&s.level===2);
-        const hasFragile=signals.some(s=>s.type==='fragile'&&s.level>=2);
         const hasFT=signals.some(s=>s.type==='ft'&&s.level>=2);
-        const activeSignals = [has3, hasStar, hasFragile, hasFT].filter(Boolean).length;
+        const activeSignals = [has3ptFragile, hasStar, hasFT].filter(Boolean).length;
         if (activeSignals >= 2) { signalLevel=2; sigCombined++; }
         else if (activeSignals === 1) signalLevel=1;
 
@@ -1055,16 +1065,13 @@ async function fetchESPNScoreboard() {
         if (signalLevel >= 2) {
           // Figure out which team to bet ON (the one that benefits from regression)
           let betTeam = '', fadeTeam = '', reasons = [];
-          const a3Data = thesis.criteria['3pt_away'], h3Data = thesis.criteria['3pt_home'];
-          const aFragile = thesis.criteria['fragile_away'], hFragile = thesis.criteria['fragile_home'];
+          const a3F = thesis.criteria['3ptfragile_away'], h3F = thesis.criteria['3ptfragile_home'];
           const aFTData = thesis.criteria['ft_away'], hFTData = thesis.criteria['ft_home'];
 
           // Score each side: who has unsustainable advantages?
           let awayFade=0, homeFade=0;
-          if (a3Data?.met && a3Data?.strong) awayFade++;  // away shooting too hot = fade away
-          if (h3Data?.met && h3Data?.strong) homeFade++;  // home shooting too hot = fade home
-          if (aFragile?.met && aFragile?.strong) awayFade++;  // away lead is fragile
-          if (hFragile?.met && hFragile?.strong) homeFade++;  // home lead is fragile
+          if (a3F?.met && a3F?.strong) awayFade++;  // away has 3PT fragile lead = fade away
+          if (h3F?.met && h3F?.strong) homeFade++;  // home has 3PT fragile lead = fade home
           if (aFTData?.met && aFTData?.strong) awayFade++;  // away lead FT-inflated
           if (hFTData?.met && hFTData?.strong) homeFade++;  // home lead FT-inflated
           // Star cold on a team = bet ON that team (star will regress up)
@@ -1077,13 +1084,11 @@ async function fetchESPNScoreboard() {
           else { betTeam = aS < hS ? aA : hA; fadeTeam = aS < hS ? hA : aA; }
 
           // Build the narrative — use full names for clarity
-          const _aD = teamDisplay(aA, aFull), _hD = teamDisplay(hA, hFull);
-          if (a3Data?.met && a3Data?.strong) reasons.push(`${_aD} is shooting an unsustainable ${a3Data.value} from 3 — this will cool off`);
-          if (h3Data?.met && h3Data?.strong) reasons.push(`${_hD} is shooting an unsustainable ${h3Data.value} from 3 — this will cool off`);
+          // NOTE: _aD and _hD already declared above in 3PT Fragile section
+          if (a3F?.met && a3F?.strong) reasons.push(`${_aD} has a 3PT Fragile Lead — shooting hot from 3 AND lead depends on it (${a3F.value}). Both will regress.`);
+          if (h3F?.met && h3F?.strong) reasons.push(`${_hD} has a 3PT Fragile Lead — shooting hot from 3 AND lead depends on it (${h3F.value}). Both will regress.`);
           if (starColdTeams[aA]) reasons.push(`${starColdTeams[aA]} (${_aD}) is ice cold — star at <60% expected pace, regression likely`);
           if (starColdTeams[hA]) reasons.push(`${starColdTeams[hA]} (${_hD}) is ice cold — star at <60% expected pace, regression likely`);
-          if (aFragile?.met && aFragile?.strong) reasons.push(`${_aD}'s lead is fragile (3PT-heavy) while ${_hD} scores from the paint — ${aFragile.value}`);
-          if (hFragile?.met && hFragile?.strong) reasons.push(`${_hD}'s lead is fragile (3PT-heavy) while ${_aD} scores from the paint — ${hFragile.value}`);
           if (aFTData?.met && aFTData?.strong) reasons.push(`${_aD}'s lead is FT-inflated (${aFTData.value}) — this FT volume will regress`);
           if (hFTData?.met && hFTData?.strong) reasons.push(`${_hD}'s lead is FT-inflated (${hFTData.value}) — this FT volume will regress`);
 
@@ -1223,15 +1228,14 @@ async function fetchESPNScoreboard() {
     });
 
     // Update counts
-    document.getElementById('live-3pt-signals').textContent = sig3;
+    document.getElementById('live-3ptfragile-signals').textContent = sig3Fragile;
     document.getElementById('live-star-signals').textContent = sigStar;
-    document.getElementById('live-fragile-leads').textContent = sigFragile;
     document.getElementById('live-ft-signals').textContent = sigFT;
     document.getElementById('live-combined-signals').textContent = sigCombined;
     document.getElementById('threept-hot-count').textContent = hotTeams;
     document.getElementById('threept-warm-count').textContent = warmTeams;
 
-    const totalSigs = sig3+sigStar+sigFragile+sigFT;
+    const totalSigs = sig3Fragile+sigStar+sigFT;
     if (totalSigs>0) { document.getElementById('live-badge').style.display='inline'; document.getElementById('live-badge').textContent=totalSigs; }
     else document.getElementById('live-badge').style.display='none';
     if (hotTeams>0) { document.getElementById('threept-badge').style.display='inline'; document.getElementById('threept-badge').textContent=hotTeams; }
@@ -1256,7 +1260,7 @@ async function fetchESPNScoreboard() {
         const trailing = t.aScore > t.hScore ? teamDisplay(t.hTeam, t.hTeamFull) : t.hScore > t.aScore ? teamDisplay(t.aTeam, t.aTeamFull) : '';
 
         // Build criteria cards
-        const criteriaKeys = ['3pt_away','3pt_home','star_away','star_home','fragile_away','fragile_home','ft_away','ft_home'];
+        const criteriaKeys = ['3ptfragile_away','3ptfragile_home','star_away','star_home','ft_away','ft_home'];
         const criteriaHTML = criteriaKeys.map(k => {
           const c = t.criteria[k];
           if (!c) return '';
@@ -2306,68 +2310,58 @@ try {
 <div id="nba-guide">
 <p class="guide-intro">All signals share one thesis: the current score was built on something unsustainable, so the live moneyline is mispriced.</p>
 <div class="guide-grid">
-<div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT</span> 3PT Regression</h3><p class="edge-label">The Edge: Unsustainable Shooting Regresses to Mean</p><p>When a team shoots far above their season 3PT%, regression is statistically inevitable. The lead built on hot 3PT shooting is inflated &mdash; teams shooting 50%+ from 3 in a half almost never sustain it.</p><div class="threshold">Trigger: 50%+ on 12+ attempts OR 55%+ on 8+ attempts = strong signal. Elevated: 45%+ on 10+ attempts.</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT FRAGILE</span> 3PT Fragile Lead</h3><p class="edge-label">The Edge: Hot 3PT Shooting + Lead Depends On It</p><p>The most selective signal. Fires ONLY when BOTH conditions are met: (1) a team is shooting unsustainably hot from 3PT, AND (2) their lead composition is fragile — built on that 3PT shooting while the opponent scores from the paint. This eliminates false positives from hot shooting alone.</p><div class="threshold">Trigger: Team shoots 50%+ on 12+ att (or 55%+ on 8+) AND their lead is 42%+ from 3PT AND opponent is 58%+ non-3PT. Both conditions required.</div></div>
 <div class="guide-card"><h3><span class="signal-badge badge-star">STAR</span> Star Cold</h3><p class="edge-label">The Edge: Cold Stars Regress Upward</p><p>When a star player (23+ PPG) is significantly below their expected scoring pace, regression upward is likely. The market undervalues their team while the star is cold, creating a buy-low window.</p><div class="threshold">Trigger: Star at &lt;60% of expected scoring pace, at least 20% of game elapsed, Q1-Q3.</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-fragile">FRAGILE</span> Fragile Lead</h3><p class="edge-label">The Edge: 3PT-Heavy Lead vs Paint-Heavy Trail = Fade the Lead</p><p>Fires only when BOTH conditions are true: the leading team's scoring is 3PT-heavy (42%+ from 3) AND the trailing team's scoring is paint-heavy (58%+ non-3PT). The lead is inflated and the trailing team's offense is sustainable.</p><div class="threshold">Trigger: Leading team 42%+ pts from 3PT AND trailing team 58%+ pts from non-3PT (min 20 pts scored).</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-ft">FT</span> FT Inflation</h3><p class="edge-label">The Edge: Leads Built on Free Throw Volume Regress</p><p>When a leading team has significantly more free throw attempts than the trailing team, part of their lead is built on unsustainable FT volume. FT rates regress within a game &mdash; refs tend to even out calls.</p><div class="threshold">Trigger: Leading team has 10+ more FTA than trailing team. FTA data from ESPN summary endpoint.</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">The Edge: Multiple Signals Compound the Mispricing</p><p>When 2+ of the above signals fire on the same game, the live moneyline is mispriced on multiple dimensions simultaneously. Each signal is an independent confirmation that the current score is built on unsustainable conditions.</p><div class="threshold">Trigger: 2+ of {3PT, Star Cold, Fragile Lead, FT Inflation} active on same game = strong combined edge.</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-ft">FT</span> FT Inflation</h3><p class="edge-label">The Edge: Leads Built on Free Throw Volume Regress</p><p>When a leading team has significantly more free throw attempts than the trailing team, part of their lead is built on unsustainable FT volume. FT rates regress within a game — refs tend to even out calls.</p><div class="threshold">Trigger: Leading team has 10+ more FTA than trailing team. FTA data from ESPN summary endpoint.</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">The Edge: Independent Signals Compound the Mispricing</p><p>When 2+ of the 3 independent signals fire on the same game, the live ML is mispriced on multiple dimensions. Each signal is a truly independent confirmation — no overlapping conditions.</p><div class="threshold">Trigger: 2+ of {3PT Fragile, Star Cold, FT Inflation} active on same game = strong combined edge.</div></div>
 </div></div>
 <div id="ncaa-guide" style="display:none">
 <p class="guide-intro">All signals share one thesis: the current score was built on something unsustainable, so the live moneyline is mispriced. NCAA-calibrated thresholds for college basketball.</p>
 <div class="guide-grid">
-<div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT</span> 3PT Regression</h3><p class="edge-label">The Edge: College Shooting Regresses Faster</p><p>NCAA teams have higher variance in 3PT shooting due to younger players and less consistent mechanics. Hot shooting spells regress even more sharply than in the NBA. League avg ~33.4%.</p><div class="threshold">Trigger: 50%+ on 12+ attempts OR 55%+ on 8+ attempts. College shooters sustain hot streaks even less than pros.</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT FRAGILE</span> 3PT Fragile Lead</h3><p class="edge-label">The Edge: College 3PT Leads Collapse Even Faster</p><p>The most selective signal, requiring BOTH conditions: (1) team shooting 50%+ from 3 on 12+ attempts, AND (2) their lead is 3PT-dependent (38%+ NCAA threshold) while opponent scores from paint. College shooters are less consistent, making these leads extremely fragile.</p><div class="threshold">Trigger: 50%+ on 12+ att AND lead 38%+ from 3PT AND opponent 58%+ non-3PT. Both conditions required.</div></div>
 <div class="guide-card"><h3><span class="signal-badge badge-star">TEAM</span> Team Offensive Slump</h3><p class="edge-label">The Edge: College Teams Lack Depth to Compensate</p><p>In NCAA, when the primary scorer goes cold, the bench drop-off is severe. College teams lack NBA-level depth, making individual cold stretches more impactful on game outcomes.</p><div class="threshold">Trigger: Key scorer at &lt;60% expected pace, at least 20% of game elapsed.</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-fragile">FRAGILE</span> Fragile Lead</h3><p class="edge-label">The Edge: 3PT-Dependent Leads Collapse Faster in College</p><p>Fires when leading team's scoring is 3PT-heavy (38%+ from 3 in NCAA) AND trailing team scores from the paint (58%+ non-3PT). College shooters are less consistent, making these leads even more fragile.</p><div class="threshold">Trigger: Leading team 38%+ pts from 3PT AND trailing team 58%+ pts from non-3PT (min 20 pts).</div></div>
 <div class="guide-card"><h3><span class="signal-badge badge-ft">FT</span> FT Inflation</h3><p class="edge-label">The Edge: FT Disparity Inflates Scores in College</p><p>NCAA's earlier bonus situation (7th foul) and 5-foul limit create more FT opportunities. When a leading team has a large FTA advantage, that lead is partially built on unsustainable free throw volume.</p><div class="threshold">Trigger: Leading team has 10+ more FTA than trailing team. Refs tend to even out calls over the game.</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">The Edge: Signal Stacking in Higher-Variance Games</p><p>NCAA games have more variance, making combined signals even more powerful. When 2+ signals fire on the same game, the mispricing compounds because college games are more prone to dramatic swings.</p><div class="threshold">Trigger: 2+ of {3PT, Star Cold, Fragile Lead, FT Inflation} active on same game.</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">The Edge: Signal Stacking in Higher-Variance Games</p><p>NCAA games have more variance, making combined signals even more powerful. When 2+ independent signals fire on the same game, the mispricing compounds.</p><div class="threshold">Trigger: 2+ of {3PT Fragile, Star Cold, FT Inflation} active on same game.</div></div>
 </div></div><div id="theory-panel" class="theory-panel">
   <h4>How This Dashboard Works</h4>
-  <p>Every signal in this dashboard shares one thesis: <strong>the current score was built on something unsustainable, so the live moneyline is mispriced.</strong> Live odds react to the scoreboard, but they fail to distinguish between sustainable scoring (paint, mid-range) and unsustainable scoring (hot 3PT streaks, FT inflation). The 5-signal system (3PT Regression, Star Cold, Fragile Lead, FT Inflation, Combined Edge) identifies when these unsustainable conditions exist &mdash; that is the edge.</p>
+  <p>Every signal in this dashboard shares one thesis: <strong>the current score was built on something unsustainable, so the live moneyline is mispriced.</strong> Live odds react to the scoreboard, but they fail to distinguish between sustainable scoring (paint, mid-range) and unsustainable scoring (hot 3PT streaks, FT inflation). The 3-signal system (3PT Fragile, Star Cold, FT Inflation) plus Combined Edge identifies when these unsustainable conditions exist — that is the edge.</p>
   <hr class="signal-divider">
-  <h4>1. 3PT Regression Signal</h4>
-  <p><strong>What it detects:</strong> A team shooting 50%+ from three-point range on 8 or more attempts. The NBA league average is ~36.5% and NCAA is ~33.4%. When a team is 15+ percentage points above average on significant volume, mean reversion is statistically inevitable.</p>
-  <p><strong>Why it is an edge:</strong> Three-point shooting is the most volatile stat in basketball. Even elite shooters regress heavily within a single game. A team hitting 9-of-16 from three in the first half will almost certainly cool off. If their lead is built on this hot streak, the market is pricing in a scoring pace that will not continue. The team that earned points inside the arc (paint scoring, free throws from driving) has the more durable lead.</p>
+  <h4>1. 3PT Fragile Lead (Merged Signal)</h4>
+  <p><strong>What it detects:</strong> This is the most selective signal — it requires BOTH of two conditions to be true simultaneously:</p>
+  <p><strong>Condition 1 — Hot 3PT Shooting:</strong> A team shooting 50%+ from three-point range on 12+ attempts (or 55%+ on 8+). The NBA league average is ~36.5% and NCAA is ~33.4%. This rate is 2+ standard deviations above the mean and will regress.</p>
+  <p><strong>Condition 2 — Fragile Lead Composition:</strong> The same team's lead is 42%+ dependent on 3PT scoring AND the trailing team scores from the paint (58%+ non-3PT). The lead is not just hot — it's structurally dependent on that hot shooting.</p>
+  <p><strong>Why both conditions matter:</strong> Hot 3PT shooting alone doesn't mean the lead is fragile — the team might also be scoring from the paint. And a fragile lead composition alone doesn't mean the shooting will regress — the percentage might be within normal range. Only when BOTH are true is the edge genuine: the shooting WILL cool off AND the lead DEPENDS on it.</p>
   <div class="edge-box">
-    <p><strong>Trigger:</strong> 3PT% &ge;50% AND 3PT made &ge;8 &rarr; Level 2 (strong). The further above league average, the stronger the regression expectation. The signal creates thesis criteria tracking which side is shooting unsustainably hot.</p>
+    <p><strong>Trigger:</strong> 3PT% &ge;50% on &ge;12 attempts (or 55%+ on 8+) AND lead composition &ge;42% from 3PT AND opponent &ge;58% non-3PT AND &ge;20 total points. All conditions must be met for Level 2 (strong) signal.</p>
   </div>
-  <p><strong>What to watch for:</strong> The signal is strongest when the hot-shooting team is leading by a margin smaller than their 3PT-inflated points. If a team made 12 threes at 55% (vs their normal 35%), roughly 6 of those threes are "above expected" &mdash; that is ~18 points of inflated scoring.</p>
+  <p><strong>When only one condition is met:</strong> If only the 3PT shooting is hot (no fragile lead) or only the lead is fragile (shooting not extreme), the system shows a Level 1 warning but does NOT fire the full signal. This eliminates false positives from the old system where 3PT and Fragile were counted as separate signals despite measuring the same underlying phenomenon.</p>
   <hr class="signal-divider">
   <h4>2. Star Player Cold / Below Pace</h4>
   <p><strong>What it detects:</strong> A franchise-caliber player performing well below their expected scoring pace early in the game (Q1-Q3 for NBA). The system tracks each team's leading scorer and compares their actual output to their per-minute expected production.</p>
-  <p><strong>Why it is an edge:</strong> Star players regress <em>upward</em>. A player averaging 28 PPG who has 6 points through two quarters is not suddenly a bad player &mdash; they are having an off stretch that will likely correct. If their team is losing partly because their star is cold, the market is undervaluing that team's true offensive potential. The star will get more touches, the coach will run plays for them, and production typically surges in the second half.</p>
+  <p><strong>Why it is an edge:</strong> Star players regress <em>upward</em>. A player averaging 28 PPG who has 6 points through two quarters is not suddenly a bad player — they are having an off stretch that will likely correct. If their team is losing partly because their star is cold, the market is undervaluing that team's true offensive potential.</p>
   <div class="edge-box green">
-    <p><strong>Trigger:</strong> Star's actual production &lt;60% of expected pace AND usage &ge;20% of team scoring AND Q3 or earlier. The system calculates expected output using per-minute projections from season averages. Example: A 30 PPG scorer expected to have 20 pts by halftime who only has 8 &mdash; that gap will likely close.</p>
+    <p><strong>Trigger:</strong> Star's actual production &lt;60% of expected pace AND Q3 or earlier. The system calculates expected output using per-minute projections from season averages. Example: A 30 PPG scorer expected to have 20 pts by halftime who only has 8 — that gap will likely close.</p>
   </div>
-  <p><strong>Nuance:</strong> The "star cold" teams list (starColdTeams) is tracked to factor into the combined thesis. If a star is cold AND their team is trailing, the combined system interprets this as a buy-low opportunity.</p>
   <hr class="signal-divider">
-  <h4>3. Fragile Lead</h4>
-  <p><strong>What it detects:</strong> A dual condition: the leading team's scoring is 3PT-heavy (42%+ of points from 3) AND the trailing team's scoring is paint-heavy (58%+ from non-3PT). This is the "fade the lead" signal.</p>
-  <p><strong>Why it is an edge:</strong> The lead is built on volatile 3PT shooting that will regress, while the trailing team earns points from sustainable paint scoring. The market sees the scoreboard but not the scoring composition.</p>
-  <div class="edge-box blue">
-    <p><strong>Trigger:</strong> Leading team has &ge;42% of points from 3PT (NBA; 38% NCAA) AND trailing team has &ge;58% from non-3PT AND &ge;20 total points. Both conditions must be true &mdash; this filters noise from single-condition checks.</p>
-  </div>
-  <p><strong>Key insight:</strong> This pairs powerfully with 3PT regression. If the leading team's 3PT% is also unsustainably high (50%+), you have two independent confirmations that the lead will erode.</p>
-  <hr class="signal-divider">
-  <h4>4. FT Inflation</h4>
+  <h4>3. FT Inflation</h4>
   <p><strong>What it detects:</strong> When the leading team has significantly more free throw attempts than the trailing team, indicating their lead is partly built on unsustainable FT volume.</p>
   <p><strong>Why it is an edge:</strong> A large FTA gap means the leading team is getting to the line at an abnormal rate. Free throw rates regress within a game &mdash; referees tend to even out calls. The FT-inflated portion of the lead is not built on genuine offensive superiority.</p>
   <div class="edge-box red">
     <p><strong>Trigger:</strong> Leading team has 10+ more FTA than the trailing team. FTA data is fetched from ESPN's summary endpoint (same source used for box score stats).</p>
   </div>
   <hr class="signal-divider">
-  <h4>5. Combined Edge</h4>
-  <p><strong>What it detects:</strong> When 2+ of the 4 signals (3PT, Star Cold, Fragile Lead, FT Inflation) fire on the same game. Multiple independent signals confirm the live moneyline is mispriced on multiple dimensions.</p>
+  <h4>4. Combined Edge</h4>
+  <p><strong>What it detects:</strong> When 2+ of the 3 independent signals (3PT Fragile, Star Cold, FT Inflation) fire on the same game. Each signal measures a genuinely different dimension of unsustainability — no overlap or double-counting.</p>
   <div class="edge-box purple">
-    <p><strong>How stacking works:</strong> The system checks for Level 2 signals across all 4 types. Any 2+ active signals elevates the thesis to signalLevel = 2 (strong combined).</p>
+    <p><strong>How stacking works:</strong> The system checks for Level 2 signals across all 3 types. Any 2+ active signals elevates the thesis to signalLevel = 2 (strong combined).</p>
     <p style="margin-top:6px"><strong>Strongest combos:</strong></p>
-    <p style="margin-top:4px"><strong>3PT + Fragile Lead:</strong> Team shooting hot AND lead built on those threes. Double confirmation the lead will evaporate.</p>
+    <p style="margin-top:4px"><strong>3PT Fragile + Star Cold:</strong> Opponent's lead is built on hot 3PT shooting AND their star is cold. When the star heats up and 3PT% drops, momentum shifts hard.</p>
+    <p style="margin-top:4px"><strong>3PT Fragile + FT Inflation:</strong> Lead is both 3PT-dependent AND FT-inflated. Two genuinely independent unsustainable foundations.</p>
     <p style="margin-top:4px"><strong>Star Cold + FT Inflation:</strong> Star underperforming AND opponent lead inflated by FTs. Both forces favor the trailing team.</p>
-    <p style="margin-top:4px"><strong>Fragile Lead + FT Inflation:</strong> Lead is both 3PT-dependent AND FT-inflated. Two separate unsustainable foundations.</p>
-    <p style="margin-top:4px"><strong>3PT + Star Cold:</strong> Opponent shooting unsustainably hot AND their star is cold. When the star heats up and 3PT% drops, momentum shifts hard.</p>
   </div>
   <hr class="signal-divider">
   <h4>Bet Side Logic</h4>
-  <p>The system scores each side's "unsustainability count." Away shooting hot = awayFade++. Away lead fragile = awayFade++. Away lead FT-inflated = awayFade++. Star cold on a team = bet ON that team (star regresses upward = fade the other side). The side with more fade reasons gets faded; the system recommends the opposite side &mdash; the team whose advantages are real, sustainable, and undervalued.</p>
+  <p>The system scores each side's "unsustainability count." Away has 3PT Fragile lead = awayFade++. Away lead FT-inflated = awayFade++. Star cold on a team = bet ON that team (star regresses upward = fade the other side). The side with more fade reasons gets faded; the system recommends the opposite side — the team whose advantages are real, sustainable, and undervalued.</p>
   <hr class="signal-divider">
   <h4>Data Sources &amp; Limitations</h4>
   <p>All data comes from ESPN's live scoreboard API (scores, period/clock, team stats, leader boards) and ESPN's summary endpoint (FTA, box score details). Refreshes on configurable interval (default 30s).</p>
