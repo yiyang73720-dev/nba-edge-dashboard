@@ -336,6 +336,21 @@
 [data-theme="dark"] .champ-pill.comfort-high{background:#14532d;color:#86efac;border-color:#166534}
 [data-theme="dark"] .champ-pill.comfort-mid{background:#713f12;color:#fde047;border-color:#854d0e}
 [data-theme="dark"] .champ-pill.comfort-low{background:#7f1d1d;color:#fca5a5;border-color:#991b1b}
+.match-card{background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.match-card:hover{border-color:var(--accent);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.match-card.live{border-color:#ef4444;animation:livePulse 2s infinite}
+@keyframes livePulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.2)}50%{box-shadow:0 0 0 6px rgba(239,68,68,0)}}
+.match-card .mc-league{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
+.match-card .mc-league .mc-time{font-weight:400;font-size:10px}
+.match-card .mc-teams{display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;font-weight:800}
+.match-card .mc-teams .mc-vs{font-size:10px;color:var(--text-muted);font-weight:400}
+.match-card .mc-teams .mc-code{padding:2px 6px;border-radius:4px;background:var(--bg);font-size:12px}
+.match-card .mc-status{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700}
+.match-card .mc-status.status-live{background:#ef444422;color:#ef4444}
+.match-card .mc-status.status-upcoming{background:var(--accent-light);color:var(--accent)}
+.match-card .mc-status.status-completed{background:var(--bg);color:var(--text-muted)}
+.match-card .mc-bo{font-size:9px;color:var(--text-muted);text-align:center;margin-top:4px}
+.match-card .mc-hasdata{font-size:8px;color:var(--green);text-align:center;margin-top:2px;font-weight:700}
 .draft-slot{background:var(--card-bg);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;min-height:80px;transition:all .2s}
 .draft-slot.filled{border-color:var(--accent)}
 .draft-slot .slot-role{font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
@@ -623,6 +638,21 @@
 
 <!-- ==================== LOL CHAMPION POOL TAB ==================== -->
 <div class="tab-content" id="content-champpool">
+
+  <!-- LIVE & UPCOMING MATCHES -->
+  <div id="live-matches-section" style="margin-bottom:24px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <div>
+        <h2 style="font-size:18px;font-weight:800;margin-bottom:2px;">&#x1F534; Live &amp; Upcoming Matches</h2>
+        <p style="font-size:11px;color:var(--text-muted);">Click a match to load teams into Draft Tool. Data from lolesports.com</p>
+      </div>
+      <button class="btn btn-outline" onclick="fetchLiveMatches()" id="refresh-matches-btn" style="font-size:11px;padding:6px 12px;">&#x1F504; Refresh</button>
+    </div>
+    <div id="live-matches-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;">
+      <div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--text-muted);font-size:13px;">Loading matches...</div>
+    </div>
+  </div>
+
   <div style="margin-bottom:20px">
     <h2 style="font-size:18px;font-weight:800;margin-bottom:4px">&#x1F3AE; Champion Pool Database</h2>
     <p style="font-size:12px;color:var(--text-muted)">Player champion pools from LCK, LPL, LEC, LCS, CBLOL. Source: Oracle's Elixir (2025-2026).</p>
@@ -2278,6 +2308,7 @@ function switchMode() {
     switchTab('champpool');
     initChampPool();
     initDraft();
+    fetchLiveMatches();
   } else {
     btn.innerHTML = '\u{1F3C0} NBA';
     btn.style.background = 'var(--accent)';
@@ -2286,6 +2317,213 @@ function switchMode() {
     document.querySelectorAll('.lol-tab').forEach(t => t.style.display = 'none');
     switchTab('live');
   }
+}
+
+// ==================== LIVE MATCHES FEED ====================
+const LOLESPORTS_API = 'https://esports-api.lolesports.com/persisted/gw';
+const LOLESPORTS_KEY = '0TvQnueqKa5mxJntVWt0w4LpLfEkrV1Ta8rQBb9Z';
+const MAJOR_LEAGUES = ['LCK','LPL','LEC','LCS','CBLOL'];
+// Map API team names -> LOL_DATA team names
+const TEAM_NAME_MAP = {
+  'TOPESPORTS':'Top Esports','Beijing JDG Intel Esports':'JD Gaming','JDG Intel Esports':'JD Gaming',
+  'WeiboGaming Faw Audi':'Weibo Gaming','BILIBILI GAMING DREAMSMART':'Bilibili Gaming',
+  'SHENZHEN NINJAS IN PYJAMAS':'Ninjas in Pyjamas','Oh My God':'Oh My God',
+  'LNG Esports':'LNG Esports','FunPlus Phoenix':'FunPlus Phoenix','Royal Never Give Up':'Royal Never Give Up',
+  "Anyone's Legend":"Anyone's Legend","Xi'an Team WE":'Team WE','Edward Gaming':'EDward Gaming',
+  'EDward Gaming':'EDward Gaming','Ultra Prime':'Ultra Prime','Invictus Gaming':'Invictus Gaming',
+  'ThunderTalk Gaming':'ThunderTalk Gaming','LGD Gaming':'LGD Gaming',
+  'T1':'T1','Gen.G':'Gen.G','Hanwha Life Esports':'Hanwha Life Esports','DRX':'DRX',
+  'Dplus KIA':'Dplus Kia','KT Rolster':'KT Rolster','Nongshim RedForce':'Nongshim RedForce',
+  'BNK FearX':'BNK FEARX','DN SOOPers':'DN SOOPers','HANJIN BRION':'HANJIN BRION',
+  'G2 Esports':'G2 Esports','Fnatic':'Fnatic','Team Vitality':'Team Vitality',
+  'Team Heretics':'Team Heretics','Karmine Corp':'Karmine Corp','GIANTX':'GiantX',
+  'Rogue':'Rogue','SK Gaming':'SK Gaming','Movistar KOI':'Movistar KOI',
+  'Team BDS':'Team BDS','Natus Vincere':'Natus Vincere','Los Ratones':'Los Ratones',
+  'Cloud9 Kia':'Cloud9','Cloud9':'Cloud9','Team Liquid Honda':'Team Liquid','Team Liquid':'Team Liquid',
+  'FlyQuest':'FlyQuest','Sentinels':'Sentinels','Dignitas':'Dignitas',
+  'Shopify Rebellion':'Shopify Rebellion','LYON':'LYON','Disguised':'Disguised',
+  'LOUD':'LOUD','RED Canids Kalunga':'RED Canids','Vivo Keyd Stars':'Vivo Keyd Stars',
+  'paiN Gaming':'paiN Gaming','FURIA':'FURIA','Fluxo':'Fluxo W7M','LOS':'LØS','Leviatan':'Leviatan'
+};
+let liveMatchesCache = [];
+let liveMatchesFetched = false;
+
+function resolveTeamName(apiName) {
+  if (TEAM_NAME_MAP[apiName]) return TEAM_NAME_MAP[apiName];
+  // Try to find in LOL_DATA.teams directly
+  if (LOL_DATA.teams[apiName]) return apiName;
+  // Fuzzy match
+  const lower = apiName.toLowerCase();
+  for (const t of Object.keys(LOL_DATA.teams)) {
+    if (t.toLowerCase().includes(lower) || lower.includes(t.toLowerCase())) return t;
+  }
+  return apiName;
+}
+
+function hasTeamData(teamName) {
+  return !!LOL_DATA.teams[resolveTeamName(teamName)];
+}
+
+async function fetchLiveMatches() {
+  const grid = document.getElementById('live-matches-grid');
+  const btn = document.getElementById('refresh-matches-btn');
+  if (!grid) return;
+  btn.disabled = true;
+  btn.textContent = '⏳ Loading...';
+  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--text-muted);font-size:13px;">Fetching matches from Riot...</div>';
+
+  try {
+    // Fetch current page and next page to get more upcoming matches
+    const resp = await fetch(LOLESPORTS_API + '/getSchedule?hl=en-US', {
+      headers: { 'x-api-key': LOLESPORTS_KEY }
+    });
+    const data = await resp.json();
+    let events = data.data.schedule.events || [];
+    const newerToken = data.data.schedule.pages.newer;
+
+    // Also fetch next page for more upcoming matches
+    if (newerToken) {
+      try {
+        const resp2 = await fetch(LOLESPORTS_API + '/getSchedule?hl=en-US&pageToken=' + encodeURIComponent(newerToken), {
+          headers: { 'x-api-key': LOLESPORTS_KEY }
+        });
+        const data2 = await resp2.json();
+        events = events.concat(data2.data.schedule.events || []);
+      } catch(e) {}
+    }
+
+    // Filter to major leagues + match type only
+    const matches = events.filter(e =>
+      e.type === 'match' &&
+      MAJOR_LEAGUES.includes(e.league.name) &&
+      (e.state === 'inProgress' || e.state === 'unstarted')
+    );
+
+    // Also include recently completed matches (last 24h) for review
+    const now = new Date();
+    const recentCompleted = events.filter(e => {
+      if (e.type !== 'match' || !MAJOR_LEAGUES.includes(e.league.name) || e.state !== 'completed') return false;
+      const diff = now - new Date(e.startTime);
+      return diff < 24 * 60 * 60 * 1000 && diff > 0;
+    }).slice(-3); // last 3 completed
+
+    const allMatches = [...recentCompleted, ...matches].slice(0, 12);
+    liveMatchesCache = allMatches;
+    liveMatchesFetched = true;
+
+    if (allMatches.length === 0) {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--text-muted);font-size:13px;">No major league matches found. Next matches may be loading soon — try refreshing.</div>';
+      btn.disabled = false;
+      btn.textContent = '\u{1F504} Refresh';
+      return;
+    }
+
+    let html = '';
+    for (const e of allMatches) {
+      const m = e.match;
+      const t1 = m.teams[0], t2 = m.teams[1];
+      const t1Name = t1.name, t2Name = t2.name;
+      const t1Code = t1.code, t2Code = t2.code;
+      const league = e.league.name;
+      const state = e.state;
+      const startTime = new Date(e.startTime);
+      const bo = m.strategy ? 'Bo' + m.strategy.count : '';
+
+      // Format time
+      let timeStr = '';
+      if (state === 'inProgress') {
+        timeStr = 'LIVE NOW';
+      } else if (state === 'completed') {
+        timeStr = 'COMPLETED';
+      } else {
+        const diffH = Math.round((startTime - now) / 3600000);
+        if (diffH < 1) timeStr = 'Starting soon';
+        else if (diffH < 24) timeStr = 'In ' + diffH + 'h';
+        else {
+          const days = Math.floor(diffH / 24);
+          timeStr = startTime.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + (days <= 2 ? ' (' + days + 'd)' : '');
+        }
+      }
+
+      // Score for completed
+      let scoreStr = '';
+      if (state === 'completed') {
+        scoreStr = '<div style="text-align:center;font-size:11px;font-weight:700;margin-top:2px;">' +
+          '<span style="color:' + (t1.result && t1.result.outcome === 'win' ? 'var(--green)' : 'var(--text-muted)') + ';">' + (t1.result ? t1.result.gameWins : '?') + '</span>' +
+          ' - ' +
+          '<span style="color:' + (t2.result && t2.result.outcome === 'win' ? 'var(--green)' : 'var(--text-muted)') + ';">' + (t2.result ? t2.result.gameWins : '?') + '</span></div>';
+      }
+
+      const statusCls = state === 'inProgress' ? 'status-live' : state === 'completed' ? 'status-completed' : 'status-upcoming';
+      const cardCls = state === 'inProgress' ? 'match-card live' : 'match-card';
+      const t1HasData = hasTeamData(t1Name);
+      const t2HasData = hasTeamData(t2Name);
+      const bothHaveData = t1HasData && t2HasData;
+
+      html += '<div class="' + cardCls + '" onclick="selectLiveMatch(\'' + t1Name.replace(/'/g, "\\'") + '\',\'' + t2Name.replace(/'/g, "\\'") + '\')">' +
+        '<div class="mc-league"><span>' + league + ' \u00B7 ' + bo + '</span><span class="mc-time mc-status ' + statusCls + '">' + timeStr + '</span></div>' +
+        '<div class="mc-teams"><span class="mc-code">' + t1Code + '</span> <span>' + t1Name + '</span> <span class="mc-vs">vs</span> <span>' + t2Name + '</span> <span class="mc-code">' + t2Code + '</span></div>' +
+        scoreStr +
+        (bothHaveData ? '<div class="mc-hasdata">\u2705 FULL DATA AVAILABLE \u2014 click to analyze</div>' :
+         (t1HasData || t2HasData) ? '<div class="mc-hasdata" style="color:var(--orange);">\u26A0\uFE0F Partial data (' + (t1HasData ? t1Code : t2Code) + ' available)</div>' :
+         '<div class="mc-hasdata" style="color:var(--text-muted);">\u274C Teams not in database</div>') +
+        '</div>';
+    }
+    grid.innerHTML = html;
+
+  } catch (err) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--red);font-size:13px;">Failed to fetch matches: ' + err.message + '<br><span style="color:var(--text-muted);font-size:11px;">This API may be blocked by CORS. Try refreshing or check your connection.</span></div>';
+  }
+
+  btn.disabled = false;
+  btn.textContent = '\u{1F504} Refresh';
+}
+
+function selectLiveMatch(team1ApiName, team2ApiName) {
+  const t1 = resolveTeamName(team1ApiName);
+  const t2 = resolveTeamName(team2ApiName);
+
+  // Set Draft Tool teams
+  const blueInput = document.getElementById('draft-team-blue');
+  const redInput = document.getElementById('draft-team-red');
+  blueInput.value = t1;
+  redInput.value = t2;
+  draftState.blue.team = t1;
+  draftState.red.team = t2;
+  document.getElementById('draft-blue-name').textContent = t1 ? '(' + t1 + ')' : '';
+  document.getElementById('draft-red-name').textContent = t2 ? '(' + t2 + ')' : '';
+
+  // Reset picks
+  draftState.blue.picks = {};
+  draftState.red.picks = {};
+  renderDraftSlots('blue');
+  renderDraftSlots('red');
+  document.getElementById('draft-summary').style.display = 'none';
+
+  // Also set the Game Analyzer teams
+  const analyzerA = document.getElementById('analyzer-team-a');
+  const analyzerB = document.getElementById('analyzer-team-b');
+  if (analyzerA && analyzerB) {
+    analyzerA.value = t1;
+    analyzerB.value = t2;
+    runAnalyzer();
+  }
+
+  // Scroll to draft tool
+  const draftSection = document.querySelector('#content-champpool .draft-slot');
+  if (draftSection) {
+    draftSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  // Flash effect
+  const blueDiv = document.getElementById('draft-blue');
+  const redDiv = document.getElementById('draft-red');
+  [blueDiv, redDiv].forEach(d => {
+    if (!d) return;
+    d.style.transition = 'background .3s';
+    d.style.background = 'var(--accent-light)';
+    setTimeout(() => { d.style.background = ''; }, 800);
+  });
 }
 
 // ==================== CHAMPION POOL ====================
