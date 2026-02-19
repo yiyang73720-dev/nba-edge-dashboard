@@ -232,15 +232,8 @@
 .tooltip-wrap .tip{visibility:hidden;opacity:0;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1a1a2e;color:#e0e0e0;padding:8px 12px;border-radius:6px;font-size:11px;line-height:1.4;white-space:normal;width:220px;z-index:100;box-shadow:0 4px 12px rgba(0,0,0,.3);pointer-events:none;transition:opacity .2s,visibility .2s}
 .tooltip-wrap:hover .tip{visibility:visible;opacity:1}
 .tooltip-wrap .tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#1a1a2e}
-.mode-toggle{display:flex;align-items:center;gap:8px;background:var(--card-bg);border:1px solid var(--border);border-radius:20px;padding:4px 12px;cursor:pointer;transition:all .2s;user-select:none}
-.mode-toggle:hover{border-color:var(--accent);box-shadow:var(--shadow-sm)}
-.mode-toggle .mode-label{font-size:12px;font-weight:600;color:var(--text-muted);transition:all .2s}
-.mode-toggle .mode-label.active-mode{color:var(--accent);font-weight:700}
-.mode-switch{position:relative;width:36px;height:20px;background:var(--border);border-radius:10px;transition:all .3s}
-.mode-switch::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:all .3s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
-.mode-switch.ncaa{background:var(--green)}
-.mode-switch.ncaa::after{left:18px}
-.ncaa-badge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9px;font-weight:700;background:#f59e0b;color:#fff;letter-spacing:.5px;margin-left:6px;vertical-align:middle}
+@keyframes edgeGlow{0%,100%{box-shadow:0 0 8px rgba(0,212,170,0.3),0 0 20px rgba(0,212,170,0.15);}50%{box-shadow:0 0 16px rgba(0,212,170,0.6),0 0 40px rgba(0,212,170,0.3);}}
+.signal-chip.combined-active{animation:edgeGlow 2s ease-in-out infinite;background:var(--accent-light);border-radius:8px;}
 .guide-section{padding:20px 0}
 .guide-intro{color:var(--text-muted);font-size:13px;margin-bottom:16px;line-height:1.5}
 .guide-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
@@ -280,7 +273,7 @@
     .theory-panel .edge-box.purple{background:rgba(139,92,246,.08);border-left-color:var(--purple)}
     .theory-panel .thresh-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
     .theory-panel .thresh-card{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:6px;padding:10px 14px}
-    .theory-panel .thresh-card h5{margin:0 0 6px;font-size:13px;color:var(--green)}.theory-panel .thresh-card.ncaa h5{color:var(--blue)}
+    .theory-panel .thresh-card h5{margin:0 0 6px;font-size:13px;color:var(--green)}
     .theory-panel .thresh-card p{font-size:12px;margin:2px 0}
     .theory-panel .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;margin:2px 4px 2px 0}
     .theory-panel .tag.l2{background:rgba(244,67,54,.15);color:#f44336}.theory-panel .tag.l1{background:rgba(255,152,0,.15);color:var(--orange)}
@@ -366,7 +359,6 @@
     <span class="conn-status conn-ok" id="connStatus" style="display:none;">Connected</span>
     <div>
       <span class="status-dot off" id="statusDot"></span>
-      <div class="mode-toggle" onclick="switchMode()" id="mode-toggle" title="Switch between NBA and NCAA mode"><span class="mode-label active-mode" id="label-nba">NBA</span><div class="mode-switch" id="mode-switch"></div><span class="mode-label" id="label-ncaa">NCAA</span></div>
 <span id="statusText" style="font-size:11px;">ESPN Feed</span>
     </div><button id="darkModeToggle" onclick="toggleDarkMode()" title="Toggle dark mode">🌙 Dark</button><button class="sound-toggle" id="soundToggle" onclick="toggleSound()" title="Toggle alert sounds">&#x1F50A; Sound</button></div>
 </div>
@@ -440,12 +432,6 @@
         <div class="chip-desc">2+ signals on same side</div>
         <div class="chip-detail-panel" id="chip-detail-combined"></div>
       </div>
-      <div class="signal-chip signal-chip-clickable" onclick="toggleSignalDetail('pace')">
-        <div class="chip-value purple" id="live-pace-mirage-count">0</div>
-        <div class="chip-label purple">O/U Pace</div>
-        <div class="chip-desc">Pace Mirage O/U signals (separate from ML)</div>
-        <div class="chip-detail-panel" id="chip-detail-pace"></div>
-      </div>
     </div>
 
 <!-- QUICK BET ACTION CARDS -->
@@ -465,13 +451,6 @@
       </div>
     </div>
 
-    <!-- ==================== PACE MIRAGE O/U SECTION ==================== -->
-    <div id="paceMirageContainer" style="display:none;margin-top:20px;">
-      <div class="edge-thesis-header" style="margin-bottom:12px;">
-        <h2 style="display:flex;align-items:center;gap:8px;">📊 OVER / UNDER SIGNALS <span class="thesis-count" id="paceMirageCount" style="background:var(--purple);color:white;font-size:12px;font-weight:700;padding:2px 10px;border-radius:12px;">0</span></h2>
-      </div>
-      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;line-height:1.5;">These are separate from moneyline signals. We detect when the scoring pace is fake — running too hot or too cold because of temporary factors. The total will regress back toward the line.</p>
-      <div id="paceMirageCards"></div>
     </div>
   </div>
 
@@ -620,7 +599,7 @@
     <div class="form-grid">
       <div class="form-group"><label>Game</label><input type="text" id="modal-game" /></div>
       <div class="form-group"><label>Side</label><input type="text" id="modal-side" /></div>
-      <div class="form-group"><label>Strategy</label><select id="modal-strategy"><option>Mean Reversion</option><option>3PT Fragile</option><option>Star Cold</option><option>FT Inflation</option><option>Combined Edge</option><option>Pace Mirage O/U</option></select></div>
+      <div class="form-group"><label>Strategy</label><select id="modal-strategy"><option>Mean Reversion</option><option>3PT Fragile</option><option>Star Cold</option><option>FT Inflation</option><option>Combined Edge</option></select></div>
       <div class="form-group"><label>Line / Price</label><input type="text" id="modal-price" /></div>
       <div class="form-group"><label>Units</label><input type="number" id="modal-units" value="1" step="0.5" min="0.5" max="2" /></div>
       <div class="form-group"><label>Notes</label><input type="text" id="modal-notes" /></div>
@@ -644,24 +623,17 @@ const TEAM_3PT_AVG = {
   MIN:36.3, NYK:37.8, PHI:36.9, PHX:38.2, LAC:36.5, MEM:35.9, SAC:37.5, MIA:36.8,
   IND:36.7, ORL:35.4, ATL:37.2, CHI:34.2, BKN:35.4, CHA:34.8, TOR:36.1, POR:35.6,
   SAS:35.3, DET:35.7, LAL:36.3, WAS:34.5, UTA:37.0, NOP:35.1, NY:37.8, GS:37.8,
-  SA:35.3, NO:35.1,
-  // NCAA (2025-26 D1 avg ~34%)
-  UK:35.2, DUKE:37.2, UNC:35.9, KU:36.1, GONZ:38.5, ARIZ:35.8, AUB:36.1, CONN:34.3,
-  BAYLOR:35.0, PURD:34.2, TENN:34.8, ALA:34.2, TXAM:33.4, ARK:33.9, ISU:35.2,
-  MIZZ:33.1, COLO:33.5, ILL:34.6, MICH:35.7, WISC:34.4, MSU:34.8, OSU:32.9,
-  CUSE:33.2, NOVA:37.9, ND:35.4, WAKE:32.6, VT:33.1, FSU:34.1, CLEM:34.7
+  SA:35.3, NO:35.1
 };
 function getTeam3PtAvg(abbr) { return TEAM_3PT_AVG[abbr] || null; }
 
 let currentMode='nba';
-const MODE_CONFIG={nba:{title:'ALPHA HUNTER',subtitle:'Live ML + O/U Edge Finder \u2022 3PT Fragile / Star Cold / FT Inflation / Pace Mirage \u2022 Auto-Updating',sport:'basketball/nba',starLabel:'Star Cold',starTooltip:'When a star player is cold (shooting well below average), their scoring tends to regress upward. The current line undervalues their team.'},ncaa:{title:'ALPHA HUNTER',subtitle:'Live ML + O/U Edge Finder \u2022 3PT Fragile / Star Cold / FT Inflation / Pace Mirage \u2022 NCAA Auto-Updating',sport:'basketball/mens-college-basketball',starLabel:'Team Slump',starTooltip:'When team offensive efficiency drops 15%+ below season average, regression to mean is likely. Markets overreact to cold stretches.'}};
-function switchMode(){oddsCache={};oddsCacheTime=0;const avgEl=document.getElementById('league-avg-value');if(avgEl)avgEl.textContent=getLeague3PtAvg()+'%';currentMode=currentMode==='nba'?'ncaa':'nba';var cfg=MODE_CONFIG[currentMode];document.getElementById('main-title').textContent=cfg.title;document.getElementById('main-subtitle').textContent=cfg.subtitle;document.title=cfg.title.replace('SYSTEM','Dashboard');var sLE=document.getElementById('star-label-text');if(sLE)sLE.textContent=cfg.starLabel;var tipEl=document.querySelector('#star-tooltip-wrap .tip');if(tipEl)tipEl.textContent=cfg.starTooltip;document.getElementById('mode-switch').className='mode-switch'+(currentMode==='ncaa'?' ncaa':'');document.getElementById('label-nba').className='mode-label'+(currentMode==='nba'?' active-mode':'');document.getElementById('label-ncaa').className='mode-label'+(currentMode==='ncaa'?' active-mode':'');var nbaG=document.getElementById('nba-guide');var ncaaG=document.getElementById('ncaa-guide');if(nbaG)nbaG.style.display=currentMode==='nba'?'':'none';if(ncaaG)ncaaG.style.display=currentMode==='ncaa'?'':'none';var lavEl=document.getElementById('league-avg-value');if(lavEl)lavEl.textContent=getLeague3PtAvg()+'%';fetchESPNScoreboard();}
 
 // === LIVE ODDS (The Odds API) ===
 let oddsCache={};let oddsCacheTime=0;const ODDS_CACHE_TTL=120000;
 let oddsRequestCount=parseInt(localStorage.getItem('oddsReqCount')||'0');
 let oddsReqMonth=localStorage.getItem('oddsReqMonth')||'';
-function getOddsSport(){return(typeof currentMode!=='undefined'&&currentMode==='ncaa')?'basketball_ncaab':'basketball_nba';}
+function getOddsSport(){return 'basketball_nba';}
 function impliedProb(am){const n=parseInt(am);if(n<0)return(Math.abs(n)/(Math.abs(n)+100)*100).toFixed(1);return(100/(n+100)*100).toFixed(1);}
 function oddsClass(am){const n=parseInt(am);if(n<=-150)return'fav';if(n>=150)return'dog';return'even';}
 async function fetchLiveOdds(){
@@ -725,7 +697,7 @@ function matchOdds(aAbbr,hAbbr,aFull,hFull){
 }
 function buildOddsHTML(aAbbr,hAbbr,aFull,hFull){const o=matchOdds(aAbbr,hAbbr,aFull,hFull);if(!o)return'';const aML=(o.awayML>0?'+':'')+o.awayML;const hML=(o.homeML>0?'+':'')+o.homeML;return'<div class="odds-row"><span><span class="odds-label">'+aAbbr+' ML</span> <span class="odds-val '+oddsClass(aML)+'">'+aML+'</span> <span class="odds-implied">('+impliedProb(aML)+'%)</span></span><span class="odds-src">'+o.book+'</span><span><span class="odds-implied">('+impliedProb(hML)+'%)</span> <span class="odds-val '+oddsClass(hML)+'">'+hML+'</span> <span class="odds-label">'+hAbbr+' ML</span></span></div>';}
 
-function getESPNUrl(){const base='https://site.api.espn'+'.com/apis/site/v2/sports/'+MODE_CONFIG[currentMode].sport+'/scoreboard';return currentMode==='ncaa'?base+'?limit=200&groups=50':base;}
+function getESPNUrl(){return 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard';}
 
 // ==================== STAR DATABASE (23+ PPG) ====================
 const DEFAULT_STARS = [
@@ -765,21 +737,8 @@ const TEAM_MAP = {
   'Toronto Raptors':'TOR','Utah Jazz':'UTA','Washington Wizards':'WAS',
 };
 function shortName(n) { return TEAM_MAP[n] || n.split(' ').pop().substring(0,3).toUpperCase(); }
-function teamDisplay(abbr, fullName) {
-  // In NCAA mode, show "Full Name (ABBR)" for clearer identification
-  // In NBA mode, just show abbreviation since teams are well-known
-  if (currentMode === 'ncaa' && fullName && fullName.length > 0) {
-    return `${fullName} (${abbr})`;
-  }
-  return abbr;
-}
-function teamDisplayShort(abbr, fullName) {
-  // Shorter version for labels: "Full Name" in NCAA, "ABBR" in NBA
-  if (currentMode === 'ncaa' && fullName && fullName.length > 0) {
-    return fullName;
-  }
-  return abbr;
-}
+function teamDisplay(abbr, fullName) { return abbr; }
+function teamDisplayShort(abbr, fullName) { return abbr; }
 
 // ==================== STATE ====================
 let state = {
@@ -844,12 +803,12 @@ function toggleSignalDetail(type) {
 
   // Build panel content from stored signal games
   const games = window._signalGames ? window._signalGames[type] : [];
-  const labels = { '3ptfragile': '3PT Fragile', 'star': 'Star Cold', 'ft': 'FT Inflation', 'combined': 'Combined Edge', 'pace': 'Pace Mirage O/U' };
+  const labels = { '3ptfragile': '3PT Fragile', 'star': 'Star Cold', 'ft': 'FT Inflation', 'combined': 'Combined Edge' };
 
   if (!games || games.length === 0) {
     panel.innerHTML = `<div class="chip-detail-header">${labels[type] || type} Games</div><div class="chip-detail-empty">No active ${labels[type] || ''} signals right now</div>`;
   } else {
-    const periodLabel = (per) => currentMode === 'ncaa' ? `H${per}` : `Q${per}`;
+    const periodLabel = (per) => `Q${per}`;
     panel.innerHTML = `<div class="chip-detail-header">${labels[type] || type} — ${games.length} game${games.length>1?'s':''}</div>` +
       games.map(g => {
         const truncDetail = g.sigDetail && g.sigDetail.length > 120 ? g.sigDetail.substring(0, 120) + '...' : (g.sigDetail || '');
@@ -917,11 +876,9 @@ function getQ1Expected(ppg) { return ppg * 0.25; }
 function getHalfExpected(ppg) { return ppg * 0.5; }
 function getExpectedByTime(ppg, mins) { return ppg * (mins / getTotalGameMinutes()); }
 
-// === TIME HELPERS (NBA vs NCAA) ===
-// NBA: 4 quarters × 12 min = 48 min total. Period = quarter number (1-4).
-// NCAA: 2 halves × 20 min = 40 min total. Period = half number (1-2). Clock counts DOWN from 20:00.
-function getTotalGameMinutes() { return currentMode === 'ncaa' ? 40 : 48; }
-function getPeriodLength() { return currentMode === 'ncaa' ? 20 : 12; }
+// === TIME HELPERS (NBA) ===
+function getTotalGameMinutes() { return 48; }
+function getPeriodLength() { return 12; }
 function getElapsedMinutes(per, clk) {
   const perLen = getPeriodLength();
   const parts = (clk || '0:00').split(':');
@@ -932,20 +889,6 @@ function getElapsedMinutes(per, clk) {
 }
 function getGamePct(per, clk) {
   return Math.min(getElapsedMinutes(per, clk) / getTotalGameMinutes(), 1);
-}
-// Extrapolate current combined score to full game
-function extrapolateTotal(combinedScore, elapsedMin) {
-  if (elapsedMin <= 0) return 0;
-  const totalMin = getTotalGameMinutes();
-  return (combinedScore / elapsedMin) * totalMin;
-}
-// Determine valid Pace Mirage window: need enough data + time for regression
-// NBA: Q2 or Q3 (roughly 12-36 min). NCAA: mid-1st half to mid-2nd half.
-function isInPaceMirageWindow(per, clk) {
-  const elapsed = getElapsedMinutes(per, clk);
-  const total = getTotalGameMinutes();
-  // Need at least 25% of game played AND not in final 20% (too late for O/U regression)
-  return elapsed >= total * 0.25 && elapsed <= total * 0.80;
 }
 
 // ==================== CONNECTION STATUS ====================
@@ -1024,112 +967,14 @@ function analyzeFTInflation(aFTA, hFTA, aScore, hScore) {
   return { aFTA: aFt, hFTA: hFt, ftGap, aInflated, hInflated };
 }
 
-// ==================== PACE MIRAGE (O/U SIGNAL) ====================
-// Detects unsustainable scoring pace for Over/Under edges
-// Fires when 2 of 3 conditions met: (1) combined 3PT% extreme, (2) FT inflation, (3) pace vs O/U line gap
-function analyzePaceMirage(aS, hS, a3P, a3A, a3M, h3P, h3A, h3M, aFTA, hFTA, per, clk, aA, hA, aFull, hFull) {
-  const result = { signal: null, direction: null, level: 0, conditions: [], conditionsMet: 0, detail: '', extrapolatedTotal: 0, ouLine: null, paceGap: 0 };
-
-  if (!isInPaceMirageWindow(per, clk)) return result;
-
-  const elapsed = getElapsedMinutes(per, clk);
-  const totalMin = getTotalGameMinutes();
-  const combined = aS + hS;
-  const projected = extrapolateTotal(combined, elapsed);
-  result.extrapolatedTotal = Math.round(projected);
-
-  // Get O/U line from odds cache
-  const odds = matchOdds(aA, hA, aFull, hFull);
-  if (odds && odds.ouLine) {
-    result.ouLine = odds.ouLine;
-    result.paceGap = Math.round(projected - odds.ouLine);
-  }
-
-  // Combined 3PT stats
-  const comb3A = (parseInt(a3A) || 0) + (parseInt(h3A) || 0);
-  const comb3M = (parseInt(a3M) || 0) + (parseInt(h3M) || 0);
-  const comb3P = comb3A > 0 ? (comb3M / comb3A * 100) : 0;
-
-  // Combined FTA
-  const combFTA = (parseInt(aFTA) || 0) + (parseInt(hFTA) || 0);
-  // Expected FTA per minute varies by league
-  const expectedFTAPerMin = currentMode === 'ncaa' ? 0.65 : 0.55; // NCAA has more fouls
-  const expectedFTA = elapsed * expectedFTAPerMin;
-  const ftRateRatio = expectedFTA > 0 ? combFTA / expectedFTA : 1;
-
-  // === CONDITION 1: Combined 3PT% is extreme (hot or cold) ===
-  const minComb3A = currentMode === 'ncaa' ? 12 : 14;
-  let cond1_hot = comb3P >= 42 && comb3A >= minComb3A;
-  let cond1_cold = comb3P <= 28 && comb3A >= minComb3A;
-  let cond1 = cond1_hot || cond1_cold;
-  let cond1_direction = cond1_hot ? 'UNDER' : cond1_cold ? 'OVER' : null;
-
-  // === CONDITION 2: FT inflation present (combined FTA significantly above expected) ===
-  let cond2_high = ftRateRatio >= 1.4 && combFTA >= 20; // 40%+ above expected
-  let cond2_low = ftRateRatio <= 0.6 && elapsed >= totalMin * 0.3; // 40%+ below expected
-  let cond2 = cond2_high || cond2_low;
-  let cond2_direction = cond2_high ? 'UNDER' : cond2_low ? 'OVER' : null;
-
-  // === CONDITION 3: Magnitude check — how far has the inflated/deflated pace pushed the projected total from the book line? ===
-  // NOTE: This is NOT independent from conditions 1-2. The projection IS inflated by the same factors.
-  // Its role is to confirm the distortion is large enough (8+ pts) that the live line has likely moved, creating a real betting edge.
-  let cond3 = false;
-  let cond3_direction = null;
-  const gapThreshold = currentMode === 'ncaa' ? 7 : 8; // NCAA games lower scoring so smaller gap meaningful
-  if (result.ouLine) {
-    if (projected > result.ouLine + gapThreshold) { cond3 = true; cond3_direction = 'UNDER'; } // pace running hot = fade it = UNDER
-    else if (projected < result.ouLine - gapThreshold) { cond3 = true; cond3_direction = 'OVER'; } // pace running cold = fade it = OVER
-  }
-
-  // Build conditions array
-  if (cond1) result.conditions.push({ name: '3PT Pace', met: true, direction: cond1_direction, detail: `Combined 3PT: ${comb3P.toFixed(1)}% (${comb3M}/${comb3A})${cond1_hot ? ' — unsustainably HOT' : ' — unsustainably COLD'}` });
-  else result.conditions.push({ name: '3PT Pace', met: false, detail: `Combined 3PT: ${comb3P.toFixed(1)}% (${comb3M}/${comb3A}) — within normal range` });
-
-  if (cond2) result.conditions.push({ name: 'FT Rate', met: true, direction: cond2_direction, detail: `Combined FTA: ${combFTA} (${(ftRateRatio*100).toFixed(0)}% of expected)${cond2_high ? ' — inflated pace' : ' — suppressed pace'}` });
-  else result.conditions.push({ name: 'FT Rate', met: false, detail: `Combined FTA: ${combFTA} (${(ftRateRatio*100).toFixed(0)}% of expected) — normal range` });
-
-  if (result.ouLine) {
-    if (cond3) result.conditions.push({ name: 'Pace vs Line', met: true, direction: cond3_direction, detail: `Projected: ${Math.round(projected)} vs O/U ${result.ouLine} (${result.paceGap > 0 ? '+' : ''}${result.paceGap} gap)` });
-    else result.conditions.push({ name: 'Pace vs Line', met: false, detail: `Projected: ${Math.round(projected)} vs O/U ${result.ouLine} (${result.paceGap > 0 ? '+' : ''}${result.paceGap} gap) — within threshold` });
-  } else {
-    result.conditions.push({ name: 'Pace vs Line', met: false, detail: 'O/U line not available from odds API' });
-  }
-
-  // Count conditions met
-  const metConditions = [cond1, cond2, cond3].filter(Boolean);
-  result.conditionsMet = metConditions.length;
-
-  // Determine direction — majority vote from met conditions
-  if (result.conditionsMet >= 2) {
-    const dirs = [];
-    if (cond1) dirs.push(cond1_direction);
-    if (cond2) dirs.push(cond2_direction);
-    if (cond3) dirs.push(cond3_direction);
-    const underVotes = dirs.filter(d => d === 'UNDER').length;
-    const overVotes = dirs.filter(d => d === 'OVER').length;
-    result.direction = underVotes >= overVotes ? 'UNDER' : 'OVER';
-    result.level = 2;
-    result.signal = 'paceMirage';
-
-    const _aD = teamDisplay(aA, aFull), _hD = teamDisplay(hA, hFull);
-    const dirEmoji = result.direction === 'UNDER' ? '📉' : '📈';
-    result.detail = `${dirEmoji} PACE MIRAGE ${result.direction}: ${_aD} vs ${_hD} — ${result.conditionsMet}/3 conditions met. ` +
-      result.conditions.filter(c => c.met).map(c => c.detail).join('. ') +
-      `. Current pace projects to ${Math.round(projected)}${result.ouLine ? ' vs O/U ' + result.ouLine : ''}.`;
-  } else if (result.conditionsMet === 1) {
-    result.level = 1;
-  }
-
-  return result;
-}
 
 // ==================== ESPN SCOREBOARD ====================
 
-function getLeague3PtAvg() { return currentMode === 'nba' ? 36.5 : 33.4; }
+function getLeague3PtAvg() { return 36.5; }
 // Team Season 3PT% Averages
 
-function getFragile3PtThreshold() { return currentMode === 'nba' ? 42 : 38; }
-function getLeagueName() { return currentMode === 'nba' ? 'NBA' : 'NCAA'; }
+function getFragile3PtThreshold() { return 42; }
+function getLeagueName() { return 'NBA'; }
 
 async function fetchESPNScoreboard() {
   const grid = document.getElementById('live-games-grid');
@@ -1153,16 +998,16 @@ async function fetchESPNScoreboard() {
     document.getElementById('live-games-count').textContent = inProgress.length;
 
     if (liveEvents.length === 0) {
-      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">&#x1F3C0;</div><p>No live or upcoming ${currentMode==='ncaa'?'NCAA':'NBA'} games right now.</p></div>`;
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">&#x1F3C0;</div><p>No live or upcoming NBA games right now.</p></div>`;
       tpGrid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">&#x1F3AF;</div><p>No live games.</p></div>`;
       document.getElementById('edgeThesisContainer').classList.remove('active');
       return;
     }
 
-    let sig3Fragile=0, sigStar=0, sigCombined=0, sigFT=0, hotTeams=0, warmTeams=0, sigPaceMirage=0;
-    let cards='', tpCards='', gameTheses=[], paceMirageResults=[];
+    let sig3Fragile=0, sigStar=0, sigCombined=0, sigFT=0, hotTeams=0, warmTeams=0;
+    let cards='', tpCards='', gameTheses=[];
     // Per-signal game tracking for chip click-to-expand
-    let signalGames = { '3ptfragile': [], 'star': [], 'ft': [], 'combined': [], 'pace': [] };
+    let signalGames = { '3ptfragile': [], 'star': [], 'ft': [], 'combined': [] };
 
     for (const event of liveEvents) {
       const comp = event.competitions?.[0]; if (!comp) continue;
@@ -1209,7 +1054,7 @@ async function fetchESPNScoreboard() {
       });
 
       let signals=[], signalLevel=0;
-      const gLabelFull = currentMode === 'ncaa' ? `${aFull || aA} @ ${hFull || hA}` : gLabel;
+      const gLabelFull = gLabel;
       let thesis = { game: gLabel, gameFull: gLabelFull, aTeam: aA, hTeam: hA, aTeamFull: aFull, hTeamFull: hFull, aScore: aS, hScore: hS, per, clk, detail, criteria: {}, betSide: '', betSideFull: '', betLogic: '', signals: [] };
 
       if (isLive) {
@@ -1334,20 +1179,6 @@ async function fetchESPNScoreboard() {
           thesis.criteria['ft_away'] = {met:false, label:`FT Balance`, detail:`No significant FT disparity between teams.`, value:'Normal'};
         }
 
-        // PACE MIRAGE (O/U) — separate signal, not part of ML combined edge
-        const pmResult = analyzePaceMirage(aS, hS, a3P, a3A, a3M, h3P, h3A, h3M, aFTA, hFTA, per, clk, aA, hA, aFull, hFull);
-        if (pmResult.level === 2) {
-          sigPaceMirage++;
-          paceMirageResults.push({
-            game: gLabel, gameFull: gLabelFull, aTeam: aA, hTeam: hA, aTeamFull: aFull, hTeamFull: hFull,
-            aScore: aS, hScore: hS, per, clk, detail, eventId: gid,
-            direction: pmResult.direction, conditionsMet: pmResult.conditionsMet,
-            conditions: pmResult.conditions, extrapolatedTotal: pmResult.extrapolatedTotal,
-            ouLine: pmResult.ouLine, paceGap: pmResult.paceGap, signalDetail: pmResult.detail
-          });
-          sendSignalNotification(pmResult.direction === 'UNDER' ? '📉 Pace Mirage UNDER' : '📈 Pace Mirage OVER', pmResult.detail.substring(0, 100), gid, 'pm_' + pmResult.direction);
-        }
-
         // COMBINED - 2+ of the 3 independent signals on same game = combined edge
         // The 3 independent signals: 3PT Fragile, Star Cold, FT Inflation
         const has3ptFragile=signals.some(s=>s.type==='3ptFragile'&&s.level===2);
@@ -1363,7 +1194,6 @@ async function fetchESPNScoreboard() {
         if (hasStar) signalGames['star'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='star'&&s.level===2).map(s=>s.text).join('; ') });
         if (hasFT) signalGames['ft'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='ft'&&s.level>=2).map(s=>s.text).join('; ') });
         if (activeSignals >= 2) signalGames['combined'].push({ ..._gameInfo, sigDetail: `${activeSignals} signals active: ${[has3ptFragile?'3PT Fragile':'',hasStar?'Star Cold':'',hasFT?'FT':''].filter(Boolean).join(' + ')}` });
-        if (pmResult.level === 2) signalGames['pace'].push({ ..._gameInfo, sigDetail: pmResult.detail });
 
         // Determine bet side and build thesis logic
         if (signalLevel >= 2) {
@@ -1464,7 +1294,7 @@ async function fetchESPNScoreboard() {
       }
 
       const isFav = state.favorites.includes(gid);
-      const periodLabel = currentMode === 'ncaa' ? `H${per}` : `Q${per}`;
+      const periodLabel = `Q${per}`;
       const _oddsHTML = buildOddsHTML(aA,hA,aFull,hFull);
 
       // Signal summary for card header
@@ -1486,8 +1316,7 @@ async function fetchESPNScoreboard() {
           <div class="game-teams">
             <div class="team-block">
               <div class="team-name">${teamDisplayShort(aA, aFull)}</div>
-              ${currentMode==='ncaa'?`<div style="font-size:9px;color:var(--text-muted);font-weight:600;">${aA}</div>`:''}
-              <div class="team-record">${aRec}</div>
+                            <div class="team-record">${aRec}</div>
               <div class="team-score">${isLive?aS:'-'}</div>
             </div>
             <div class="vs-block">
@@ -1495,8 +1324,7 @@ async function fetchESPNScoreboard() {
             </div>
             <div class="team-block">
               <div class="team-name">${teamDisplayShort(hA, hFull)}</div>
-              ${currentMode==='ncaa'?`<div style="font-size:9px;color:var(--text-muted);font-weight:600;">${hA}</div>`:''}
-              <div class="team-record">${hRec}</div>
+                            <div class="team-record">${hRec}</div>
               <div class="team-score">${isLive?hS:'-'}</div>
             </div>
           </div>
@@ -1585,6 +1413,9 @@ async function fetchESPNScoreboard() {
     document.getElementById('live-star-signals').textContent = sigStar;
     document.getElementById('live-ft-signals').textContent = sigFT;
     document.getElementById('live-combined-signals').textContent = sigCombined;
+    // Glow effect on combined chip when 2+ signals fire
+    const combinedChip = document.getElementById('live-combined-signals').closest('.signal-chip');
+    if (sigCombined > 0) { combinedChip.classList.add('combined-active'); } else { combinedChip.classList.remove('combined-active'); }
     document.getElementById('threept-hot-count').textContent = hotTeams;
     document.getElementById('threept-warm-count').textContent = warmTeams;
 
@@ -1672,102 +1503,6 @@ async function fetchESPNScoreboard() {
         </div>`;
       }).join('');
     } else { etc.classList.remove('active'); etCards.innerHTML = ''; }
-
-    // ==================== PACE MIRAGE O/U PANEL ====================
-    document.getElementById('live-pace-mirage-count').textContent = sigPaceMirage;
-    const pmContainer = document.getElementById('paceMirageContainer');
-    const pmCards = document.getElementById('paceMirageCards');
-    if (paceMirageResults.length > 0) {
-      pmContainer.style.display = 'block';
-      document.getElementById('paceMirageCount').textContent = paceMirageResults.length;
-      pmCards.innerHTML = paceMirageResults.map(pm => {
-        const dirColor = pm.direction === 'UNDER' ? 'var(--red)' : 'var(--green)';
-        const dirEmoji = pm.direction === 'UNDER' ? '📉' : '📈';
-        const dirBg = pm.direction === 'UNDER' ? 'var(--red-light)' : 'var(--green-light)';
-        const _aD = teamDisplay(pm.aTeam, pm.aTeamFull);
-        const _hD = teamDisplay(pm.hTeam, pm.hTeamFull);
-        const elapsed = getElapsedMinutes(pm.per, pm.clk);
-        const totalMin = getTotalGameMinutes();
-        const pctPlayed = (getGamePct(pm.per, pm.clk) * 100).toFixed(0);
-        const periodLabel = currentMode === 'ncaa' ? `H${pm.per}` : `Q${pm.per}`;
-
-        const condHTML = pm.conditions.map(c => {
-          const icon = c.met ? '✅' : '⬜';
-          // Plain English explanations per condition
-          let plainText = c.detail;
-          if (c.name === '3PT Pace') {
-            if (c.met && c.direction === 'UNDER') plainText = `Both teams combined are shooting ${c.detail.match(/[\d.]+%/)?.[0] || '42%+'} from 3 — way above the ~35% average. This hot streak is inflating the score and won't last → points will drop → UNDER.`;
-            else if (c.met && c.direction === 'OVER') plainText = `Both teams combined are only shooting ${c.detail.match(/[\d.]+%/)?.[0] || '28%-'} from 3 — way below average. This cold streak is holding the score down and won't last → points will rise → OVER.`;
-            else plainText = `3PT shooting is in normal range (${c.detail.match(/[\d.]+%/)?.[0] || '~35%'}) — no edge here.`;
-          } else if (c.name === 'FT Rate') {
-            if (c.met && c.direction === 'UNDER') plainText = `Teams have shot ${c.detail.match(/\d+ /)?.[0]?.trim() || 'a lot of'} free throws — ${c.detail.match(/\d+% of expected/)?.[0] || '140%+ of expected'}. Refs are calling too many fouls. This inflates the score and will slow down → UNDER.`;
-            else if (c.met && c.direction === 'OVER') plainText = `Very few free throws so far — ${c.detail.match(/\d+% of expected/)?.[0] || '60%- of expected'}. The low foul rate is suppressing the score. Fouls will pick up → more points → OVER.`;
-            else plainText = `Free throw rate is normal — no edge here.`;
-          } else if (c.name === 'Pace vs Line') {
-            if (c.met && c.direction === 'UNDER') plainText = `The gap confirms it: projected ~${pm.extrapolatedTotal} is ${Math.abs(pm.paceGap)} pts above the pre-game line of ${pm.ouLine}. This gap exists BECAUSE of the hot 3PT/FT factors above. The bigger the gap, the more the live line has moved → the bigger your UNDER edge.`;
-            else if (c.met && c.direction === 'OVER') plainText = `The gap confirms it: projected ~${pm.extrapolatedTotal} is ${Math.abs(pm.paceGap)} pts below the pre-game line of ${pm.ouLine}. This gap exists BECAUSE of the cold 3PT/low FT factors above. The bigger the gap, the more the live line has dropped → the bigger your OVER edge.`;
-            else if (pm.ouLine) plainText = `Projected total (~${pm.extrapolatedTotal}) is close to the O/U line (${pm.ouLine}) — the factors above have not distorted the score enough yet for a big edge.`;
-            else plainText = `O/U line not available from odds API — cannot measure the gap.`;
-          }
-          return `<div class="criteria-item ${c.met ? 'met' : 'not-met'}">
-            <span class="criteria-check">${icon}</span>
-            <div class="criteria-text">
-              <span class="criteria-label">${c.name}</span>
-              <span class="criteria-value ${c.met ? '' : 'neg'}">${c.met ? c.direction : '—'}</span>
-              <span class="criteria-detail">${plainText}</span>
-            </div>
-          </div>`;
-        }).join('');
-
-        return `<div class="thesis-card" style="border-left: 4px solid ${dirColor};">
-          <div class="thesis-game-bar">
-            <div>
-              <div class="thesis-game-label">${pm.gameFull || pm.game}</div>
-              <div class="thesis-game-period">${periodLabel} ${pm.clk} | ${pctPlayed}% played | ${_aD} ${pm.aScore} - ${pm.hScore} ${_hD}</div>
-            </div>
-            <div style="text-align:right;">
-              <div style="font-size:22px;font-weight:900;color:${dirColor};">${dirEmoji} ${pm.direction}</div>
-              <div style="font-size:11px;color:var(--text-muted);">${pm.conditionsMet}/3 conditions</div>
-            </div>
-          </div>
-          <div class="thesis-body">
-            <div class="thesis-bet-line" style="background:${dirBg};">
-              <div style="flex:1;">
-                <div class="thesis-bet-action" style="color:${dirColor};font-size:15px;font-weight:800;">🎯 BET ${pm.direction} (live total)</div>
-                <div class="thesis-bet-side" style="font-size:12px;margin-top:2px;">Current score: ${pm.aScore + pm.hScore} pts in ${Math.round(elapsed)} min → projected ~${pm.extrapolatedTotal} for full ${totalMin} min game</div>
-                <div style="font-size:11px;color:var(--text-muted);margin-top:4px;font-style:italic;">How: (${pm.aScore + pm.hScore} pts ÷ ${Math.round(elapsed)} min) × ${totalMin} min = ~${pm.extrapolatedTotal} pts. This projection is inflated/deflated by the unsustainable factors below.${pm.ouLine ? ' Pre-game O/U line: ' + pm.ouLine : ''}</div>
-              </div>
-            </div>
-            <div class="thesis-logic">
-              <div class="thesis-logic-title">Why Bet ${pm.direction}?</div>
-              <div class="thesis-logic-text" style="line-height:1.7;">
-                ${(function(){
-                  if (pm.direction === 'UNDER') {
-                    var main = '<strong>The current scoring pace (~' + pm.extrapolatedTotal + ' projected) is inflated.</strong> Hot 3PT streaks and/or extra free throws are pumping up the score right now. Those things always cool off.';
-                    if (pm.ouLine) main += '<br><br><strong>The key point:</strong> The pre-game line was ' + pm.ouLine + '. During the game, live sportsbooks adjust the total to match what is happening — so they have likely pushed the live O/U line UP because scoring looks hot. That is where you get your edge. You are not betting UNDER the pre-game ' + pm.ouLine + ' — you are betting UNDER the inflated LIVE total that the books moved up. Go check your sportsbook for the live O/U right now.';
-                    else main += '<br><br>Live sportsbooks adjust the total during the game. They have likely pushed it UP to match this hot pace — that is where you get your edge. Bet UNDER the live total.';
-                    return '<div style="margin-bottom:6px;font-size:12px;">' + main + '</div><div style="padding:10px 12px;background:' + dirBg + ';border-radius:6px;border-left:3px solid ' + dirColor + ';margin-top:8px;font-size:12px;line-height:1.6;"><strong>The edge:</strong> Live books see the hot pace and raise the total. But the pace is fake — built on streaks that will cool. The live UNDER is mispriced because the book reacted to unsustainable scoring.</div>';
-                  } else {
-                    var main = '<strong>The current scoring pace (~' + pm.extrapolatedTotal + ' projected) is deflated.</strong> Cold 3PT shooting and/or unusually few free throws are holding the score down. Those things always bounce back.';
-                    if (pm.ouLine) main += '<br><br><strong>The key point:</strong> The pre-game line was ' + pm.ouLine + '. During the game, live sportsbooks adjust the total to match what is happening — so they have likely dropped the live O/U line DOWN because scoring looks cold. That is where you get your edge. You are not betting OVER the pre-game ' + pm.ouLine + ' — you are betting OVER the deflated LIVE total that the books moved down. Go check your sportsbook for the live O/U right now.';
-                    else main += '<br><br>Live sportsbooks adjust the total during the game. They have likely dropped it DOWN to match this cold pace — that is where you get your edge. Bet OVER the live total.';
-                    return '<div style="margin-bottom:6px;font-size:12px;">' + main + '</div><div style="padding:10px 12px;background:' + dirBg + ';border-radius:6px;border-left:3px solid ' + dirColor + ';margin-top:8px;font-size:12px;line-height:1.6;"><strong>The edge:</strong> Live books see the cold pace and lower the total. But the pace is fake — built on cold streaks that will warm up. The live OVER is mispriced because the book reacted to unsustainable scoring.</div>';
-                  }
-                })()}
-              </div>
-            </div>
-            <div class="thesis-criteria">${condHTML}</div>
-            <div class="thesis-actions">
-              <span style="font-size:10px;color:var(--text-muted);">${_aD} ${pm.aScore} - ${pm.hScore} ${_hD} | ${periodLabel} ${pm.clk} | ${pctPlayed}% of game played</span>
-              <button class="btn btn-sm" style="background:${dirColor};color:white;" onclick="openLogModal('${pm.game}','O/U ${pm.direction}','Pace Mirage')">Log Bet</button>
-            </div>
-          </div>
-        </div>`;
-      }).join('');
-    } else {
-      pmContainer.style.display = 'none';
-      pmCards.innerHTML = '';
-    }
 
     // Store signal games globally for chip click-to-expand
     window._signalGames = signalGames;
@@ -2813,11 +2548,6 @@ try {
 <td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;"><strong>2+ signals firing on the same game.</strong> Multiple things are unsustainable at once — strongest edge.</td>
 <td style="padding:10px 6px;font-weight:700;color:var(--green);">Same as the individual signals — bet the team that benefits when things regress. <strong>Highest confidence.</strong></td>
 </tr>
-<tr>
-<td style="padding:10px 6px;"><span class="signal-badge" style="background:var(--purple);font-size:10px;">O/U PACE</span></td>
-<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">The scoring pace is <strong>fake</strong> — teams are scoring way too fast or too slow because of hot/cold 3PT or unusual FT rates. The total will regress.</td>
-<td style="padding:10px 6px;font-weight:700;color:var(--purple);">Bet <strong>UNDER</strong> if pace is fake-high, <strong>OVER</strong> if pace is fake-low. The signal tells you which one.</td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -2829,23 +2559,15 @@ try {
 <div class="guide-card"><h3><span class="signal-badge badge-star">STAR</span> Star Cold</h3><p class="edge-label">A star player is way below their normal scoring pace — they'll bounce back</p><p>When a 25+ PPG star has scored way less than expected through Q2-Q3, history says they heat up. The market undervalues their team while the star is cold. That's the buy window.</p><div class="threshold">Trigger: Star at &lt;60% of expected scoring pace, at least 20% of game elapsed.</div></div>
 <div class="guide-card"><h3><span class="signal-badge badge-ft">FT</span> FT Inflation</h3><p class="edge-label">Leading team got way more free throws than the other team — refs will even out</p><p>If Team A has 10+ more free throw attempts than Team B, part of that lead is from unsustainable ref treatment. Refs tend to balance calls — the FT advantage will shrink.</p><div class="threshold">Trigger: Leading team has 10+ more FTA than trailing team.</div></div>
 <div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">2+ signals firing on the same game = strongest edge, most confidence</p><p>When multiple signals agree on the same game, the live odds are wrong from multiple angles. Each signal catches something different — so when 2+ fire together, the mispricing is larger.</p><div class="threshold">Trigger: 2+ of {3PT Fragile, Star Cold, FT Inflation} on same game.</div></div>
-<div class="guide-card" style="border-left:3px solid var(--purple);"><h3><span class="signal-badge" style="background:var(--purple);">O/U</span> Pace Mirage (Over/Under)</h3><p class="edge-label">Scoring pace is fake — total will regress toward the O/U line</p><p>This is for Over/Under bets, not moneyline. Detects when teams are scoring too fast or too slow because of temporary factors (hot 3PT, weird FT rates). When 2 of 3 conditions are met, the total will regress.</p><div class="threshold">Trigger: 2 of 3: (1) Combined 3PT% &ge;42% or &le;28%, (2) FT rate 40%+ abnormal, (3) Projected total 8+ pts off O/U line. Window: Q2-Q3.</div></div>
+
 </div></div>
-<div id="ncaa-guide" style="display:none">
-<p class="guide-intro" style="margin-bottom:12px;"><strong>Core thesis:</strong> The current score was built on something unsustainable. NCAA thresholds are calibrated for college basketball.</p>
-<div class="guide-grid">
-<div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT FRAGILE</span> 3PT Fragile Lead</h3><p class="edge-label">College teams go cold from 3 even faster than the pros</p><p>Fires when BOTH are true: (1) shooting 50%+ from 3 on 12+ attempts, AND (2) lead depends on that 3PT shooting (38%+ NCAA threshold). College shooters are less consistent — these leads collapse faster.</p><div class="threshold">Trigger: 50%+ on 12+ att AND lead 38%+ from 3PT AND opponent 58%+ non-3PT.</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-star">TEAM</span> Team Offensive Slump</h3><p class="edge-label">When the best player goes cold, college teams can't make up for it</p><p>College teams lack NBA depth. When the go-to scorer is cold, there's no "next man up." That slump won't last, but the market already priced in the bad performance.</p><div class="threshold">Trigger: Key scorer at &lt;60% expected pace, 20%+ of game elapsed.</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-ft">FT</span> FT Inflation</h3><p class="edge-label">College has more fouls and easier bonus — FT gaps are even less sustainable</p><p>NCAA's 7th-foul bonus and 5-foul limit create bigger FT swings. When one team has 10+ more FTA, that advantage is temporary — refs even out.</p><div class="threshold">Trigger: Leading team has 10+ more FTA than trailing team.</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">Multiple signals = strongest bet in high-variance college games</p><p>College games are more volatile, so combined signals carry even more weight. When 2+ independent signals fire on the same game, the edge is compounding.</p><div class="threshold">Trigger: 2+ of {3PT Fragile, Star Cold, FT Inflation} on same game.</div></div>
-<div class="guide-card" style="border-left:3px solid var(--purple);"><h3><span class="signal-badge" style="background:var(--purple);">O/U</span> Pace Mirage (Over/Under)</h3><p class="edge-label">College scoring pace is even more volatile — easier to spot fake totals</p><p>NCAA games have wilder shooting streaks and more fouls. When the pace diverges from the O/U line because of temporary hot/cold streaks, the regression is sharp.</p><div class="threshold">Trigger: 2 of 3: (1) Combined 3PT% &ge;42% or &le;28% on 12+ att, (2) FT rate 40%+ abnormal, (3) Projected total 7+ pts off O/U line. Window: 25%-80% of game.</div></div>
-</div></div><div id="theory-panel" class="theory-panel">
+<div id="theory-panel" class="theory-panel">
   <h4>How This Dashboard Works</h4>
   <p>Every signal in this dashboard shares one thesis: <strong>the current score was built on something unsustainable, so the live moneyline is mispriced.</strong> Live odds react to the scoreboard, but they fail to distinguish between sustainable scoring (paint, mid-range) and unsustainable scoring (hot 3PT streaks, FT inflation). The 3-signal system (3PT Fragile, Star Cold, FT Inflation) plus Combined Edge identifies when these unsustainable conditions exist — that is the edge.</p>
   <hr class="signal-divider">
   <h4>1. 3PT Fragile Lead (Merged Signal)</h4>
   <p><strong>What it detects:</strong> This is the most selective signal — it requires BOTH of two conditions to be true simultaneously:</p>
-  <p><strong>Condition 1 — Hot 3PT Shooting:</strong> A team shooting 50%+ from three-point range on 12+ attempts (or 55%+ on 8+). The NBA league average is ~36.5% and NCAA is ~33.4%. This rate is 2+ standard deviations above the mean and will regress.</p>
+  <p><strong>Condition 1 — Hot 3PT Shooting:</strong> A team shooting 50%+ from three-point range on 12+ attempts (or 55%+ on 8+). The NBA league average is ~36.5%. This rate is 2+ standard deviations above the mean and will regress.</p>
   <p><strong>Condition 2 — Fragile Lead Composition:</strong> The same team's lead is 42%+ dependent on 3PT scoring AND the trailing team scores from the paint (58%+ non-3PT). The lead is not just hot — it's structurally dependent on that hot shooting.</p>
   <p><strong>Why both conditions matter:</strong> Hot 3PT shooting alone doesn't mean the lead is fragile — the team might also be scoring from the paint. And a fragile lead composition alone doesn't mean the shooting will regress — the percentage might be within normal range. Only when BOTH are true is the edge genuine: the shooting WILL cool off AND the lead DEPENDS on it.</p>
   <div class="edge-box">
@@ -2877,17 +2599,6 @@ try {
     <p style="margin-top:4px"><strong>Star Cold + FT Inflation:</strong> Star underperforming AND opponent lead inflated by FTs. Both forces favor the trailing team.</p>
   </div>
   <hr class="signal-divider">
-  <h4>5. Pace Mirage (Over/Under) — Separate Signal</h4>
-  <p><strong>What it detects:</strong> When the current scoring pace in a game is built on unsustainable factors, creating an edge on the Over/Under total. This is completely separate from the ML signals above — it targets the total line, not the moneyline.</p>
-  <p><strong>Three conditions (fires when 2 of 3 are met):</strong></p>
-  <div class="edge-box purple">
-    <p><strong>Condition 1 — Combined 3PT%:</strong> Both teams combined are shooting abnormally hot (&ge;42%) or cold (&le;28%) from 3PT on a meaningful sample (14+ combined attempts for NBA, 12+ for NCAA). Hot combined shooting inflates the score temporarily (UNDER); cold shooting suppresses it (OVER).</p>
-    <p style="margin-top:4px"><strong>Condition 2 — FT Rate:</strong> Combined free throw attempts are 40%+ above expected (inflated pace = UNDER) or 40%+ below expected (suppressed pace = OVER). Foul rates always regress within a game.</p>
-    <p style="margin-top:4px"><strong>Condition 3 — Pace vs O/U Line:</strong> The extrapolated total (current pace projected to full game) diverges from the book's O/U line by 8+ points (NBA) or 7+ (NCAA). The market is anchored to the unsustainable pace.</p>
-  </div>
-  <p><strong>NBA vs NCAA timing:</strong> NBA uses 4&times;12 minute quarters (48 min total). NCAA uses 2&times;20 minute halves (40 min total). The system automatically adjusts pace calculations, expected FTA rates, and the valid signal window (25%-80% of game elapsed) for each mode.</p>
-  <p><strong>Direction logic:</strong> Each met condition votes UNDER or OVER. The majority vote determines the signal direction. When all 3 conditions agree, the signal is at maximum strength.</p>
-  <hr class="signal-divider">
   <h4>Bet Side Logic (ML Signals)</h4>
   <p>The system scores each side's "unsustainability count." Away has 3PT Fragile lead = awayFade++. Away lead FT-inflated = awayFade++. Star cold on a team = bet ON that team (star regresses upward = fade the other side). The side with more fade reasons gets faded; the system recommends the opposite side — the team whose advantages are real, sustainable, and undervalued.</p>
   <hr class="signal-divider">
@@ -2900,3 +2611,5 @@ try {
 </body>
 </html>
 
+
+    
