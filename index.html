@@ -884,6 +884,7 @@ let state = {
   autoRefresh: false, refreshTimer: null, countdownTimer: null,
   quarterAlerts: JSON.parse(localStorage.getItem('quarterAlerts') || '[]'),
   lastKnownPeriods: {}, prevTeamData: {},
+  scoreHistory: {},  // { gameId: [ {ts, aS, hS}, ... ] } — tracks score over time for momentum
   errorCount: 0, consecutiveErrors: 0,
   signalFirstSeen: {},
   favorites: JSON.parse(localStorage.getItem('favorites') || '[]'),
@@ -1029,6 +1030,68 @@ function getGamePct(per, clk) {
   return Math.min(getElapsedMinutes(per, clk) / getTotalGameMinutes(), 1);
 }
 
+// ==================== SCORE MOMENTUM / DAMAGE LOCKED ====================
+// Tracks score snapshots over time to detect if a deficit is growing/stable (damage locked in)
+function trackScoreMomentum(gameId, aS, hS) {
+  if (!state.scoreHistory[gameId]) state.scoreHistory[gameId] = [];
+  const hist = state.scoreHistory[gameId];
+  const now = Date.now();
+  // Only record if 20+ seconds since last snapshot (avoid duplicates from rapid refreshes)
+  if (hist.length === 0 || (now - hist[hist.length-1].ts) >= 20000) {
+    hist.push({ ts: now, aS, hS });
+  }
+  // Keep only last 10 snapshots (~5 min of data at 30s intervals)
+  if (hist.length > 10) hist.splice(0, hist.length - 10);
+}
+
+// Analyze if the score deficit for a given team is locked in (stable or growing)
+// Returns: { locked: bool, trend: 'growing'|'stable'|'shrinking'|'unknown', deficitNow, deficitThen, snapshots }
+function analyzeDamageLocked(gameId, teamSide, minSnapshots) {
+  const hist = state.scoreHistory[gameId];
+  const need = minSnapshots || 3;
+  if (!hist || hist.length < need) return { locked: false, trend: 'unknown', snapshots: hist?.length || 0 };
+
+  // Look at last N snapshots
+  const recent = hist.slice(-need);
+  const first = recent[0];
+  const last = recent[recent.length - 1];
+
+  // Calculate deficit FROM the perspective of the team we're evaluating
+  // teamSide: 'away' or 'home' — the team whose star is cold / who is trailing
+  const getDeficit = (snap) => {
+    // Positive deficit = team is behind. Negative = team is ahead.
+    return teamSide === 'away' ? (snap.hS - snap.aS) : (snap.aS - snap.hS);
+  };
+
+  const deficitNow = getDeficit(last);
+  const deficitThen = getDeficit(first);
+  const deficitChange = deficitNow - deficitThen;
+
+  // "Locked" = the team was behind AND the deficit didn't shrink (grew or stayed)
+  // For 3PT Fragile: the LEADING team's lead held/grew = trailing team can't close the gap
+  const isTrailing = deficitNow > 0;
+  const deficitGrew = deficitChange > 0;
+  const deficitStable = deficitChange >= 0; // didn't shrink
+
+  // Check if deficit has been consistently non-shrinking across all snapshots
+  let consistentlyBehind = true;
+  for (let i = 1; i < recent.length; i++) {
+    if (getDeficit(recent[i]) < getDeficit(recent[i-1]) - 2) {
+      consistentlyBehind = false; // deficit shrank by more than 2 pts at some point
+      break;
+    }
+  }
+
+  let trend = 'unknown';
+  if (deficitChange > 2) trend = 'growing';
+  else if (deficitChange >= -1) trend = 'stable';
+  else trend = 'shrinking';
+
+  const locked = isTrailing && deficitStable && consistentlyBehind;
+
+  return { locked, trend, deficitNow, deficitThen, deficitChange, snapshots: recent.length, consistentlyBehind };
+}
+
 // ==================== CONNECTION STATUS ====================
 function setConnStatus(status) {
   const el = document.getElementById('connStatus');
@@ -1164,6 +1227,9 @@ async function fetchESPNScoreboard() {
       let a3M=aStats.threePointFieldGoalsMade||'-', a3A=aStats.threePointFieldGoalsAttempted||'-';
       let h3M=hStats.threePointFieldGoalsMade||'-', h3A=hStats.threePointFieldGoalsAttempted||'-';
       let aFouls=aStats.fouls||aStats.totalFouls||'0', hFouls=hStats.fouls||hStats.totalFouls||'0';
+
+      // Track score momentum for Damage Locked detection
+      if (isLive) trackScoreMomentum(gid, aS, hS);
       let aFTA = parseInt(aStats.freeThrowsAttempted)||0;
       let hFTA = parseInt(hStats.freeThrowsAttempted)||0;
 
@@ -1219,14 +1285,33 @@ async function fetchESPNScoreboard() {
         // Condition 2: Their lead is fragile (3PT-heavy) AND trailing team scores from paint
         const _aD = teamDisplay(aA, aFull), _hD = teamDisplay(hA, hFull);
 
+        // ===== OPPONENT ENGINE CHECK =====
+        // Can the trailing team actually capitalize if 3PT regression happens?
+        // Compute non-3PT points per minute for each team (paint + FT + mid-range)
+        const _gMinsNow = getElapsedMinutes(per, clk) || 1;
+        const aNon3Pts = aS - (parseInt(a3M)||0)*3;
+        const hNon3Pts = hS - (parseInt(h3M)||0)*3;
+        const aNon3Ppm = aNon3Pts / _gMinsNow;  // away non-3PT points per minute
+        const hNon3Ppm = hNon3Pts / _gMinsNow;  // home non-3PT points per minute
+        // League avg ~1.8-2.0 non-3PT ppm. Below 1.3 = broken offense, can't capitalize on regression.
+        const NO_ENGINE_THRESHOLD = 1.3;
+
         // Away team: both hot 3PT AND fragile lead
         const awayLead = aS - hS;
+        // If away leads with fragile 3s, check if HOME (trailing) has enough non-3PT engine to capitalize
+        const hNoEngine = awayLead > 0 && hNon3Ppm < NO_ENGINE_THRESHOLD && _gMinsNow >= 10;
+        const hEngineLabel = hNoEngine ? ` ⚠️ BUT ${_hD} has no scoring engine (${hNon3Ppm.toFixed(1)} non-3PT PPM) — may not capitalize even if 3s regress` : '';
+
         if (a3Check.isHot && aFragileData && awayLead >= 3 && awayLead <= 15) {
-          signals.push({type:'3ptFragile', text:`${_aD} 3PT FRAGILE: shooting ${a3Check.pn.toFixed(0)}% from 3 (${a3Check.mn}/${a3Check.an}) AND lead is ${aFragileData.pct3.toFixed(0)}% 3PT-dependent. Lead: ${awayLead}pts. ${_hD} scores from paint (${aFragileData.oppPaintPct.toFixed(0)}%). Classic fade.`, level:2});
+          const fragileStrength = hNoEngine ? 'weakened' : 'strong';
+          signals.push({type:'3ptFragile', text:`${_aD} 3PT FRAGILE: shooting ${a3Check.pn.toFixed(0)}% from 3 (${a3Check.mn}/${a3Check.an}) AND lead is ${aFragileData.pct3.toFixed(0)}% 3PT-dependent. Lead: ${awayLead}pts. ${_hD} scores from paint (${aFragileData.oppPaintPct.toFixed(0)}%).${hNoEngine ? ' ⚠️ BUT trailing team has weak scoring engine — regression may not flip result.' : ' Classic fade.'}`, level:2});
           sig3Fragile++;
-          sendSignalNotification('🔥 3PT Fragile: ' + _aD, aA + ' shooting ' + a3Check.pn.toFixed(0) + '% from 3 AND lead is fragile (' + awayLead + 'pts)', gid, '3ptfragile_away');
+          sendSignalNotification('🔥 3PT Fragile: ' + _aD + (hNoEngine ? ' (⚠️ weak opponent engine)' : ''), aA + ' shooting ' + a3Check.pn.toFixed(0) + '% from 3 AND lead is fragile (' + awayLead + 'pts)' + (hNoEngine ? '. But trailing team offense is broken — regression may not matter.' : ''), gid, '3ptfragile_away');
           if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
-          thesis.criteria['3ptfragile_away'] = {met:true, strong:true, label:`${_aD} 3PT Fragile Lead`, detail:`<strong>3PT Shooting:</strong> ${_aD} is shooting ${a3Check.pn.toFixed(0)}% from 3 on ${a3Check.an} attempts (${getLeagueName()} avg: ${getLeague3PtAvg()}%).<br><strong>Lead Composition:</strong> ${aFragileData.pct3.toFixed(0)}% of ${_aD}'s scoring comes from 3PT (threshold: ${getFragile3PtThreshold()}%).<br><strong>Score Margin:</strong> ${awayLead} pts — in the 3-15pt sweet spot where regression flips the game.<br><strong>Opponent Durability:</strong> ${_hD} has ${aFragileData.oppPaintPct.toFixed(0)}% non-3PT scoring — paint-heavy and sustainable.<br><strong>Signal:</strong> Hot 3PT + fragile lead + competitive margin. When shooting cools, lead evaporates.`, value:`${a3Check.pn.toFixed(0)}% 3PT + ${aFragileData.pct3.toFixed(0)}% fragile | Lead: ${awayLead}`};
+          const engineDetail = hNoEngine
+            ? `<br><strong>⚠️ Opponent Engine Check:</strong> ${_hD} is producing only ${hNon3Ppm.toFixed(1)} non-3PT points/min (threshold: ${NO_ENGINE_THRESHOLD}). Their offense is broken beyond just 3PT variance — even if ${_aD}'s 3s cool down, ${_hD} may not have the scoring engine to capitalize. <strong>Signal is weaker.</strong>`
+            : `<br><strong>✅ Opponent Engine:</strong> ${_hD} is producing ${hNon3Ppm.toFixed(1)} non-3PT points/min — they have a real scoring engine from paint/FT/mid-range. When ${_aD}'s 3s regress, ${_hD} can capitalize.`;
+          thesis.criteria['3ptfragile_away'] = {met:true, strong:!hNoEngine, label:`${_aD} 3PT Fragile Lead${hNoEngine?' ⚠️':''}`, detail:`<strong>3PT Shooting:</strong> ${_aD} is shooting ${a3Check.pn.toFixed(0)}% from 3 on ${a3Check.an} attempts (${getLeagueName()} avg: ${getLeague3PtAvg()}%).<br><strong>Lead Composition:</strong> ${aFragileData.pct3.toFixed(0)}% of ${_aD}'s scoring comes from 3PT (threshold: ${getFragile3PtThreshold()}%).<br><strong>Score Margin:</strong> ${awayLead} pts — in the 3-15pt sweet spot where regression flips the game.<br><strong>Opponent Durability:</strong> ${_hD} has ${aFragileData.oppPaintPct.toFixed(0)}% non-3PT scoring — paint-heavy and sustainable.${engineDetail}<br><strong>Signal:</strong> ${hNoEngine ? 'Hot 3PT + fragile lead detected, but trailing team\'s offense is too weak to exploit regression. Proceed with caution.' : 'Hot 3PT + fragile lead + competitive margin. When shooting cools, lead evaporates.'}`, value:`${a3Check.pn.toFixed(0)}% 3PT + ${aFragileData.pct3.toFixed(0)}% fragile | Lead: ${awayLead}${hNoEngine?' ⚠️':''}`};
         } else if (a3Check.isHot && aFragileData && awayLead > 15) {
           // Hot + fragile but blowout — too large a margin for reliable fade
           signals.push({type:'3ptFragile', text:`${_aD} 3PT fragile but lead too large (${awayLead}pts) — blowout territory.`, level:1});
@@ -1251,12 +1336,19 @@ async function fetchESPNScoreboard() {
 
         // Home team: both hot 3PT AND fragile lead
         const homeLead = hS - aS;
+        // If home leads with fragile 3s, check if AWAY (trailing) has enough non-3PT engine to capitalize
+        const aNoEngine = homeLead > 0 && aNon3Ppm < NO_ENGINE_THRESHOLD && _gMinsNow >= 10;
+        const aEngineLabel = aNoEngine ? ` ⚠️ BUT ${_aD} has no scoring engine (${aNon3Ppm.toFixed(1)} non-3PT PPM) — may not capitalize even if 3s regress` : '';
+
         if (h3Check.isHot && hFragileData && homeLead >= 3 && homeLead <= 15) {
-          signals.push({type:'3ptFragile', text:`${_hD} 3PT FRAGILE: shooting ${h3Check.pn.toFixed(0)}% from 3 (${h3Check.mn}/${h3Check.an}) AND lead is ${hFragileData.pct3.toFixed(0)}% 3PT-dependent. Lead: ${homeLead}pts. ${_aD} scores from paint (${hFragileData.oppPaintPct.toFixed(0)}%). Classic fade.`, level:2});
+          signals.push({type:'3ptFragile', text:`${_hD} 3PT FRAGILE: shooting ${h3Check.pn.toFixed(0)}% from 3 (${h3Check.mn}/${h3Check.an}) AND lead is ${hFragileData.pct3.toFixed(0)}% 3PT-dependent. Lead: ${homeLead}pts. ${_aD} scores from paint (${hFragileData.oppPaintPct.toFixed(0)}%).${aNoEngine ? ' ⚠️ BUT trailing team has weak scoring engine — regression may not flip result.' : ' Classic fade.'}`, level:2});
           sig3Fragile++;
-          sendSignalNotification('🔥 3PT Fragile: ' + _hD, hA + ' shooting ' + h3Check.pn.toFixed(0) + '% from 3 AND lead is fragile (' + homeLead + 'pts)', gid, '3ptfragile_home');
+          sendSignalNotification('🔥 3PT Fragile: ' + _hD + (aNoEngine ? ' (⚠️ weak opponent engine)' : ''), hA + ' shooting ' + h3Check.pn.toFixed(0) + '% from 3 AND lead is fragile (' + homeLead + 'pts)' + (aNoEngine ? '. But trailing team offense is broken — regression may not matter.' : ''), gid, '3ptfragile_home');
           if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
-          thesis.criteria['3ptfragile_home'] = {met:true, strong:true, label:`${_hD} 3PT Fragile Lead`, detail:`<strong>3PT Shooting:</strong> ${_hD} is shooting ${h3Check.pn.toFixed(0)}% from 3 on ${h3Check.an} attempts (${getLeagueName()} avg: ${getLeague3PtAvg()}%).<br><strong>Lead Composition:</strong> ${hFragileData.pct3.toFixed(0)}% of ${_hD}'s scoring comes from 3PT (threshold: ${getFragile3PtThreshold()}%).<br><strong>Score Margin:</strong> ${homeLead} pts — in the 3-15pt sweet spot where regression flips the game.<br><strong>Opponent Durability:</strong> ${_aD} has ${hFragileData.oppPaintPct.toFixed(0)}% non-3PT scoring — paint-heavy and sustainable.<br><strong>Signal:</strong> Hot 3PT + fragile lead + competitive margin. When shooting cools, lead evaporates.`, value:`${h3Check.pn.toFixed(0)}% 3PT + ${hFragileData.pct3.toFixed(0)}% fragile | Lead: ${homeLead}`};
+          const hEngineDetail = aNoEngine
+            ? `<br><strong>⚠️ Opponent Engine Check:</strong> ${_aD} is producing only ${aNon3Ppm.toFixed(1)} non-3PT points/min (threshold: ${NO_ENGINE_THRESHOLD}). Their offense is broken beyond just 3PT variance — even if ${_hD}'s 3s cool down, ${_aD} may not have the scoring engine to capitalize. <strong>Signal is weaker.</strong>`
+            : `<br><strong>✅ Opponent Engine:</strong> ${_aD} is producing ${aNon3Ppm.toFixed(1)} non-3PT points/min — they have a real scoring engine from paint/FT/mid-range. When ${_hD}'s 3s regress, ${_aD} can capitalize.`;
+          thesis.criteria['3ptfragile_home'] = {met:true, strong:!aNoEngine, label:`${_hD} 3PT Fragile Lead${aNoEngine?' ⚠️':''}`, detail:`<strong>3PT Shooting:</strong> ${_hD} is shooting ${h3Check.pn.toFixed(0)}% from 3 on ${h3Check.an} attempts (${getLeagueName()} avg: ${getLeague3PtAvg()}%).<br><strong>Lead Composition:</strong> ${hFragileData.pct3.toFixed(0)}% of ${_hD}'s scoring comes from 3PT (threshold: ${getFragile3PtThreshold()}%).<br><strong>Score Margin:</strong> ${homeLead} pts — in the 3-15pt sweet spot where regression flips the game.<br><strong>Opponent Durability:</strong> ${_aD} has ${hFragileData.oppPaintPct.toFixed(0)}% non-3PT scoring — paint-heavy and sustainable.${hEngineDetail}<br><strong>Signal:</strong> ${aNoEngine ? 'Hot 3PT + fragile lead detected, but trailing team\'s offense is too weak to exploit regression. Proceed with caution.' : 'Hot 3PT + fragile lead + competitive margin. When shooting cools, lead evaporates.'}`, value:`${h3Check.pn.toFixed(0)}% 3PT + ${hFragileData.pct3.toFixed(0)}% fragile | Lead: ${homeLead}${aNoEngine?' ⚠️':''}`};
         } else if (h3Check.isHot && hFragileData && homeLead > 15) {
           signals.push({type:'3ptFragile', text:`${_hD} 3PT fragile but lead too large (${homeLead}pts) — blowout territory.`, level:1});
           thesis.criteria['3ptfragile_home'] = {met:true, strong:false, label:`${_hD} 3PT Fragile (Blowout)`, detail:`${_hD} has a fragile 3PT lead (${hFragileData.pct3.toFixed(0)}% from 3PT) but the ${homeLead}pt margin is too large. Signal needs 3-15pt lead to fire. Even if 3PT% regresses, blowout margin provides too much cushion.`, value:`${homeLead}pt lead — too wide`, warn:true};
@@ -1289,15 +1381,28 @@ async function fetchESPNScoreboard() {
             const oppSide = side==='away'?'home':'away';
             // Star Coil: <65% pace + Q2-Q3 + game within 15 pts (competitive)
             if (pr<0.65 && per>=2 && per<=3 && scoreMargin<=15) {
+              // DAMAGE LOCKED CHECK: Is the star's team trailing AND deficit stable/growing?
+              const starTeamSide = leader.team===aA ? 'away' : 'home';
+              const starTeamTrailing = (starTeamSide==='away' && aS < hS) || (starTeamSide==='home' && hS < aS);
+              const dmg = analyzeDamageLocked(gid, starTeamSide, 3);
+              const damageLocked = starTeamTrailing && dmg.locked;
+              const dmgLabel = damageLocked ? '🔒 DAMAGE LOCKED' : (starTeamTrailing && dmg.trend==='growing' ? '📉 Deficit growing' : '');
+
               let ctx = per===2?` Half exp: ${getHalfExpected(star.ppg).toFixed(0)}`:'';
-              signals.push({type:'star',text:`🌀 ${leader.name} ${leader.pts}pts (exp ~${exp.toFixed(0)}, ${(pr*100).toFixed(0)}% pace). Game within ${scoreMargin}pts — coiled for breakout.${ctx}`,level:2});
+              if (damageLocked) ctx += ` | ${dmgLabel}: deficit ${dmg.deficitNow}pts, was ${dmg.deficitThen}pts (${dmg.snapshots} checks)`;
+              signals.push({type:'star',text:`🌀 ${leader.name} ${leader.pts}pts (exp ~${exp.toFixed(0)}, ${(pr*100).toFixed(0)}% pace). Game within ${scoreMargin}pts — coiled for breakout.${dmgLabel ? ' ' + dmgLabel : ''}${ctx}`,level:2});
               sigStar++;
               fireStarCoilAlert(leader, star, gMins, per, clk, gLabel, pr, scoreMargin);
-              sendSignalNotification('🌀 Star Coil: ' + leader.name, leader.name + ' only ' + leader.pts + 'pts (exp ~' + exp.toFixed(0) + '). Game within ' + scoreMargin + 'pts — compressed spring.', gid, 'star_' + leader.team);
+              sendSignalNotification('🌀 Star Coil: ' + leader.name + (damageLocked ? ' 🔒 DAMAGE LOCKED' : ''), leader.name + ' only ' + leader.pts + 'pts (exp ~' + exp.toFixed(0) + '). Game within ' + scoreMargin + 'pts.' + (damageLocked ? ' Deficit stable/growing — damage is baked in.' : ''), gid, 'star_' + leader.team);
               if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
-              starCoilTeams[leader.team] = leader.name;
+              starCoilTeams[leader.team] = { name: leader.name, damageLocked, dmg };
               const starTeamFull = leader.team===aA ? aFull : hFull;
-              thesis.criteria[`star_${oppSide}`] = {met:true, strong:true, label:`Star Coil: ${leader.name} (${teamDisplay(leader.team, starTeamFull)})`, detail:`<strong>Player:</strong> ${leader.name} — averages ${star.ppg} PPG.<br><strong>Current:</strong> ${leader.pts} pts at Q${per} ${clk} (expected ~${exp.toFixed(0)}).<br><strong>Pace:</strong> ${(pr*100).toFixed(0)}% of expected — below the 60% threshold.<br><strong>Game Context:</strong> Score margin is ${scoreMargin} pts — game is competitive.<br><strong>Timing:</strong> Q${per} — prime window for star breakout.<br><strong>Why it matters:</strong> Star is cold but the game is close. When the star heats up (and they will), the ML swings hard. The market hasn't priced in the breakout.`, value:`${leader.pts}/${exp.toFixed(0)} pts (${(pr*100).toFixed(0)}%) | Margin: ${scoreMargin}`};
+              const dmgDetail = damageLocked
+                ? `<br><strong>🔒 Damage Locked:</strong> ${leader.name}'s team has been trailing for ${dmg.snapshots} consecutive checks. Deficit was ${dmg.deficitThen}pts → now ${dmg.deficitNow}pts (${dmg.trend}). Even if the star heats up, the hole is too deep to climb out of — the cold stretch already decided the game.`
+                : (starTeamTrailing && dmg.snapshots >= 2
+                  ? `<br><strong>Momentum:</strong> Team trailing by ${scoreMargin}pts. Deficit trend: ${dmg.trend} (${dmg.snapshots} checks). Not yet locked — deficit could still shrink.`
+                  : `<br><strong>Momentum:</strong> Tracking score trend (${dmg.snapshots}/3 snapshots). Damage Locked status pending.`);
+              thesis.criteria[`star_${oppSide}`] = {met:true, strong:true, label:`Star Coil${damageLocked?' 🔒':''}: ${leader.name} (${teamDisplay(leader.team, starTeamFull)})`, detail:`<strong>Player:</strong> ${leader.name} — averages ${star.ppg} PPG.<br><strong>Current:</strong> ${leader.pts} pts at Q${per} ${clk} (expected ~${exp.toFixed(0)}).<br><strong>Pace:</strong> ${(pr*100).toFixed(0)}% of expected — below the 65% threshold.<br><strong>Game Context:</strong> Score margin is ${scoreMargin} pts — game is competitive.<br><strong>Timing:</strong> Q${per} — prime window for star breakout.${dmgDetail}<br><strong>Why it matters:</strong> ${damageLocked ? 'Star is cold AND the deficit has been stable/growing. Even if the star catches fire, the damage from the cold stretch is already baked into the score. Bet AGAINST the star\'s team — the hole is too deep.' : 'Star is cold but the game is close. When the star heats up (and they will), the ML swings hard. The market hasn\'t priced in the breakout.'}`, value:`${leader.pts}/${exp.toFixed(0)} pts (${(pr*100).toFixed(0)}%) | Margin: ${scoreMargin}${damageLocked?' 🔒':''}`};
             } else if (pr<0.65 && per<=3) {
               // Star is cold but game not competitive or wrong quarter — monitoring only
               const starTeamFull2 = leader.team===aA ? aFull : hFull;
@@ -1333,11 +1438,19 @@ async function fetchESPNScoreboard() {
 
           // Score each side: who has unsustainable advantages?
           let awayFade=0, homeFade=0;
-          if (a3F?.met && a3F?.strong) awayFade++;  // away has 3PT fragile lead = fade away
-          if (h3F?.met && h3F?.strong) homeFade++;  // home has 3PT fragile lead = fade home
-          // Star coil on a team = bet ON that team (star will regress up)
-          if (starCoilTeams[aA]) homeFade++;  // away star coil = away bounces back = fade home
-          if (starCoilTeams[hA]) awayFade++;  // home star coil = home bounces back = fade away
+          if (a3F?.met && a3F?.strong) awayFade++;  // away has 3PT fragile lead + trailing team can capitalize = fade away
+          if (h3F?.met && h3F?.strong) homeFade++;  // home has 3PT fragile lead + trailing team can capitalize = fade home
+          // 3PT Fragile fired but trailing team has no engine = weaker signal, don't count as full fade
+          // (a3F/h3F.strong is already false when noEngine, so the above won't increment — correct)
+
+          // Star coil on a team: normally bet ON that team (star regresses up)
+          // BUT if Damage Locked: star's team deficit is baked in — bet AGAINST star's team instead (flip)
+          const aStarCoil = starCoilTeams[aA];
+          const hStarCoil = starCoilTeams[hA];
+          if (aStarCoil && !aStarCoil.damageLocked) homeFade++;  // away star coil, no lock = away bounces back = fade home
+          if (aStarCoil && aStarCoil.damageLocked) awayFade++;   // away star coil + locked = away can't recover = fade away
+          if (hStarCoil && !hStarCoil.damageLocked) awayFade++;  // home star coil, no lock = home bounces back = fade away
+          if (hStarCoil && hStarCoil.damageLocked) homeFade++;   // home star coil + locked = home can't recover = fade home
 
           if (awayFade > homeFade) { betTeam = hA; fadeTeam = aA; }
           else if (homeFade > awayFade) { betTeam = aA; fadeTeam = hA; }
@@ -1346,10 +1459,14 @@ async function fetchESPNScoreboard() {
 
           // Build the narrative — use full names for clarity
           // NOTE: _aD and _hD already declared above in 3PT Fragile section
-          if (a3F?.met && a3F?.strong) reasons.push(`${_aD} has a 3PT Fragile Lead — shooting hot from 3 AND lead depends on it (${a3F.value}). Both will regress.`);
-          if (h3F?.met && h3F?.strong) reasons.push(`${_hD} has a 3PT Fragile Lead — shooting hot from 3 AND lead depends on it (${h3F.value}). Both will regress.`);
-          if (starCoilTeams[aA]) reasons.push(`${starCoilTeams[aA]} (${_aD}) is coiled — star at <60% pace in a close game, breakout incoming`);
-          if (starCoilTeams[hA]) reasons.push(`${starCoilTeams[hA]} (${_hD}) is coiled — star at <60% pace in a close game, breakout incoming`);
+          if (a3F?.met && a3F?.strong) reasons.push(`${_aD} has a 3PT Fragile Lead — shooting hot from 3 AND lead depends on it (${a3F.value}). ${_hD} has the engine to capitalize.`);
+          if (a3F?.met && !a3F?.strong && a3Check.isHot && aFragileData) reasons.push(`${_aD} has 3PT Fragile Lead but ${_hD}'s offense is broken (${hNon3Ppm.toFixed(1)} non-3PT PPM) — regression may not flip the result. Weaker signal.`);
+          if (h3F?.met && h3F?.strong) reasons.push(`${_hD} has a 3PT Fragile Lead — shooting hot from 3 AND lead depends on it (${h3F.value}). ${_aD} has the engine to capitalize.`);
+          if (h3F?.met && !h3F?.strong && h3Check.isHot && hFragileData) reasons.push(`${_hD} has 3PT Fragile Lead but ${_aD}'s offense is broken (${aNon3Ppm.toFixed(1)} non-3PT PPM) — regression may not flip the result. Weaker signal.`);
+          if (aStarCoil && !aStarCoil.damageLocked) reasons.push(`${aStarCoil.name} (${_aD}) is coiled — star at <65% pace in a close game, breakout incoming`);
+          if (aStarCoil && aStarCoil.damageLocked) reasons.push(`${aStarCoil.name} (${_aD}) is coiled BUT 🔒 damage locked — deficit has been stable/growing. Star's cold stretch already decided the game. Fade ${_aD}.`);
+          if (hStarCoil && !hStarCoil.damageLocked) reasons.push(`${hStarCoil.name} (${_hD}) is coiled — star at <65% pace in a close game, breakout incoming`);
+          if (hStarCoil && hStarCoil.damageLocked) reasons.push(`${hStarCoil.name} (${_hD}) is coiled BUT 🔒 damage locked — deficit has been stable/growing. Star's cold stretch already decided the game. Fade ${_hD}.`);
 
 
           const strongCriteria = Object.values(thesis.criteria).filter(c => c.met && c.strong).length;
@@ -3162,8 +3279,8 @@ try {
 <div id="nba-guide">
 <p class="guide-intro" style="margin-bottom:12px;"><strong>Core thesis:</strong> The current score was built on something unsustainable, so the live odds are mispriced. We bet on regression.</p>
 <div class="guide-grid">
-<div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT FRAGILE</span> 3PT Fragile Lead</h3><p class="edge-label">Team is winning because of hot 3PT shooting — and the lead depends on it</p><p>Fires when ALL are true: (1) a team is shooting 50%+ from 3 on 12+ attempts, (2) their lead is built on that 3PT shooting while the opponent scores from paint, AND (3) the lead is 3-15 points. Not too tight (no edge), not a blowout (cushion absorbs regression). The sweet spot where 3PT cooling flips the game.</p><div class="threshold">Trigger: 50%+ on 12+ att AND lead 42%+ from 3PT AND opponent 58%+ non-3PT AND lead 3-15 pts.</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-star">STAR</span> Star Coil</h3><p class="edge-label">Star is cold + game is close + Q2-Q3 timing = compressed spring ready to explode</p><p>When a 25+ PPG star is at &lt;60% of expected pace AND the game is within 15 points during Q2-Q3, this is the highest-edge version of the star cold signal. The star will regress upward, and because the game is competitive, that regression actually changes the outcome. The market hasn't priced in the breakout.</p><div class="threshold">Trigger: Star at &lt;60% pace + score margin ≤15 pts + Q2 or Q3.</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT FRAGILE</span> 3PT Fragile Lead</h3><p class="edge-label">Team is winning because of hot 3PT shooting — and the lead depends on it</p><p>Fires when ALL are true: (1) a team is shooting 50%+ from 3 on 12+ attempts, (2) their lead is built on that 3PT shooting while the opponent scores from paint, AND (3) the lead is 3-15 points. The sweet spot where 3PT cooling flips the game.</p><p><strong>⚠️ Opponent Engine Check:</strong> The system also checks if the trailing team has a real scoring engine (non-3PT points per minute &gt; 1.3). If the trailing team's offense is broken — they can't score from paint, FT, or mid-range — then even if 3s regress, they have no engine to capitalize. Signal is downgraded to ⚠️ (weaker). <em>Regression only matters if the other team can take advantage of it.</em></p><div class="threshold">Trigger: 50%+ on 12+ att AND lead 42%+ from 3PT AND opponent 58%+ non-3PT AND lead 3-15 pts.<br>Weakened: If trailing team non-3PT PPM &lt; 1.3 (broken offense).</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-star">STAR</span> Star Coil</h3><p class="edge-label">Star is cold + game is close + Q2-Q3 timing = compressed spring ready to explode</p><p>When a 25+ PPG star is at &lt;65% of expected pace AND the game is within 15 points during Q2-Q3, this is the highest-edge version of the star cold signal. The star will regress upward, and because the game is competitive, that regression actually changes the outcome.</p><p><strong>🔒 Damage Locked:</strong> The system tracks the score over multiple refresh cycles. If the star's team has been trailing AND the deficit is stable or growing over 3+ checks (~90 seconds), it marks the signal as "Damage Locked." This means the cold stretch already decided the game — even if the star heats up, the hole is too deep. The bet direction FLIPS: instead of betting on the star's team (expecting breakout), you bet against them (damage is done).</p><div class="threshold">Trigger: Star at &lt;65% pace + score margin &le;15 pts + Q2 or Q3.<br>🔒 Damage Locked: Star's team trailing + deficit stable/growing over 3+ score checks.</div></div>
 
 <div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">Both signals firing on the same game = strongest edge, most confidence</p><p>When 3PT Fragile AND Star Coil fire on the same game, the live odds are wrong from two independent angles. Each signal catches something different — together, the mispricing is larger.</p><div class="threshold">Trigger: Both 3PT Fragile + Star Coil on the same game.</div></div>
 
@@ -3180,13 +3297,16 @@ try {
   <div class="edge-box">
     <p><strong>Trigger:</strong> 3PT% &ge;50% on &ge;12 attempts (or 55%+ on 8+) AND lead composition &ge;42% from 3PT AND opponent &ge;58% non-3PT AND &ge;20 total points AND lead between 3-15 pts. All conditions must be met for Level 2 (strong) signal. The 3-15pt margin filter ensures the lead is real but erasable — not a blowout, not a dead heat.</p>
   </div>
-  <p><strong>When only one condition is met:</strong> If only the 3PT shooting is hot (no fragile lead) or only the lead is fragile (shooting not extreme), the system shows a Level 1 warning but does NOT fire the full signal. This eliminates false positives from the old system where 3PT and Fragile were counted as separate signals despite measuring the same underlying phenomenon.</p>
+  <p><strong>When only one condition is met:</strong> If only the 3PT shooting is hot (no fragile lead) or only the lead is fragile (shooting not extreme), the system shows a Level 1 warning but does NOT fire the full signal.</p>
+  <p><strong>⚠️ Opponent Engine Check (NEW):</strong> Even when 3PT Fragile fires, the system checks: can the trailing team actually score without relying on the opponent's regression? It computes the trailing team's non-3PT points per minute (paint + FT + mid-range). If below 1.3 PPM, their offense is fundamentally broken — even if the leading team's 3s cool down, the trailing team has no engine to capitalize. The signal is downgraded to ⚠️ (weaker). <strong>Regression only matters if the other team can take advantage of it.</strong></p>
   <hr class="signal-divider">
   <h4>2. Star Coil (Upgraded Star Cold)</h4>
-  <p><strong>What it detects:</strong> A franchise-caliber player performing well below their expected scoring pace (<65%) during Q2-Q3 AND the game is competitive (within 15 points). This is the "compressed spring" — the star is coiled and will break out, and because the game is close, that breakout changes the outcome.</p>
-  <p><strong>Why it is an edge:</strong> Star players regress <em>upward</em>. But the old Star Cold signal fired even in blowouts or Q1 (too early). Star Coil adds two critical filters: (1) game must be competitive so the star's breakout actually impacts the result, and (2) timing must be Q2-Q3 — the sweet spot where regression has time to play out.</p>
+  <p><strong>What it detects:</strong> A franchise-caliber player performing well below their expected scoring pace (&lt;65%) during Q2-Q3 AND the game is competitive (within 15 points). This is the "compressed spring" — the star is coiled and will break out, and because the game is close, that breakout changes the outcome.</p>
+  <p><strong>Why it is an edge:</strong> Star players regress <em>upward</em>. Star Coil requires: (1) game must be competitive so the star's breakout actually impacts the result, and (2) timing must be Q2-Q3 — the sweet spot where regression has time to play out.</p>
+  <p><strong>🔒 Damage Locked (NEW):</strong> But what if the star heats up and the game result <em>still</em> doesn't change? The system tracks the score over consecutive refresh cycles (~30s each). If the star's team has been trailing AND the deficit stayed flat or grew over 3+ checks, it flags "🔒 Damage Locked." The cold stretch already did its damage — even if the star catches fire now, the hole is too deep. The bet direction <strong>FLIPS</strong>: instead of betting on the star's team (expecting breakout to flip the game), you bet against them (the deficit is baked in).</p>
   <div class="edge-box green">
-    <p><strong>Trigger:</strong> Star's actual production &lt;65% of expected pace AND Q2 or Q3 AND score margin ≤15 pts. Example: A 30 PPG scorer has 8 pts at halftime, team is down 7 — the market undervalues this team's chances because their best player hasn't shown up yet. But he will.</p>
+    <p><strong>Trigger:</strong> Star's actual production &lt;65% of expected pace AND Q2 or Q3 AND score margin &le;15 pts.</p>
+    <p style="margin-top:6px"><strong>🔒 Damage Locked:</strong> Star's team trailing + deficit stable or growing over 3+ consecutive score snapshots. Bet direction flips — fade the star's team.</p>
   </div>
   <hr class="signal-divider">
   <h4>3. Combined Edge</h4>
@@ -3197,7 +3317,12 @@ try {
   </div>
   <hr class="signal-divider">
   <h4>Bet Side Logic (ML Signals)</h4>
-  <p>The system scores each side's "unsustainability count." Away has 3PT Fragile lead = awayFade++. Star Coil on a team = bet ON that team (star regresses upward = fade the other side). The side with more fade reasons gets faded; the system recommends the opposite side — the team whose advantages are real, sustainable, and undervalued.</p>
+  <p>The system scores each side's "unsustainability count" with two key modifiers:</p>
+  <ul style="margin:8px 0;padding-left:20px;line-height:1.6;">
+    <li><strong>3PT Fragile + Opponent Engine:</strong> If the trailing team can't score (non-3PT PPM &lt; 1.3), the fade signal is weakened — regression won't help a broken offense.</li>
+    <li><strong>Star Coil + Damage Locked:</strong> If the star's team deficit is stable/growing over 3+ checks, the bet flips — fade the star's team instead of betting on them.</li>
+  </ul>
+  <p>The side with more fade reasons gets faded; the system recommends the opposite side — the team whose advantages are real, sustainable, and undervalued.</p>
   <hr class="signal-divider">
   <h4>Data Sources &amp; Limitations</h4>
   <p>All data comes from ESPN's live scoreboard API (scores, period/clock, team stats, leader boards) and ESPN's summary endpoint (FTA, box score details). Refreshes on configurable interval (default 30s).</p>
