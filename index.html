@@ -1032,29 +1032,50 @@ function getGamePct(per, clk) {
 
 // ==================== SCORE MOMENTUM / DAMAGE LOCKED ====================
 // Tracks score snapshots over time to detect if a deficit is growing/stable (damage locked in)
+// Anti-bias: requires minimum time span (not just snapshot count), score must change, game must be 15+ min in
 function trackScoreMomentum(gameId, aS, hS) {
   if (!state.scoreHistory[gameId]) state.scoreHistory[gameId] = [];
   const hist = state.scoreHistory[gameId];
   const now = Date.now();
-  // Only record if 20+ seconds since last snapshot (avoid duplicates from rapid refreshes)
-  if (hist.length === 0 || (now - hist[hist.length-1].ts) >= 20000) {
+  // Only record if 25+ seconds since last snapshot (avoid duplicates from rapid refreshes)
+  if (hist.length === 0 || (now - hist[hist.length-1].ts) >= 25000) {
     hist.push({ ts: now, aS, hS });
   }
-  // Keep only last 10 snapshots (~5 min of data at 30s intervals)
-  if (hist.length > 10) hist.splice(0, hist.length - 10);
+  // Keep last 15 snapshots (~6-7 min of data at 30s intervals)
+  if (hist.length > 15) hist.splice(0, hist.length - 15);
 }
 
 // Analyze if the score deficit for a given team is locked in (stable or growing)
-// Returns: { locked: bool, trend: 'growing'|'stable'|'shrinking'|'unknown', deficitNow, deficitThen, snapshots }
-function analyzeDamageLocked(gameId, teamSide, minSnapshots) {
+// Anti-bias checks:
+//   1. Minimum TIME SPAN between first & last snapshot (not just count) — avoids timeout/dead-ball bias
+//   2. Score must have changed — avoids frozen-game false positives
+//   3. Called only after 15+ game minutes (checked by caller via gMins)
+// Returns: { locked, trend, deficitNow, deficitThen, deficitChange, snapshots, timeSpanSec, scoreChanged, reason }
+function analyzeDamageLocked(gameId, teamSide, minSnapshots, gMins) {
   const hist = state.scoreHistory[gameId];
-  const need = minSnapshots || 3;
-  if (!hist || hist.length < need) return { locked: false, trend: 'unknown', snapshots: hist?.length || 0 };
+  const need = minSnapshots || 4;  // bumped from 3 to 4 for more data
+  const MIN_TIME_SPAN_MS = 180000; // 3 minutes minimum between first and last snapshot
+  const MIN_GAME_MINUTES = 15;     // don't evaluate before mid-Q2
 
-  // Look at last N snapshots
-  const recent = hist.slice(-need);
+  if (!hist || hist.length < need) return { locked: false, trend: 'unknown', snapshots: hist?.length || 0, reason: `need ${need} snapshots, have ${hist?.length || 0}` };
+
+  // Anti-bias #3: game must be far enough along
+  if (gMins && gMins < MIN_GAME_MINUTES) return { locked: false, trend: 'unknown', snapshots: hist.length, reason: `game only ${gMins.toFixed(0)} min in (need ${MIN_GAME_MINUTES})` };
+
+  // Use all available snapshots (not just last N) for better signal
+  const recent = hist.slice(-Math.max(need, hist.length));
   const first = recent[0];
   const last = recent[recent.length - 1];
+  const timeSpanMs = last.ts - first.ts;
+
+  // Anti-bias #1: minimum time span between first and last snapshot
+  if (timeSpanMs < MIN_TIME_SPAN_MS) return { locked: false, trend: 'unknown', snapshots: recent.length, timeSpanSec: Math.round(timeSpanMs/1000), reason: `time span ${Math.round(timeSpanMs/1000)}s < ${MIN_TIME_SPAN_MS/1000}s minimum` };
+
+  // Anti-bias #2: score must have changed (at least one team scored)
+  const totalScoreFirst = first.aS + first.hS;
+  const totalScoreLast = last.aS + last.hS;
+  const scoreChanged = totalScoreLast !== totalScoreFirst;
+  if (!scoreChanged) return { locked: false, trend: 'unknown', snapshots: recent.length, timeSpanSec: Math.round(timeSpanMs/1000), scoreChanged: false, reason: 'no scoring activity — dead ball or timeout' };
 
   // Calculate deficit FROM the perspective of the team we're evaluating
   // teamSide: 'away' or 'home' — the team whose star is cold / who is trailing
@@ -1068,28 +1089,31 @@ function analyzeDamageLocked(gameId, teamSide, minSnapshots) {
   const deficitChange = deficitNow - deficitThen;
 
   // "Locked" = the team was behind AND the deficit didn't shrink (grew or stayed)
-  // For 3PT Fragile: the LEADING team's lead held/grew = trailing team can't close the gap
   const isTrailing = deficitNow > 0;
-  const deficitGrew = deficitChange > 0;
   const deficitStable = deficitChange >= 0; // didn't shrink
 
   // Check if deficit has been consistently non-shrinking across all snapshots
+  // Allow small 2-pt fluctuations (single basket noise) but flag any real comeback attempt
   let consistentlyBehind = true;
+  let maxRecovery = 0; // track the biggest single-interval recovery
   for (let i = 1; i < recent.length; i++) {
-    if (getDeficit(recent[i]) < getDeficit(recent[i-1]) - 2) {
-      consistentlyBehind = false; // deficit shrank by more than 2 pts at some point
+    const recovery = getDeficit(recent[i-1]) - getDeficit(recent[i]);
+    if (recovery > maxRecovery) maxRecovery = recovery;
+    if (recovery > 3) {
+      consistentlyBehind = false; // deficit shrank by more than 3 pts in one interval = comeback attempt
       break;
     }
   }
 
   let trend = 'unknown';
-  if (deficitChange > 2) trend = 'growing';
-  else if (deficitChange >= -1) trend = 'stable';
+  if (deficitChange > 3) trend = 'growing';
+  else if (deficitChange >= -2) trend = 'stable';
   else trend = 'shrinking';
 
   const locked = isTrailing && deficitStable && consistentlyBehind;
+  const timeSpanSec = Math.round(timeSpanMs / 1000);
 
-  return { locked, trend, deficitNow, deficitThen, deficitChange, snapshots: recent.length, consistentlyBehind };
+  return { locked, trend, deficitNow, deficitThen, deficitChange, snapshots: recent.length, timeSpanSec, scoreChanged, consistentlyBehind, maxRecovery, reason: locked ? 'deficit stable/growing over ' + timeSpanSec + 's with scoring activity' : (isTrailing ? 'trailing but deficit shrinking or inconsistent' : 'not trailing') };
 }
 
 // ==================== CONNECTION STATUS ====================
@@ -1384,7 +1408,7 @@ async function fetchESPNScoreboard() {
               // DAMAGE LOCKED CHECK: Is the star's team trailing AND deficit stable/growing?
               const starTeamSide = leader.team===aA ? 'away' : 'home';
               const starTeamTrailing = (starTeamSide==='away' && aS < hS) || (starTeamSide==='home' && hS < aS);
-              const dmg = analyzeDamageLocked(gid, starTeamSide, 3);
+              const dmg = analyzeDamageLocked(gid, starTeamSide, 4, gMins);
               const damageLocked = starTeamTrailing && dmg.locked;
               const dmgLabel = damageLocked ? '🔒 DAMAGE LOCKED' : (starTeamTrailing && dmg.trend==='growing' ? '📉 Deficit growing' : '');
 
@@ -1398,10 +1422,10 @@ async function fetchESPNScoreboard() {
               starCoilTeams[leader.team] = { name: leader.name, damageLocked, dmg };
               const starTeamFull = leader.team===aA ? aFull : hFull;
               const dmgDetail = damageLocked
-                ? `<br><strong>🔒 Damage Locked:</strong> ${leader.name}'s team has been trailing for ${dmg.snapshots} consecutive checks. Deficit was ${dmg.deficitThen}pts → now ${dmg.deficitNow}pts (${dmg.trend}). Even if the star heats up, the hole is too deep to climb out of — the cold stretch already decided the game.`
+                ? `<br><strong>🔒 Damage Locked:</strong> ${leader.name}'s team has been trailing across ${dmg.snapshots} checks over ${dmg.timeSpanSec}s of game action. Deficit was ${dmg.deficitThen}pts → now ${dmg.deficitNow}pts (${dmg.trend}). Scoring confirmed active (not timeout). Even if the star heats up, the hole is too deep — the cold stretch already decided the game.`
                 : (starTeamTrailing && dmg.snapshots >= 2
-                  ? `<br><strong>Momentum:</strong> Team trailing by ${scoreMargin}pts. Deficit trend: ${dmg.trend} (${dmg.snapshots} checks). Not yet locked — deficit could still shrink.`
-                  : `<br><strong>Momentum:</strong> Tracking score trend (${dmg.snapshots}/3 snapshots). Damage Locked status pending.`);
+                  ? `<br><strong>Momentum:</strong> Team trailing by ${scoreMargin}pts. Deficit trend: ${dmg.trend} (${dmg.snapshots} checks, ${dmg.timeSpanSec||'?'}s span). Not locked: ${dmg.reason}.`
+                  : `<br><strong>Momentum:</strong> Collecting data (${dmg.snapshots}/4 snapshots, need 3+ min span). ${dmg.reason}.`);
               thesis.criteria[`star_${oppSide}`] = {met:true, strong:true, label:`Star Coil${damageLocked?' 🔒':''}: ${leader.name} (${teamDisplay(leader.team, starTeamFull)})`, detail:`<strong>Player:</strong> ${leader.name} — averages ${star.ppg} PPG.<br><strong>Current:</strong> ${leader.pts} pts at Q${per} ${clk} (expected ~${exp.toFixed(0)}).<br><strong>Pace:</strong> ${(pr*100).toFixed(0)}% of expected — below the 65% threshold.<br><strong>Game Context:</strong> Score margin is ${scoreMargin} pts — game is competitive.<br><strong>Timing:</strong> Q${per} — prime window for star breakout.${dmgDetail}<br><strong>Why it matters:</strong> ${damageLocked ? 'Star is cold AND the deficit has been stable/growing. Even if the star catches fire, the damage from the cold stretch is already baked into the score. Bet AGAINST the star\'s team — the hole is too deep.' : 'Star is cold but the game is close. When the star heats up (and they will), the ML swings hard. The market hasn\'t priced in the breakout.'}`, value:`${leader.pts}/${exp.toFixed(0)} pts (${(pr*100).toFixed(0)}%) | Margin: ${scoreMargin}${damageLocked?' 🔒':''}`};
             } else if (pr<0.65 && per<=3) {
               // Star is cold but game not competitive or wrong quarter — monitoring only
