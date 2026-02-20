@@ -1287,8 +1287,8 @@ async function fetchESPNScoreboard() {
             const pr = exp>0 ? leader.pts/exp : 1;
             const side = leader.team===aA?'away':'home';
             const oppSide = side==='away'?'home':'away';
-            // Star Coil: <60% pace + Q2-Q3 + game within 15 pts (competitive)
-            if (pr<0.6 && per>=2 && per<=3 && scoreMargin<=15) {
+            // Star Coil: <65% pace + Q2-Q3 + game within 15 pts (competitive)
+            if (pr<0.65 && per>=2 && per<=3 && scoreMargin<=15) {
               let ctx = per===2?` Half exp: ${getHalfExpected(star.ppg).toFixed(0)}`:'';
               signals.push({type:'star',text:`🌀 ${leader.name} ${leader.pts}pts (exp ~${exp.toFixed(0)}, ${(pr*100).toFixed(0)}% pace). Game within ${scoreMargin}pts — coiled for breakout.${ctx}`,level:2});
               sigStar++;
@@ -1298,7 +1298,7 @@ async function fetchESPNScoreboard() {
               starCoilTeams[leader.team] = leader.name;
               const starTeamFull = leader.team===aA ? aFull : hFull;
               thesis.criteria[`star_${oppSide}`] = {met:true, strong:true, label:`Star Coil: ${leader.name} (${teamDisplay(leader.team, starTeamFull)})`, detail:`<strong>Player:</strong> ${leader.name} — averages ${star.ppg} PPG.<br><strong>Current:</strong> ${leader.pts} pts at Q${per} ${clk} (expected ~${exp.toFixed(0)}).<br><strong>Pace:</strong> ${(pr*100).toFixed(0)}% of expected — below the 60% threshold.<br><strong>Game Context:</strong> Score margin is ${scoreMargin} pts — game is competitive.<br><strong>Timing:</strong> Q${per} — prime window for star breakout.<br><strong>Why it matters:</strong> Star is cold but the game is close. When the star heats up (and they will), the ML swings hard. The market hasn't priced in the breakout.`, value:`${leader.pts}/${exp.toFixed(0)} pts (${(pr*100).toFixed(0)}%) | Margin: ${scoreMargin}`};
-            } else if (pr<0.6 && per<=3) {
+            } else if (pr<0.65 && per<=3) {
               // Star is cold but game not competitive or wrong quarter — monitoring only
               const starTeamFull2 = leader.team===aA ? aFull : hFull;
               const reason = per<2 ? 'too early (Q1)' : scoreMargin>15 ? `blowout (${scoreMargin}pt margin)` : '';
@@ -1307,7 +1307,7 @@ async function fetchESPNScoreboard() {
             } else if (pr<0.75 && gPct>=0.2) {
               const starTeamFull2 = leader.team===aA ? aFull : hFull;
               signals.push({type:'star',text:`${leader.name} (${teamDisplay(leader.team, starTeamFull2)}) ${leader.pts}pts, behind ${star.ppg} PPG pace (exp ~${exp.toFixed(0)})`,level:1});
-              thesis.criteria[`star_${oppSide}`] = {met:true, strong:false, label:`Star Below Pace: ${leader.name} (${teamDisplay(leader.team, starTeamFull2)})`, detail:`${leader.name} (${star.ppg} PPG) has ${leader.pts} pts vs ${exp.toFixed(0)} expected. Below pace but not at critical 60% threshold yet.`, value:`${(pr*100).toFixed(0)}% pace`, warn:true};
+              thesis.criteria[`star_${oppSide}`] = {met:true, strong:false, label:`Star Below Pace: ${leader.name} (${teamDisplay(leader.team, starTeamFull2)})`, detail:`${leader.name} (${star.ppg} PPG) has ${leader.pts} pts vs ${exp.toFixed(0)} expected. Below pace but not at critical 65% threshold yet.`, value:`${(pr*100).toFixed(0)}% pace`, warn:true};
             }
           }
         });
@@ -2263,7 +2263,7 @@ function fireStarCoilAlert(leader, star, gMins, per, clk, gLabel, paceRatio, mar
     ppg: star.ppg,
     pacePercent: paceRatio * 100,
     type: 'coil',
-    signals: ['Star at ' + (paceRatio * 100).toFixed(0) + '% pace', 'Below 60% threshold', 'Game within ' + margin + ' pts', 'Q' + per + ' — prime window']
+    signals: ['Star at ' + (paceRatio * 100).toFixed(0) + '% pace', 'Below 65% threshold', 'Game within ' + margin + ' pts', 'Q' + per + ' — prime window']
   });
 }
 
@@ -3183,10 +3183,10 @@ try {
   <p><strong>When only one condition is met:</strong> If only the 3PT shooting is hot (no fragile lead) or only the lead is fragile (shooting not extreme), the system shows a Level 1 warning but does NOT fire the full signal. This eliminates false positives from the old system where 3PT and Fragile were counted as separate signals despite measuring the same underlying phenomenon.</p>
   <hr class="signal-divider">
   <h4>2. Star Coil (Upgraded Star Cold)</h4>
-  <p><strong>What it detects:</strong> A franchise-caliber player performing well below their expected scoring pace (<60%) during Q2-Q3 AND the game is competitive (within 15 points). This is the "compressed spring" — the star is coiled and will break out, and because the game is close, that breakout changes the outcome.</p>
+  <p><strong>What it detects:</strong> A franchise-caliber player performing well below their expected scoring pace (<65%) during Q2-Q3 AND the game is competitive (within 15 points). This is the "compressed spring" — the star is coiled and will break out, and because the game is close, that breakout changes the outcome.</p>
   <p><strong>Why it is an edge:</strong> Star players regress <em>upward</em>. But the old Star Cold signal fired even in blowouts or Q1 (too early). Star Coil adds two critical filters: (1) game must be competitive so the star's breakout actually impacts the result, and (2) timing must be Q2-Q3 — the sweet spot where regression has time to play out.</p>
   <div class="edge-box green">
-    <p><strong>Trigger:</strong> Star's actual production &lt;60% of expected pace AND Q2 or Q3 AND score margin ≤15 pts. Example: A 30 PPG scorer has 8 pts at halftime, team is down 7 — the market undervalues this team's chances because their best player hasn't shown up yet. But he will.</p>
+    <p><strong>Trigger:</strong> Star's actual production &lt;65% of expected pace AND Q2 or Q3 AND score margin ≤15 pts. Example: A 30 PPG scorer has 8 pts at halftime, team is down 7 — the market undervalues this team's chances because their best player hasn't shown up yet. But he will.</p>
   </div>
   <hr class="signal-divider">
   <h4>3. Combined Edge</h4>
