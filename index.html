@@ -377,14 +377,6 @@
 .champ-btn .cb-wr.wr-mid{color:var(--orange)}
 .champ-btn .cb-wr.wr-low{color:var(--red)}
 .champ-picker-empty{text-align:center;padding:20px;color:var(--text-muted);font-size:12px}
-.comp-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:11px}
-.comp-row .comp-label{width:110px;text-align:right;font-weight:600;color:var(--text-muted);flex-shrink:0;font-size:10px;text-transform:uppercase;letter-spacing:.5px}
-.comp-row .comp-bar-wrap{flex:1;display:flex;gap:2px;height:18px}
-.comp-row .comp-bar{height:100%;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;min-width:20px;transition:width .4s ease}
-.comp-row .comp-bar.bar-blue{background:linear-gradient(90deg,#2563eb,#3b82f6)}
-.comp-row .comp-bar.bar-red{background:linear-gradient(90deg,#ef4444,#dc2626)}
-.comp-row .comp-vs{font-size:10px;color:var(--text-muted);font-weight:600;flex-shrink:0;width:22px;text-align:center}
-.comp-verdict{text-align:center;padding:12px;margin-top:8px;border-radius:8px;font-weight:700}
 .analyzer-dimension{background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:8px}
 .analyzer-dimension .dim-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .analyzer-dimension .dim-name{font-size:12px;font-weight:700;color:var(--text-primary)}
@@ -3114,99 +3106,64 @@ function renderCompAnalysis() {
   const bName = draftState.blue.team || 'Blue';
   const rName = draftState.red.team || 'Red';
 
-  const dims = [
-    { label: 'Late Game', key: 'lateGame', icon: '\u{1F4C8}', bVal: bComp.lateGame, rVal: rComp.lateGame },
-    { label: 'Backline Threat', key: 'backlineThreat', icon: '\u{1F5E1}', bVal: bComp.backlineThreat, rVal: rComp.backlineThreat },
-    { label: 'TF Control', key: 'tfControl', icon: '\u{1F3AF}', bVal: bComp.tfControl, rVal: rComp.tfControl }
-  ];
-
-  // Overall weighted score
-  const weights = [0.35, 0.30, 0.35];
-  let bTotal = 0, rTotal = 0;
-  dims.forEach((d, i) => { bTotal += d.bVal * weights[i]; rTotal += d.rVal * weights[i]; });
-  bTotal = Math.round(bTotal * 10) / 10;
-  rTotal = Math.round(rTotal * 10) / 10;
+  const tagStyle = 'display:inline-block;padding:2px 8px;margin:2px;border-radius:5px;font-size:11px;font-weight:600;';
+  const bTag = tagStyle + 'background:rgba(59,130,246,.1);color:#3b82f6;border:1px solid rgba(59,130,246,.2);';
+  const rTag = tagStyle + 'background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2);';
+  const mutedTag = tagStyle + 'background:var(--bg);color:var(--text-muted);border:1px solid var(--border);';
 
   let html = '<div class="card" style="padding:16px;border-color:var(--accent);">' +
-    '<div style="text-align:center;margin-bottom:14px;"><span style="font-size:10px;font-weight:700;color:var(--accent);letter-spacing:1px;text-transform:uppercase;">\u{1F9E0} Comp Analysis (Pure Comp \u2014 No Player Skill)</span></div>';
+    '<div style="text-align:center;margin-bottom:14px;"><span style="font-size:10px;font-weight:700;color:var(--accent);letter-spacing:1px;text-transform:uppercase;">\u{1F9E0} Comp Breakdown</span></div>';
 
-  // Team headers
-  html += '<div style="display:flex;justify-content:space-between;margin-bottom:12px;font-size:12px;font-weight:800;">' +
-    '<span style="color:#3b82f6;">\u{1F535} ' + bName + '</span>' +
-    '<span style="color:#ef4444;">\u{1F534} ' + rName + '</span></div>';
+  // Column headers
+  html += '<div style="display:flex;margin-bottom:10px;font-size:11px;font-weight:800;border-bottom:1px solid var(--border);padding-bottom:6px;">' +
+    '<div style="width:90px;color:var(--text-muted);"></div>' +
+    '<div style="flex:1;color:#3b82f6;">\u{1F535} ' + bName + '</div>' +
+    '<div style="flex:1;color:#ef4444;text-align:right;">\u{1F534} ' + rName + '</div></div>';
 
-  // Render each dimension with bars + team breakdown
-  dims.forEach((d, i) => {
-    const maxBar = 10;
-    const bPct = Math.round(d.bVal / maxBar * 100);
-    const rPct = Math.round(d.rVal / maxBar * 100);
-    const bWin = d.bVal > d.rVal;
-    const rWin = d.rVal > d.bVal;
-    const diff = Math.abs(d.bVal - d.rVal);
-    const edgeTag = diff >= 3 ? '\u{1F525}' : diff >= 1.5 ? '\u26A1' : '';
+  // Helper: render champ tags
+  function tags(names, style) { return names.length > 0 ? names.map(n => '<span style="' + style + '">' + n + '</span>').join('') : '<span style="' + mutedTag + '">None</span>'; }
 
-    html += '<div style="margin-bottom:14px;">' +
-      '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">' +
-      '<span style="font-size:13px;">' + d.icon + '</span>' +
-      '<span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-primary);">' + d.label + '</span>' +
-      (edgeTag ? '<span style="font-size:11px;">' + edgeTag + '</span>' : '') + '</div>';
+  // 1. Late Game
+  html += '<div style="margin-bottom:14px;">' +
+    '<div style="display:flex;align-items:baseline;">' +
+    '<div style="width:90px;font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;flex-shrink:0;">\u{1F4C8} Late Game</div>' +
+    '<div style="flex:1;">' + tags(bComp.scalers, bTag) + '</div>' +
+    '<div style="flex:1;text-align:right;">' + tags(rComp.scalers, rTag) + '</div></div>';
+  // Early game champs row
+  if (bComp.earlyChamps.length > 0 || rComp.earlyChamps.length > 0) {
+    html += '<div style="display:flex;align-items:baseline;margin-top:2px;">' +
+      '<div style="width:90px;font-size:9px;color:var(--text-muted);flex-shrink:0;padding-left:2px;">Early-game</div>' +
+      '<div style="flex:1;">' + tags(bComp.earlyChamps, mutedTag) + '</div>' +
+      '<div style="flex:1;text-align:right;">' + tags(rComp.earlyChamps, mutedTag) + '</div></div>';
+  }
+  html += '</div>';
 
-    // Bars
-    html += '<div class="comp-row" style="margin-bottom:4px;">' +
-      '<div class="comp-label" style="width:0;"></div>' +
-      '<div class="comp-bar-wrap">' +
-      '<div class="comp-bar bar-blue" style="width:' + Math.max(bPct, 15) + '%;opacity:' + (bWin ? '1' : '.5') + '">' + d.bVal.toFixed(1) + '</div>' +
-      '<div class="comp-vs">vs</div>' +
-      '<div class="comp-bar bar-red" style="width:' + Math.max(rPct, 15) + '%;opacity:' + (rWin ? '1' : '.5') + '">' + d.rVal.toFixed(1) + '</div>' +
-      '</div></div>';
+  // 2. Backline Threat
+  html += '<div style="margin-bottom:14px;">' +
+    '<div style="display:flex;align-items:baseline;">' +
+    '<div style="width:90px;font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;flex-shrink:0;">\u{1F5E1} Backline</div>' +
+    '<div style="flex:1;">' + tags(bComp.diveNames, bTag) + '</div>' +
+    '<div style="flex:1;text-align:right;">' + tags(rComp.diveNames, rTag) + '</div></div></div>';
 
-    // Team breakdowns per dimension
-    let bDesc = '', rDesc = '';
-    if (d.key === 'lateGame') {
-      bDesc = bComp.scalers.length > 0 ? '\u{1F4A0} Scalers: ' + bComp.scalers.join(', ') : '\u26A0 No hypercarries';
-      if (bComp.earlyChamps.length > 0) bDesc += ' \u00B7 Early: ' + bComp.earlyChamps.join(', ');
-      rDesc = rComp.scalers.length > 0 ? '\u{1F4A0} Scalers: ' + rComp.scalers.join(', ') : '\u26A0 No hypercarries';
-      if (rComp.earlyChamps.length > 0) rDesc += ' \u00B7 Early: ' + rComp.earlyChamps.join(', ');
-    } else if (d.key === 'backlineThreat') {
-      bDesc = bComp.diveNames.length > 0 ? '\u{1F5E1} Divers: ' + bComp.diveNames.join(', ') : '\u26A0 No backline access';
-      rDesc = rComp.diveNames.length > 0 ? '\u{1F5E1} Divers: ' + rComp.diveNames.join(', ') : '\u26A0 No backline access';
-    } else if (d.key === 'tfControl') {
-      const bParts = [];
-      if (bComp.ccChamps.length > 0) bParts.push('\u{1F3AF} Reliable CC: ' + bComp.ccChamps.join(', '));
-      if (bComp.engageChamps.length > 0) bParts.push('\u{1F6E1} Engage: ' + bComp.engageChamps.join(', '));
-      if (bComp.peelChamps.length > 0) bParts.push('\u{1F49A} Peel: ' + bComp.peelChamps.join(', '));
-      bDesc = bParts.length > 0 ? bParts.join(' \u00B7 ') : '\u26A0 Low teamfight tools';
-      const rParts = [];
-      if (rComp.ccChamps.length > 0) rParts.push('\u{1F3AF} Reliable CC: ' + rComp.ccChamps.join(', '));
-      if (rComp.engageChamps.length > 0) rParts.push('\u{1F6E1} Engage: ' + rComp.engageChamps.join(', '));
-      if (rComp.peelChamps.length > 0) rParts.push('\u{1F49A} Peel: ' + rComp.peelChamps.join(', '));
-      rDesc = rParts.length > 0 ? rParts.join(' \u00B7 ') : '\u26A0 Low teamfight tools';
-    }
+  // 3. TF Control — sub-rows: Reliable CC, Engage, Peel
+  html += '<div style="margin-bottom:6px;">' +
+    '<div style="display:flex;align-items:baseline;">' +
+    '<div style="width:90px;font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;flex-shrink:0;">\u{1F3AF} Reliable CC</div>' +
+    '<div style="flex:1;">' + tags(bComp.ccChamps, bTag) + '</div>' +
+    '<div style="flex:1;text-align:right;">' + tags(rComp.ccChamps, rTag) + '</div></div>';
 
-    html += '<div style="display:flex;gap:8px;font-size:10px;line-height:1.4;">' +
-      '<div style="flex:1;color:#3b82f6;opacity:.85;padding:2px 0;">' + bDesc + '</div>' +
-      '<div style="flex:1;color:#ef4444;opacity:.85;padding:2px 0;text-align:right;">' + rDesc + '</div>' +
-      '</div></div>';
-  });
+  html += '<div style="display:flex;align-items:baseline;margin-top:4px;">' +
+    '<div style="width:90px;font-size:9px;color:var(--text-muted);flex-shrink:0;padding-left:2px;">Engage</div>' +
+    '<div style="flex:1;">' + tags(bComp.engageChamps, bTag) + '</div>' +
+    '<div style="flex:1;text-align:right;">' + tags(rComp.engageChamps, rTag) + '</div></div>';
 
-  // Overall verdict
-  const diff = bTotal - rTotal;
-  const absDiff = Math.abs(diff);
-  let verdictColor, verdictLabel;
-  if (absDiff >= 1.5) { verdictColor = 'var(--green)'; verdictLabel = 'COMP EDGE'; }
-  else if (absDiff >= 0.6) { verdictColor = 'var(--orange)'; verdictLabel = 'SLIGHT COMP EDGE'; }
-  else { verdictColor = 'var(--text-muted)'; verdictLabel = 'COMPS EVEN'; }
-  const verdictTeam = diff > 0 ? bName : diff < 0 ? rName : 'Neither';
-
-  let bWins = 0, rWins = 0;
-  dims.forEach(d => { if (d.bVal > d.rVal) bWins++; else if (d.rVal > d.bVal) rWins++; });
-
-  html += '<div class="comp-verdict" style="background:' + verdictColor + '22;border:1px solid ' + verdictColor + ';">' +
-    '<div style="font-size:10px;color:' + verdictColor + ';letter-spacing:1px;margin-bottom:4px;">' + verdictLabel + '</div>' +
-    '<div style="font-size:18px;color:' + verdictColor + ';">' + (absDiff >= 0.6 ? verdictTeam : 'No clear advantage') + '</div>' +
-    '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">' +
-    'Overall: ' + bName + ' ' + bTotal.toFixed(1) + ' vs ' + rName + ' ' + rTotal.toFixed(1) +
-    ' \u00B7 Dimensions: ' + bWins + '-' + (3 - bWins - rWins) + '-' + rWins + '</div></div>';
+  if (bComp.peelChamps.length > 0 || rComp.peelChamps.length > 0) {
+    html += '<div style="display:flex;align-items:baseline;margin-top:4px;">' +
+      '<div style="width:90px;font-size:9px;color:var(--text-muted);flex-shrink:0;padding-left:2px;">Peel</div>' +
+      '<div style="flex:1;">' + tags(bComp.peelChamps, bTag) + '</div>' +
+      '<div style="flex:1;text-align:right;">' + tags(rComp.peelChamps, rTag) + '</div></div>';
+  }
+  html += '</div>';
 
   html += '</div>';
   container.innerHTML = html;
