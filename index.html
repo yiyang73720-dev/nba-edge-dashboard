@@ -356,6 +356,27 @@
 .draft-slot .slot-role{font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
 .draft-slot .slot-champ{font-size:13px;font-weight:700;color:var(--text-primary);margin-top:4px}
 .draft-slot .slot-stats{font-size:10px;color:var(--text-muted);margin-top:2px}
+.draft-slot.picking{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent);position:relative}
+.champ-picker-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+.champ-picker{background:var(--card-bg);border:2px solid var(--accent);border-radius:14px;width:min(460px,92vw);max-height:70vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.champ-picker-header{padding:14px 16px 10px;border-bottom:1px solid var(--border);flex-shrink:0}
+.champ-picker-header h3{font-size:14px;font-weight:800;margin-bottom:8px}
+.champ-picker-search{width:100%;padding:8px 12px;font-size:13px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text-primary);outline:none}
+.champ-picker-search:focus{border-color:var(--accent)}
+.champ-picker-body{overflow-y:auto;padding:10px 16px 16px;flex:1}
+.champ-picker-section{margin-bottom:12px}
+.champ-picker-section-label{font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;padding-left:2px}
+.champ-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;margin:2px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg);color:var(--text-primary);transition:all .15s;white-space:nowrap}
+.champ-btn:hover{border-color:var(--accent);background:var(--accent-light);transform:scale(1.03)}
+.champ-btn.comfort-high{border-color:#22c55e44;background:rgba(34,197,94,.08)}
+.champ-btn.comfort-mid{border-color:#f59e0b44;background:rgba(245,158,11,.06)}
+.champ-btn.comfort-low{border-color:var(--border)}
+.champ-btn .cb-games{font-size:9px;color:var(--text-muted);font-weight:400}
+.champ-btn .cb-wr{font-size:9px;font-weight:700}
+.champ-btn .cb-wr.wr-high{color:var(--green)}
+.champ-btn .cb-wr.wr-mid{color:var(--orange)}
+.champ-btn .cb-wr.wr-low{color:var(--red)}
+.champ-picker-empty{text-align:center;padding:20px;color:var(--text-muted);font-size:12px}
 .analyzer-dimension{background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:8px}
 .analyzer-dimension .dim-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .analyzer-dimension .dim-name{font-size:12px;font-weight:700;color:var(--text-primary)}
@@ -676,7 +697,7 @@
   <div id="champpool-grid" class="games-grid" style="grid-template-columns:repeat(auto-fill,minmax(300px,1fr));"></div>
   <div style="margin-top:32px;border-top:2px solid var(--border);padding-top:24px;">
     <h2 style="font-size:18px;font-weight:800;margin-bottom:4px">&#x2694;&#xFE0F; Live Draft Tool</h2>
-    <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px">Select champions as picks come in during live draft. See comfort level for each pick.</p>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px">Tap any role slot to instantly pick a champion. Player&#x27;s pool shown first with comfort levels. One tap = locked in.</p>
     <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
       <div style="flex:1;min-width:200px;"><label style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;">Blue Side Team</label>
         <input type="text" id="draft-team-blue" placeholder="Type team name..." list="draft-teams-list" oninput="updateDraftTeam('blue')"></div>
@@ -715,7 +736,7 @@
     <h3 style="font-size:16px;font-weight:800;margin-bottom:12px;">&#x1F3AE; How LoL Mode Works</h3>
     <div style="font-size:13px;line-height:1.7;color:var(--text-primary);">
       <p style="margin-bottom:10px;"><strong>Champion Pool:</strong> Every player&#x27;s champion stats across LCK, LPL, LEC, LCS, CBLOL. Green = comfort (10+ games, 55%+ WR), Yellow = moderate, Red = low data.</p>
-      <p style="margin-bottom:10px;"><strong>Live Draft Tool:</strong> Input champion picks in real-time during draft phase. See each player&#x27;s historical stats on that specific champion.</p>
+      <p style="margin-bottom:10px;"><strong>Live Draft Tool:</strong> One-tap champion picker. Tap a role slot, see the player&#x27;s champion pool (comfort-coded), tap to lock in. Search bar for quick lookup. No typing needed.</p>
       <p style="margin-bottom:10px;"><strong>Game Analyzer:</strong> 5-dimension rating comparing two teams: Early Game, Objective Control, Late Game Power, Composition, Vision &amp; Macro.</p>
     </div>
   </div>
@@ -2883,14 +2904,136 @@ function renderDraftSlots(side) {
         '<div class="slot-stats">DPM: ' + pick.dpm + ' | GD@10: ' + (pick.gd10 > 0 ? '+' : '') + pick.gd10 + '</div>' +
         '<button onclick="clearDraftPick(\'' + side + '\',\'' + role + '\')" style="font-size:9px;color:var(--red);background:none;border:none;cursor:pointer;padding:2px;">\u2715 clear</button></div>';
     } else {
-      html += '<div class="draft-slot"><div class="slot-role">' + role + '</div>' +
-        '<input type="text" placeholder="Pick champion..." list="draft-champs-list" ' +
-        'onchange="onDraftPick(\'' + side + '\',\'' + role + '\',this.value)" ' +
-        'style="margin-top:4px;font-size:12px;padding:4px 8px;width:100%;text-align:center;border:1px dashed var(--border);border-radius:6px;background:transparent;"></div>';
+      html += '<div class="draft-slot" onclick="openChampPicker(\'' + side + '\',\'' + role + '\',this)" style="cursor:pointer">' +
+        '<div class="slot-role">' + role + '</div>' +
+        '<div style="margin-top:8px;font-size:11px;color:var(--text-muted);">\u{1F447} Tap to pick</div></div>';
     }
   });
   container.innerHTML = html;
   updateDraftSummary();
+}
+
+// ==================== CHAMPION PICKER (ONE-TAP) ====================
+let pickerOpen = false;
+function openChampPicker(side, role, slotEl) {
+  if (pickerOpen) return;
+  pickerOpen = true;
+  if (slotEl) slotEl.classList.add('picking');
+
+  const teamName = draftState[side].team;
+  // Find the player for this team+role
+  let playerName = '', playerData = null;
+  if (teamName) {
+    for (const [name, pdata] of Object.entries(LOL_DATA.players)) {
+      if (pdata.team === teamName && pdata.role === role) { playerName = name; playerData = pdata; break; }
+    }
+  }
+
+  // Build player's champion pool (sorted by games played desc)
+  let playerChamps = [];
+  if (playerData) {
+    playerChamps = Object.entries(playerData.champions)
+      .map(([name, s]) => ({ name, ...s }))
+      .sort((a, b) => b.gp - a.gp);
+  }
+
+  // Build all champions set (excluding player's champs to avoid duplicates)
+  const playerChampNames = new Set(playerChamps.map(c => c.name));
+  const allChamps = new Set();
+  Object.values(LOL_DATA.players).forEach(p => {
+    Object.keys(p.champions).forEach(c => { if (!playerChampNames.has(c)) allChamps.add(c); });
+  });
+  const allChampsSorted = [...allChamps].sort();
+
+  // Already picked champions (exclude from choices)
+  const alreadyPicked = new Set();
+  ['blue', 'red'].forEach(s => {
+    Object.values(draftState[s].picks).forEach(p => alreadyPicked.add(p.champion));
+  });
+
+  // Create overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'champ-picker-overlay';
+  overlay.id = 'champ-picker-overlay';
+  overlay.onclick = (e) => { if (e.target === overlay) closeChampPicker(slotEl); };
+
+  const sideColor = side === 'blue' ? '#3b82f6' : '#ef4444';
+  const sideLabel = side === 'blue' ? '\u{1F535} Blue' : '\u{1F534} Red';
+
+  let pickerHTML = '<div class="champ-picker"><div class="champ-picker-header">' +
+    '<h3>' + sideLabel + ' \u2014 ' + role + (playerName ? ' (' + playerName + ')' : '') + '</h3>' +
+    '<input type="text" class="champ-picker-search" id="champ-picker-search" placeholder="\u{1F50D} Search champion..." autofocus></div>' +
+    '<div class="champ-picker-body" id="champ-picker-body"></div></div>';
+
+  overlay.innerHTML = pickerHTML;
+  document.body.appendChild(overlay);
+
+  // Render champion buttons
+  function renderPickerChamps(filter) {
+    const body = document.getElementById('champ-picker-body');
+    const q = (filter || '').toLowerCase().trim();
+    let html = '';
+
+    // Section 1: Player's pool (if team is set)
+    if (playerChamps.length > 0) {
+      const filtered = playerChamps.filter(c => !alreadyPicked.has(c.name) && (!q || c.name.toLowerCase().includes(q)));
+      if (filtered.length > 0) {
+        html += '<div class="champ-picker-section"><div class="champ-picker-section-label">\u{2B50} ' + playerName + '\'s Pool (' + filtered.length + ' champs)</div>';
+        filtered.forEach(c => {
+          const cls = c.gp >= 10 && c.wr >= 55 ? 'comfort-high' : c.gp >= 5 ? 'comfort-mid' : 'comfort-low';
+          const wrCls = c.wr >= 55 ? 'wr-high' : c.wr >= 50 ? 'wr-mid' : 'wr-low';
+          html += '<button class="champ-btn ' + cls + '" onclick="pickChampFromGrid(\'' + side + '\',\'' + role + '\',\'' + c.name.replace(/'/g, "\\'") + '\')">' +
+            c.name + ' <span class="cb-games">' + c.gp + 'G</span> <span class="cb-wr ' + wrCls + '">' + c.wr + '%</span></button>';
+        });
+        html += '</div>';
+      }
+    }
+
+    // Section 2: All other champions
+    const filteredAll = allChampsSorted.filter(c => !alreadyPicked.has(c) && (!q || c.toLowerCase().includes(q)));
+    if (filteredAll.length > 0) {
+      html += '<div class="champ-picker-section"><div class="champ-picker-section-label">' +
+        (playerChamps.length > 0 ? '\u{1F4CB} All Other Champions' : '\u{1F4CB} All Champions') +
+        ' (' + filteredAll.length + ')</div>';
+      filteredAll.forEach(c => {
+        html += '<button class="champ-btn" onclick="pickChampFromGrid(\'' + side + '\',\'' + role + '\',\'' + c.replace(/'/g, "\\'") + '\')">' + c + '</button>';
+      });
+      html += '</div>';
+    }
+
+    if (!html) html = '<div class="champ-picker-empty">No champions match "' + (filter || '') + '"</div>';
+    body.innerHTML = html;
+  }
+
+  renderPickerChamps('');
+
+  // Live search filter
+  const searchInput = document.getElementById('champ-picker-search');
+  searchInput.addEventListener('input', () => renderPickerChamps(searchInput.value));
+
+  // Keyboard: Escape to close, Enter to pick first visible
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { closeChampPicker(slotEl); }
+    else if (e.key === 'Enter') {
+      const firstBtn = document.querySelector('#champ-picker-body .champ-btn');
+      if (firstBtn) firstBtn.click();
+    }
+  });
+
+  // Focus search after a tick (for mobile)
+  setTimeout(() => { if (searchInput) searchInput.focus(); }, 50);
+}
+
+function pickChampFromGrid(side, role, champion) {
+  closeChampPicker();
+  onDraftPick(side, role, champion);
+}
+
+function closeChampPicker(slotEl) {
+  const overlay = document.getElementById('champ-picker-overlay');
+  if (overlay) overlay.remove();
+  if (slotEl) slotEl.classList.remove('picking');
+  pickerOpen = false;
 }
 
 function onDraftPick(side, role, champion) {
