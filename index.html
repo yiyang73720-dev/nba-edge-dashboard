@@ -763,6 +763,51 @@ const TEAM_3PT_AVG = {
 };
 function getTeam3PtAvg(abbr) { return TEAM_3PT_AVG[abbr] || null; }
 
+// ==================== SUPPORTING CAST ANALYSIS ====================
+// Pure live-data approach: no season averages, no assumptions.
+// Compares the star's teammates' output directly to the opponent's total output.
+//
+// castScore = teamScore - starPts (what teammates produced)
+// castGap = castScore - opponentScore (how close cast alone is to matching the opponent)
+//
+// If castGap ≥ 0: Cast is MATCHING or BEATING the opponent without the star. Star regression = dominant.
+// If castGap > -8: Cast is close. Star regression likely flips the game. Strong edge.
+// If castGap -8 to -15: Cast is behind but game is still in range. Standard edge.
+// If castGap < -15: Cast is way behind. Whole team broken. Star alone won't save it. Weak edge.
+//
+// Also computes starDeficit = star's expected pts - star's actual pts (the "missing" points).
+// If starDeficit > |castGap|, star regression alone closes the gap. This is the key insight:
+//   the star has MORE missing points than the team is behind = regression flips the lead.
+//
+function analyzeSupportingCast(starPts, teamScore, opponentScore, starPPG, elapsedMinutes) {
+  const castScore = teamScore - starPts;
+  const castGap = castScore - opponentScore;
+  const starExpected = starPPG * (elapsedMinutes / 48);
+  const starDeficit = starExpected - starPts;  // how many points the star is "missing"
+  const regressionFlips = starDeficit > 0 && starDeficit > Math.abs(Math.min(castGap, 0));
+
+  if (elapsedMinutes < 8) return { castScore, castGap, starDeficit, regressionFlips, strong: false, moderate: false, weak: true, label: 'N/A', emoji: '➖', reason: 'too early' };
+
+  // Classify based on cast gap
+  const strong = castGap >= -8;     // cast within 8 of opponent or ahead
+  const moderate = castGap >= -15 && castGap < -8;
+  const weak = castGap < -15;
+
+  let label, emoji;
+  if (castGap >= 0) { label = 'CAST LEADING'; emoji = '🔥'; }
+  else if (strong) { label = 'CAST CLOSE'; emoji = '💪'; }
+  else if (moderate) { label = 'CAST BEHIND'; emoji = '➖'; }
+  else { label = 'CAST BROKEN'; emoji = '⚠️'; }
+
+  return {
+    castScore, castGap, starDeficit: Math.round(starDeficit * 10) / 10,
+    starExpected: Math.round(starExpected * 10) / 10,
+    regressionFlips,
+    strong, moderate, weak, label, emoji,
+    reason: `Cast ${castScore}pts vs opp ${opponentScore}pts (gap: ${castGap > 0 ? '+' : ''}${castGap}). Star missing ~${starDeficit.toFixed(0)}pts.${regressionFlips ? ' Regression flips the lead.' : ''}`
+  };
+}
+
 let currentMode='nba';
 
 // === LIVE ODDS (The Odds API) ===
@@ -1405,28 +1450,69 @@ async function fetchESPNScoreboard() {
             const oppSide = side==='away'?'home':'away';
             // Star Coil: <65% pace + Q2-Q3 + game within 15 pts (competitive)
             if (pr<0.65 && per>=2 && per<=3 && scoreMargin<=15) {
-              // DAMAGE LOCKED CHECK: Is the star's team trailing AND deficit stable/growing?
               const starTeamSide = leader.team===aA ? 'away' : 'home';
+              const starTeamScore = starTeamSide==='away' ? aS : hS;
               const starTeamTrailing = (starTeamSide==='away' && aS < hS) || (starTeamSide==='home' && hS < aS);
+
+              // ===== SUPPORTING CAST ANALYSIS (core edge strengthener) =====
+              // How well are the star's teammates performing WITHOUT the star's contribution?
+              // If cast is strong (≥90% pace), the team is competitive DESPITE the star being cold.
+              // Star regression on top of a strong cast = massive swing. This is the strongest edge.
+              const oppScore = starTeamSide==='away' ? hS : aS;
+              const cast = analyzeSupportingCast(leader.pts, starTeamScore, oppScore, star.ppg, gMins);
+
+              // ===== DAMAGE LOCKED CHECK =====
               const dmg = analyzeDamageLocked(gid, starTeamSide, 4, gMins);
               const damageLocked = starTeamTrailing && dmg.locked;
-              const dmgLabel = damageLocked ? '🔒 DAMAGE LOCKED' : (starTeamTrailing && dmg.trend==='growing' ? '📉 Deficit growing' : '');
+
+              // ===== SIGNAL STRENGTH CLASSIFICATION =====
+              // 3 tiers based on supporting cast gap (cast score vs opponent score):
+              //   ELITE: castGap ≥ -8 → cast within 8pts of opponent or leading → strongest signal
+              //   STANDARD: castGap -8 to -15 → cast behind but in range → normal signal
+              //   WEAK: castGap < -15 → cast way behind opponent → whole team broken, star alone won't save
+              // Damage Locked overrides: if deficit is baked in, downgrade regardless
+              // regressionFlips: star's missing pts > cast gap → regression alone closes the deficit
+              let coilTier, tierEmoji, tierLabel;
+              if (damageLocked) {
+                coilTier = 'locked'; tierEmoji = '🔒'; tierLabel = 'DAMAGE LOCKED';
+              } else if (cast.strong) {
+                coilTier = 'elite'; tierEmoji = '💪'; tierLabel = 'CAST STRONG';
+              } else if (cast.moderate) {
+                coilTier = 'standard'; tierEmoji = '🌀'; tierLabel = 'STANDARD';
+              } else {
+                coilTier = 'weak'; tierEmoji = '⚠️'; tierLabel = 'CAST WEAK';
+              }
+
+              const isStrongSignal = coilTier === 'elite' || coilTier === 'standard';
 
               let ctx = per===2?` Half exp: ${getHalfExpected(star.ppg).toFixed(0)}`:'';
-              if (damageLocked) ctx += ` | ${dmgLabel}: deficit ${dmg.deficitNow}pts, was ${dmg.deficitThen}pts (${dmg.snapshots} checks)`;
-              signals.push({type:'star',text:`🌀 ${leader.name} ${leader.pts}pts (exp ~${exp.toFixed(0)}, ${(pr*100).toFixed(0)}% pace). Game within ${scoreMargin}pts — coiled for breakout.${dmgLabel ? ' ' + dmgLabel : ''}${ctx}`,level:2});
+              signals.push({type:'star',text:`${tierEmoji} ${leader.name} ${leader.pts}pts (exp ~${exp.toFixed(0)}, ${(pr*100).toFixed(0)}% pace). Margin: ${scoreMargin}pts. Cast: ${cast.castScore}pts vs opp ${oppScore}pts (gap: ${cast.castGap > 0 ? '+' : ''}${cast.castGap}) ${tierLabel}.${cast.regressionFlips ? ' ✅ Regression flips lead.' : ''}${ctx}`,level:2});
               sigStar++;
               fireStarCoilAlert(leader, star, gMins, per, clk, gLabel, pr, scoreMargin);
-              sendSignalNotification('🌀 Star Coil: ' + leader.name + (damageLocked ? ' 🔒 DAMAGE LOCKED' : ''), leader.name + ' only ' + leader.pts + 'pts (exp ~' + exp.toFixed(0) + '). Game within ' + scoreMargin + 'pts.' + (damageLocked ? ' Deficit stable/growing — damage is baked in.' : ''), gid, 'star_' + leader.team);
+              sendSignalNotification(`${tierEmoji} Star Coil [${tierLabel}]: ${leader.name}`, `${leader.name} ${leader.pts}pts (exp ~${exp.toFixed(0)}). Cast ${cast.castScore}pts vs opp ${oppScore} (gap: ${cast.castGap}). ${cast.regressionFlips ? 'Regression flips!' : ''} Margin: ${scoreMargin}pts.`, gid, 'star_' + leader.team);
               if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
-              starCoilTeams[leader.team] = { name: leader.name, damageLocked, dmg };
+              starCoilTeams[leader.team] = { name: leader.name, damageLocked, dmg, cast, coilTier };
               const starTeamFull = leader.team===aA ? aFull : hFull;
+
+              // Build detailed thesis breakdown
+              const oppTeamAbbr = starTeamSide==='away' ? hA : aA;
+              const castDetail = `<br><strong>${cast.emoji} Supporting Cast (${cast.label}):</strong> Without ${leader.name}, teammates have <strong>${cast.castScore} pts</strong> vs ${oppTeamAbbr}'s <strong>${oppScore} pts</strong> (gap: <strong>${cast.castGap > 0 ? '+' : ''}${cast.castGap}</strong>).<br>&nbsp;&nbsp;• ${leader.name} is missing ~${cast.starDeficit.toFixed(0)} pts from expected (${star.ppg} PPG × ${(gMins/48*100).toFixed(0)}% game = ~${cast.starExpected.toFixed(0)} exp, has ${leader.pts}).<br>&nbsp;&nbsp;• ${cast.regressionFlips ? `<strong>KEY: Star's missing ${cast.starDeficit.toFixed(0)}pts > team deficit of ${Math.abs(Math.min(cast.castGap, 0))}pts.</strong> When ${leader.name} regresses to mean, the team takes the lead.` : cast.castGap >= 0 ? `<strong>Cast is already matching/beating the opponent.</strong> Star regression pushes this team into dominant territory.` : cast.strong ? `Cast is close to the opponent — within striking distance. Star regression makes this a real fight.` : cast.moderate ? `Cast is behind but game is still in range. Star regression helps but may not be enough alone.` : `<strong>Warning:</strong> Cast is ${Math.abs(cast.castGap)} pts behind the opponent. The whole team is struggling. Star regression of ~${cast.starDeficit.toFixed(0)}pts may not close a ${Math.abs(cast.castGap)}pt cast gap.`}`;
+
               const dmgDetail = damageLocked
-                ? `<br><strong>🔒 Damage Locked:</strong> ${leader.name}'s team has been trailing across ${dmg.snapshots} checks over ${dmg.timeSpanSec}s of game action. Deficit was ${dmg.deficitThen}pts → now ${dmg.deficitNow}pts (${dmg.trend}). Scoring confirmed active (not timeout). Even if the star heats up, the hole is too deep — the cold stretch already decided the game.`
+                ? `<br><strong>🔒 Damage Locked:</strong> Trailing across ${dmg.snapshots} checks over ${dmg.timeSpanSec}s. Deficit: ${dmg.deficitThen}→${dmg.deficitNow}pts (${dmg.trend}). Even if star + cast are strong, the hole is baked in.`
                 : (starTeamTrailing && dmg.snapshots >= 2
-                  ? `<br><strong>Momentum:</strong> Team trailing by ${scoreMargin}pts. Deficit trend: ${dmg.trend} (${dmg.snapshots} checks, ${dmg.timeSpanSec||'?'}s span). Not locked: ${dmg.reason}.`
-                  : `<br><strong>Momentum:</strong> Collecting data (${dmg.snapshots}/4 snapshots, need 3+ min span). ${dmg.reason}.`);
-              thesis.criteria[`star_${oppSide}`] = {met:true, strong:true, label:`Star Coil${damageLocked?' 🔒':''}: ${leader.name} (${teamDisplay(leader.team, starTeamFull)})`, detail:`<strong>Player:</strong> ${leader.name} — averages ${star.ppg} PPG.<br><strong>Current:</strong> ${leader.pts} pts at Q${per} ${clk} (expected ~${exp.toFixed(0)}).<br><strong>Pace:</strong> ${(pr*100).toFixed(0)}% of expected — below the 65% threshold.<br><strong>Game Context:</strong> Score margin is ${scoreMargin} pts — game is competitive.<br><strong>Timing:</strong> Q${per} — prime window for star breakout.${dmgDetail}<br><strong>Why it matters:</strong> ${damageLocked ? 'Star is cold AND the deficit has been stable/growing. Even if the star catches fire, the damage from the cold stretch is already baked into the score. Bet AGAINST the star\'s team — the hole is too deep.' : 'Star is cold but the game is close. When the star heats up (and they will), the ML swings hard. The market hasn\'t priced in the breakout.'}`, value:`${leader.pts}/${exp.toFixed(0)} pts (${(pr*100).toFixed(0)}%) | Margin: ${scoreMargin}${damageLocked?' 🔒':''}`};
+                  ? `<br><strong>Momentum:</strong> Trailing by ${scoreMargin}pts. Trend: ${dmg.trend} (${dmg.snapshots} checks, ${dmg.timeSpanSec||'?'}s). Not locked: ${dmg.reason}.`
+                  : `<br><strong>Momentum:</strong> Collecting data (${dmg.snapshots}/4 snapshots). ${dmg.reason}.`);
+
+              const whyItMatters = coilTier === 'elite'
+                ? `STRONGEST EDGE: Without ${leader.name}, the cast has ${cast.castScore}pts — only ${Math.abs(cast.castGap)}pts ${cast.castGap >= 0 ? 'AHEAD of' : 'behind'} the opponent's ${oppScore}pts.${cast.regressionFlips ? ` Star is missing ~${cast.starDeficit.toFixed(0)}pts, which is MORE than the ${Math.abs(cast.castGap)}pt gap. When ${leader.name} regresses to mean, this team takes the lead.` : ` The cast is already competing. Star regression pushes this team into dominant territory.`} The market is pricing in the star's cold stretch but ignoring that the rest of the team is holding.`
+                : coilTier === 'standard'
+                ? `Star is cold, game is close. Cast has ${cast.castScore}pts vs opponent's ${oppScore} (gap: ${cast.castGap}).${cast.regressionFlips ? ` Star's missing ~${cast.starDeficit.toFixed(0)}pts covers the gap.` : ''} Standard edge — star regression helps.`
+                : coilTier === 'locked'
+                ? `Star is cold AND deficit is locked in. Cast: ${cast.castScore}pts vs opp ${oppScore}. Despite cast effort, the hole is baked in — bet AGAINST the star's team.`
+                : `CAUTION: Cast only has ${cast.castScore}pts vs opponent's ${oppScore} (gap: ${cast.castGap}). The whole team is broken, not just the star.${cast.starDeficit > 0 ? ` Star is missing ~${cast.starDeficit.toFixed(0)}pts but the cast gap is ${Math.abs(cast.castGap)}pts — regression alone can't close it.` : ''} Proceed with caution.`;
+
+              thesis.criteria[`star_${oppSide}`] = {met:true, strong:isStrongSignal, label:`Star Coil ${tierEmoji} [${tierLabel}]: ${leader.name} (${teamDisplay(leader.team, starTeamFull)})`, detail:`<strong>Player:</strong> ${leader.name} — averages ${star.ppg} PPG.<br><strong>Current:</strong> ${leader.pts} pts at Q${per} ${clk} (expected ~${exp.toFixed(0)}).<br><strong>Pace:</strong> ${(pr*100).toFixed(0)}% of expected — below 65% threshold.<br><strong>Game Context:</strong> Score margin ${scoreMargin} pts. Q${per} — prime window.${castDetail}${dmgDetail}<br><strong>Why it matters:</strong> ${whyItMatters}`, value:`${leader.pts}/${exp.toFixed(0)} pts (${(pr*100).toFixed(0)}%) | Cast gap: ${cast.castGap > 0 ? '+' : ''}${cast.castGap} | ${tierLabel}`};
             } else if (pr<0.65 && per<=3) {
               // Star is cold but game not competitive or wrong quarter — monitoring only
               const starTeamFull2 = leader.team===aA ? aFull : hFull;
@@ -1467,14 +1553,20 @@ async function fetchESPNScoreboard() {
           // 3PT Fragile fired but trailing team has no engine = weaker signal, don't count as full fade
           // (a3F/h3F.strong is already false when noEngine, so the above won't increment — correct)
 
-          // Star coil on a team: normally bet ON that team (star regresses up)
-          // BUT if Damage Locked: star's team deficit is baked in — bet AGAINST star's team instead (flip)
+          // Star Coil: bet direction depends on tier
+          //   ELITE (cast strong): strong bet ON star's team (fade opponent) — 1.5 weight
+          //   STANDARD (cast moderate): normal bet ON star's team (fade opponent) — 1.0 weight
+          //   WEAK (cast weak): signal too weak to act on — 0 weight (don't fade either side)
+          //   LOCKED (damage locked): bet AGAINST star's team (flip) — 1.0 weight
           const aStarCoil = starCoilTeams[aA];
           const hStarCoil = starCoilTeams[hA];
-          if (aStarCoil && !aStarCoil.damageLocked) homeFade++;  // away star coil, no lock = away bounces back = fade home
-          if (aStarCoil && aStarCoil.damageLocked) awayFade++;   // away star coil + locked = away can't recover = fade away
-          if (hStarCoil && !hStarCoil.damageLocked) awayFade++;  // home star coil, no lock = home bounces back = fade away
-          if (hStarCoil && hStarCoil.damageLocked) homeFade++;   // home star coil + locked = home can't recover = fade home
+          if (aStarCoil?.coilTier === 'elite') { homeFade += 1.5; }       // away elite coil = away surges = fade home HARD
+          else if (aStarCoil?.coilTier === 'standard') { homeFade += 1; } // away standard coil = fade home normal
+          else if (aStarCoil?.coilTier === 'locked') { awayFade += 1; }   // away locked = away done = fade away
+          // weak = no weight either direction
+          if (hStarCoil?.coilTier === 'elite') { awayFade += 1.5; }       // home elite coil = home surges = fade away HARD
+          else if (hStarCoil?.coilTier === 'standard') { awayFade += 1; } // home standard coil = home bounces back = fade away
+          else if (hStarCoil?.coilTier === 'locked') { homeFade += 1; }   // home locked = home done = fade home
 
           if (awayFade > homeFade) { betTeam = hA; fadeTeam = aA; }
           else if (homeFade > awayFade) { betTeam = aA; fadeTeam = hA; }
@@ -1487,10 +1579,14 @@ async function fetchESPNScoreboard() {
           if (a3F?.met && !a3F?.strong && a3Check.isHot && aFragileData) reasons.push(`${_aD} has 3PT Fragile Lead but ${_hD}'s offense is broken (${hNon3Ppm.toFixed(1)} non-3PT PPM) — regression may not flip the result. Weaker signal.`);
           if (h3F?.met && h3F?.strong) reasons.push(`${_hD} has a 3PT Fragile Lead — shooting hot from 3 AND lead depends on it (${h3F.value}). ${_aD} has the engine to capitalize.`);
           if (h3F?.met && !h3F?.strong && h3Check.isHot && hFragileData) reasons.push(`${_hD} has 3PT Fragile Lead but ${_aD}'s offense is broken (${aNon3Ppm.toFixed(1)} non-3PT PPM) — regression may not flip the result. Weaker signal.`);
-          if (aStarCoil && !aStarCoil.damageLocked) reasons.push(`${aStarCoil.name} (${_aD}) is coiled — star at <65% pace in a close game, breakout incoming`);
-          if (aStarCoil && aStarCoil.damageLocked) reasons.push(`${aStarCoil.name} (${_aD}) is coiled BUT 🔒 damage locked — deficit has been stable/growing. Star's cold stretch already decided the game. Fade ${_aD}.`);
-          if (hStarCoil && !hStarCoil.damageLocked) reasons.push(`${hStarCoil.name} (${_hD}) is coiled — star at <65% pace in a close game, breakout incoming`);
-          if (hStarCoil && hStarCoil.damageLocked) reasons.push(`${hStarCoil.name} (${_hD}) is coiled BUT 🔒 damage locked — deficit has been stable/growing. Star's cold stretch already decided the game. Fade ${_hD}.`);
+          if (aStarCoil?.coilTier === 'elite') reasons.push(`💪 ${aStarCoil.name} (${_aD}) is coiled. Cast: ${aStarCoil.cast.castScore}pts vs opp (gap: ${aStarCoil.cast.castGap > 0 ? '+' : ''}${aStarCoil.cast.castGap}).${aStarCoil.cast.regressionFlips ? ' Star regression alone flips the lead.' : ' Cast is holding — star regression = surge.'} Strongest edge.`);
+          else if (aStarCoil?.coilTier === 'standard') reasons.push(`🌀 ${aStarCoil.name} (${_aD}) is coiled. Cast gap: ${aStarCoil.cast.castGap}. Standard edge.`);
+          else if (aStarCoil?.coilTier === 'locked') reasons.push(`🔒 ${aStarCoil.name} (${_aD}) is coiled BUT damage locked — deficit baked in. Fade ${_aD}.`);
+          else if (aStarCoil?.coilTier === 'weak') reasons.push(`⚠️ ${aStarCoil.name} (${_aD}) is coiled but cast gap is ${aStarCoil.cast.castGap} — whole team broken. No directional weight.`);
+          if (hStarCoil?.coilTier === 'elite') reasons.push(`💪 ${hStarCoil.name} (${_hD}) is coiled. Cast: ${hStarCoil.cast.castScore}pts vs opp (gap: ${hStarCoil.cast.castGap > 0 ? '+' : ''}${hStarCoil.cast.castGap}).${hStarCoil.cast.regressionFlips ? ' Star regression alone flips the lead.' : ' Cast is holding — star regression = surge.'} Strongest edge.`);
+          else if (hStarCoil?.coilTier === 'standard') reasons.push(`🌀 ${hStarCoil.name} (${_hD}) is coiled. Cast gap: ${hStarCoil.cast.castGap}. Standard edge.`);
+          else if (hStarCoil?.coilTier === 'locked') reasons.push(`🔒 ${hStarCoil.name} (${_hD}) is coiled BUT damage locked — deficit baked in. Fade ${_hD}.`);
+          else if (hStarCoil?.coilTier === 'weak') reasons.push(`⚠️ ${hStarCoil.name} (${_hD}) is coiled but cast gap is ${hStarCoil.cast.castGap} — whole team broken. No directional weight.`);
 
 
           const strongCriteria = Object.values(thesis.criteria).filter(c => c.met && c.strong).length;
@@ -3304,7 +3400,7 @@ try {
 <p class="guide-intro" style="margin-bottom:12px;"><strong>Core thesis:</strong> The current score was built on something unsustainable, so the live odds are mispriced. We bet on regression.</p>
 <div class="guide-grid">
 <div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT FRAGILE</span> 3PT Fragile Lead</h3><p class="edge-label">Team is winning because of hot 3PT shooting — and the lead depends on it</p><p>Fires when ALL are true: (1) a team is shooting 50%+ from 3 on 12+ attempts, (2) their lead is built on that 3PT shooting while the opponent scores from paint, AND (3) the lead is 3-15 points. The sweet spot where 3PT cooling flips the game.</p><p><strong>⚠️ Opponent Engine Check:</strong> The system also checks if the trailing team has a real scoring engine (non-3PT points per minute &gt; 1.3). If the trailing team's offense is broken — they can't score from paint, FT, or mid-range — then even if 3s regress, they have no engine to capitalize. Signal is downgraded to ⚠️ (weaker). <em>Regression only matters if the other team can take advantage of it.</em></p><div class="threshold">Trigger: 50%+ on 12+ att AND lead 42%+ from 3PT AND opponent 58%+ non-3PT AND lead 3-15 pts.<br>Weakened: If trailing team non-3PT PPM &lt; 1.3 (broken offense).</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-star">STAR</span> Star Coil</h3><p class="edge-label">Star is cold + game is close + Q2-Q3 timing = compressed spring ready to explode</p><p>When a 25+ PPG star is at &lt;65% of expected pace AND the game is within 15 points during Q2-Q3, this is the highest-edge version of the star cold signal. The star will regress upward, and because the game is competitive, that regression actually changes the outcome.</p><p><strong>🔒 Damage Locked:</strong> The system tracks the score over multiple refresh cycles. If the star's team has been trailing AND the deficit is stable or growing over 3+ checks (~90 seconds), it marks the signal as "Damage Locked." This means the cold stretch already decided the game — even if the star heats up, the hole is too deep. The bet direction FLIPS: instead of betting on the star's team (expecting breakout), you bet against them (damage is done).</p><div class="threshold">Trigger: Star at &lt;65% pace + score margin &le;15 pts + Q2 or Q3.<br>🔒 Damage Locked: Star's team trailing + deficit stable/growing over 3+ score checks.</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-star">STAR</span> Star Coil</h3><p class="edge-label">Star is cold + game is close + supporting cast is holding = maximum edge</p><p>When a 25+ PPG star is at &lt;65% of expected pace AND the game is within 15 points during Q2-Q3.</p><p><strong>💪 Supporting Cast Analysis:</strong> The system compares the cast's output (team score minus star's points) directly to the opponent's total score — no season averages, pure live data. If the cast is within 8pts of the opponent, the team is competitive WITHOUT the star. When the star regresses upward, it's regression on top of an already-strong team. Also checks if the star's "missing points" exceed the cast gap — if so, regression alone flips the lead.</p><p><strong>4 tiers:</strong> 🔥 Cast Leading (cast ahead of opponent), 💪 Cast Close (within 8), ➖ Cast Behind (8-15), ⚠️ Cast Broken (&gt;15 behind). Also 🔒 Damage Locked if deficit is stable over 3+ min.</p><div class="threshold">Trigger: Star &lt;65% pace + margin &le;15 + Q2-Q3.<br>Tiers: Elite (cast gap ≥-8), Standard (-8 to -15), Weak (&lt;-15), Locked (deficit stable 3+min).</div></div>
 
 <div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">Both signals firing on the same game = strongest edge, most confidence</p><p>When 3PT Fragile AND Star Coil fire on the same game, the live odds are wrong from two independent angles. Each signal catches something different — together, the mispricing is larger.</p><div class="threshold">Trigger: Both 3PT Fragile + Star Coil on the same game.</div></div>
 
@@ -3324,13 +3420,20 @@ try {
   <p><strong>When only one condition is met:</strong> If only the 3PT shooting is hot (no fragile lead) or only the lead is fragile (shooting not extreme), the system shows a Level 1 warning but does NOT fire the full signal.</p>
   <p><strong>⚠️ Opponent Engine Check (NEW):</strong> Even when 3PT Fragile fires, the system checks: can the trailing team actually score without relying on the opponent's regression? It computes the trailing team's non-3PT points per minute (paint + FT + mid-range). If below 1.3 PPM, their offense is fundamentally broken — even if the leading team's 3s cool down, the trailing team has no engine to capitalize. The signal is downgraded to ⚠️ (weaker). <strong>Regression only matters if the other team can take advantage of it.</strong></p>
   <hr class="signal-divider">
-  <h4>2. Star Coil (Upgraded Star Cold)</h4>
-  <p><strong>What it detects:</strong> A franchise-caliber player performing well below their expected scoring pace (&lt;65%) during Q2-Q3 AND the game is competitive (within 15 points). This is the "compressed spring" — the star is coiled and will break out, and because the game is close, that breakout changes the outcome.</p>
-  <p><strong>Why it is an edge:</strong> Star players regress <em>upward</em>. Star Coil requires: (1) game must be competitive so the star's breakout actually impacts the result, and (2) timing must be Q2-Q3 — the sweet spot where regression has time to play out.</p>
-  <p><strong>🔒 Damage Locked (NEW):</strong> But what if the star heats up and the game result <em>still</em> doesn't change? The system tracks the score over consecutive refresh cycles (~30s each). If the star's team has been trailing AND the deficit stayed flat or grew over 3+ checks, it flags "🔒 Damage Locked." The cold stretch already did its damage — even if the star catches fire now, the hole is too deep. The bet direction <strong>FLIPS</strong>: instead of betting on the star's team (expecting breakout to flip the game), you bet against them (the deficit is baked in).</p>
+  <h4>2. Star Coil (with Supporting Cast + Damage Locked)</h4>
+  <p><strong>What it detects:</strong> A franchise-caliber player performing well below their expected scoring pace (&lt;65%) during Q2-Q3 AND the game is competitive (within 15 points).</p>
+  <p><strong>💪 Supporting Cast Analysis:</strong> The core edge strengthener. Instead of comparing to season averages, the system uses <strong>pure live data</strong>: it takes the team's score, subtracts the star's points, and compares that directly to the opponent's total score. This "cast gap" tells you how well the teammates are doing against THIS specific opponent in THIS game.</p>
+  <ul style="margin:8px 0;padding-left:20px;line-height:1.5;">
+    <li><strong>🔥 Cast Leading</strong> (gap ≥ 0): Teammates are matching/beating the opponent without the star. Strongest possible edge.</li>
+    <li><strong>💪 Cast Close</strong> (gap -1 to -8): Cast is within striking distance. Star regression makes it a real fight.</li>
+    <li><strong>➖ Cast Behind</strong> (gap -8 to -15): Cast is behind but game is in range. Standard edge.</li>
+    <li><strong>⚠️ Cast Broken</strong> (gap &lt; -15): Whole team is struggling. Star alone won't fix it. Signal weakened.</li>
+  </ul>
+  <p><strong>Regression Flips Check:</strong> The system also calculates how many points the star is "missing" (expected minus actual). If the missing points exceed the cast gap, regression alone flips the lead — this is the highest-confidence scenario.</p>
+  <p><strong>🔒 Damage Locked:</strong> Tracks score over 3+ minutes of real game action. If the deficit is stable/growing with scoring activity confirmed (not a timeout), the damage is baked in. Bet direction flips.</p>
   <div class="edge-box green">
-    <p><strong>Trigger:</strong> Star's actual production &lt;65% of expected pace AND Q2 or Q3 AND score margin &le;15 pts.</p>
-    <p style="margin-top:6px"><strong>🔒 Damage Locked:</strong> Star's team trailing + deficit stable or growing over 3+ consecutive score snapshots. Bet direction flips — fade the star's team.</p>
+    <p><strong>Trigger:</strong> Star &lt;65% pace + Q2/Q3 + margin &le;15pts.</p>
+    <p style="margin-top:6px"><strong>Tiers:</strong> Elite (cast gap ≥-8, 1.5× weight), Standard (-8 to -15, 1× weight), Weak (&lt;-15, 0 weight), Locked (deficit baked in, reverse bet).</p>
   </div>
   <hr class="signal-divider">
   <h4>3. Combined Edge</h4>
