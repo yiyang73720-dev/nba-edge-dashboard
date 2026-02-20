@@ -377,6 +377,14 @@
 .champ-btn .cb-wr.wr-mid{color:var(--orange)}
 .champ-btn .cb-wr.wr-low{color:var(--red)}
 .champ-picker-empty{text-align:center;padding:20px;color:var(--text-muted);font-size:12px}
+.comp-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:11px}
+.comp-row .comp-label{width:110px;text-align:right;font-weight:600;color:var(--text-muted);flex-shrink:0;font-size:10px;text-transform:uppercase;letter-spacing:.5px}
+.comp-row .comp-bar-wrap{flex:1;display:flex;gap:2px;height:18px}
+.comp-row .comp-bar{height:100%;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;min-width:20px;transition:width .4s ease}
+.comp-row .comp-bar.bar-blue{background:linear-gradient(90deg,#2563eb,#3b82f6)}
+.comp-row .comp-bar.bar-red{background:linear-gradient(90deg,#ef4444,#dc2626)}
+.comp-row .comp-vs{font-size:10px;color:var(--text-muted);font-weight:600;flex-shrink:0;width:22px;text-align:center}
+.comp-verdict{text-align:center;padding:12px;margin-top:8px;border-radius:8px;font-weight:700}
 .analyzer-dimension{background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:8px}
 .analyzer-dimension .dim-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .analyzer-dimension .dim-name{font-size:12px;font-weight:700;color:var(--text-primary)}
@@ -712,6 +720,7 @@
       <div style="flex:1;min-width:0" id="draft-red"><h4 style="font-size:13px;font-weight:800;text-align:center;color:#ef4444;">&#x1F534; Red Side <span id="draft-red-name" style="color:var(--text-muted);font-weight:400;"></span></h4><div style="display:grid;gap:8px;" id="draft-red-slots"></div><div style="margin-top:8px;text-align:center;font-size:12px;font-weight:700;" id="draft-red-score"></div></div>
     </div>
     <div id="draft-summary" style="margin-top:16px;display:none;"></div>
+    <div id="comp-analysis" style="margin-top:16px;display:none;"></div>
   </div>
 </div>
 
@@ -2873,6 +2882,286 @@ function togglePlayerDetail(card, playerName) {
   detail.style.display = 'block';
 }
 
+// ==================== CHAMPION TRAITS (COMP ANALYSIS) ====================
+const CHAMP_TRAITS = {
+"Aatrox":{scaling:2,dmg:"AD",threat:"frontline",cc:1,burst:2,engage:1,safety:2},
+"Ahri":{scaling:2,dmg:"AP",threat:"backline",cc:2,burst:3,engage:0,safety:2},
+"Akali":{scaling:2,dmg:"AP",threat:"backline",cc:0,burst:3,engage:0,safety:1},
+"Akshan":{scaling:2,dmg:"AD",threat:"backline",cc:0,burst:2,engage:0,safety:2},
+"Alistar":{scaling:1,dmg:"AP",threat:"frontline",cc:3,burst:1,engage:2,safety:3},
+"Ambessa":{scaling:2,dmg:"AD",threat:"backline",cc:1,burst:2,engage:1,safety:2},
+"Amumu":{scaling:2,dmg:"AP",threat:"frontline",cc:3,burst:2,engage:2,safety:3},
+"Anivia":{scaling:3,dmg:"AP",threat:"poke",cc:2,burst:2,engage:0,safety:2},
+"Annie":{scaling:2,dmg:"AP",threat:"backline",cc:2,burst:3,engage:1,safety:2},
+"Aphelios":{scaling:3,dmg:"AD",threat:"poke",cc:1,burst:2,engage:0,safety:1},
+"Ashe":{scaling:2,dmg:"AD",threat:"poke",cc:2,burst:1,engage:2,safety:3},
+"Aurelion Sol":{scaling:3,dmg:"AP",threat:"poke",cc:1,burst:2,engage:0,safety:2},
+"Aurora":{scaling:2,dmg:"AP",threat:"backline",cc:2,burst:2,engage:1,safety:2},
+"Azir":{scaling:3,dmg:"AP",threat:"poke",cc:2,burst:2,engage:1,safety:2},
+"Bard":{scaling:2,dmg:"AP",threat:"peel",cc:3,burst:1,engage:1,safety:3},
+"Bel'Veth":{scaling:3,dmg:"AD",threat:"backline",cc:1,burst:2,engage:1,safety:1},
+"Blitzcrank":{scaling:1,dmg:"AP",threat:"frontline",cc:2,burst:2,engage:2,safety:3},
+"Brand":{scaling:2,dmg:"AP",threat:"poke",cc:1,burst:3,engage:0,safety:2},
+"Braum":{scaling:1,dmg:"AP",threat:"frontline",cc:2,burst:1,engage:1,safety:3},
+"Caitlyn":{scaling:3,dmg:"AD",threat:"poke",cc:1,burst:2,engage:0,safety:2},
+"Camille":{scaling:2,dmg:"AD",threat:"backline",cc:2,burst:3,engage:2,safety:2},
+"Cassiopeia":{scaling:3,dmg:"AP",threat:"poke",cc:2,burst:2,engage:0,safety:1},
+"Cho'Gath":{scaling:3,dmg:"AP",threat:"frontline",cc:2,burst:3,engage:0,safety:2},
+"Corki":{scaling:3,dmg:"MIX",threat:"poke",cc:0,burst:2,engage:0,safety:2},
+"Darius":{scaling:2,dmg:"AD",threat:"frontline",cc:1,burst:2,engage:1,safety:2},
+"Diana":{scaling:2,dmg:"AP",threat:"backline",cc:2,burst:3,engage:2,safety:2},
+"Dr. Mundo":{scaling:3,dmg:"AP",threat:"frontline",cc:0,burst:1,engage:0,safety:2},
+"Draven":{scaling:2,dmg:"AD",threat:"poke",cc:1,burst:3,engage:0,safety:1},
+"Ekko":{scaling:2,dmg:"AP",threat:"backline",cc:2,burst:3,engage:1,safety:2},
+"Elise":{scaling:1,dmg:"AP",threat:"backline",cc:1,burst:3,engage:1,safety:2},
+"Ezreal":{scaling:3,dmg:"AD",threat:"poke",cc:0,burst:2,engage:0,safety:3},
+"Fiddlesticks":{scaling:2,dmg:"AP",threat:"backline",cc:2,burst:3,engage:2,safety:2},
+"Fiora":{scaling:3,dmg:"AD",threat:"backline",cc:1,burst:2,engage:0,safety:1},
+"Galio":{scaling:2,dmg:"AP",threat:"frontline",cc:3,burst:2,engage:2,safety:3},
+"Gangplank":{scaling:3,dmg:"AD",threat:"poke",cc:0,burst:3,engage:0,safety:2},
+"Garen":{scaling:2,dmg:"AD",threat:"frontline",cc:1,burst:2,engage:0,safety:2},
+"Gnar":{scaling:2,dmg:"AD",threat:"frontline",cc:3,burst:2,engage:2,safety:2},
+"Gragas":{scaling:2,dmg:"AP",threat:"frontline",cc:3,burst:3,engage:2,safety:3},
+"Graves":{scaling:2,dmg:"AD",threat:"backline",cc:0,burst:3,engage:0,safety:2},
+"Gwen":{scaling:3,dmg:"AP",threat:"backline",cc:0,burst:2,engage:0,safety:1},
+"Hecarim":{scaling:2,dmg:"AD",threat:"backline",cc:2,burst:3,engage:2,safety:2},
+"Hwei":{scaling:2,dmg:"AP",threat:"poke",cc:2,burst:2,engage:0,safety:2},
+"Irelia":{scaling:2,dmg:"AD",threat:"backline",cc:1,burst:2,engage:1,safety:1},
+"Ivern":{scaling:2,dmg:"AP",threat:"peel",cc:2,burst:1,engage:0,safety:3},
+"Janna":{scaling:1,dmg:"AP",threat:"peel",cc:2,burst:1,engage:0,safety:3},
+"Jarvan IV":{scaling:1,dmg:"AD",threat:"frontline",cc:2,burst:2,engage:2,safety:2},
+"Jax":{scaling:3,dmg:"MIX",threat:"backline",cc:1,burst:2,engage:1,safety:1},
+"Jayce":{scaling:2,dmg:"AD",threat:"poke",cc:1,burst:3,engage:0,safety:2},
+"Jhin":{scaling:2,dmg:"AD",threat:"poke",cc:2,burst:3,engage:0,safety:2},
+"Jinx":{scaling:3,dmg:"AD",threat:"poke",cc:1,burst:2,engage:0,safety:1},
+"K'Sante":{scaling:2,dmg:"AD",threat:"frontline",cc:2,burst:2,engage:2,safety:2},
+"Kai'Sa":{scaling:3,dmg:"MIX",threat:"backline",cc:0,burst:3,engage:0,safety:2},
+"Kalista":{scaling:2,dmg:"AD",threat:"poke",cc:1,burst:2,engage:1,safety:2},
+"Karma":{scaling:1,dmg:"AP",threat:"peel",cc:1,burst:2,engage:0,safety:3},
+"Karthus":{scaling:3,dmg:"AP",threat:"poke",cc:0,burst:2,engage:0,safety:2},
+"Kassadin":{scaling:3,dmg:"AP",threat:"backline",cc:1,burst:3,engage:0,safety:1},
+"Kennen":{scaling:2,dmg:"AP",threat:"backline",cc:3,burst:3,engage:2,safety:2},
+"Kha'Zix":{scaling:2,dmg:"AD",threat:"backline",cc:0,burst:3,engage:0,safety:1},
+"Kindred":{scaling:3,dmg:"AD",threat:"backline",cc:0,burst:2,engage:0,safety:2},
+"Kled":{scaling:2,dmg:"AD",threat:"frontline",cc:1,burst:2,engage:2,safety:2},
+"Kog'Maw":{scaling:3,dmg:"MIX",threat:"poke",cc:0,burst:2,engage:0,safety:1},
+"LeBlanc":{scaling:2,dmg:"AP",threat:"backline",cc:1,burst:3,engage:0,safety:2},
+"Lee Sin":{scaling:1,dmg:"AD",threat:"backline",cc:2,burst:3,engage:2,safety:2},
+"Leona":{scaling:1,dmg:"AP",threat:"frontline",cc:3,burst:1,engage:2,safety:3},
+"Lillia":{scaling:3,dmg:"AP",threat:"poke",cc:3,burst:2,engage:2,safety:2},
+"Lissandra":{scaling:2,dmg:"AP",threat:"frontline",cc:3,burst:3,engage:1,safety:3},
+"Lucian":{scaling:2,dmg:"AD",threat:"poke",cc:0,burst:3,engage:0,safety:2},
+"Lulu":{scaling:1,dmg:"AP",threat:"peel",cc:2,burst:1,engage:0,safety:3},
+"Lux":{scaling:2,dmg:"AP",threat:"poke",cc:2,burst:3,engage:0,safety:2},
+"Malphite":{scaling:2,dmg:"AP",threat:"frontline",cc:3,burst:3,engage:2,safety:3},
+"Malzahar":{scaling:2,dmg:"AP",threat:"poke",cc:2,burst:2,engage:0,safety:3},
+"Maokai":{scaling:2,dmg:"AP",threat:"frontline",cc:3,burst:1,engage:2,safety:3},
+"Mel":{scaling:3,dmg:"AP",threat:"poke",cc:1,burst:2,engage:0,safety:2},
+"Milio":{scaling:1,dmg:"AP",threat:"peel",cc:1,burst:1,engage:0,safety:3},
+"Miss Fortune":{scaling:2,dmg:"AD",threat:"poke",cc:1,burst:3,engage:0,safety:2},
+"Mordekaiser":{scaling:2,dmg:"AP",threat:"frontline",cc:1,burst:2,engage:1,safety:2},
+"Morgana":{scaling:2,dmg:"AP",threat:"peel",cc:3,burst:2,engage:1,safety:3},
+"Naafiri":{scaling:2,dmg:"AD",threat:"backline",cc:0,burst:3,engage:1,safety:1},
+"Nami":{scaling:1,dmg:"AP",threat:"peel",cc:2,burst:1,engage:1,safety:3},
+"Nasus":{scaling:3,dmg:"AD",threat:"frontline",cc:1,burst:2,engage:0,safety:1},
+"Nautilus":{scaling:1,dmg:"AP",threat:"frontline",cc:3,burst:1,engage:2,safety:3},
+"Neeko":{scaling:2,dmg:"AP",threat:"frontline",cc:3,burst:3,engage:1,safety:2},
+"Nidalee":{scaling:2,dmg:"AP",threat:"poke",cc:0,burst:3,engage:0,safety:2},
+"Nilah":{scaling:3,dmg:"AD",threat:"backline",cc:0,burst:2,engage:1,safety:1},
+"Nocturne":{scaling:2,dmg:"AD",threat:"backline",cc:2,burst:3,engage:2,safety:2},
+"Olaf":{scaling:1,dmg:"AD",threat:"frontline",cc:0,burst:2,engage:1,safety:2},
+"Orianna":{scaling:2,dmg:"AP",threat:"poke",cc:3,burst:3,engage:1,safety:3},
+"Ornn":{scaling:2,dmg:"AP",threat:"frontline",cc:3,burst:2,engage:2,safety:3},
+"Pantheon":{scaling:1,dmg:"AD",threat:"backline",cc:2,burst:3,engage:2,safety:2},
+"Poppy":{scaling:2,dmg:"AD",threat:"frontline",cc:2,burst:2,engage:1,safety:3},
+"Pyke":{scaling:2,dmg:"AD",threat:"backline",cc:2,burst:3,engage:2,safety:2},
+"Qiyana":{scaling:2,dmg:"AD",threat:"backline",cc:2,burst:3,engage:1,safety:1},
+"Rakan":{scaling:1,dmg:"AP",threat:"frontline",cc:3,burst:1,engage:2,safety:3},
+"Rammus":{scaling:2,dmg:"AP",threat:"frontline",cc:2,burst:1,engage:2,safety:3},
+"Rek'Sai":{scaling:1,dmg:"AD",threat:"backline",cc:2,burst:3,engage:1,safety:2},
+"Rell":{scaling:1,dmg:"AP",threat:"frontline",cc:3,burst:1,engage:2,safety:3},
+"Renata Glasc":{scaling:2,dmg:"AP",threat:"peel",cc:3,burst:1,engage:0,safety:3},
+"Renekton":{scaling:1,dmg:"AD",threat:"frontline",cc:1,burst:3,engage:1,safety:2},
+"Rengar":{scaling:2,dmg:"AD",threat:"backline",cc:1,burst:3,engage:0,safety:1},
+"Riven":{scaling:2,dmg:"AD",threat:"backline",cc:2,burst:3,engage:1,safety:2},
+"Rumble":{scaling:2,dmg:"AP",threat:"frontline",cc:1,burst:3,engage:0,safety:2},
+"Ryze":{scaling:3,dmg:"AP",threat:"poke",cc:1,burst:2,engage:0,safety:2},
+"Sejuani":{scaling:2,dmg:"AP",threat:"frontline",cc:3,burst:1,engage:2,safety:3},
+"Senna":{scaling:3,dmg:"AD",threat:"poke",cc:1,burst:2,engage:0,safety:3},
+"Seraphine":{scaling:2,dmg:"AP",threat:"peel",cc:3,burst:2,engage:0,safety:3},
+"Sett":{scaling:2,dmg:"AD",threat:"frontline",cc:2,burst:2,engage:2,safety:2},
+"Shen":{scaling:2,dmg:"AP",threat:"frontline",cc:1,burst:1,engage:1,safety:3},
+"Shyvana":{scaling:3,dmg:"AP",threat:"poke",cc:0,burst:3,engage:1,safety:1},
+"Singed":{scaling:2,dmg:"AP",threat:"frontline",cc:1,burst:1,engage:1,safety:2},
+"Sion":{scaling:2,dmg:"AD",threat:"frontline",cc:2,burst:2,engage:2,safety:3},
+"Sivir":{scaling:3,dmg:"AD",threat:"poke",cc:0,burst:2,engage:0,safety:2},
+"Skarner":{scaling:2,dmg:"AD",threat:"frontline",cc:2,burst:2,engage:2,safety:2},
+"Smolder":{scaling:3,dmg:"MIX",threat:"poke",cc:0,burst:2,engage:0,safety:1},
+"Sona":{scaling:2,dmg:"AP",threat:"peel",cc:2,burst:1,engage:0,safety:3},
+"Soraka":{scaling:1,dmg:"AP",threat:"peel",cc:1,burst:1,engage:0,safety:3},
+"Swain":{scaling:2,dmg:"AP",threat:"frontline",cc:2,burst:2,engage:1,safety:2},
+"Sylas":{scaling:2,dmg:"AP",threat:"backline",cc:1,burst:3,engage:1,safety:2},
+"Syndra":{scaling:2,dmg:"AP",threat:"poke",cc:2,burst:3,engage:0,safety:2},
+"Tahm Kench":{scaling:2,dmg:"AP",threat:"frontline",cc:2,burst:2,engage:0,safety:3},
+"Taliyah":{scaling:2,dmg:"AP",threat:"poke",cc:2,burst:3,engage:0,safety:2},
+"Talon":{scaling:2,dmg:"AD",threat:"backline",cc:0,burst:3,engage:0,safety:1},
+"Taric":{scaling:1,dmg:"AP",threat:"peel",cc:2,burst:1,engage:0,safety:3},
+"Thresh":{scaling:1,dmg:"AP",threat:"frontline",cc:3,burst:1,engage:2,safety:3},
+"Tristana":{scaling:3,dmg:"AD",threat:"backline",cc:1,burst:3,engage:1,safety:2},
+"Trundle":{scaling:2,dmg:"AD",threat:"frontline",cc:1,burst:2,engage:1,safety:2},
+"Tryndamere":{scaling:3,dmg:"AD",threat:"backline",cc:0,burst:2,engage:0,safety:1},
+"Twisted Fate":{scaling:2,dmg:"AP",threat:"poke",cc:2,burst:2,engage:0,safety:3},
+"Twitch":{scaling:3,dmg:"AD",threat:"poke",cc:0,burst:3,engage:0,safety:1},
+"Udyr":{scaling:2,dmg:"AD",threat:"frontline",cc:1,burst:1,engage:1,safety:2},
+"Urgot":{scaling:2,dmg:"AD",threat:"frontline",cc:2,burst:2,engage:1,safety:2},
+"Varus":{scaling:2,dmg:"AD",threat:"poke",cc:2,burst:2,engage:1,safety:2},
+"Vayne":{scaling:3,dmg:"AD",threat:"backline",cc:1,burst:2,engage:0,safety:1},
+"Veigar":{scaling:3,dmg:"AP",threat:"poke",cc:2,burst:3,engage:0,safety:2},
+"Vex":{scaling:2,dmg:"AP",threat:"backline",cc:2,burst:3,engage:1,safety:2},
+"Vi":{scaling:2,dmg:"AD",threat:"backline",cc:2,burst:3,engage:2,safety:2},
+"Viego":{scaling:2,dmg:"AD",threat:"backline",cc:1,burst:2,engage:0,safety:1},
+"Viktor":{scaling:3,dmg:"AP",threat:"poke",cc:2,burst:2,engage:0,safety:2},
+"Vladimir":{scaling:3,dmg:"AP",threat:"frontline",cc:0,burst:3,engage:0,safety:2},
+"Volibear":{scaling:2,dmg:"AP",threat:"frontline",cc:1,burst:2,engage:1,safety:2},
+"Warwick":{scaling:2,dmg:"AD",threat:"backline",cc:2,burst:2,engage:1,safety:2},
+"Wukong":{scaling:2,dmg:"AD",threat:"frontline",cc:3,burst:2,engage:2,safety:2},
+"Xayah":{scaling:3,dmg:"AD",threat:"poke",cc:1,burst:2,engage:0,safety:2},
+"Xerath":{scaling:2,dmg:"AP",threat:"poke",cc:1,burst:3,engage:0,safety:2},
+"Xin Zhao":{scaling:1,dmg:"AD",threat:"backline",cc:1,burst:2,engage:1,safety:2},
+"Yasuo":{scaling:2,dmg:"AD",threat:"backline",cc:2,burst:2,engage:0,safety:1},
+"Yone":{scaling:2,dmg:"MIX",threat:"backline",cc:1,burst:3,engage:1,safety:1},
+"Yorick":{scaling:3,dmg:"AD",threat:"frontline",cc:1,burst:2,engage:0,safety:1},
+"Yunara":{scaling:2,dmg:"AP",threat:"peel",cc:2,burst:1,engage:0,safety:3},
+"Yuumi":{scaling:2,dmg:"AP",threat:"peel",cc:1,burst:1,engage:0,safety:3},
+"Zaahen":{scaling:2,dmg:"AD",threat:"frontline",cc:1,burst:2,engage:1,safety:2},
+"Zac":{scaling:2,dmg:"AP",threat:"frontline",cc:3,burst:1,engage:2,safety:3},
+"Zed":{scaling:2,dmg:"AD",threat:"backline",cc:0,burst:3,engage:0,safety:1},
+"Zeri":{scaling:3,dmg:"AD",threat:"poke",cc:0,burst:2,engage:0,safety:2},
+"Ziggs":{scaling:2,dmg:"AP",threat:"poke",cc:1,burst:3,engage:0,safety:2},
+"Zilean":{scaling:2,dmg:"AP",threat:"peel",cc:2,burst:2,engage:0,safety:3},
+"Zoe":{scaling:2,dmg:"AP",threat:"poke",cc:2,burst:3,engage:0,safety:2},
+"Zyra":{scaling:2,dmg:"AP",threat:"peel",cc:2,burst:2,engage:0,safety:3}
+};
+
+// ==================== COMP ANALYSIS ENGINE ====================
+function analyzeComp(champNames) {
+  // Returns analysis object for a set of 1-5 champion names
+  const traits = champNames.map(c => CHAMP_TRAITS[c]).filter(Boolean);
+  if (!traits.length) return null;
+  const n = traits.length;
+
+  // 1. Late Game Scaling (avg scaling score, scaled to 0-10)
+  const avgScaling = traits.reduce((s, t) => s + t.scaling, 0) / n;
+  const lateGame = Math.round(((avgScaling - 1) / 2) * 10 * 10) / 10; // 1->0, 3->10
+
+  // 2. Damage Profile — AP/AD balance (closer to 50/50 = better)
+  const apCount = traits.filter(t => t.dmg === 'AP').length;
+  const adCount = traits.filter(t => t.dmg === 'AD').length;
+  const mixCount = traits.filter(t => t.dmg === 'MIX').length;
+  const apRatio = (apCount + mixCount * 0.5) / n;
+  const dmgBalance = Math.round((1 - Math.abs(apRatio - 0.5) * 2) * 10 * 10) / 10; // 50/50=10, all one type=0
+
+  // 3. Backline Threat — how many champs can dive/assassinate enemy carries
+  const backlineCount = traits.filter(t => t.threat === 'backline').length;
+  const avgBurst = traits.filter(t => t.threat === 'backline').reduce((s, t) => s + t.burst, 0);
+  const backlineThreat = Math.min(10, Math.round((backlineCount * 2.5 + (backlineCount > 0 ? avgBurst / backlineCount : 0)) * 10) / 10);
+
+  // 4. Teamfight Control — CC + engage + peel combined
+  const totalCC = traits.reduce((s, t) => s + t.cc, 0);
+  const totalEngage = traits.reduce((s, t) => s + t.engage, 0);
+  const peelCount = traits.filter(t => t.threat === 'peel').length;
+  const tfControl = Math.min(10, Math.round((totalCC / (n * 3) * 5 + totalEngage / (n * 2) * 3 + peelCount / n * 2) * 10) / 10);
+
+  // 5. Comp Stability — how well the comp plays from behind
+  const avgSafety = traits.reduce((s, t) => s + t.safety, 0) / n;
+  const needsLeadCount = traits.filter(t => t.safety === 1).length;
+  const stability = Math.round(((avgSafety - 1) / 2 * 7 + (1 - needsLeadCount / n) * 3) * 10) / 10;
+
+  // Damage breakdown string
+  const dmgStr = (apCount > 0 ? apCount + ' AP' : '') + (adCount > 0 ? (apCount > 0 ? ' / ' : '') + adCount + ' AD' : '') + (mixCount > 0 ? ' / ' + mixCount + ' MIX' : '');
+
+  return { lateGame, dmgBalance, backlineThreat, tfControl, stability, dmgStr, apCount, adCount, mixCount, n };
+}
+
+function renderCompAnalysis() {
+  const container = document.getElementById('comp-analysis');
+  const bChamps = Object.values(draftState.blue.picks).map(p => p.champion);
+  const rChamps = Object.values(draftState.red.picks).map(p => p.champion);
+
+  if (bChamps.length === 0 && rChamps.length === 0) { container.style.display = 'none'; return; }
+
+  // Need at least 1 pick on each side to compare
+  if (bChamps.length === 0 || rChamps.length === 0) { container.style.display = 'none'; return; }
+
+  const bComp = analyzeComp(bChamps);
+  const rComp = analyzeComp(rChamps);
+  if (!bComp || !rComp) { container.style.display = 'none'; return; }
+
+  container.style.display = 'block';
+
+  const bName = draftState.blue.team || 'Blue';
+  const rName = draftState.red.team || 'Red';
+
+  const dims = [
+    { label: 'Late Game', bVal: bComp.lateGame, rVal: rComp.lateGame, desc: 'Scaling power into late game' },
+    { label: 'Dmg Balance', bVal: bComp.dmgBalance, rVal: rComp.dmgBalance, desc: 'AP/AD mix (harder to itemize against)' },
+    { label: 'Backline Threat', bVal: bComp.backlineThreat, rVal: rComp.backlineThreat, desc: 'Ability to reach and kill enemy carries' },
+    { label: 'TF Control', bVal: bComp.tfControl, rVal: rComp.tfControl, desc: 'CC, engage, peel for teamfights' },
+    { label: 'Stability', bVal: bComp.stability, rVal: rComp.stability, desc: 'How well comp plays from behind' }
+  ];
+
+  // Calculate overall scores
+  const weights = [0.25, 0.15, 0.25, 0.20, 0.15]; // late, dmg, backline, tf, stability
+  let bTotal = 0, rTotal = 0;
+  dims.forEach((d, i) => { bTotal += d.bVal * weights[i]; rTotal += d.rVal * weights[i]; });
+  bTotal = Math.round(bTotal * 10) / 10;
+  rTotal = Math.round(rTotal * 10) / 10;
+
+  let html = '<div class="card" style="padding:16px;border-color:var(--accent);">' +
+    '<div style="text-align:center;margin-bottom:12px;"><span style="font-size:10px;font-weight:700;color:var(--accent);letter-spacing:1px;text-transform:uppercase;">\u{1F9E0} Composition Analysis (Pure Comp \u2014 No Player Skill)</span></div>' +
+    '<div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:11px;font-weight:700;">' +
+    '<span style="color:#3b82f6;">\u{1F535} ' + bName + ' (' + bComp.dmgStr + ')</span>' +
+    '<span style="color:#ef4444;">\u{1F534} ' + rName + ' (' + rComp.dmgStr + ')</span></div>';
+
+  dims.forEach((d, i) => {
+    const maxBar = 10;
+    const bPct = Math.round(d.bVal / maxBar * 100);
+    const rPct = Math.round(d.rVal / maxBar * 100);
+    const bWin = d.bVal > d.rVal;
+    const rWin = d.rVal > d.bVal;
+    html += '<div class="comp-row">' +
+      '<div class="comp-label" title="' + d.desc + '">' + d.label + '</div>' +
+      '<div class="comp-bar-wrap">' +
+      '<div class="comp-bar bar-blue" style="width:' + Math.max(bPct, 12) + '%;opacity:' + (bWin ? '1' : '.55') + '">' + d.bVal.toFixed(1) + '</div>' +
+      '<div class="comp-vs">vs</div>' +
+      '<div class="comp-bar bar-red" style="width:' + Math.max(rPct, 12) + '%;opacity:' + (rWin ? '1' : '.55') + '">' + d.rVal.toFixed(1) + '</div>' +
+      '</div></div>';
+  });
+
+  // Overall verdict
+  const diff = bTotal - rTotal;
+  const absDiff = Math.abs(diff);
+  let verdictColor, verdictLabel, verdictTeam;
+  if (absDiff >= 2) { verdictColor = 'var(--green)'; verdictLabel = 'COMP EDGE'; }
+  else if (absDiff >= 0.8) { verdictColor = 'var(--orange)'; verdictLabel = 'SLIGHT COMP EDGE'; }
+  else { verdictColor = 'var(--text-muted)'; verdictLabel = 'COMPS EVEN'; }
+  verdictTeam = diff > 0 ? bName : diff < 0 ? rName : 'Neither';
+
+  // Count dimension wins
+  let bWins = 0, rWins = 0;
+  dims.forEach(d => { if (d.bVal > d.rVal) bWins++; else if (d.rVal > d.bVal) rWins++; });
+
+  html += '<div class="comp-verdict" style="background:' + verdictColor + '22;border:1px solid ' + verdictColor + ';">' +
+    '<div style="font-size:10px;color:' + verdictColor + ';letter-spacing:1px;margin-bottom:4px;">' + verdictLabel + '</div>' +
+    '<div style="font-size:18px;color:' + verdictColor + ';">' + (absDiff >= 0.8 ? verdictTeam : 'No clear advantage') + '</div>' +
+    '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">' +
+    'Overall: ' + bName + ' ' + bTotal.toFixed(1) + ' vs ' + rName + ' ' + rTotal.toFixed(1) +
+    ' \u00B7 Dimensions: ' + bWins + '-' + (5 - bWins - rWins) + '-' + rWins + '</div></div>';
+
+  html += '</div>';
+  container.innerHTML = html;
+}
+
 // ==================== LIVE DRAFT TOOL ====================
 const ROLES = ['Top', 'Jungle', 'Mid', 'ADC', 'Support'];
 let draftState = { blue: { team: '', picks: {} }, red: { team: '', picks: {} } };
@@ -2886,6 +3175,7 @@ function resetDraft() {
   document.getElementById('draft-blue-name').textContent = '';
   document.getElementById('draft-red-name').textContent = '';
   document.getElementById('draft-summary').style.display = 'none';
+  document.getElementById('comp-analysis').style.display = 'none';
   renderDraftSlots('blue');
   renderDraftSlots('red');
 }
@@ -3062,7 +3352,7 @@ function updateDraftTeam(side) {
 
 function updateDraftSummary() {
   const bP = Object.values(draftState.blue.picks), rP = Object.values(draftState.red.picks);
-  if (bP.length === 0 && rP.length === 0) { document.getElementById('draft-summary').style.display = 'none'; document.getElementById('draft-blue-score').innerHTML = ''; document.getElementById('draft-red-score').innerHTML = ''; return; }
+  if (bP.length === 0 && rP.length === 0) { document.getElementById('draft-summary').style.display = 'none'; document.getElementById('comp-analysis').style.display = 'none'; document.getElementById('draft-blue-score').innerHTML = ''; document.getElementById('draft-red-score').innerHTML = ''; return; }
   const calc = (picks) => {
     if (!picks.length) return { avg: 0, comfort: 0, total: 0 };
     let cc = 0, wr = 0;
@@ -3084,6 +3374,8 @@ function updateDraftSummary() {
       '<div style="text-align:center;font-size:20px;font-weight:800;color:' + eColor + ';">' + (Math.abs(edge) >= 2 ? eTeam + ' ML' : 'No bet \u2014 too close') + '</div>' +
       '<div style="text-align:center;font-size:12px;color:var(--text-muted);margin-top:4px;">Blue avg WR: ' + bS.avg + '% (' + bS.comfort + ' comfort) vs Red avg WR: ' + rS.avg + '% (' + rS.comfort + ' comfort)</div></div>';
   }
+  // Trigger comp analysis whenever picks change
+  renderCompAnalysis();
 }
 
 // ==================== GAME ANALYZER ====================
