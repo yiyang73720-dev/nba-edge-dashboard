@@ -3043,44 +3043,60 @@ const CHAMP_TRAITS = {
 "Zyra":{scaling:2,dmg:"AP",threat:"peel",cc:2,burst:2,engage:0,safety:3}
 };
 
-// ==================== COMP ANALYSIS ENGINE ====================
+// ==================== COMP ANALYSIS ENGINE (v2: 3 DIMENSIONS) ====================
+// Reliable CC map — champions with easy-to-hit AoE / point-click CC that dominates teamfights
+// rcc: 3 = unavoidable AoE teamfight ult, 2 = reliable but needs positioning, 1 = decent but conditional
+const RELIABLE_CC = {
+"Alistar":3,"Amumu":3,"Galio":3,"Kennen":3,"Leona":3,"Lillia":3,"Lissandra":3,
+"Malphite":3,"Neeko":3,"Orianna":3,"Ornn":3,"Rakan":3,"Rell":3,"Sejuani":3,"Wukong":3,"Zac":3,
+"Annie":2,"Diana":2,"Gnar":2,"Jarvan IV":2,"Maokai":2,"Nautilus":2,"Rammus":2,"Sett":2,"Skarner":2,
+"Nocturne":2,"Hecarim":2,"K'Sante":2,"Fiddlesticks":2,"Qiyana":2,
+"Braum":1,"Poppy":1,"Tahm Kench":1,"Vi":1,"Warwick":1,"Lulu":1,"Taric":1,"Ivern":1
+};
+
 function analyzeComp(champNames) {
-  // Returns analysis object for a set of 1-5 champion names
-  const traits = champNames.map(c => CHAMP_TRAITS[c]).filter(Boolean);
-  if (!traits.length) return null;
-  const n = traits.length;
+  const named = champNames.map(c => ({ name: c, t: CHAMP_TRAITS[c], rcc: RELIABLE_CC[c] || 0 })).filter(x => x.t);
+  if (!named.length) return null;
+  const n = named.length;
+  const traits = named.map(x => x.t);
 
-  // 1. Late Game Scaling (avg scaling score, scaled to 0-10)
+  // 1. Late Game Scaling (0-10)
   const avgScaling = traits.reduce((s, t) => s + t.scaling, 0) / n;
-  const lateGame = Math.round(((avgScaling - 1) / 2) * 10 * 10) / 10; // 1->0, 3->10
+  const lateGame = Math.round(((avgScaling - 1) / 2) * 10 * 10) / 10;
+  // Key scaling champs
+  const scalers = named.filter(x => x.t.scaling >= 3).map(x => x.name);
+  const earlyChamps = named.filter(x => x.t.scaling === 1).map(x => x.name);
 
-  // 2. Damage Profile — AP/AD balance (closer to 50/50 = better)
-  const apCount = traits.filter(t => t.dmg === 'AP').length;
-  const adCount = traits.filter(t => t.dmg === 'AD').length;
-  const mixCount = traits.filter(t => t.dmg === 'MIX').length;
-  const apRatio = (apCount + mixCount * 0.5) / n;
-  const dmgBalance = Math.round((1 - Math.abs(apRatio - 0.5) * 2) * 10 * 10) / 10; // 50/50=10, all one type=0
+  // 2. Backline Threat (0-10) — divers + assassins that can reach enemy carries
+  const divers = named.filter(x => x.t.threat === 'backline');
+  const backlineCount = divers.length;
+  const avgBurst = backlineCount > 0 ? divers.reduce((s, x) => s + x.t.burst, 0) / backlineCount : 0;
+  const backlineThreat = Math.min(10, Math.round((backlineCount * 2.5 + avgBurst * 0.8) * 10) / 10);
+  const diveNames = divers.map(x => x.name);
 
-  // 3. Backline Threat — how many champs can dive/assassinate enemy carries
-  const backlineCount = traits.filter(t => t.threat === 'backline').length;
-  const avgBurst = traits.filter(t => t.threat === 'backline').reduce((s, t) => s + t.burst, 0);
-  const backlineThreat = Math.min(10, Math.round((backlineCount * 2.5 + (backlineCount > 0 ? avgBurst / backlineCount : 0)) * 10) / 10);
-
-  // 4. Teamfight Control — CC + engage + peel combined
-  const totalCC = traits.reduce((s, t) => s + t.cc, 0);
+  // 3. Teamfight Control (0-10) — reliable CC weighted 2x, engage, peel
+  // Formula: reliableCC contributes 2x, regular cc fills the rest, engage adds, peel adds
+  let ccScore = 0;
+  named.forEach(x => {
+    if (x.rcc >= 2) {
+      ccScore += x.rcc * 2; // reliable AoE CC weighted double
+    } else if (x.rcc === 1) {
+      ccScore += x.t.cc * 1.3; // slightly boosted
+    } else {
+      ccScore += x.t.cc * 0.7; // skillshot CC discounted
+    }
+  });
   const totalEngage = traits.reduce((s, t) => s + t.engage, 0);
   const peelCount = traits.filter(t => t.threat === 'peel').length;
-  const tfControl = Math.min(10, Math.round((totalCC / (n * 3) * 5 + totalEngage / (n * 2) * 3 + peelCount / n * 2) * 10) / 10);
+  const tfControl = Math.min(10, Math.round((ccScore / (n * 4) * 5.5 + totalEngage / (n * 2) * 2.5 + peelCount / n * 2) * 10) / 10);
+  // Key CC champs (reliable)
+  const ccChamps = named.filter(x => x.rcc >= 2).map(x => x.name);
+  // Engage champs
+  const engageChamps = named.filter(x => x.t.engage >= 2).map(x => x.name);
+  // Peel champs
+  const peelChamps = named.filter(x => x.t.threat === 'peel').map(x => x.name);
 
-  // 5. Comp Stability — how well the comp plays from behind
-  const avgSafety = traits.reduce((s, t) => s + t.safety, 0) / n;
-  const needsLeadCount = traits.filter(t => t.safety === 1).length;
-  const stability = Math.round(((avgSafety - 1) / 2 * 7 + (1 - needsLeadCount / n) * 3) * 10) / 10;
-
-  // Damage breakdown string
-  const dmgStr = (apCount > 0 ? apCount + ' AP' : '') + (adCount > 0 ? (apCount > 0 ? ' / ' : '') + adCount + ' AD' : '') + (mixCount > 0 ? ' / ' + mixCount + ' MIX' : '');
-
-  return { lateGame, dmgBalance, backlineThreat, tfControl, stability, dmgStr, apCount, adCount, mixCount, n };
+  return { lateGame, backlineThreat, tfControl, scalers, earlyChamps, diveNames, ccChamps, engageChamps, peelChamps, n };
 }
 
 function renderCompAnalysis() {
@@ -3088,9 +3104,6 @@ function renderCompAnalysis() {
   const bChamps = Object.values(draftState.blue.picks).map(p => p.champion);
   const rChamps = Object.values(draftState.red.picks).map(p => p.champion);
 
-  if (bChamps.length === 0 && rChamps.length === 0) { container.style.display = 'none'; return; }
-
-  // Need at least 1 pick on each side to compare
   if (bChamps.length === 0 || rChamps.length === 0) { container.style.display = 'none'; return; }
 
   const bComp = analyzeComp(bChamps);
@@ -3098,65 +3111,102 @@ function renderCompAnalysis() {
   if (!bComp || !rComp) { container.style.display = 'none'; return; }
 
   container.style.display = 'block';
-
   const bName = draftState.blue.team || 'Blue';
   const rName = draftState.red.team || 'Red';
 
   const dims = [
-    { label: 'Late Game', bVal: bComp.lateGame, rVal: rComp.lateGame, desc: 'Scaling power into late game' },
-    { label: 'Dmg Balance', bVal: bComp.dmgBalance, rVal: rComp.dmgBalance, desc: 'AP/AD mix (harder to itemize against)' },
-    { label: 'Backline Threat', bVal: bComp.backlineThreat, rVal: rComp.backlineThreat, desc: 'Ability to reach and kill enemy carries' },
-    { label: 'TF Control', bVal: bComp.tfControl, rVal: rComp.tfControl, desc: 'CC, engage, peel for teamfights' },
-    { label: 'Stability', bVal: bComp.stability, rVal: rComp.stability, desc: 'How well comp plays from behind' }
+    { label: 'Late Game', key: 'lateGame', icon: '\u{1F4C8}', bVal: bComp.lateGame, rVal: rComp.lateGame },
+    { label: 'Backline Threat', key: 'backlineThreat', icon: '\u{1F5E1}', bVal: bComp.backlineThreat, rVal: rComp.backlineThreat },
+    { label: 'TF Control', key: 'tfControl', icon: '\u{1F3AF}', bVal: bComp.tfControl, rVal: rComp.tfControl }
   ];
 
-  // Calculate overall scores
-  const weights = [0.25, 0.15, 0.25, 0.20, 0.15]; // late, dmg, backline, tf, stability
+  // Overall weighted score
+  const weights = [0.35, 0.30, 0.35];
   let bTotal = 0, rTotal = 0;
   dims.forEach((d, i) => { bTotal += d.bVal * weights[i]; rTotal += d.rVal * weights[i]; });
   bTotal = Math.round(bTotal * 10) / 10;
   rTotal = Math.round(rTotal * 10) / 10;
 
   let html = '<div class="card" style="padding:16px;border-color:var(--accent);">' +
-    '<div style="text-align:center;margin-bottom:12px;"><span style="font-size:10px;font-weight:700;color:var(--accent);letter-spacing:1px;text-transform:uppercase;">\u{1F9E0} Composition Analysis (Pure Comp \u2014 No Player Skill)</span></div>' +
-    '<div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:11px;font-weight:700;">' +
-    '<span style="color:#3b82f6;">\u{1F535} ' + bName + ' (' + bComp.dmgStr + ')</span>' +
-    '<span style="color:#ef4444;">\u{1F534} ' + rName + ' (' + rComp.dmgStr + ')</span></div>';
+    '<div style="text-align:center;margin-bottom:14px;"><span style="font-size:10px;font-weight:700;color:var(--accent);letter-spacing:1px;text-transform:uppercase;">\u{1F9E0} Comp Analysis (Pure Comp \u2014 No Player Skill)</span></div>';
 
+  // Team headers
+  html += '<div style="display:flex;justify-content:space-between;margin-bottom:12px;font-size:12px;font-weight:800;">' +
+    '<span style="color:#3b82f6;">\u{1F535} ' + bName + '</span>' +
+    '<span style="color:#ef4444;">\u{1F534} ' + rName + '</span></div>';
+
+  // Render each dimension with bars + team breakdown
   dims.forEach((d, i) => {
     const maxBar = 10;
     const bPct = Math.round(d.bVal / maxBar * 100);
     const rPct = Math.round(d.rVal / maxBar * 100);
     const bWin = d.bVal > d.rVal;
     const rWin = d.rVal > d.bVal;
-    html += '<div class="comp-row">' +
-      '<div class="comp-label" title="' + d.desc + '">' + d.label + '</div>' +
+    const diff = Math.abs(d.bVal - d.rVal);
+    const edgeTag = diff >= 3 ? '\u{1F525}' : diff >= 1.5 ? '\u26A1' : '';
+
+    html += '<div style="margin-bottom:14px;">' +
+      '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">' +
+      '<span style="font-size:13px;">' + d.icon + '</span>' +
+      '<span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-primary);">' + d.label + '</span>' +
+      (edgeTag ? '<span style="font-size:11px;">' + edgeTag + '</span>' : '') + '</div>';
+
+    // Bars
+    html += '<div class="comp-row" style="margin-bottom:4px;">' +
+      '<div class="comp-label" style="width:0;"></div>' +
       '<div class="comp-bar-wrap">' +
-      '<div class="comp-bar bar-blue" style="width:' + Math.max(bPct, 12) + '%;opacity:' + (bWin ? '1' : '.55') + '">' + d.bVal.toFixed(1) + '</div>' +
+      '<div class="comp-bar bar-blue" style="width:' + Math.max(bPct, 15) + '%;opacity:' + (bWin ? '1' : '.5') + '">' + d.bVal.toFixed(1) + '</div>' +
       '<div class="comp-vs">vs</div>' +
-      '<div class="comp-bar bar-red" style="width:' + Math.max(rPct, 12) + '%;opacity:' + (rWin ? '1' : '.55') + '">' + d.rVal.toFixed(1) + '</div>' +
+      '<div class="comp-bar bar-red" style="width:' + Math.max(rPct, 15) + '%;opacity:' + (rWin ? '1' : '.5') + '">' + d.rVal.toFixed(1) + '</div>' +
+      '</div></div>';
+
+    // Team breakdowns per dimension
+    let bDesc = '', rDesc = '';
+    if (d.key === 'lateGame') {
+      bDesc = bComp.scalers.length > 0 ? '\u{1F4A0} Scalers: ' + bComp.scalers.join(', ') : '\u26A0 No hypercarries';
+      if (bComp.earlyChamps.length > 0) bDesc += ' \u00B7 Early: ' + bComp.earlyChamps.join(', ');
+      rDesc = rComp.scalers.length > 0 ? '\u{1F4A0} Scalers: ' + rComp.scalers.join(', ') : '\u26A0 No hypercarries';
+      if (rComp.earlyChamps.length > 0) rDesc += ' \u00B7 Early: ' + rComp.earlyChamps.join(', ');
+    } else if (d.key === 'backlineThreat') {
+      bDesc = bComp.diveNames.length > 0 ? '\u{1F5E1} Divers: ' + bComp.diveNames.join(', ') : '\u26A0 No backline access';
+      rDesc = rComp.diveNames.length > 0 ? '\u{1F5E1} Divers: ' + rComp.diveNames.join(', ') : '\u26A0 No backline access';
+    } else if (d.key === 'tfControl') {
+      const bParts = [];
+      if (bComp.ccChamps.length > 0) bParts.push('\u{1F3AF} Reliable CC: ' + bComp.ccChamps.join(', '));
+      if (bComp.engageChamps.length > 0) bParts.push('\u{1F6E1} Engage: ' + bComp.engageChamps.join(', '));
+      if (bComp.peelChamps.length > 0) bParts.push('\u{1F49A} Peel: ' + bComp.peelChamps.join(', '));
+      bDesc = bParts.length > 0 ? bParts.join(' \u00B7 ') : '\u26A0 Low teamfight tools';
+      const rParts = [];
+      if (rComp.ccChamps.length > 0) rParts.push('\u{1F3AF} Reliable CC: ' + rComp.ccChamps.join(', '));
+      if (rComp.engageChamps.length > 0) rParts.push('\u{1F6E1} Engage: ' + rComp.engageChamps.join(', '));
+      if (rComp.peelChamps.length > 0) rParts.push('\u{1F49A} Peel: ' + rComp.peelChamps.join(', '));
+      rDesc = rParts.length > 0 ? rParts.join(' \u00B7 ') : '\u26A0 Low teamfight tools';
+    }
+
+    html += '<div style="display:flex;gap:8px;font-size:10px;line-height:1.4;">' +
+      '<div style="flex:1;color:#3b82f6;opacity:.85;padding:2px 0;">' + bDesc + '</div>' +
+      '<div style="flex:1;color:#ef4444;opacity:.85;padding:2px 0;text-align:right;">' + rDesc + '</div>' +
       '</div></div>';
   });
 
   // Overall verdict
   const diff = bTotal - rTotal;
   const absDiff = Math.abs(diff);
-  let verdictColor, verdictLabel, verdictTeam;
-  if (absDiff >= 2) { verdictColor = 'var(--green)'; verdictLabel = 'COMP EDGE'; }
-  else if (absDiff >= 0.8) { verdictColor = 'var(--orange)'; verdictLabel = 'SLIGHT COMP EDGE'; }
+  let verdictColor, verdictLabel;
+  if (absDiff >= 1.5) { verdictColor = 'var(--green)'; verdictLabel = 'COMP EDGE'; }
+  else if (absDiff >= 0.6) { verdictColor = 'var(--orange)'; verdictLabel = 'SLIGHT COMP EDGE'; }
   else { verdictColor = 'var(--text-muted)'; verdictLabel = 'COMPS EVEN'; }
-  verdictTeam = diff > 0 ? bName : diff < 0 ? rName : 'Neither';
+  const verdictTeam = diff > 0 ? bName : diff < 0 ? rName : 'Neither';
 
-  // Count dimension wins
   let bWins = 0, rWins = 0;
   dims.forEach(d => { if (d.bVal > d.rVal) bWins++; else if (d.rVal > d.bVal) rWins++; });
 
   html += '<div class="comp-verdict" style="background:' + verdictColor + '22;border:1px solid ' + verdictColor + ';">' +
     '<div style="font-size:10px;color:' + verdictColor + ';letter-spacing:1px;margin-bottom:4px;">' + verdictLabel + '</div>' +
-    '<div style="font-size:18px;color:' + verdictColor + ';">' + (absDiff >= 0.8 ? verdictTeam : 'No clear advantage') + '</div>' +
+    '<div style="font-size:18px;color:' + verdictColor + ';">' + (absDiff >= 0.6 ? verdictTeam : 'No clear advantage') + '</div>' +
     '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">' +
     'Overall: ' + bName + ' ' + bTotal.toFixed(1) + ' vs ' + rName + ' ' + rTotal.toFixed(1) +
-    ' \u00B7 Dimensions: ' + bWins + '-' + (5 - bWins - rWins) + '-' + rWins + '</div></div>';
+    ' \u00B7 Dimensions: ' + bWins + '-' + (3 - bWins - rWins) + '-' + rWins + '</div></div>';
 
   html += '</div>';
   container.innerHTML = html;
