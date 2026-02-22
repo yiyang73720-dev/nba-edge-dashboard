@@ -1125,6 +1125,7 @@ function getRecommendation(awayScore, homeScore, awayAbbr, homeAbbr, period, clo
   } else if (margin <= 20) {
     type = 'SPREAD'; units = 1;
   } else {
+    // 21+ pts — too far gone
     rec.reasoning = `Down ${margin} pts — margin too large for mean reversion play.`;
     return rec;
   }
@@ -1132,16 +1133,17 @@ function getRecommendation(awayScore, homeScore, awayAbbr, homeAbbr, period, clo
   // Time adjustment: <6 min remaining → downgrade one tier
   if (gameMinRemaining < 6) {
     if (type === 'ML') {
-      type = 'SPREAD';
+      type = 'SPREAD'; // ML → SPREAD
     } else if (margin > 15) {
+      // cautious SPREAD → WATCH
       rec.reasoning = `Down ${margin} with only ${Math.round(gameMinRemaining)} min left — not enough time.`;
       return rec;
     }
-    units = Math.min(units, 1);
+    units = Math.min(units, 1); // cap units when time is short
   }
 
   // Build the recommendation
-  const side = tied ? awayAbbr : trailingTeam;
+  const side = tied ? awayAbbr : trailingTeam; // if tied, pick away team as default
   const spreadLine = type === 'SPREAD' ? `+${margin}` : '';
   const timeStr = Math.round(gameMinRemaining);
 
@@ -1820,15 +1822,15 @@ async function fetchESPNScoreboard() {
               titleText='EDGE \u2014 WATCH';
               recDetail=`<div style="font-size:11px;margin-top:4px;font-weight:700;color:var(--text-muted);">&#x1F440; ${rec.reasoning}</div>`;
             }
-            const bgColor=signalLevel===2?'var(--accent-light)':'var(--orange-light)';
+            const bgColor=signalLevel===2?(rec.type==='WATCH'?'var(--accent-light)':'var(--accent-light)'):'var(--orange-light)';
             const borderColor=signalLevel===2?'var(--accent)':'var(--orange)';
             const titleColor=signalLevel===2?'var(--accent)':'var(--orange)';
             return `<div style="margin-top:8px;padding:8px 10px;border-radius:6px;background:${bgColor};border-left:3px solid ${borderColor};">
               <div style="font-size:10px;font-weight:800;color:${titleColor};margin-bottom:4px;letter-spacing:0.5px;">${titleText}</div>
-              ${signals.map(s=>\`<div style="font-size:11px;color:var(--text-secondary);line-height:1.5;">\${s.level===2?'&#x1F525;':'&#x26A0;&#xFE0F;'} \${s.text}</div>\`).join('')}
+              ${signals.map(s=>`<div style="font-size:11px;color:var(--text-secondary);line-height:1.5;">${s.level===2?'&#x1F525;':'&#x26A0;&#xFE0F;'} ${s.text}</div>`).join('')}
               ${recDetail}
               ${betBtn}
-              ${state.signalFirstSeen[gid]?\`<div style="font-size:9px;color:var(--text-muted);margin-top:4px;">\u23F1 \${Math.floor((Date.now()-state.signalFirstSeen[gid])/60000)}m ago</div>\`:''}
+              ${state.signalFirstSeen[gid]?`<div style="font-size:9px;color:var(--text-muted);margin-top:4px;">\u23F1 ${Math.floor((Date.now()-state.signalFirstSeen[gid])/60000)}m ago</div>`:''}
             </div>`;
           })():''}
         </div>
