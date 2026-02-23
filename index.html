@@ -436,6 +436,7 @@
   <div class="tab" onclick="switchTab('log')" id="tab-log">Bet Log</div>
   <div class="tab" onclick="switchTab('bankroll')" id="tab-bankroll">Bankroll</div>
   <div class="tab" onclick="switchTab('history')" id="tab-history">📊 History</div>
+  <div class="tab nba-tab" onclick="switchTab('tracker')" id="tab-tracker">📈 Backtest</div>
   <div class="tab nba-tab" onclick="switchTab('guide')" id="tab-guide">Signal Guide</div>
   <div class="tab lol-tab" onclick="switchTab('champpool')" id="tab-champpool" style="display:none">🎮 Champion Pool</div>
   <div class="tab lol-tab" onclick="switchTab('analyzer')" id="tab-analyzer" style="display:none">📊 Game Analyzer</div>
@@ -956,6 +957,7 @@ let state = {
   signalFirstSeen: {},
   favorites: JSON.parse(localStorage.getItem('favorites') || '[]'),
   signalHistory: JSON.parse(localStorage.getItem('signalHistory') || '[]'),
+  signalTracker: JSON.parse(localStorage.getItem('signalTracker') || '[]'),
 };
 
 // ==================== INIT ====================
@@ -1894,6 +1896,14 @@ async function fetchESPNScoreboard() {
       }
     });
 
+    // Auto-track signals for backtest
+    gameTheses.forEach(t => {
+      if (t.signalLevel >= 2 && t.betSide) {
+        const rec = getRecommendation(t.aScore, t.hScore, t.aTeam, t.hTeam, t.per, t.clk, t.signalLevel);
+        autoTrackSignal(t, rec);
+      }
+    });
+
     // Update counts
     document.getElementById('live-3ptfragile-signals').textContent = sig3Fragile;
     document.getElementById('live-star-signals').textContent = sigStar;
@@ -1997,6 +2007,7 @@ async function fetchESPNScoreboard() {
         updateBacktestPanel();
         updateKelly();
         autoResolveBets(); // Check for final scores and auto-mark W/L
+        resolveSignalTracker(); // Check signal tracker results
 
 
   } catch (err) {
@@ -2127,6 +2138,404 @@ function autoLogBet(gameId, team, side, signals, marketOdds, impliedP) {
   });
   localStorage.setItem('betLog', JSON.stringify(log));
 }
+
+// ==================== SIGNAL BACKTEST TRACKER ====================
+const TRACKER_BANKROLL = 20000;
+const TRACKER_DEFAULT_EDGE = 0.08; // 8% estimated edge for strong signals (2+ combined)
+const TRACKER_MAX_KELLY = 0.05;    // Max 5% of bankroll per bet (quarter-Kelly cap)
+
+function trackerKellyBet(odds, edge) {
+  // Kelly: f* = (bp - q) / b where b=decimal odds-1, p=estimated win prob, q=1-p
+  // For mean-reversion live bets at -110: b = 100/110 = 0.909
+  // Estimated p based on edge above break-even
+  const breakEven = odds < 0 ? Math.abs(odds)/(Math.abs(odds)+100) : 100/(odds+100);
+  const p = Math.min(0.70, breakEven + edge); // cap at 70%
+  const q = 1 - p;
+  const b = odds < 0 ? 100/Math.abs(odds) : odds/100;
+  let f = (b * p - q) / b;
+  if (f <= 0) f = 0.01; // minimum 1% if edge exists
+  f = Math.min(f, TRACKER_MAX_KELLY); // cap at 5%
+  const bet = Math.round(TRACKER_BANKROLL * f);
+  return { f: Math.round(f*1000)/10, p: Math.round(p*1000)/10, bet, edge: Math.round(edge*1000)/10 };
+}
+
+function autoTrackSignal(thesis, rec) {
+  if (!thesis || !rec || rec.type === 'WATCH') return;
+  const trackerKey = thesis.eventId + '_' + (thesis.betSide||'');
+  if (state.signalTracker.find(s => s.key === trackerKey)) return;
+
+  // Estimate edge based on signal strength
+  const sigCount = (thesis.signals||[]).filter(s=>s.level===2).length;
+  let edge = TRACKER_DEFAULT_EDGE;
+  if (sigCount >= 3) edge = 0.12;      // 3+ strong signals = 12% edge
+  else if (sigCount >= 2) edge = 0.08;  // 2 strong = 8%
+  else edge = 0.05;                      // 1 strong = 5%
+
+  const odds = thesis.marketOdds || -110;
+  const kelly = trackerKellyBet(odds, edge);
+
+  const entry = {
+    id: Date.now() + '_' + Math.random().toString(36).substr(2,6),
+    key: trackerKey,
+    eventId: thesis.eventId,
+    game: thesis.game || '',
+    awayTeam: thesis.aTeam || '',
+    homeTeam: thesis.hTeam || '',
+    awayTeamFull: thesis.aTeamFull || '',
+    homeTeamFull: thesis.hTeamFull || '',
+    signalSide: thesis.betSide || '',
+    signalSideFull: thesis.betSideFull || '',
+    recType: rec.type,
+    spreadLine: rec.spreadLine || '',
+    units: rec.units || 1,
+    signalLevel: thesis.signalLevel || 2,
+    signals: (thesis.signals||[]).filter(s=>s.level===2).map(s=>s.type),
+    confidence: thesis.confidence || '',
+    strongCount: thesis.strongCount || 0,
+    awayScore: thesis.aScore,
+    homeScore: thesis.hScore,
+    period: thesis.per,
+    clock: thesis.clk,
+    reasoning: rec.reasoning || '',
+    marketOdds: odds,
+    kellyPct: kelly.f,
+    kellyBet: kelly.bet,
+    estWinProb: kelly.p,
+    estEdge: kelly.edge,
+    timestamp: Date.now(),
+    date: new Date().toLocaleDateString(),
+    // Result fields — filled by resolveSignalTracker
+    finalAwayScore: null,
+    finalHomeScore: null,
+    gameCompleted: false,
+    mlResult: null,
+    atsResult: null,
+    mlPayout: null,
+    atsPayout: null,
+    resultCheckedAt: null
+  };
+
+  state.signalTracker.push(entry);
+  if (state.signalTracker.length > 500) state.signalTracker = state.signalTracker.slice(-400);
+  localStorage.setItem('signalTracker', JSON.stringify(state.signalTracker));
+  renderSignalTracker();
+}
+
+async function resolveSignalTracker(specificDateStr) {
+  const pending = state.signalTracker.filter(s => !s.gameCompleted);
+  if (pending.length === 0) { renderSignalTracker(); return; }
+
+  const datesToFetch = new Set();
+  if (specificDateStr) {
+    datesToFetch.add(specificDateStr);
+  } else {
+    datesToFetch.add('today');
+    pending.forEach(s => {
+      if (s.date) {
+        const parts = s.date.split('/');
+        if (parts.length === 3) {
+          const mm = parts[0].padStart(2,'0');
+          const dd = parts[1].padStart(2,'0');
+          const yyyy = parts[2].length === 2 ? '20'+parts[2] : parts[2];
+          datesToFetch.add(yyyy+mm+dd);
+        }
+      }
+    });
+  }
+
+  let allEvents = [];
+  for (const ds of datesToFetch) {
+    try {
+      const base = getESPNUrl();
+      const url = ds === 'today' ? base : base + '?dates=' + ds;
+      const resp = await fetch(url);
+      if (!resp.ok) continue;
+      const data = await resp.json();
+      allEvents = allEvents.concat(data.events || []);
+    } catch(e) { console.warn('Signal tracker fetch error:', e); }
+  }
+
+  const eventMap = {};
+  allEvents.forEach(e => { eventMap[e.id] = e; eventMap[String(e.id)] = e; });
+
+  let changed = false;
+  pending.forEach(signal => {
+    const event = eventMap[signal.eventId] || eventMap[String(signal.eventId)];
+    if (!event) return;
+    if (event.status?.type?.state !== 'post') return;
+
+    const comp = event.competitions?.[0];
+    if (!comp) return;
+    const away = comp.competitors?.find(c => c.homeAway === 'away');
+    const home = comp.competitors?.find(c => c.homeAway === 'home');
+    if (!away || !home) return;
+
+    const finalAway = parseInt(away.score) || 0;
+    const finalHome = parseInt(home.score) || 0;
+    signal.finalAwayScore = finalAway;
+    signal.finalHomeScore = finalHome;
+    signal.gameCompleted = true;
+    signal.resultCheckedAt = Date.now();
+
+    const signalIsAway = signal.signalSide === signal.awayTeam;
+    const sigFinal = signalIsAway ? finalAway : finalHome;
+    const oppFinal = signalIsAway ? finalHome : finalAway;
+    const betAmt = signal.kellyBet || 0;
+    const odds = signal.marketOdds || -110;
+    const multiplier = odds < 0 ? 100/Math.abs(odds) : odds/100;
+
+    // ML result
+    if (sigFinal > oppFinal) {
+      signal.mlResult = 'W';
+      signal.mlPayout = Math.round(betAmt * multiplier);
+    } else {
+      signal.mlResult = 'L';
+      signal.mlPayout = -betAmt;
+    }
+
+    // ATS result
+    if (signal.spreadLine) {
+      const spread = parseFloat(signal.spreadLine) || 0;
+      const adjusted = sigFinal + spread;
+      if (adjusted > oppFinal) {
+        signal.atsResult = 'W';
+        signal.atsPayout = Math.round(betAmt * (100/110)); // spread always -110
+      } else if (adjusted === oppFinal) {
+        signal.atsResult = 'P';
+        signal.atsPayout = 0;
+      } else {
+        signal.atsResult = 'L';
+        signal.atsPayout = -betAmt;
+      }
+    } else {
+      signal.atsResult = signal.mlResult;
+      signal.atsPayout = signal.mlPayout;
+    }
+    changed = true;
+  });
+
+  if (changed) {
+    localStorage.setItem('signalTracker', JSON.stringify(state.signalTracker));
+  }
+  renderSignalTracker();
+}
+
+function getSignalTrackerStats() {
+  const all = state.signalTracker;
+  const completed = all.filter(s => s.gameCompleted);
+  const pending = all.filter(s => !s.gameCompleted);
+
+  const mlR = completed.filter(s => s.mlResult);
+  const mlW = mlR.filter(s => s.mlResult==='W').length;
+  const mlL = mlR.filter(s => s.mlResult==='L').length;
+  const mlWR = mlR.length>0 ? Math.round(mlW/mlR.length*1000)/10 : 0;
+  const mlProfit = mlR.reduce((s,x) => s+(x.mlPayout||0), 0);
+  const mlRisked = mlR.reduce((s,x) => s+(x.kellyBet||0), 0);
+  const mlROI = mlRisked>0 ? Math.round(mlProfit/mlRisked*1000)/10 : 0;
+
+  const atsR = completed.filter(s => s.atsResult);
+  const atsW = atsR.filter(s => s.atsResult==='W').length;
+  const atsL = atsR.filter(s => s.atsResult==='L').length;
+  const atsP = atsR.filter(s => s.atsResult==='P').length;
+  const atsWR = atsR.length>0 ? Math.round(atsW/atsR.length*1000)/10 : 0;
+  const atsProfit = atsR.reduce((s,x) => s+(x.atsPayout||0), 0);
+  const atsRisked = atsR.reduce((s,x) => s+(x.kellyBet||0), 0);
+  const atsROI = atsRisked>0 ? Math.round(atsProfit/atsRisked*1000)/10 : 0;
+
+  // By signal type
+  const bySig = {};
+  completed.forEach(s => {
+    (s.signals||[]).forEach(sig => {
+      if (!bySig[sig]) bySig[sig] = {n:0, mlW:0, mlL:0, atsW:0, atsL:0, atsP:0, mlProfit:0, atsProfit:0, risked:0};
+      const b = bySig[sig]; b.n++;
+      if (s.mlResult==='W') b.mlW++; else b.mlL++;
+      if (s.atsResult==='W') b.atsW++; else if (s.atsResult==='L') b.atsL++; else if (s.atsResult==='P') b.atsP++;
+      b.mlProfit += (s.mlPayout||0); b.atsProfit += (s.atsPayout||0); b.risked += (s.kellyBet||0);
+    });
+  });
+
+  // By quarter
+  const byQ = {};
+  completed.forEach(s => {
+    const q = 'Q'+(s.period||'?');
+    if (!byQ[q]) byQ[q] = {n:0, mlW:0, mlL:0, atsW:0, atsL:0, mlProfit:0, atsProfit:0, risked:0};
+    const b = byQ[q]; b.n++;
+    if (s.mlResult==='W') b.mlW++; else b.mlL++;
+    if (s.atsResult==='W') b.atsW++; else if (s.atsResult==='L') b.atsL++;
+    b.mlProfit += (s.mlPayout||0); b.atsProfit += (s.atsPayout||0); b.risked += (s.kellyBet||0);
+  });
+
+  // By rec type
+  const byRec = {};
+  completed.forEach(s => {
+    const rt = s.recType || 'ML';
+    if (!byRec[rt]) byRec[rt] = {n:0, mlW:0, mlL:0, atsW:0, atsL:0, mlProfit:0, atsProfit:0, risked:0};
+    const b = byRec[rt]; b.n++;
+    if (s.mlResult==='W') b.mlW++; else b.mlL++;
+    if (s.atsResult==='W') b.atsW++; else if (s.atsResult==='L') b.atsL++;
+    b.mlProfit += (s.mlPayout||0); b.atsProfit += (s.atsPayout||0); b.risked += (s.kellyBet||0);
+  });
+
+  const totalRisked = completed.reduce((s,x) => s+(x.kellyBet||0), 0);
+  const currentBankroll = TRACKER_BANKROLL + mlProfit;
+
+  return {
+    total: all.length, completed: completed.length, pending: pending.length,
+    mlW, mlL, mlWR, mlProfit, mlROI, mlRisked,
+    atsW, atsL, atsP, atsWR, atsProfit, atsROI, atsRisked,
+    bySig, byQ, byRec,
+    totalRisked, currentBankroll
+  };
+}
+
+function renderSignalTracker() {
+  const el = document.getElementById('signal-tracker-content');
+  if (!el) return;
+
+  const st = getSignalTrackerStats();
+  const all = state.signalTracker.slice().reverse();
+
+  if (all.length === 0) {
+    el.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--text-muted);font-size:13px;">No signals tracked yet. Signals are automatically recorded when combined signals (level 2) fire during live games with auto-refresh on.</div>';
+    return;
+  }
+
+  let h = '';
+
+  // ===== BANKROLL HEADER =====
+  const bkColor = st.currentBankroll >= TRACKER_BANKROLL ? 'var(--green)' : 'var(--red)';
+  const pnl = st.mlProfit;
+  const pnlSign = pnl >= 0 ? '+' : '';
+  h += '<div class="card" style="margin-bottom:16px;padding:16px 20px;background:linear-gradient(135deg,var(--card-bg),var(--accent-light));border:1px solid var(--accent)">';
+  h += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">';
+  h += '<div><div style="font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:1px;margin-bottom:4px">BACKTEST BANKROLL</div>';
+  h += '<div style="font-size:28px;font-weight:800;color:'+bkColor+'">$'+st.currentBankroll.toLocaleString()+'</div>';
+  h += '<div style="font-size:11px;color:var(--text-muted)">Started: $'+TRACKER_BANKROLL.toLocaleString()+' | P&L: <span style="color:'+bkColor+'">'+pnlSign+'$'+pnl.toLocaleString()+'</span></div></div>';
+  h += '<div style="text-align:right"><div style="font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:1px;margin-bottom:4px">KELLY SIZING</div>';
+  h += '<div style="font-size:12px;color:var(--text-secondary);line-height:1.6">Edge est: 5-12% by signal strength<br>Max bet: '+Math.round(TRACKER_MAX_KELLY*100)+'% of bankroll ($'+(TRACKER_BANKROLL*TRACKER_MAX_KELLY).toLocaleString()+')<br>Odds: live market or -110 default</div></div>';
+  h += '</div></div>';
+
+  // ===== SUMMARY STATS GRID =====
+  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px">';
+
+  const statCard = (label, value, sub, color) => {
+    return '<div class="card" style="padding:14px;text-align:center"><div style="font-size:9px;font-weight:700;color:var(--text-muted);letter-spacing:0.8px;margin-bottom:6px">'+label+'</div><div style="font-size:22px;font-weight:800;color:'+(color||'var(--text-primary)')+'">'+value+'</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px">'+sub+'</div></div>';
+  };
+
+  h += statCard('TRACKED', st.total, st.pending+' pending', 'var(--accent)');
+  h += statCard('ML RECORD', st.mlW+'-'+st.mlL, st.mlWR+'% win rate', st.mlWR>=52.4?'var(--green)':'var(--red)');
+  h += statCard('ATS RECORD', st.atsW+'-'+st.atsL+'-'+st.atsP, st.atsWR+'% win rate', st.atsWR>=52.4?'var(--green)':'var(--red)');
+  h += statCard('ML P&L', (st.mlProfit>=0?'+':'')+' $'+st.mlProfit.toLocaleString(), 'ROI: '+(st.mlROI>=0?'+':'')+st.mlROI+'%', st.mlProfit>=0?'var(--green)':'var(--red)');
+  h += statCard('ATS P&L', (st.atsProfit>=0?'+':'')+' $'+st.atsProfit.toLocaleString(), 'ROI: '+(st.atsROI>=0?'+':'')+st.atsROI+'%', st.atsProfit>=0?'var(--green)':'var(--red)');
+  h += statCard('TOTAL RISKED', '$'+st.totalRisked.toLocaleString(), st.completed+' resolved', 'var(--text-primary)');
+  h += '</div>';
+
+  // ===== BREAKDOWN BY SIGNAL TYPE =====
+  const sigKeys = Object.keys(st.bySig);
+  if (sigKeys.length > 0) {
+    h += '<div style="margin-bottom:16px"><div style="font-size:12px;font-weight:700;margin-bottom:8px;color:var(--text-muted);letter-spacing:0.5px">BY SIGNAL TYPE</div>';
+    h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px">';
+    sigKeys.forEach(sig => {
+      const d = st.bySig[sig];
+      const mlWR = d.n>0?Math.round(d.mlW/d.n*100):0;
+      const atsWR = d.n>0?Math.round(d.atsW/d.n*100):0;
+      h += '<div class="card" style="padding:12px"><div style="font-size:12px;font-weight:800;color:var(--accent);margin-bottom:6px">'+sig.toUpperCase()+' <span style="font-weight:400;color:var(--text-muted)">(n='+d.n+')</span></div>';
+      h += '<div style="font-size:11px;line-height:1.8">';
+      h += 'ML: <strong style="color:'+(mlWR>=52.4?'var(--green)':'var(--red)')+'">'+d.mlW+'-'+d.mlL+'</strong> ('+mlWR+'%) | '+(d.mlProfit>=0?'+':'')+' $'+d.mlProfit.toLocaleString()+'<br>';
+      h += 'ATS: <strong style="color:'+(atsWR>=52.4?'var(--green)':'var(--red)')+'">'+d.atsW+'-'+d.atsL+'-'+d.atsP+'</strong> ('+atsWR+'%) | '+(d.atsProfit>=0?'+':'')+' $'+d.atsProfit.toLocaleString();
+      h += '</div></div>';
+    });
+    h += '</div></div>';
+  }
+
+  // ===== BREAKDOWN BY QUARTER =====
+  const qKeys = Object.keys(st.byQ).sort();
+  if (qKeys.length > 0) {
+    h += '<div style="margin-bottom:16px"><div style="font-size:12px;font-weight:700;margin-bottom:8px;color:var(--text-muted);letter-spacing:0.5px">BY QUARTER</div>';
+    h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px">';
+    qKeys.forEach(q => {
+      const d = st.byQ[q];
+      const mlWR = d.n>0?Math.round(d.mlW/d.n*100):0;
+      h += '<div class="card" style="padding:12px"><div style="font-size:14px;font-weight:800;color:var(--accent);margin-bottom:4px">'+q+' <span style="font-weight:400;color:var(--text-muted);font-size:11px">(n='+d.n+')</span></div>';
+      h += '<div style="font-size:11px">ML: <strong style="color:'+(mlWR>=52.4?'var(--green)':'var(--red)')+'">'+d.mlW+'-'+d.mlL+'</strong> ('+mlWR+'%) | P&L: <span style="color:'+(d.mlProfit>=0?'var(--green)':'var(--red)')+'">'+(d.mlProfit>=0?'+':'')+' $'+d.mlProfit.toLocaleString()+'</span></div>';
+      h += '</div>';
+    });
+    h += '</div></div>';
+  }
+
+  // ===== BREAKDOWN BY REC TYPE =====
+  const recKeys = Object.keys(st.byRec);
+  if (recKeys.length > 0) {
+    h += '<div style="margin-bottom:16px"><div style="font-size:12px;font-weight:700;margin-bottom:8px;color:var(--text-muted);letter-spacing:0.5px">BY REC TYPE</div>';
+    h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px">';
+    recKeys.forEach(rt => {
+      const d = st.byRec[rt];
+      const mlWR = d.n>0?Math.round(d.mlW/d.n*100):0;
+      const atsWR = d.n>0?Math.round(d.atsW/d.n*100):0;
+      h += '<div class="card" style="padding:12px"><div style="font-size:12px;font-weight:800;color:'+(rt==='ML'?'var(--orange)':'var(--purple, #7c3aed)')+';margin-bottom:6px">'+rt+' <span style="font-weight:400;color:var(--text-muted)">(n='+d.n+')</span></div>';
+      h += '<div style="font-size:11px;line-height:1.8">';
+      h += 'ML: <strong>'+d.mlW+'-'+d.mlL+'</strong> ('+mlWR+'%) | '+(d.mlProfit>=0?'+':'')+' $'+d.mlProfit.toLocaleString()+'<br>';
+      h += 'ATS: <strong>'+d.atsW+'-'+d.atsL+'</strong> ('+atsWR+'%) | '+(d.atsProfit>=0?'+':'')+' $'+d.atsProfit.toLocaleString();
+      h += '</div></div>';
+    });
+    h += '</div></div>';
+  }
+
+  // ===== SIGNAL HISTORY TABLE =====
+  const thS = 'padding:8px 6px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);border-bottom:2px solid var(--border);white-space:nowrap;text-align:left';
+  h += '<div class="card" style="padding:0;overflow:hidden"><div style="overflow-x:auto">';
+  h += '<table style="width:100%;border-collapse:collapse;font-size:11px"><thead><tr>';
+  h += '<th style="'+thS+'">Date</th><th style="'+thS+'">Game</th><th style="'+thS+'">Side</th><th style="'+thS+'">Rec</th><th style="'+thS+'">Spread</th>';
+  h += '<th style="'+thS+'">Score@Signal</th><th style="'+thS+'">Final</th><th style="'+thS+'">Bet</th>';
+  h += '<th style="'+thS+'">ML</th><th style="'+thS+'">ATS</th><th style="'+thS+'">ML P&L</th><th style="'+thS+'">ATS P&L</th>';
+  h += '</tr></thead><tbody>';
+
+  all.forEach(s => {
+    const td = 'padding:8px 6px;border-bottom:1px solid var(--border-light, rgba(255,255,255,0.06));white-space:nowrap';
+    const scoreAt = s.awayScore+'-'+s.homeScore+' Q'+(s.period||'?')+' '+(s.clock||'');
+    const final_ = s.gameCompleted ? s.finalAwayScore+'-'+s.finalHomeScore : '<span style="color:var(--orange)">Pending</span>';
+    const mlC = s.mlResult==='W'?'var(--green)':s.mlResult==='L'?'var(--red)':'var(--text-muted)';
+    const atsC = s.atsResult==='W'?'var(--green)':s.atsResult==='L'?'var(--red)':s.atsResult==='P'?'var(--orange)':'var(--text-muted)';
+    const mlPL = s.mlPayout!==null ? (s.mlPayout>=0?'+':'')+' $'+s.mlPayout.toLocaleString() : '-';
+    const mlPLC = (s.mlPayout||0)>0?'var(--green)':(s.mlPayout||0)<0?'var(--red)':'var(--text-muted)';
+    const atsPL = s.atsPayout!==null ? (s.atsPayout>=0?'+':'')+' $'+s.atsPayout.toLocaleString() : '-';
+    const atsPLC = (s.atsPayout||0)>0?'var(--green)':(s.atsPayout||0)<0?'var(--red)':'var(--text-muted)';
+    const sigs = (s.signals||[]).map(x => '<span style="display:inline-block;font-size:8px;padding:1px 4px;border-radius:3px;background:var(--accent-light);color:var(--accent);font-weight:600;margin-left:2px">'+x+'</span>').join('');
+
+    h += '<tr>';
+    h += '<td style="'+td+';font-size:10px;color:var(--text-muted)">'+s.date+'</td>';
+    h += '<td style="'+td+';font-weight:600">'+s.game+'</td>';
+    h += '<td style="'+td+';color:var(--accent);font-weight:700">'+s.signalSide+' '+sigs+'</td>';
+    h += '<td style="'+td+';font-weight:700;color:'+(s.recType==='ML'?'var(--orange)':'var(--purple, #7c3aed)')+'">'+s.recType+'</td>';
+    h += '<td style="'+td+';font-family:monospace">'+(s.spreadLine||'-')+'</td>';
+    h += '<td style="'+td+';font-family:monospace;font-size:10px">'+scoreAt+'</td>';
+    h += '<td style="'+td+';font-family:monospace;font-weight:700">'+final_+'</td>';
+    h += '<td style="'+td+';font-family:monospace;font-size:10px">$'+(s.kellyBet||0).toLocaleString()+' <span style="color:var(--text-muted);font-size:8px">('+((s.kellyPct||0))+'%)</span></td>';
+    h += '<td style="'+td+';font-weight:800;color:'+mlC+'">'+(s.mlResult||'-')+'</td>';
+    h += '<td style="'+td+';font-weight:800;color:'+atsC+'">'+(s.atsResult||'-')+'</td>';
+    h += '<td style="'+td+';font-family:monospace;color:'+mlPLC+'">'+mlPL+'</td>';
+    h += '<td style="'+td+';font-family:monospace;color:'+atsPLC+'">'+atsPL+'</td>';
+    h += '</tr>';
+  });
+
+  h += '</tbody></table></div></div>';
+  el.innerHTML = h;
+}
+
+function exportSignalTracker() {
+  const data = state.signalTracker;
+  if (data.length === 0) { alert('No signals tracked yet'); return; }
+  let csv = 'Date,Game,SignalSide,RecType,SpreadLine,Signals,MarketOdds,KellyPct,KellyBet,EstEdge,AwayScore,HomeScore,Period,Clock,FinalAway,FinalHome,ML,ATS,MLPayout,ATSPayout\n';
+  data.forEach(s => {
+    csv += s.date+',"'+s.game+'",'+s.signalSide+','+s.recType+','+(s.spreadLine||'')+',"'+(s.signals||[]).join(';')+'",'+(s.marketOdds||'')+','+(s.kellyPct||'')+','+(s.kellyBet||'')+','+(s.estEdge||'')+','+s.awayScore+','+s.homeScore+','+(s.period||'')+','+(s.clock||'')+','+(s.finalAwayScore!==null?s.finalAwayScore:'')+','+(s.finalHomeScore!==null?s.finalHomeScore:'')+','+(s.mlResult||'')+','+(s.atsResult||'')+','+(s.mlPayout||0)+','+(s.atsPayout||0)+'\n';
+  });
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'signal-backtest-'+new Date().toISOString().split('T')[0]+'.csv';
+  a.click();
+}
+
 
 // ==================== AUTO-RESOLVE BETS FROM ESPN FINAL SCORES ====================
 async function autoResolveBets() {
@@ -2568,6 +2977,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateBacktestPanel();
     updateKelly();
     renderStarDB();
+    renderSignalTracker();
 
   const btn = document.getElementById('soundToggle');
   if (btn) {
@@ -3882,6 +4292,23 @@ try {
     <div class="card-body" id="historyContent">
       <div style="text-align:center;padding:20px;color:var(--text-muted);">Click Refresh to load signal history.</div>
     </div>
+  </div>
+</div>
+
+
+<div id="content-tracker" class="tab-content">
+  <div style="margin-bottom:16px">
+    <h2 style="font-size:20px;font-weight:800;margin-bottom:4px">📈 Signal Backtest Tracker</h2>
+    <p style="font-size:12px;color:var(--text-muted);line-height:1.5">Auto-tracks every signalLevel=2 recommendation. Results resolved from ESPN final scores. Kelly-sized bets on $20K bankroll with estimated 5-12% edge.</p>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
+    <button class="btn btn-sm" style="background:var(--accent);color:white;border:none;padding:8px 16px;border-radius:8px;font-weight:600;cursor:pointer" onclick="resolveSignalTracker()">🔄 Check Results</button>
+    <button class="btn btn-sm" style="background:var(--card-bg);color:var(--text-secondary);border:1px solid var(--border);padding:8px 16px;border-radius:8px;font-weight:600;cursor:pointer" onclick="exportSignalTracker()">📥 Export CSV</button>
+    <button class="btn btn-sm" style="background:var(--card-bg);color:var(--red);border:1px solid var(--border);padding:8px 16px;border-radius:8px;font-weight:600;cursor:pointer" onclick="if(confirm('Clear all backtest tracker data? This cannot be undone.')){state.signalTracker=[];localStorage.removeItem('signalTracker');renderSignalTracker();}">🗑 Clear</button>
+    <span style="margin-left:auto;font-size:10px;color:var(--text-muted)">Signals auto-tracked when combined signals fire during live games</span>
+  </div>
+  <div id="signal-tracker-content">
+    <div style="text-align:center;padding:40px 20px;color:var(--text-muted);font-size:13px">Loading...</div>
   </div>
 </div>
 
