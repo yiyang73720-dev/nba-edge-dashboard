@@ -250,6 +250,7 @@
 .signal-badge.badge-paint{background:#10b981}
 .signal-badge.badge-foul{background:#8b5cf6}
 .signal-badge.badge-hustle{background:#f59e0b}
+.signal-badge.badge-road{background:#06b6d4}
 .signal-badge.badge-combined{background:#00d4aa}
 .signal-badge.badge-hot{background:#ef4444}
 .signal-badge.badge-warm{background:#f97316}
@@ -360,7 +361,7 @@
     <div>
       <span class="status-dot off" id="statusDot"></span>
 <span id="statusText" style="font-size:11px;">ESPN Feed</span>
-    </div><button id="darkModeToggle" onclick="toggleDarkMode()" title="Toggle dark mode">🌙 Dark</button><button class="sound-toggle" id="soundToggle" onclick="toggleSound()" title="Toggle alert sounds">&#x1F50A; Sound</button></div>
+    </div><span id="ncaa-star-status" style="font-size:10px;color:var(--accent);font-weight:600;"></span><button id="modeToggleBtn" onclick="switchMode(currentMode==='nba'?'ncaab':'nba')" title="Switch NBA/NCAAB" style="background:var(--purple)!important;color:white!important;border-radius:20px!important;padding:6px 14px!important;font-size:12px!important;font-weight:700!important;">NBA</button><button id="darkModeToggle" onclick="toggleDarkMode()" title="Toggle dark mode">🌙 Dark</button><button class="sound-toggle" id="soundToggle" onclick="toggleSound()" title="Toggle alert sounds">&#x1F50A; Sound</button></div>
 </div>
 
 <div class="tab-bar" id="tabBar">
@@ -493,7 +494,7 @@
     <div class="card">
       <div class="card-header">Live Star Status</div>
       <div class="card-body">
-        <table><thead><tr><th>Player</th><th>Game</th><th>Pts</th><th>Q1 Pace</th><th>Half Pace</th><th>Overall %</th><th>Period</th><th>Signal</th></tr></thead>
+        <table><thead><tr><th>Player</th><th>Game</th><th>Pts</th><th id="star-col-q1">Q1 Pace</th><th>Half Pace</th><th>Overall %</th><th>Period</th><th>Signal</th></tr></thead>
         <tbody id="live-star-status"><tr><td colspan="8" class="empty-state">Star stats populate when live games are running.</td></tr></tbody></table>
       </div>
     </div>
@@ -623,7 +624,7 @@ const TEAM_3PT_AVG = {
   SAS:35.3, DET:35.7, LAL:36.3, WAS:34.5, UTA:37.0, NOP:35.1, NY:37.8, GS:37.8,
   SA:35.3, NO:35.1
 };
-function getTeam3PtAvg(abbr) { return TEAM_3PT_AVG[abbr] || null; }
+function getTeam3PtAvg(abbr) { return isNCAA() ? 33.5 : (TEAM_3PT_AVG[abbr] || null); }
 
 // ==================== SUPPORTING CAST ANALYSIS ====================
 // Pure live-data approach: no season averages, no assumptions.
@@ -644,7 +645,7 @@ function getTeam3PtAvg(abbr) { return TEAM_3PT_AVG[abbr] || null; }
 function analyzeSupportingCast(starPts, teamScore, opponentScore, starPPG, elapsedMinutes) {
   const castScore = teamScore - starPts;
   const castGap = castScore - opponentScore;
-  const starExpected = starPPG * (elapsedMinutes / 48);
+  const starExpected = starPPG * (elapsedMinutes / getTotalGameMinutes());
   const starDeficit = starExpected - starPts;  // how many points the star is "missing"
   const regressionFlips = starDeficit > 0 && starDeficit > Math.abs(Math.min(castGap, 0));
 
@@ -672,11 +673,137 @@ function analyzeSupportingCast(starPts, teamScore, opponentScore, starPPG, elaps
 
 const currentMode='nba';
 
+// NCAA Star Database — built PRE-GAME from ESPN team leaders API (real season PPG)
+let ncaaStarCache = JSON.parse(localStorage.getItem('ncaaStarCache') || '[]');
+let ncaaStarCacheTime = parseInt(localStorage.getItem('ncaaStarCacheTime') || '0');
+const NCAA_STAR_CACHE_TTL = 86400000; // 24h cache
+let ncaaStarBuildInProgress = false;
+
+function isNCAA() { return currentMode === 'ncaab'; }
+
+// Build NCAA star database from ESPN Core API — runs BEFORE games matter
+// Pipeline: scoreboard → team IDs → team leaders (PPG) → resolve names for 16+ PPG
+async function buildNcaaStarDB(forceRefresh) {
+  if (ncaaStarBuildInProgress) return;
+  if (!forceRefresh && ncaaStarCache.length > 0 && (Date.now() - ncaaStarCacheTime) < NCAA_STAR_CACHE_TTL) {
+    console.log('[NCAA Stars] Using cached DB:', ncaaStarCache.length, 'stars');
+    return;
+  }
+  ncaaStarBuildInProgress = true;
+  const statusEl = document.getElementById('ncaa-star-status');
+  if (statusEl) statusEl.textContent = 'Building star database...';
+  console.log('[NCAA Stars] Building star database from ESPN...');
+
+  try {
+    // Step 1: Get team IDs from today's scoreboard
+    const sbResp = await fetch(getESPNUrl());
+    if (!sbResp.ok) throw new Error('Scoreboard fetch failed');
+    const sbData = await sbResp.json();
+    const teams = [];
+    for (const e of (sbData.events || [])) {
+      for (const c of (e.competitions?.[0]?.competitors || [])) {
+        const tid = c.team?.id;
+        const abbr = c.team?.abbreviation || '';
+        if (tid && !teams.find(t => t.id === tid)) teams.push({ id: tid, abbr });
+      }
+    }
+    if (statusEl) statusEl.textContent = `Scanning ${teams.length} teams...`;
+
+    // Step 2: Fetch team leaders (PPG) — 5 at a time
+    const candidates = [];
+    const batchSize = 5;
+    for (let i = 0; i < teams.length; i += batchSize) {
+      const batch = teams.slice(i, i + batchSize);
+      const promises = batch.map(async (team) => {
+        try {
+          const url = `https://sports.core.api.espn.com/v2/sports/basketball/leagues/mens-college-basketball/seasons/2026/types/2/teams/${team.id}/leaders`;
+          const resp = await fetch(url);
+          if (!resp.ok) return [];
+          const d = await resp.json();
+          const found = [];
+          for (const cat of (d.categories || [])) {
+            if (cat.name === 'pointsPerGame') {
+              for (const l of (cat.leaders || [])) {
+                const ppg = l.value || 0;
+                if (ppg >= 16) {
+                  const ref = l.athlete?.$ref || '';
+                  found.push({ ppg: Math.round(ppg * 10) / 10, ref, team: team.abbr, teamId: team.id });
+                }
+              }
+              break;
+            }
+          }
+          return found;
+        } catch { return []; }
+      });
+      const results = await Promise.all(promises);
+      results.forEach(r => candidates.push(...r));
+    }
+    if (statusEl) statusEl.textContent = `Found ${candidates.length} stars, resolving names...`;
+
+    // Step 3: Resolve athlete names — only for 16+ PPG candidates
+    const stars = [];
+    for (let i = 0; i < candidates.length; i += batchSize) {
+      const batch = candidates.slice(i, i + batchSize);
+      const promises = batch.map(async (cand) => {
+        try {
+          if (!cand.ref) return cand;
+          const resp = await fetch(cand.ref);
+          if (!resp.ok) return cand;
+          const ath = await resp.json();
+          cand.name = ath.displayName || '?';
+          cand.id = ath.id || '';
+          return cand;
+        } catch { return cand; }
+      });
+      const resolved = await Promise.all(promises);
+      stars.push(...resolved.filter(s => s.name));
+    }
+
+    // Save to cache
+    ncaaStarCache = stars;
+    ncaaStarCacheTime = Date.now();
+    localStorage.setItem('ncaaStarCache', JSON.stringify(stars));
+    localStorage.setItem('ncaaStarCacheTime', String(ncaaStarCacheTime));
+    console.log('[NCAA Stars] Built DB:', stars.length, 'stars');
+    if (statusEl) statusEl.textContent = `${stars.length} stars loaded`;
+    setTimeout(() => { if (statusEl) statusEl.textContent = ''; }, 3000);
+  } catch (e) {
+    console.warn('[NCAA Stars] Build error:', e);
+    if (statusEl) statusEl.textContent = 'Star DB error — using fallback';
+  } finally {
+    ncaaStarBuildInProgress = false;
+  }
+}
+
+function switchMode(mode) {
+  currentMode = mode;
+  localStorage.setItem('alphaMode', mode);
+  // Update UI labels
+  const subtitle = document.getElementById('main-subtitle');
+  if (subtitle) subtitle.innerHTML = mode === 'ncaab' ? 'NCAAB &bull; DATA-DRIVEN ANALYTICS' : 'NBA &bull; DATA-DRIVEN ANALYTICS';
+  const modeBtn = document.getElementById('modeToggleBtn');
+  if (modeBtn) modeBtn.textContent = mode === 'ncaab' ? 'NCAAB' : 'NBA';
+  const starCol = document.getElementById('star-col-q1');
+  if (starCol) starCol.textContent = mode === 'ncaab' ? 'H1 Pace' : 'Q1 Pace';
+  // Reset caches for fresh data
+  oddsCache = {}; oddsCacheTime = 0;
+  state.scoreHistory = {};
+  state.lastKnownPeriods = {};
+  state.prevTeamData = {};
+  // Build NCAA star database BEFORE fetching games
+  if (mode === 'ncaab') {
+    buildNcaaStarDB().then(() => fetchESPNScoreboard());
+  } else {
+    fetchESPNScoreboard();
+  }
+}
+
 // === LIVE ODDS (The Odds API) ===
 let oddsCache={};let oddsCacheTime=0;const ODDS_CACHE_TTL=120000;
 let oddsRequestCount=parseInt(localStorage.getItem('oddsReqCount')||'0');
 let oddsReqMonth=localStorage.getItem('oddsReqMonth')||'';
-function getOddsSport(){return 'basketball_nba';}
+function getOddsSport(){return isNCAA() ? 'basketball_ncaab' : 'basketball_nba';}
 function impliedProb(am){const n=parseInt(am);if(n<0)return(Math.abs(n)/(Math.abs(n)+100)*100).toFixed(1);return(100/(n+100)*100).toFixed(1);}
 function oddsClass(am){const n=parseInt(am);if(n<=-150)return'fav';if(n>=150)return'dog';return'even';}
 async function fetchLiveOdds(){
@@ -740,7 +867,7 @@ function matchOdds(aAbbr,hAbbr,aFull,hFull){
 }
 function buildOddsHTML(aAbbr,hAbbr,aFull,hFull){const o=matchOdds(aAbbr,hAbbr,aFull,hFull);if(!o)return'';const aML=(o.awayML>0?'+':'')+o.awayML;const hML=(o.homeML>0?'+':'')+o.homeML;return'<div class="odds-row"><span><span class="odds-label">'+aAbbr+' ML</span> <span class="odds-val '+oddsClass(aML)+'">'+aML+'</span> <span class="odds-implied">('+impliedProb(aML)+'%)</span></span><span class="odds-src">'+o.book+'</span><span><span class="odds-implied">('+impliedProb(hML)+'%)</span> <span class="odds-val '+oddsClass(hML)+'">'+hML+'</span> <span class="odds-label">'+hAbbr+' ML</span></span></div>';}
 
-function getESPNUrl(){return 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard';}
+function getESPNUrl(){return isNCAA() ? 'https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard' : 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard';}
 
 // ==================== STAR DATABASE (23+ PPG) ====================
 const DEFAULT_STARS = [
@@ -855,7 +982,7 @@ function toggleSignalDetail(type) {
   if (!games || games.length === 0) {
     panel.innerHTML = `<div class="chip-detail-header">${labels[type] || type} Games</div><div class="chip-detail-empty">No active ${labels[type] || ''} signals right now</div>`;
   } else {
-    const periodLabel = (per) => `Q${per}`;
+    const periodLabel = (per) => isNCAA() ? (per <= 2 ? `H${per}` : `OT${per-2}`) : `Q${per}`;
     panel.innerHTML = `<div class="chip-detail-header">${labels[type] || type} — ${games.length} game${games.length>1?'s':''}</div>` +
       games.map(g => {
         const truncDetail = g.sigDetail && g.sigDetail.length > 120 ? g.sigDetail.substring(0, 120) + '...' : (g.sigDetail || '');
@@ -906,17 +1033,53 @@ function toggleAutoRefresh() {
     btn.textContent = 'Start'; btn.className = 'btn btn-sm btn-green'; dot.className = 'dot off'; lbl.textContent = 'OFF';
     document.getElementById('liveIndicator').style.display = 'none';
     clearInterval(state.refreshTimer); clearInterval(state.countdownTimer);
+    if (_bgWorker) { _bgWorker.postMessage({ cmd: 'stop' }); _bgWorker.terminate(); _bgWorker = null; }
     document.getElementById('countdownFill').style.width = '100%';
   }
 }
+// === BACKGROUND-SAFE TIMER ===
+// Browsers throttle setInterval in background tabs (60s+ delay).
+// Use a Web Worker blob to keep the timer alive even when tab is hidden.
+let _bgWorker = null;
+function _createBgWorker() {
+  if (_bgWorker) _bgWorker.terminate();
+  try {
+    const blob = new Blob([`
+      let iv = 30000;
+      let tid = null;
+      self.onmessage = function(e) {
+        if (e.data.cmd === 'start') { iv = e.data.interval || 30000; clearInterval(tid); tid = setInterval(()=>self.postMessage('tick'), iv); self.postMessage('tick'); }
+        if (e.data.cmd === 'stop') { clearInterval(tid); tid = null; }
+      };
+    `], { type: 'application/javascript' });
+    _bgWorker = new Worker(URL.createObjectURL(blob));
+    _bgWorker.onmessage = function() { if (state.autoRefresh) fetchESPNScoreboard(); };
+    return true;
+  } catch(e) { console.warn('[BG Worker] Not available, falling back to setInterval'); return false; }
+}
+
 function startCountdown() {
   const iv = parseInt(document.getElementById('refreshInterval').value) * 1000;
   let rem = iv;
   clearInterval(state.refreshTimer); clearInterval(state.countdownTimer);
-  state.refreshTimer = setInterval(() => { if (state.autoRefresh) { fetchESPNScoreboard(); rem = iv; } }, iv);
-  state.countdownTimer = setInterval(() => { rem -= 1000; document.getElementById('countdownFill').style.width = Math.max(0, rem/iv*100)+'%'; }, 1000);
+  // Try Web Worker for background-safe timer; fall back to setInterval
+  const workerOk = _createBgWorker();
+  if (workerOk) {
+    _bgWorker.postMessage({ cmd: 'start', interval: iv });
+  } else {
+    state.refreshTimer = setInterval(() => { if (state.autoRefresh) { fetchESPNScoreboard(); } }, iv);
+  }
+  state.countdownTimer = setInterval(() => { rem -= 1000; if (rem <= 0) rem = iv; document.getElementById('countdownFill').style.width = Math.max(0, rem/iv*100)+'%'; }, 1000);
 }
 function updateRefreshInterval() { if (state.autoRefresh) startCountdown(); }
+
+// === VISIBILITY CHANGE — catch up when tab wakes up ===
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible' && state.autoRefresh) {
+    console.log('[Visibility] Tab visible — immediate refresh to catch missed signals');
+    fetchESPNScoreboard();
+  }
+});
 
 // ==================== PACE HELPERS ====================
 function getQ1Expected(ppg) { return ppg * 0.25; }
@@ -932,17 +1095,18 @@ function getRecommendation(awayScore, homeScore, awayAbbr, homeAbbr, period, clo
   const trailingTeam = tied ? null : (awayScore < homeScore ? awayAbbr : homeAbbr);
   const leadingTeam = tied ? null : (awayScore < homeScore ? homeAbbr : awayAbbr);
 
-  // Calculate time remaining
-  const clockMin = parseFloat(clock?.split(':')[0] || 12);
+  // Calculate time remaining (mode-aware: NBA 48min/4Q, NCAA 40min/2H)
+  const _perLen = getPeriodLength();
+  const clockMin = parseFloat(clock?.split(':')[0] || _perLen);
   const clockSec = parseFloat(clock?.split(':')[1] || 0);
-  const gameMinElapsed = (period - 1) * 12 + (12 - clockMin - clockSec / 60);
-  const gameMinRemaining = Math.max(0, 48 - gameMinElapsed);
+  const gameMinElapsed = (period - 1) * _perLen + (_perLen - clockMin - clockSec / 60);
+  const gameMinRemaining = Math.max(0, getTotalGameMinutes() - gameMinElapsed);
 
   // Default: WATCH
   let rec = { type: 'WATCH', side: null, spreadLine: '', units: 0, reasoning: '', margin: margin, minRemaining: Math.round(gameMinRemaining) };
 
   // OT or <3 min left → always WATCH
-  if (period >= 5) {
+  if (period >= getOTPeriod()) {
     rec.reasoning = 'Overtime — too volatile for mean reversion plays.';
     return rec;
   }
@@ -1001,9 +1165,11 @@ function getRecommendation(awayScore, homeScore, awayAbbr, homeAbbr, period, clo
   return rec;
 }
 
-// === TIME HELPERS (NBA) ===
-function getTotalGameMinutes() { return 48; }
-function getPeriodLength() { return 12; }
+// === TIME HELPERS (NBA / NCAA) ===
+function getTotalGameMinutes() { return isNCAA() ? 40 : 48; }
+function getPeriodLength() { return isNCAA() ? 20 : 12; }
+function getRegulationPeriods() { return isNCAA() ? 2 : 4; }
+function getOTPeriod() { return isNCAA() ? 3 : 5; }
 function getElapsedMinutes(per, clk) {
   const perLen = getPeriodLength();
   const parts = (clk || '0:00').split(':');
@@ -1142,7 +1308,7 @@ function showQuarterToast(a) {
 function renderQtrAlerts() {
   const tb = document.getElementById('qtr-alerts-body');
   if (!state.quarterAlerts.length) { tb.innerHTML = '<tr><td colspan="7" class="empty-state">No quarter-end alerts yet.</td></tr>'; document.getElementById('threept-qtr-alerts').textContent = '0'; return; }
-  tb.innerHTML = state.quarterAlerts.map(a => `<tr><td>${a.time}</td><td><strong>${a.team}</strong></td><td>Q${a.quarter}</td><td style="color:var(--red);font-weight:800;">${a.pct}%</td><td>${a.made}/${a.att}</td><td>${a.game}</td><td><button class="btn btn-purple btn-sm" onclick="openLogModal('${a.game}','3PT Q${a.quarter}','3PT Regression')">Log</button></td></tr>`).join('');
+  tb.innerHTML = state.quarterAlerts.map(a => { const pLabel = isNCAA() ? (a.quarter <= 2 ? `H${a.quarter}` : `OT`) : `Q${a.quarter}`; return `<tr><td>${a.time}</td><td><strong>${a.team}</strong></td><td>${pLabel}</td><td style="color:var(--red);font-weight:800;">${a.pct}%</td><td>${a.made}/${a.att}</td><td>${a.game}</td><td><button class="btn btn-purple btn-sm" onclick="openLogModal('${a.game}','3PT ${pLabel}','3PT Regression')">Log</button></td></tr>`; }).join('');
   document.getElementById('threept-qtr-alerts').textContent = state.quarterAlerts.length;
 }
 function clearQtrAlerts() { if(confirm('Clear all?')) { state.quarterAlerts=[]; localStorage.setItem('quarterAlerts','[]'); renderQtrAlerts(); document.getElementById('threept-badge').style.display='none'; } }
@@ -1171,11 +1337,11 @@ function analyzeScoringDurability(teamAbbr, score, fg3Made, opponentScore) {
 
 // ==================== ESPN SCOREBOARD ====================
 
-function getLeague3PtAvg() { return 36.5; }
+function getLeague3PtAvg() { return isNCAA() ? 33.5 : 36.5; }
 // Team Season 3PT% Averages
 
-function getFragile3PtThreshold() { return 42; }
-function getLeagueName() { return 'NBA'; }
+function getFragile3PtThreshold() { return isNCAA() ? 40 : 42; }
+function getLeagueName() { return isNCAA() ? 'NCAAB' : 'NBA'; }
 
 async function fetchESPNScoreboard() {
   const grid = document.getElementById('live-games-grid');
@@ -1199,7 +1365,7 @@ async function fetchESPNScoreboard() {
     document.getElementById('live-games-count').textContent = inProgress.length;
 
     if (liveEvents.length === 0) {
-      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">&#x1F3C0;</div><p>No live or upcoming NBA games right now.</p></div>`;
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">&#x1F3C0;</div><p>No live or upcoming ${getLeagueName()} games right now.</p></div>`;
       tpGrid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">&#x1F3AF;</div><p>No live games.</p></div>`;
       document.getElementById('edgeThesisContainer').classList.remove('active');
       return;
@@ -1266,8 +1432,9 @@ async function fetchESPNScoreboard() {
         const chk3 = (p,m,a,t,side,tFull) => {
           const pn=parseFloat(p), an=parseInt(a), mn=parseInt(m);
           const tD = teamDisplay(t, tFull);
-          const isHot = (pn>=50&&an>=12)||(pn>=55&&an>=8);
-          const isWarm = !isHot && pn>=45&&an>=10;
+          // NCAA: lower thresholds (fewer possessions, lower league avg 3PT%)
+          const isHot = isNCAA() ? ((pn>=48&&an>=10)||(pn>=52&&an>=7)) : ((pn>=50&&an>=12)||(pn>=55&&an>=8));
+          const isWarm = !isHot && (isNCAA() ? (pn>=43&&an>=8) : (pn>=45&&an>=10));
           if (isHot) {
             fire3PTAlert(t, pn.toFixed(0), mn, an, gLabel, per, clk); hotTeams++;
           } else if (isWarm) { warmTeams++; }
@@ -1303,8 +1470,8 @@ async function fetchESPNScoreboard() {
         const hNon3Pts = hS - (parseInt(h3M)||0)*3;
         const aNon3Ppm = aNon3Pts / _gMinsNow;  // away non-3PT points per minute
         const hNon3Ppm = hNon3Pts / _gMinsNow;  // home non-3PT points per minute
-        // League avg ~1.8-2.0 non-3PT ppm. Below 1.3 = broken offense, can't capitalize on regression.
-        const NO_ENGINE_THRESHOLD = 1.3;
+        // League avg ~1.8-2.0 non-3PT ppm (NBA). NCAA is lower scoring → threshold 1.1.
+        const NO_ENGINE_THRESHOLD = isNCAA() ? 1.1 : 1.3;
 
         // Away team: both hot 3PT AND fragile lead
         const awayLead = aS - hS;
@@ -1312,7 +1479,8 @@ async function fetchESPNScoreboard() {
         const hNoEngine = awayLead > 0 && hNon3Ppm < NO_ENGINE_THRESHOLD && _gMinsNow >= 10;
         const hEngineLabel = hNoEngine ? ` ⚠️ BUT ${_hD} has no scoring engine (${hNon3Ppm.toFixed(1)} non-3PT PPM) — may not capitalize even if 3s regress` : '';
 
-        if (a3Check.isHot && aFragileData && awayLead >= 3 && awayLead <= 15) {
+        const _fragileMaxMargin = isNCAA() ? 12 : 15;
+        if (a3Check.isHot && aFragileData && awayLead >= 3 && awayLead <= _fragileMaxMargin) {
           const fragileStrength = hNoEngine ? 'weakened' : 'strong';
           signals.push({type:'3ptFragile', text:`${_aD} 3PT FRAGILE: shooting ${a3Check.pn.toFixed(0)}% from 3 (${a3Check.mn}/${a3Check.an}) AND lead is ${aFragileData.pct3.toFixed(0)}% 3PT-dependent. Lead: ${awayLead}pts. ${_hD} scores from paint (${aFragileData.oppPaintPct.toFixed(0)}%).${hNoEngine ? ' ⚠️ BUT trailing team has weak scoring engine — regression may not flip result.' : ' Classic fade.'}`, level:2});
           sig3Fragile++;
@@ -1322,7 +1490,7 @@ async function fetchESPNScoreboard() {
             ? `<br><strong>⚠️ Opponent Engine Check:</strong> ${_hD} is producing only ${hNon3Ppm.toFixed(1)} non-3PT points/min (threshold: ${NO_ENGINE_THRESHOLD}). Their offense is broken beyond just 3PT variance — even if ${_aD}'s 3s cool down, ${_hD} may not have the scoring engine to capitalize. <strong>Signal is weaker.</strong>`
             : `<br><strong>✅ Opponent Engine:</strong> ${_hD} is producing ${hNon3Ppm.toFixed(1)} non-3PT points/min — they have a real scoring engine from paint/FT/mid-range. When ${_aD}'s 3s regress, ${_hD} can capitalize.`;
           thesis.criteria['3ptfragile_away'] = {met:true, strong:!hNoEngine, label:`${_aD} 3PT Fragile Lead${hNoEngine?' ⚠️':''}`, detail:`<strong>3PT Shooting:</strong> ${_aD} is shooting ${a3Check.pn.toFixed(0)}% from 3 on ${a3Check.an} attempts (${getLeagueName()} avg: ${getLeague3PtAvg()}%).<br><strong>Lead Composition:</strong> ${aFragileData.pct3.toFixed(0)}% of ${_aD}'s scoring comes from 3PT (threshold: ${getFragile3PtThreshold()}%).<br><strong>Score Margin:</strong> ${awayLead} pts — in the 3-15pt sweet spot where regression flips the game.<br><strong>Opponent Durability:</strong> ${_hD} has ${aFragileData.oppPaintPct.toFixed(0)}% non-3PT scoring — paint-heavy and sustainable.${engineDetail}<br><strong>Signal:</strong> ${hNoEngine ? 'Hot 3PT + fragile lead detected, but trailing team\'s offense is too weak to exploit regression. Proceed with caution.' : 'Hot 3PT + fragile lead + competitive margin. When shooting cools, lead evaporates.'}`, value:`${a3Check.pn.toFixed(0)}% 3PT + ${aFragileData.pct3.toFixed(0)}% fragile | Lead: ${awayLead}${hNoEngine?' ⚠️':''}`};
-        } else if (a3Check.isHot && aFragileData && awayLead > 15) {
+        } else if (a3Check.isHot && aFragileData && awayLead > _fragileMaxMargin) {
           // Hot + fragile but blowout — too large a margin for reliable fade
           signals.push({type:'3ptFragile', text:`${_aD} 3PT fragile but lead too large (${awayLead}pts) — blowout territory.`, level:1});
           thesis.criteria['3ptfragile_away'] = {met:true, strong:false, label:`${_aD} 3PT Fragile (Blowout)`, detail:`${_aD} has a fragile 3PT lead (${aFragileData.pct3.toFixed(0)}% from 3PT) but the ${awayLead}pt margin is too large. Signal needs 3-15pt lead to fire. Even if 3PT% regresses, blowout margin provides too much cushion.`, value:`${awayLead}pt lead — too wide`, warn:true};
@@ -1350,7 +1518,7 @@ async function fetchESPNScoreboard() {
         const aNoEngine = homeLead > 0 && aNon3Ppm < NO_ENGINE_THRESHOLD && _gMinsNow >= 10;
         const aEngineLabel = aNoEngine ? ` ⚠️ BUT ${_aD} has no scoring engine (${aNon3Ppm.toFixed(1)} non-3PT PPM) — may not capitalize even if 3s regress` : '';
 
-        if (h3Check.isHot && hFragileData && homeLead >= 3 && homeLead <= 15) {
+        if (h3Check.isHot && hFragileData && homeLead >= 3 && homeLead <= _fragileMaxMargin) {
           signals.push({type:'3ptFragile', text:`${_hD} 3PT FRAGILE: shooting ${h3Check.pn.toFixed(0)}% from 3 (${h3Check.mn}/${h3Check.an}) AND lead is ${hFragileData.pct3.toFixed(0)}% 3PT-dependent. Lead: ${homeLead}pts. ${_aD} scores from paint (${hFragileData.oppPaintPct.toFixed(0)}%).${aNoEngine ? ' ⚠️ BUT trailing team has weak scoring engine — regression may not flip result.' : ' Classic fade.'}`, level:2});
           sig3Fragile++;
           sendSignalNotification('🔥 3PT Fragile: ' + _hD + (aNoEngine ? ' (⚠️ weak opponent engine)' : ''), hA + ' shooting ' + h3Check.pn.toFixed(0) + '% from 3 AND lead is fragile (' + homeLead + 'pts)' + (aNoEngine ? '. But trailing team offense is broken — regression may not matter.' : ''), gid, '3ptfragile_home');
@@ -1359,7 +1527,7 @@ async function fetchESPNScoreboard() {
             ? `<br><strong>⚠️ Opponent Engine Check:</strong> ${_aD} is producing only ${aNon3Ppm.toFixed(1)} non-3PT points/min (threshold: ${NO_ENGINE_THRESHOLD}). Their offense is broken beyond just 3PT variance — even if ${_hD}'s 3s cool down, ${_aD} may not have the scoring engine to capitalize. <strong>Signal is weaker.</strong>`
             : `<br><strong>✅ Opponent Engine:</strong> ${_aD} is producing ${aNon3Ppm.toFixed(1)} non-3PT points/min — they have a real scoring engine from paint/FT/mid-range. When ${_hD}'s 3s regress, ${_aD} can capitalize.`;
           thesis.criteria['3ptfragile_home'] = {met:true, strong:!aNoEngine, label:`${_hD} 3PT Fragile Lead${aNoEngine?' ⚠️':''}`, detail:`<strong>3PT Shooting:</strong> ${_hD} is shooting ${h3Check.pn.toFixed(0)}% from 3 on ${h3Check.an} attempts (${getLeagueName()} avg: ${getLeague3PtAvg()}%).<br><strong>Lead Composition:</strong> ${hFragileData.pct3.toFixed(0)}% of ${_hD}'s scoring comes from 3PT (threshold: ${getFragile3PtThreshold()}%).<br><strong>Score Margin:</strong> ${homeLead} pts — in the 3-15pt sweet spot where regression flips the game.<br><strong>Opponent Durability:</strong> ${_aD} has ${hFragileData.oppPaintPct.toFixed(0)}% non-3PT scoring — paint-heavy and sustainable.${hEngineDetail}<br><strong>Signal:</strong> ${aNoEngine ? 'Hot 3PT + fragile lead detected, but trailing team\'s offense is too weak to exploit regression. Proceed with caution.' : 'Hot 3PT + fragile lead + competitive margin. When shooting cools, lead evaporates.'}`, value:`${h3Check.pn.toFixed(0)}% 3PT + ${hFragileData.pct3.toFixed(0)}% fragile | Lead: ${homeLead}${aNoEngine?' ⚠️':''}`};
-        } else if (h3Check.isHot && hFragileData && homeLead > 15) {
+        } else if (h3Check.isHot && hFragileData && homeLead > _fragileMaxMargin) {
           signals.push({type:'3ptFragile', text:`${_hD} 3PT fragile but lead too large (${homeLead}pts) — blowout territory.`, level:1});
           thesis.criteria['3ptfragile_home'] = {met:true, strong:false, label:`${_hD} 3PT Fragile (Blowout)`, detail:`${_hD} has a fragile 3PT lead (${hFragileData.pct3.toFixed(0)}% from 3PT) but the ${homeLead}pt margin is too large. Signal needs 3-15pt lead to fire. Even if 3PT% regresses, blowout margin provides too much cushion.`, value:`${homeLead}pt lead — too wide`, warn:true};
         } else if (h3Check.isHot && hFragileData && homeLead < 3) {
@@ -1377,20 +1545,34 @@ async function fetchESPNScoreboard() {
           thesis.criteria['3ptfragile_home'] = {met:false, label:`${_hD} 3PT Fragile`, detail:`No 3PT fragile signal. Normal shooting and/or no fragile lead composition.`, value:'N/A'};
         }
 
-        // STAR COIL CHECK — Star cold (<60% pace) + competitive game (within 15 pts) + Q2-Q3 only
-        const cM = parseFloat(clk?.split(':')[0]||12), cS = parseFloat(clk?.split(':')[1]||0);
+        // STAR COIL CHECK — Star cold (<60% pace) + competitive game + prime window
+        const cM = parseFloat(clk?.split(':')[0]||getPeriodLength()), cS = parseFloat(clk?.split(':')[1]||0);
         const gMins = getElapsedMinutes(per, clk), gPct = getGamePct(per, clk);
         const scoreMargin = Math.abs(aS - hS);
         let starCoilTeams = {};
         [...aLeaders,...hLeaders].forEach(leader => {
-          const star = state.stars.find(s => leader.name.toLowerCase().includes(s.name.split(' ').pop().toLowerCase()) && s.team===leader.team);
+          // NCAA: match against pre-game star database (16+ PPG, built from ESPN team leaders API)
+          // NBA: match against the curated star database (23+ PPG)
+          let star;
+          if (isNCAA()) {
+            star = ncaaStarCache.find(s => {
+              const leaderLast = leader.name.toLowerCase().split(' ').pop();
+              const starLast = s.name.split(' ').pop().toLowerCase();
+              return leaderLast === starLast && s.team === leader.team;
+            });
+          } else {
+            star = state.stars.find(s => leader.name.toLowerCase().includes(s.name.split(' ').pop().toLowerCase()) && s.team===leader.team);
+          }
           if (star) {
             const exp = getExpectedByTime(star.ppg, gMins);
             const pr = exp>0 ? leader.pts/exp : 1;
             const side = leader.team===aA?'away':'home';
             const oppSide = side==='away'?'home':'away';
-            // Star Coil: <65% pace + Q2-Q3 + game within 15 pts (competitive)
-            if (pr<0.65 && per>=2 && per<=3 && scoreMargin<=15) {
+            // Star Coil: <65% pace + prime window + game within 15 pts (competitive)
+            // NBA: Q2-Q3 (per 2-3). NCAA: 8-35 min elapsed (halves, not quarters)
+            const _coilMaxMargin = isNCAA() ? 12 : 15;
+            const _inCoilWindow = isNCAA() ? (gMins >= 8 && gMins <= 35) : (per>=2 && per<=3);
+            if (pr<0.65 && _inCoilWindow && scoreMargin<=_coilMaxMargin) {
               const starTeamSide = leader.team===aA ? 'away' : 'home';
               const starTeamScore = starTeamSide==='away' ? aS : hS;
               const starTeamTrailing = (starTeamSide==='away' && aS < hS) || (starTeamSide==='home' && hS < aS);
@@ -1437,7 +1619,7 @@ async function fetchESPNScoreboard() {
 
               // Build detailed thesis breakdown
               const oppTeamAbbr = starTeamSide==='away' ? hA : aA;
-              const castDetail = `<br><strong>${cast.emoji} Supporting Cast (${cast.label}):</strong> Without ${leader.name}, teammates have <strong>${cast.castScore} pts</strong> vs ${oppTeamAbbr}'s <strong>${oppScore} pts</strong> (gap: <strong>${cast.castGap > 0 ? '+' : ''}${cast.castGap}</strong>).<br>&nbsp;&nbsp;• ${leader.name} is missing ~${cast.starDeficit.toFixed(0)} pts from expected (${star.ppg} PPG × ${(gMins/48*100).toFixed(0)}% game = ~${cast.starExpected.toFixed(0)} exp, has ${leader.pts}).<br>&nbsp;&nbsp;• ${cast.regressionFlips ? `<strong>KEY: Star's missing ${cast.starDeficit.toFixed(0)}pts > team deficit of ${Math.abs(Math.min(cast.castGap, 0))}pts.</strong> When ${leader.name} regresses to mean, the team takes the lead.` : cast.castGap >= 0 ? `<strong>Cast is already matching/beating the opponent.</strong> Star regression pushes this team into dominant territory.` : cast.strong ? `Cast is close to the opponent — within striking distance. Star regression makes this a real fight.` : cast.moderate ? `Cast is behind but game is still in range. Star regression helps but may not be enough alone.` : `<strong>Warning:</strong> Cast is ${Math.abs(cast.castGap)} pts behind the opponent. The whole team is struggling. Star regression of ~${cast.starDeficit.toFixed(0)}pts may not close a ${Math.abs(cast.castGap)}pt cast gap.`}`;
+              const castDetail = `<br><strong>${cast.emoji} Supporting Cast (${cast.label}):</strong> Without ${leader.name}, teammates have <strong>${cast.castScore} pts</strong> vs ${oppTeamAbbr}'s <strong>${oppScore} pts</strong> (gap: <strong>${cast.castGap > 0 ? '+' : ''}${cast.castGap}</strong>).<br>&nbsp;&nbsp;• ${leader.name} is missing ~${cast.starDeficit.toFixed(0)} pts from expected (${star.ppg} PPG × ${(gMins/getTotalGameMinutes()*100).toFixed(0)}% game = ~${cast.starExpected.toFixed(0)} exp, has ${leader.pts}).<br>&nbsp;&nbsp;• ${cast.regressionFlips ? `<strong>KEY: Star's missing ${cast.starDeficit.toFixed(0)}pts > team deficit of ${Math.abs(Math.min(cast.castGap, 0))}pts.</strong> When ${leader.name} regresses to mean, the team takes the lead.` : cast.castGap >= 0 ? `<strong>Cast is already matching/beating the opponent.</strong> Star regression pushes this team into dominant territory.` : cast.strong ? `Cast is close to the opponent — within striking distance. Star regression makes this a real fight.` : cast.moderate ? `Cast is behind but game is still in range. Star regression helps but may not be enough alone.` : `<strong>Warning:</strong> Cast is ${Math.abs(cast.castGap)} pts behind the opponent. The whole team is struggling. Star regression of ~${cast.starDeficit.toFixed(0)}pts may not close a ${Math.abs(cast.castGap)}pt cast gap.`}`;
 
               const dmgDetail = damageLocked
                 ? `<br><strong>🔒 Damage Locked:</strong> Trailing across ${dmg.snapshots} checks over ${dmg.timeSpanSec}s. Deficit: ${dmg.deficitThen}→${dmg.deficitNow}pts (${dmg.trend}). Even if star + cast are strong, the hole is baked in.`
@@ -1453,13 +1635,15 @@ async function fetchESPNScoreboard() {
                 ? `Star is cold AND deficit is locked in. Cast: ${cast.castScore}pts vs opp ${oppScore}. Despite cast effort, the hole is baked in — bet AGAINST the star's team.`
                 : `CAUTION: Cast only has ${cast.castScore}pts vs opponent's ${oppScore} (gap: ${cast.castGap}). The whole team is broken, not just the star.${cast.starDeficit > 0 ? ` Star is missing ~${cast.starDeficit.toFixed(0)}pts but the cast gap is ${Math.abs(cast.castGap)}pts — regression alone can't close it.` : ''} Proceed with caution.`;
 
-              thesis.criteria[`star_${oppSide}`] = {met:true, strong:isStrongSignal, label:`Star Coil ${tierEmoji} [${tierLabel}]: ${leader.name} (${teamDisplay(leader.team, starTeamFull)})`, detail:`<strong>Player:</strong> ${leader.name} — averages ${star.ppg} PPG.<br><strong>Current:</strong> ${leader.pts} pts at Q${per} ${clk} (expected ~${exp.toFixed(0)}).<br><strong>Pace:</strong> ${(pr*100).toFixed(0)}% of expected — below 65% threshold.<br><strong>Game Context:</strong> Score margin ${scoreMargin} pts. Q${per} — prime window.${castDetail}${dmgDetail}<br><strong>Why it matters:</strong> ${whyItMatters}`, value:`${leader.pts}/${exp.toFixed(0)} pts (${(pr*100).toFixed(0)}%) | Cast gap: ${cast.castGap > 0 ? '+' : ''}${cast.castGap} | ${tierLabel}`};
-            } else if (pr<0.65 && per<=3) {
-              // Star is cold but game not competitive or wrong quarter — monitoring only
+              const _coilPLabel = isNCAA() ? (per <= 2 ? `H${per}` : `OT`) : `Q${per}`;
+              thesis.criteria[`star_${oppSide}`] = {met:true, strong:isStrongSignal, label:`Star Coil ${tierEmoji} [${tierLabel}]: ${leader.name} (${teamDisplay(leader.team, starTeamFull)})`, detail:`<strong>Player:</strong> ${leader.name} — averages ${star.ppg} PPG.<br><strong>Current:</strong> ${leader.pts} pts at ${_coilPLabel} ${clk} (expected ~${exp.toFixed(0)}).<br><strong>Pace:</strong> ${(pr*100).toFixed(0)}% of expected — below 65% threshold.<br><strong>Game Context:</strong> Score margin ${scoreMargin} pts. ${_coilPLabel} — prime window.${castDetail}${dmgDetail}<br><strong>Why it matters:</strong> ${whyItMatters}`, value:`${leader.pts}/${exp.toFixed(0)} pts (${(pr*100).toFixed(0)}%) | Cast gap: ${cast.castGap > 0 ? '+' : ''}${cast.castGap} | ${tierLabel}`};
+            } else if (pr<0.65 && (isNCAA() ? gMins <= 35 : per<=3)) {
+              // Star is cold but game not competitive or wrong window — monitoring only
               const starTeamFull2 = leader.team===aA ? aFull : hFull;
-              const reason = per<2 ? 'too early (Q1)' : scoreMargin>15 ? `blowout (${scoreMargin}pt margin)` : '';
+              const reason = isNCAA() ? (gMins<8 ? 'too early' : scoreMargin>_coilMaxMargin ? `blowout (${scoreMargin}pt margin)` : '') : (per<2 ? 'too early (Q1)' : scoreMargin>_coilMaxMargin ? `blowout (${scoreMargin}pt margin)` : '');
               signals.push({type:'star',text:`${leader.name} (${teamDisplay(leader.team, starTeamFull2)}) cold at ${(pr*100).toFixed(0)}% pace — but ${reason}. No coil.`,level:1});
-              thesis.criteria[`star_${oppSide}`] = {met:true, strong:false, label:`Star Cold (No Coil): ${leader.name}`, detail:`${leader.name} (${star.ppg} PPG) is at ${(pr*100).toFixed(0)}% pace but signal doesn't fire: ${reason || 'conditions not met'}. Star Coil needs Q2-Q3 + game within 15 pts.`, value:`${(pr*100).toFixed(0)}% pace`, warn:true};
+              const windowLabel = isNCAA() ? '8-35 min' : 'Q2-Q3';
+              thesis.criteria[`star_${oppSide}`] = {met:true, strong:false, label:`Star Cold (No Coil): ${leader.name}`, detail:`${leader.name} (${star.ppg} PPG) is at ${(pr*100).toFixed(0)}% pace but signal doesn't fire: ${reason || 'conditions not met'}. Star Coil needs ${windowLabel} + game within ${_coilMaxMargin} pts.`, value:`${(pr*100).toFixed(0)}% pace`, warn:true};
             } else if (pr<0.75 && gPct>=0.2) {
               const starTeamFull2 = leader.team===aA ? aFull : hFull;
               signals.push({type:'star',text:`${leader.name} (${teamDisplay(leader.team, starTeamFull2)}) ${leader.pts}pts, behind ${star.ppg} PPG pace (exp ~${exp.toFixed(0)})`,level:1});
@@ -1475,23 +1659,25 @@ async function fetchESPNScoreboard() {
         if (activeSignals >= 2) { sigCombined++; }
 
         // ===== RELAXED COMBINED CHECK =====
-        // When two independent edges converge, each individual signal doesn't need to be as strict.
-        // "Soft" thresholds only fire as a COMBINED signal — never individually.
-        // 3PT Soft: 45%/10att (or 50%/8att), fragile ≥38%, margin 2-18pts, no engine check required
-        // Star Soft: <75% pace, Q1-Q3, margin ≤18pts
+        // NBA: UNCHANGED — 45%/10att (or 50%/8att), fragile ≥38%, <75% pace, per 1-3, reject weak cast
+        // NCAA: LOOSENED — 40%/7att (or 45%/5att), fragile ≥34%, <80% pace, 4-37min, accept weak cast
+        // NCAA combined fires more often because fewer possessions = higher variance = soft convergence is still meaningful
         let soft3ptAway = false, soft3ptHome = false, softStarAny = false;
         let soft3ptAwayDetail = '', soft3ptHomeDetail = '', softStarDetail = '';
         let softStarCoilTeams = {};
 
         if (!has3ptFragile || !hasStar) {
           // --- Soft 3PT Fragile (only evaluate if strict didn't fire) ---
-          const SOFT_FRAGILE_PCT = 38;
-          const softHot = (chk) => (chk.pn >= 45 && chk.an >= 10) || (chk.pn >= 50 && chk.an >= 8);
+          const SOFT_FRAGILE_PCT = isNCAA() ? 34 : 38;
+          const softHot = isNCAA()
+            ? (chk) => (chk.pn >= 40 && chk.an >= 7) || (chk.pn >= 45 && chk.an >= 5)
+            : (chk) => (chk.pn >= 45 && chk.an >= 10) || (chk.pn >= 50 && chk.an >= 8);
 
           if (!has3ptFragile) {
             // Away soft 3PT
             const awayLd = aS - hS;
-            if (softHot(a3Check) && awayLd >= 2 && awayLd <= 18 && aS >= 15) {
+            const _softMaxLd = isNCAA() ? 20 : 18, _softMinScore = isNCAA() ? 12 : 15;
+            if (softHot(a3Check) && awayLd >= 2 && awayLd <= _softMaxLd && aS >= _softMinScore) {
               const aDurSoft = analyzeScoringDurability(aA, aS, a3M, hS);
               if (aDurSoft.pct3 >= SOFT_FRAGILE_PCT) {
                 soft3ptAway = true;
@@ -1500,7 +1686,7 @@ async function fetchESPNScoreboard() {
             }
             // Home soft 3PT
             const homeLd = hS - aS;
-            if (softHot(h3Check) && homeLd >= 2 && homeLd <= 18 && hS >= 15) {
+            if (softHot(h3Check) && homeLd >= 2 && homeLd <= _softMaxLd && hS >= _softMinScore) {
               const hDurSoft = analyzeScoringDurability(hA, hS, h3M, aS);
               if (hDurSoft.pct3 >= SOFT_FRAGILE_PCT) {
                 soft3ptHome = true;
@@ -1516,17 +1702,31 @@ async function fetchESPNScoreboard() {
           // --- Soft Star Coil (only evaluate if strict didn't fire) ---
           if (!hasStar) {
             [...aLeaders, ...hLeaders].forEach(leader => {
-              const star = state.stars.find(s => leader.name.toLowerCase().includes(s.name.split(' ').pop().toLowerCase()) && s.team === leader.team);
+              // Same star matching as strict coil: NCAA pre-game DB, NBA curated
+              let star;
+              if (isNCAA()) {
+                star = ncaaStarCache.find(s => {
+                  const leaderLast = leader.name.toLowerCase().split(' ').pop();
+                  const starLast = s.name.split(' ').pop().toLowerCase();
+                  return leaderLast === starLast && s.team === leader.team;
+                });
+              } else {
+                star = state.stars.find(s => leader.name.toLowerCase().includes(s.name.split(' ').pop().toLowerCase()) && s.team === leader.team);
+              }
               if (star) {
                 const exp = getExpectedByTime(star.ppg, gMins);
                 const pr = exp > 0 ? leader.pts / exp : 1;
-                // Soft: <75% pace, Q1-Q3, margin ≤18pts
-                if (pr < 0.75 && per >= 1 && per <= 3 && scoreMargin <= 18) {
+                // NCAA Soft: <80% pace, wide window, margin ≤18. NBA Soft: <75% pace, per 1-3, margin ≤18 (UNCHANGED)
+                const _softMaxMargin = isNCAA() ? 18 : 18;
+                const _inSoftWindow = isNCAA() ? (gMins >= 4 && gMins <= 37) : (per >= 1 && per <= 3);
+                const _softPaceThresh = isNCAA() ? 0.80 : 0.75;
+                if (pr < _softPaceThresh && _inSoftWindow && scoreMargin <= _softMaxMargin) {
                   const starTeamSide = leader.team === aA ? 'away' : 'home';
                   const starTeamScore = starTeamSide === 'away' ? aS : hS;
                   const oppScore = starTeamSide === 'away' ? hS : aS;
                   const cast = analyzeSupportingCast(leader.pts, starTeamScore, oppScore, star.ppg, gMins);
-                  // For soft combined, accept elite or standard cast tiers
+                  // NCAA: accept all cast tiers except damage-locked (3PT Fragile is primary driver)
+                  // NBA: accept elite/standard only (UNCHANGED from original)
                   const starTeamTrailing = (starTeamSide === 'away' && aS < hS) || (starTeamSide === 'home' && hS < aS);
                   const dmg = analyzeDamageLocked(gid, starTeamSide, 4, gMins);
                   const damageLocked = starTeamTrailing && dmg.locked;
@@ -1535,10 +1735,11 @@ async function fetchESPNScoreboard() {
                   else if (cast.strong) coilTier = 'elite';
                   else if (cast.moderate) coilTier = 'standard';
                   else coilTier = 'weak';
-                  if (coilTier !== 'weak') {
+                  const _softCastOk = isNCAA() ? (coilTier !== 'locked') : (coilTier !== 'weak' && coilTier !== 'locked');
+                  if (_softCastOk) {
                     softStarAny = true;
                     const starTeamFull = leader.team === aA ? aFull : hFull;
-                    softStarDetail = `${leader.name} (${teamDisplay(leader.team, starTeamFull)}) soft Star Coil: ${(pr*100).toFixed(0)}% pace, Q${per}, margin ${scoreMargin}pts, cast tier ${coilTier}`;
+                    softStarDetail = `${leader.name} (${teamDisplay(leader.team, starTeamFull)}) soft Star Coil: ${(pr*100).toFixed(0)}% pace, ${isNCAA()?(per<=2?'H'+per:'OT'):'Q'+per}, margin ${scoreMargin}pts, cast tier ${coilTier}`;
                     softStarCoilTeams[leader.team] = { name: leader.name, damageLocked, dmg, cast, coilTier };
                   }
                 }
@@ -1571,11 +1772,11 @@ async function fetchESPNScoreboard() {
               // Add thesis criteria for the soft 3PT signal
               if (soft3ptAway) {
                 const aDurSoft = analyzeScoringDurability(aA, aS, a3M, hS);
-                thesis.criteria['3ptfragile_away'] = { met: true, strong: true, label: `${_aD} 3PT Fragile (Combined Boost)`, detail: `<strong>Combined Boost:</strong> ${_aD} shooting ${a3Check.pn.toFixed(0)}% from 3 on ${a3Check.an} att with ${aDurSoft.pct3.toFixed(0)}% 3PT-dependent lead. Below strict solo thresholds, but combined with Star Coil convergence, the edge is actionable.<br><strong>Relaxed thresholds:</strong> 45%/10att (or 50%/8att), 38% fragile, 2-18pt margin.`, value: `${a3Check.pn.toFixed(0)}% 3PT + ${aDurSoft.pct3.toFixed(0)}% fragile (soft)` };
+                thesis.criteria['3ptfragile_away'] = { met: true, strong: true, label: `${_aD} 3PT Fragile (Combined Boost)`, detail: `<strong>Combined Boost:</strong> ${_aD} shooting ${a3Check.pn.toFixed(0)}% from 3 on ${a3Check.an} att with ${aDurSoft.pct3.toFixed(0)}% 3PT-dependent lead. Below strict solo thresholds, but combined with Star Coil convergence, the edge is actionable.<br><strong>Relaxed thresholds:</strong> ${isNCAA()?'40%/7att (or 45%/5att), 34% fragile, 2-20pt margin':'45%/10att (or 50%/8att), 38% fragile, 2-18pt margin'}.`, value: `${a3Check.pn.toFixed(0)}% 3PT + ${aDurSoft.pct3.toFixed(0)}% fragile (soft)` };
               }
               if (soft3ptHome) {
                 const hDurSoft = analyzeScoringDurability(hA, hS, h3M, aS);
-                thesis.criteria['3ptfragile_home'] = { met: true, strong: true, label: `${_hD} 3PT Fragile (Combined Boost)`, detail: `<strong>Combined Boost:</strong> ${_hD} shooting ${h3Check.pn.toFixed(0)}% from 3 on ${h3Check.an} att with ${hDurSoft.pct3.toFixed(0)}% 3PT-dependent lead. Below strict solo thresholds, but combined with Star Coil convergence, the edge is actionable.<br><strong>Relaxed thresholds:</strong> 45%/10att (or 50%/8att), 38% fragile, 2-18pt margin.`, value: `${h3Check.pn.toFixed(0)}% 3PT + ${hDurSoft.pct3.toFixed(0)}% fragile (soft)` };
+                thesis.criteria['3ptfragile_home'] = { met: true, strong: true, label: `${_hD} 3PT Fragile (Combined Boost)`, detail: `<strong>Combined Boost:</strong> ${_hD} shooting ${h3Check.pn.toFixed(0)}% from 3 on ${h3Check.an} att with ${hDurSoft.pct3.toFixed(0)}% 3PT-dependent lead. Below strict solo thresholds, but combined with Star Coil convergence, the edge is actionable.<br><strong>Relaxed thresholds:</strong> ${isNCAA()?'40%/7att (or 45%/5att), 34% fragile, 2-20pt margin':'45%/10att (or 50%/8att), 38% fragile, 2-18pt margin'}.`, value: `${h3Check.pn.toFixed(0)}% 3PT + ${hDurSoft.pct3.toFixed(0)}% fragile (soft)` };
               }
             } else { softParts.push('3PT Fragile'); }
             if (!hasStar && softStarAny) {
@@ -1590,7 +1791,8 @@ async function fetchESPNScoreboard() {
                 const oppSide = side === 'away' ? 'home' : 'away';
                 if (!thesis.criteria[`star_${oppSide}`] || !thesis.criteria[`star_${oppSide}`].strong) {
                   const teamFull = teamKey === aA ? aFull : hFull;
-                  thesis.criteria[`star_${oppSide}`] = { met: true, strong: sc.coilTier === 'elite' || sc.coilTier === 'standard', label: `Star Coil (Combined Boost): ${sc.name} (${teamDisplay(teamKey, teamFull)})`, detail: `<strong>Combined Boost:</strong> ${sc.name} below pace in a competitive game. Below strict solo thresholds (Q${per}, pace relaxed to <75%), but combined with 3PT Fragile convergence, the edge is actionable.<br><strong>Cast:</strong> ${sc.cast.castScore}pts vs opp (gap: ${sc.cast.castGap > 0 ? '+' : ''}${sc.cast.castGap}). Tier: ${sc.coilTier}.`, value: `Soft coil | Cast gap: ${sc.cast.castGap > 0 ? '+' : ''}${sc.cast.castGap} | ${sc.coilTier}` };
+                  const _softPLabel = isNCAA() ? (per <= 2 ? `H${per}` : `OT`) : `Q${per}`;
+                  thesis.criteria[`star_${oppSide}`] = { met: true, strong: sc.coilTier === 'elite' || sc.coilTier === 'standard', label: `Star Coil (Combined Boost): ${sc.name} (${teamDisplay(teamKey, teamFull)})`, detail: `<strong>Combined Boost:</strong> ${sc.name} below pace in a competitive game. Below strict solo thresholds (${_softPLabel}, pace relaxed to <75%), but combined with 3PT Fragile convergence, the edge is actionable.<br><strong>Cast:</strong> ${sc.cast.castScore}pts vs opp (gap: ${sc.cast.castGap > 0 ? '+' : ''}${sc.cast.castGap}). Tier: ${sc.coilTier}.`, value: `Soft coil | Cast gap: ${sc.cast.castGap > 0 ? '+' : ''}${sc.cast.castGap} | ${sc.coilTier}` };
                 }
               });
             } else { softParts.push('Star Coil'); }
@@ -1638,6 +1840,21 @@ async function fetchESPNScoreboard() {
           else if (hStarCoil?.coilTier === 'standard') { awayFade += 1; } // home standard coil = home bounces back = fade away
           else if (hStarCoil?.coilTier === 'locked') { homeFade += 1; }   // home locked = home done = fade home
 
+          // ===== HOME COURT BOOSTER (NCAA ONLY) =====
+          // NCAA home court = 3.5-4 pts (vs NBA 2.5). This is a structural tailwind for the home team.
+          // When signals say bet the HOME team: crowd energy + regression = double tailwind → boost.
+          // When signals say bet the ROAD team: home court is a headwind → no boost.
+          // NBA: NO CHANGE — this booster does not apply to NBA. NBA is set in stone.
+          let homeCourtEdge = false;
+          if (isNCAA()) {
+            const _hcBoost = 0.5;
+            // awayFade > 0 means "reasons to fade the away team" = "reasons to bet the home team"
+            if (awayFade > 0) {
+              awayFade += _hcBoost; // boost fading away = boost betting home team
+              homeCourtEdge = true;
+            }
+          }
+
           if (awayFade > homeFade) { betTeam = hA; fadeTeam = aA; }
           else if (homeFade > awayFade) { betTeam = aA; fadeTeam = hA; }
           else if (awayFade > 0) { betTeam = hA; fadeTeam = aA; }
@@ -1658,6 +1875,11 @@ async function fetchESPNScoreboard() {
           else if (hStarCoil?.coilTier === 'locked') reasons.push(`🔒 ${hStarCoil.name} (${_hD}) is coiled BUT damage locked — deficit baked in. Fade ${_hD}.`);
           else if (hStarCoil?.coilTier === 'weak') reasons.push(`⚠️ ${hStarCoil.name} (${_hD}) is coiled but cast gap is ${hStarCoil.cast.castGap} — whole team broken. No directional weight.`);
 
+          // Home Court Edge narrative (NCAA only — homeCourtEdge is always false for NBA)
+          if (homeCourtEdge && betTeam === hA) {
+            reasons.push(`🏟️ HOME COURT EDGE: Betting ${_hD} (home team). NCAAB home court ~3.5-4 pts — crowd energy + regression signals = double tailwind. Home team bouncebacks are structurally stronger.`);
+            thesis.criteria['homecourt_edge'] = { met: true, strong: true, label: `Home Court Booster`, detail: `<strong>Home Court Advantage:</strong> ${_hD} is at home. NCAAB home court advantage averages ~3.5-4 pts — the strongest in American sports.<br><strong>Why it amplifies your signal:</strong> When regression signals fire in the home team's favor (opponent's 3s will cool down, or home star will heat up), the crowd energy creates a compounding effect. The home crowd fuels momentum swings. Refs show documented home bias in foul calls. Home players are in familiar surroundings.<br><strong>The edge:</strong> Your regression signal + home court structural advantage = stronger expected outcome than the same signal on a neutral court.`, value: `Home court tailwind` };
+          }
 
           const strongCriteria = Object.values(thesis.criteria).filter(c => c.met && c.strong).length;
           const allCriteria = Object.values(thesis.criteria).filter(c => c.met).length;
@@ -1674,6 +1896,7 @@ async function fetchESPNScoreboard() {
           thesis.totalMet = allCriteria;
           thesis.signals = signals;
           thesis.signalLevel = signalLevel;
+          thesis.homeCourtEdge = homeCourtEdge && betTeam === hA;
           const _tOdds = matchOdds(aA, hA, aFull, hFull);
           let _betML = null, _implP = 0;
           if (_tOdds) {
@@ -1689,9 +1912,10 @@ async function fetchESPNScoreboard() {
           }
           thesis.eventId = event.id;
           thesis.betTeamAbbr = betTeam;
-          if (_tOdds && _betML) {
-            autoLogBet(event.id, betTeam, 'ML', signals.filter(x=>x.level===2).map(x=>x.type), _betML, _implP);
-          }
+          // Always log the bet — use default -110 odds if live odds unavailable
+          const _logOdds = _betML || -110;
+          const _logImplP = _betML ? _implP : 0.524; // -110 implied = 52.4%
+          autoLogBet(event.id, betTeam, 'ML', signals.filter(x=>x.level===2).map(x=>x.type), _logOdds, _logImplP);
           gameTheses.push(thesis);
         }
       }
@@ -1727,7 +1951,7 @@ async function fetchESPNScoreboard() {
       }
 
       const isFav = state.favorites.includes(gid);
-      const periodLabel = `Q${per}`;
+      const periodLabel = isNCAA() ? (per <= 2 ? `H${per}` : `OT${per-2}`) : `Q${per}`;
       const _oddsHTML = buildOddsHTML(aA,hA,aFull,hFull);
 
       // Signal summary for card header
@@ -1814,7 +2038,7 @@ async function fetchESPNScoreboard() {
         const cb=(aHot||hHot)?'hot-card':(aWarm||hWarm)?'warm-card':'';
         const qBoxes=(t,p,m,a)=>{const pv=parseFloat(p)||0,mv=parseInt(m)||0,av=parseInt(a)||0;let b='';for(let q=1;q<=4;q++){const act=q===per,past=q<per;if(past||act){const hc2=pv>=50&&av>=8&&act?'hot-q':act?'active-q':'';b+=`<div class="qtr-box ${hc2}"><div class="qtr-label">Q${q}${act?' *':''}</div><div class="qtr-value ${act&&pv>=50?'hot-val':'normal-val'}">${act?pv.toFixed(0)+'%':'-'}</div><div class="qtr-detail">${act?mv+'/'+av:'done'}</div></div>`;}else b+=`<div class="qtr-box"><div class="qtr-label">Q${q}</div><div class="qtr-value normal-val">-</div><div class="qtr-detail">-</div></div>`;}return b;};
         const tRow=(t,p,m,a,hot,warm)=>{const badge=hot?'<span class="signal-badge signal-fire">UNSUSTAINABLE</span>':warm?'<span class="signal-badge signal-moderate">ELEVATED</span>':'<span class="signal-badge signal-none">Normal</span>';return `<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><span style="font-weight:800;font-size:14px;color:var(--navy);">${t}</span>${badge}</div>${bar3(p,m,a,t)}<div class="qtr-grid">${qBoxes(t,p,m,a)}</div></div>`;};
-        tpCards+=`<div class="three-pt-card ${cb}"><div class="three-pt-card-header"><span>${gLabel}</span><span>Q${per} ${clk}</span></div><div class="three-pt-card-body">${tRow(aA,a3P,a3M,a3A,aHot,aWarm)}${tRow(hA,h3P,h3M,h3A,hHot,hWarm)}${(aHot||hHot)?`<div style="text-align:center;margin-top:6px;"><button class="btn btn-purple btn-sm" onclick="openLogModal('${gLabel}','3PT Reg','3PT Regression')">Log 3PT Bet</button></div>`:''}</div></div>`;
+        tpCards+=`<div class="three-pt-card ${cb}"><div class="three-pt-card-header"><span>${gLabel}</span><span>${periodLabel} ${clk}</span></div><div class="three-pt-card-body">${tRow(aA,a3P,a3M,a3A,aHot,aWarm)}${tRow(hA,h3P,h3M,h3A,hHot,hWarm)}${(aHot||hHot)?`<div style="text-align:center;margin-top:6px;"><button class="btn btn-purple btn-sm" onclick="openLogModal('${gLabel}','3PT Reg','3PT Regression')">Log 3PT Bet</button></div>`:''}</div></div>`;
       }
     }
 
@@ -1830,17 +2054,18 @@ async function fetchESPNScoreboard() {
     if (gameTheses.length > 0) {
       qbPanel.style.display = 'block';
       qbCards.innerHTML = gameTheses.map(t => {
-        const sigs = t.signals.filter(s=>s.level===2).map(s => {
+        let sigs = t.signals.filter(s=>s.level===2).map(s => {
           const badges = {'3pt':'3PT','star':'STAR','fragile':'FRAGILE'};
           return '<span class="signal-badge badge-' + s.type + '">' + (badges[s.type]||s.type.toUpperCase()) + '</span>';
         }).join(' ');
+        if (t.homeCourtEdge) sigs += ' <span class="signal-badge badge-road">HOME COURT</span>';
         const oddsStr = t.marketOdds ? ' @ ' + (t.marketOdds > 0 ? '+' : '') + t.marketOdds : '';
         const kellyStr = t.kellyPct ? ' (Kelly: ' + (t.kellyPct*100).toFixed(1) + '%)' : '';
         const elapsed = state.signalFirstSeen[t.eventId] ? Math.floor((Date.now() - state.signalFirstSeen[t.eventId]) / 60000) : 0;
         const elapsedStr = elapsed > 0 ? ' \u2022 Signal active ' + elapsed + 'm' : ' \u2022 NEW';
         return '<div style="background:var(--card-bg);border:2px solid var(--accent);border-radius:var(--radius);padding:12px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow-md);animation:slideUp 0.3s ease">' +
           '<div><div style="font-size:14px;font-weight:700;color:var(--accent)">BET ' + t.betSide + ' ML' + oddsStr + '</div>' +
-          '<div style="font-size:11px;color:var(--text-secondary);margin-top:2px">' + t.game + ' \u2022 Q' + (t.per||'?') + ' ' + (t.clk||'') + kellyStr + elapsedStr + '</div>' +
+          '<div style="font-size:11px;color:var(--text-secondary);margin-top:2px">' + t.game + ' \u2022 ' + (isNCAA() ? ((t.per||0)<=2 ? 'H'+(t.per||'?') : 'OT') : 'Q'+(t.per||'?')) + ' ' + (t.clk||'') + kellyStr + elapsedStr + '</div>' +
           '<div style="margin-top:4px">' + sigs + '</div></div>' +
           '<div style="text-align:right"><div style="font-size:20px;font-weight:800;color:var(--accent)">' + (t.strongCount||0) + '</div><div style="font-size:9px;color:var(--text-muted)">SIGNALS</div></div></div>';
       }).join('');
@@ -1933,7 +2158,7 @@ async function fetchESPNScoreboard() {
           <div class="thesis-game-bar">
             <div>
               <div class="thesis-game-label">${t.gameFull || t.game}</div>
-              <div class="thesis-game-period">Q${t.per} ${t.clk} ${leading!=='TIE'?`| ${leading} leads by ${scoreDiff}`:'| Tied'}</div>
+              <div class="thesis-game-period">${isNCAA() ? (t.per<=2 ? 'H'+t.per : 'OT'+(t.per-2)) : 'Q'+t.per} ${t.clk} ${leading!=='TIE'?`| ${leading} leads by ${scoreDiff}`:'| Tied'}</div>
             </div>
             <div class="thesis-confidence">
               <div class="conf-meter">${confDots}</div>
@@ -2007,19 +2232,33 @@ function updateStarTracker(events) {
         for (const l of (cat.leaders||[])) {
           const nm=l.athlete?.shortName||l.athlete?.displayName||'';
           const pts=parseFloat(l.value)||0;
-          const star=state.stars.find(s=>nm.toLowerCase().includes(s.name.split(' ').pop().toLowerCase())&&s.team===tA);
+          // NCAA: use pre-game star DB. NBA: use curated star DB.
+          let star;
+          if (isNCAA()) {
+            star = ncaaStarCache.find(s => { const ll=nm.toLowerCase().split(' ').pop(); const sl=s.name.split(' ').pop().toLowerCase(); return ll===sl&&s.team===tA; });
+          } else {
+            star = state.stars.find(s=>nm.toLowerCase().includes(s.name.split(' ').pop().toLowerCase())&&s.team===tA);
+          }
           if (!star) continue;
           const exp=getExpectedByTime(star.ppg,gMins), pr=exp>0?(pts/exp*100):100;
           const q1E=getQ1Expected(star.ppg), hE=getHalfExpected(star.ppg);
+          const _regPer = getRegulationPeriods(); // NBA: 4, NCAA: 2
           let q1T='-';
-          if (per>=2) q1T=`${q1E.toFixed(1)} exp`;
-          else if (per===1) { const p=q1E>0?(pts/q1E*100):100; q1T=`<span style="color:${p<60?'var(--red)':p<80?'var(--orange)':'var(--green)'};font-weight:700;">${p.toFixed(0)}%</span> of ${q1E.toFixed(1)}`; }
+          // NBA: Q1 ends at per=2. NCAA: no Q1 concept, show H1 pace when per===1
+          if (isNCAA()) {
+            if (per>=2) q1T=`${hE.toFixed(1)} exp`; // H1 done
+            else if (per===1) { const p=hE>0?(pts/hE*100):100; q1T=`<span style="color:${p<60?'var(--red)':p<80?'var(--orange)':'var(--green)'};font-weight:700;">${p.toFixed(0)}%</span> of ${hE.toFixed(1)}`; }
+          } else {
+            if (per>=2) q1T=`${q1E.toFixed(1)} exp`;
+            else if (per===1) { const p=q1E>0?(pts/q1E*100):100; q1T=`<span style="color:${p<60?'var(--red)':p<80?'var(--orange)':'var(--green)'};font-weight:700;">${p.toFixed(0)}%</span> of ${q1E.toFixed(1)}`; }
+          }
           let hT2='-';
-          if (per>=3) hT2=`${hE.toFixed(1)} exp`;
-          else if (per===2||(per===1&&gMins>0)) { const p=hE>0?(pts/hE*100):100; hT2=`<span style="color:${p<60?'var(--red)':p<80?'var(--orange)':'var(--green)'};font-weight:700;">${p.toFixed(0)}%</span> of ${hE.toFixed(1)}`; }
+          if (per>_regPer) hT2=`${hE.toFixed(1)} exp`; // past halftime/regulation
+          else if (per>=1&&gMins>0) { const p=hE>0?(pts/hE*100):100; hT2=`<span style="color:${p<60?'var(--red)':p<80?'var(--orange)':'var(--green)'};font-weight:700;">${p.toFixed(0)}%</span> of ${hE.toFixed(1)}`; }
           const fc=pr<60?'var(--red)':pr<80?'var(--orange)':'var(--green)';
-          const sig=pr<60&&gPct>=0.2&&per<=3?'<span class="signal-badge signal-fire">COLD - BET</span>':pr<75?'<span class="signal-badge signal-moderate">Below Pace</span>':'<span class="signal-badge signal-none">On Pace</span>';
-          rows+=`<tr class="star-row"><td><strong>${nm}</strong><br><span style="font-size:9px;color:var(--gray);">${star.ppg} PPG</span></td><td>${gl}</td><td style="font-size:16px;font-weight:800;">${pts}</td><td>${q1T}</td><td>${hT2}</td><td><div class="pace-indicator"><div class="pace-fill" style="width:${Math.min(pr,100)}%;background:${fc};"></div></div> ${pr.toFixed(0)}%</td><td>Q${per} ${clk}</td><td>${sig}</td></tr>`;
+          const sig=pr<60&&gPct>=0.2&&per<=_regPer?'<span class="signal-badge signal-fire">COLD - BET</span>':pr<75?'<span class="signal-badge signal-moderate">Below Pace</span>':'<span class="signal-badge signal-none">On Pace</span>';
+          const _pLabel = isNCAA() ? (per <= 2 ? `H${per}` : `OT${per-2}`) : `Q${per}`;
+          rows+=`<tr class="star-row"><td><strong>${nm}</strong><br><span style="font-size:9px;color:var(--gray);">${star.ppg} PPG</span></td><td>${gl}</td><td style="font-size:16px;font-weight:800;">${pts}</td><td>${q1T}</td><td>${hT2}</td><td><div class="pace-indicator"><div class="pace-fill" style="width:${Math.min(pr,100)}%;background:${fc};"></div></div> ${pr.toFixed(0)}%</td><td>${_pLabel} ${clk}</td><td>${sig}</td></tr>`;
         }
       }
     }
@@ -2032,7 +2271,8 @@ function renderStarDB() {
   const tb = document.getElementById('star-db-body');
   tb.innerHTML = state.stars.map((s,i) => {
     const q1=getQ1Expected(s.ppg), h=getHalfExpected(s.ppg);
-    return `<tr><td><strong>${s.name}</strong></td><td>${s.team}</td><td>${s.ppg}</td><td>${q1.toFixed(1)}</td><td>${h.toFixed(1)}</td><td>&lt;${(q1*0.6).toFixed(0)} Q1, &lt;${(h*0.6).toFixed(0)} half</td><td><button class="btn btn-red btn-sm" onclick="removeStar(${i})">X</button></td></tr>`;
+    const pLabel = isNCAA() ? 'H1' : 'Q1';
+    return `<tr><td><strong>${s.name}</strong></td><td>${s.team}</td><td>${s.ppg}</td><td>${isNCAA() ? h.toFixed(1) : q1.toFixed(1)}</td><td>${h.toFixed(1)}</td><td>&lt;${(isNCAA() ? (h*0.6).toFixed(0) : (q1*0.6).toFixed(0))} ${pLabel}, &lt;${(h*0.6).toFixed(0)} half</td><td><button class="btn btn-red btn-sm" onclick="removeStar(${i})">X</button></td></tr>`;
   }).join('');
 }
 function addStar() {
@@ -2128,7 +2368,8 @@ function trackerKellyBet(odds, edge) {
 }
 
 function autoTrackSignal(thesis, rec) {
-  if (!thesis || !rec || rec.type === 'WATCH') return;
+  if (!thesis) return;
+  if (!rec) rec = { type: 'WATCH', side: null, spreadLine: '', units: 0, reasoning: 'No recommendation generated', margin: 0, minRemaining: 0 };
   const trackerKey = thesis.eventId + '_' + (thesis.betSide||'');
   if (state.signalTracker.find(s => s.key === trackerKey)) return;
 
@@ -2172,6 +2413,7 @@ function autoTrackSignal(thesis, rec) {
     estEdge: kelly.edge,
     timestamp: Date.now(),
     date: new Date().toLocaleDateString(),
+    mode: currentMode,
     // Result fields — filled by resolveSignalTracker
     finalAwayScore: null,
     finalHomeScore: null,
@@ -2187,6 +2429,100 @@ function autoTrackSignal(thesis, rec) {
   if (state.signalTracker.length > 500) state.signalTracker = state.signalTracker.slice(-400);
   localStorage.setItem('signalTracker', JSON.stringify(state.signalTracker));
   renderSignalTracker();
+}
+
+// === IMPORT FROM BACKGROUND ENGINE ===
+// Loads engine-signals.json (written by signal-engine.js when browser was offline)
+// and merges any new signals into the signal tracker + bet log.
+async function importEngineSignals() {
+  try {
+    const resp = await fetch('engine-signals.json?t=' + Date.now());
+    if (!resp.ok) return; // no engine file — normal if engine hasn't run
+    const engineSignals = await resp.json();
+    if (!Array.isArray(engineSignals) || engineSignals.length === 0) return;
+    let imported = 0;
+    for (const sig of engineSignals) {
+      // Skip if already in tracker
+      const trackerKey = sig.eventId + '_' + (sig.betTeam || '');
+      if (state.signalTracker.find(s => s.key === trackerKey)) continue;
+      // Convert engine format to tracker format
+      const entry = {
+        id: sig.timestamp + '_' + Math.random().toString(36).substr(2, 6),
+        key: trackerKey,
+        eventId: sig.eventId,
+        game: sig.game || '',
+        awayTeam: sig.game?.split(' @ ')?.[0] || '',
+        homeTeam: sig.game?.split(' @ ')?.[1] || '',
+        awayTeamFull: sig.gameFullAway || '',
+        homeTeamFull: sig.gameFullHome || '',
+        signalSide: sig.betTeam || '',
+        signalSideFull: sig.betTeamFull || '',
+        recType: sig.recType || 'ML',
+        spreadLine: '',
+        units: 1,
+        signalLevel: 2,
+        signals: sig.signalTypes || [],
+        confidence: sig.signalCount >= 2 ? 'high' : 'medium',
+        strongCount: sig.signalCount || 1,
+        awayScore: sig.awayScore,
+        homeScore: sig.homeScore,
+        period: sig.period,
+        clock: sig.clock,
+        reasoning: `Background engine signal: ${(sig.signalTypes || []).join(' + ')}`,
+        marketOdds: sig.marketOdds || -110,
+        kellyPct: sig.kellyPct,
+        kellyBet: sig.kellyBet,
+        estWinProb: sig.estWinProb,
+        estEdge: sig.estEdge,
+        timestamp: sig.timestamp,
+        date: sig.date || new Date(sig.timestamp).toLocaleDateString(),
+        mode: sig.mode || currentMode,
+        finalAwayScore: sig.finalAwayScore,
+        finalHomeScore: sig.finalHomeScore,
+        gameCompleted: sig.gameCompleted || false,
+        mlResult: sig.mlResult || null,
+        atsResult: null,
+        mlPayout: sig.mlPayout || null,
+        atsPayout: null,
+        resultCheckedAt: null,
+        source: 'engine' // tag so you know it came from background
+      };
+      state.signalTracker.push(entry);
+      imported++;
+      // Also add to bet log if not there
+      const logKey = sig.eventId + '_' + sig.betTeam;
+      let betLog = JSON.parse(localStorage.getItem('betLog') || '[]');
+      if (!betLog.find(x => x.key === logKey)) {
+        betLog.push({
+          id: sig.timestamp,
+          key: logKey,
+          gameId: sig.eventId,
+          team: sig.betTeam,
+          side: 'ML',
+          signals: sig.signalTypes || [],
+          marketOdds: sig.marketOdds || -110,
+          impliedP: sig.impliedP,
+          estimatedP: sig.estWinProb,
+          kellyPct: sig.kellyPct,
+          kellyBet: sig.kellyBet,
+          timestamp: new Date(sig.timestamp).toISOString(),
+          outcome: sig.mlResult || null,
+          payout: sig.mlPayout || null,
+          mode: sig.mode || currentMode,
+          source: 'engine'
+        });
+        localStorage.setItem('betLog', JSON.stringify(betLog));
+      }
+    }
+    if (imported > 0) {
+      localStorage.setItem('signalTracker', JSON.stringify(state.signalTracker));
+      renderSignalTracker();
+      renderBetLog();
+      console.log(`[Engine Import] Imported ${imported} signals from background engine`);
+    }
+  } catch(e) {
+    // Silently ignore — engine file may not exist
+  }
 }
 
 async function resolveSignalTracker(specificDateStr) {
@@ -2940,6 +3276,21 @@ function toggleDarkMode() {
 
 // Init sound button state
 document.addEventListener('DOMContentLoaded', function() {
+    // Restore saved mode (NBA or NCAAB)
+    const savedMode = localStorage.getItem('alphaMode') || 'nba';
+    if (savedMode !== currentMode) {
+      currentMode = savedMode;
+      const subtitle = document.getElementById('main-subtitle');
+      if (subtitle) subtitle.innerHTML = savedMode === 'ncaab' ? 'NCAAB &bull; DATA-DRIVEN ANALYTICS' : 'NBA &bull; DATA-DRIVEN ANALYTICS';
+      const modeBtn = document.getElementById('modeToggleBtn');
+      if (modeBtn) modeBtn.textContent = savedMode === 'ncaab' ? 'NCAAB' : 'NBA';
+      const starCol = document.getElementById('star-col-q1');
+      if (starCol) starCol.textContent = savedMode === 'ncaab' ? 'H1 Pace' : 'Q1 Pace';
+    }
+    // Build NCAA star database on startup if in NCAAB mode
+    if (currentMode === 'ncaab') buildNcaaStarDB();
+    // Import signals from background engine (engine-signals.json)
+    importEngineSignals();
     loadBankrollSettings();
     renderBetLog();
     updateBacktestPanel();
@@ -3006,7 +3357,7 @@ function fireStarCoilAlert(leader, star, gMins, per, clk, gLabel, paceRatio, mar
     ppg: star.ppg,
     pacePercent: paceRatio * 100,
     type: 'coil',
-    signals: ['Star at ' + (paceRatio * 100).toFixed(0) + '% pace', 'Below 65% threshold', 'Game within ' + margin + ' pts', 'Q' + per + ' — prime window']
+    signals: ['Star at ' + (paceRatio * 100).toFixed(0) + '% pace', 'Below 65% threshold', 'Game within ' + margin + ' pts', (isNCAA() ? (per <= 2 ? 'H' + per : 'OT') : 'Q' + per) + ' — prime window']
   });
 }
 
