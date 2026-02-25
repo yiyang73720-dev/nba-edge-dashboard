@@ -373,6 +373,7 @@
     .team-name img { flex-shrink: 0; }
     .watch-link { display: inline-flex; align-items: center; gap: 3px; font-size: 9px; font-weight: 600; color: var(--accent); background: var(--accent-light); padding: 2px 7px; border-radius: 3px; text-decoration: none; letter-spacing: 0.3px; transition: opacity 0.15s; }
     .watch-link:hover { opacity: 0.7; }
+    .game-links { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
     .tp-inline { cursor: pointer; }
     .tp-inline:hover { text-decoration: underline; }
     .tp-modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.35); z-index: 1000; justify-content: center; align-items: center; }
@@ -1554,6 +1555,13 @@ function shortName(n) { return TEAM_MAP[n] || n.split(' ').pop().substring(0,3).
 function teamDisplay(abbr, fullName) { return abbr; }
 function teamDisplayShort(abbr, fullName) { return abbr; }
 function teamLogoImg(logoUrl, size) { if (!logoUrl) return ''; return `<img src="${logoUrl}" alt="" style="width:${size||20}px;height:${size||20}px;object-fit:contain;vertical-align:middle;">`; }
+function gameLinksHTML(espnLink, leaguePassLink) {
+  let links = [];
+  if (espnLink) links.push(`<a href="${espnLink}" target="_blank" class="watch-link">ESPN</a>`);
+  if (leaguePassLink) links.push(`<a href="${leaguePassLink}" target="_blank" class="watch-link">League Pass</a>`);
+  if (!isNCAA()) links.push(`<a href="https://sports.qq.com/nba/" target="_blank" class="watch-link">WATCH 腾讯</a>`);
+  return links.length ? `<div class="game-links">${links.join('')}</div>` : '';
+}
 
 // ==================== STATE ====================
 let state = {
@@ -2268,6 +2276,10 @@ async function fetchESPNScoreboard() {
       const hA = home.team?.abbreviation || shortName(home.team?.displayName||'');
       const aLogo = away.team?.logo || '';
       const hLogo = home.team?.logo || '';
+      // Game links: ESPN gamecast + NBA League Pass
+      const espnLink = event.links?.[0]?.href || '';
+      const gameSlug = espnLink ? espnLink.split('/').pop() : '';
+      const leaguePassLink = !isNCAA() && gameSlug ? 'https://www.nba.com/game/' + gameSlug : '';
       const aS = parseInt(away.score)||0, hS = parseInt(home.score)||0;
       const gameState = event.status?.type?.state;
       const isLive = gameState === 'in';
@@ -2327,7 +2339,7 @@ async function fetchESPNScoreboard() {
             <div style="text-align:center;padding:8px 0 4px;">
               <div style="font-size:12px;font-weight:600;color:var(--text-secondary);">${tipoffStr}</div>
               ${oddsDetail || ou ? '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">' + (oddsDetail ? oddsDetail : '') + (ou ? ' | O/U ' + ou : '') + '</div>' : ''}
-              ${!isNCAA() ? '<div style="margin-top:4px;"><a href="https://sports.qq.com/nba/" target="_blank" class="watch-link">WATCH 腾讯</a></div>' : ''}
+              ${gameLinksHTML(espnLink, leaguePassLink)}
             </div>
           </div>
         </div>`;
@@ -2995,7 +3007,7 @@ async function fetchESPNScoreboard() {
             </div>
             <div class="vs-block">
               <div class="vs-text" style="font-size:11px;font-weight:500;color:var(--text-muted);opacity:0.6;">vs</div>
-              ${isLive && !isNCAA() ? '<a href="https://sports.qq.com/nba/" target="_blank" class="watch-link" style="margin-top:4px;">WATCH 腾讯</a>' : ''}
+              ${isLive ? '<div class="game-links" style="flex-direction:column;gap:3px;">' + (espnLink ? '<a href="'+espnLink+'" target="_blank" class="watch-link">ESPN</a>' : '') + (leaguePassLink ? '<a href="'+leaguePassLink+'" target="_blank" class="watch-link">LP</a>' : '') + (!isNCAA() ? '<a href="https://sports.qq.com/nba/" target="_blank" class="watch-link">腾讯</a>' : '') + '</div>' : ''}
             </div>
             <div class="team-block">
               <div class="team-name">${teamLogoImg(hLogo, 20)}${teamDisplayShort(hA, hFull)}</div>
