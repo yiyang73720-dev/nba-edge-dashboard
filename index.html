@@ -1567,60 +1567,66 @@ if (_bcEl) _bcEl.value = state.bankroll.current || '';
 renderBetLog(); renderStarDB(); renderQtrAlerts(); loadBankrollSettings();
 
 // ==================== TEAM PROFILES CACHE ====================
-// Fetches full team data: standing, seed, streak, PPG, OppPPG, diff, home/road records
-let teamProfileCache = {}; // { 'BOS': { seed: 2, standing: '1st Atlantic', streak: 4, ppg: 115.0, oppg: 107.6, diff: 7.4, homeRec: '18-9', roadRec: '20-10' }, ... }
+// Full team data: record, standing, streak + offense/defense stats from ESPN statistics API
+let teamProfileCache = {};
 let teamProfileLastFetch = 0;
+let _teamProfileMode = ''; // track mode changes
 
 async function fetchTeamProfiles() {
   const now = Date.now();
-  // Refresh every 30 min max
-  if (now - teamProfileLastFetch < 30 * 60 * 1000 && Object.keys(teamProfileCache).length > 0) return;
+  const mode = isNCAA() ? 'ncaab' : 'nba';
+  // Refresh every 30 min, or immediately if mode changed
+  if (mode === _teamProfileMode && now - teamProfileLastFetch < 30 * 60 * 1000 && Object.keys(teamProfileCache).length > 0) return;
+  _teamProfileMode = mode;
   try {
     const league = isNCAA() ? 'mens-college-basketball' : 'nba';
-    // NBA: 30 teams via IDs 1-30. NCAA: too many — use scoreboard teams only.
+
+    // Step 1: Get team IDs. NBA: all 30. NCAA: today's scoreboard teams.
+    let teamIds = [];
     if (isNCAA()) {
-      // For NCAA, fetch profiles from today's scoreboard teams only
       const sbRes = await fetch(`https://site.api.espn.com/apis/site/v2/sports/basketball/${league}/scoreboard`);
       if (!sbRes.ok) return;
       const sbData = await sbRes.json();
-      const teamIds = new Set();
+      const idSet = new Set();
       for (const ev of (sbData.events || [])) {
-        const comp = ev.competitions?.[0];
-        if (!comp) continue;
-        for (const c of (comp.competitors || [])) {
-          if (c.team?.id) teamIds.add(c.team.id);
+        for (const c of (ev.competitions?.[0]?.competitors || [])) {
+          if (c.team?.id) idSet.add(c.team.id);
         }
       }
-      const fetches = [...teamIds].map(id =>
-        fetch(`https://site.api.espn.com/apis/site/v2/sports/basketball/${league}/teams/${id}`)
-          .then(r => r.ok ? r.json() : null).catch(() => null)
-      );
-      const results = await Promise.all(fetches);
-      for (const d of results) {
-        if (!d?.team) continue;
-        parseTeamProfile(d.team);
-      }
+      teamIds = [...idSet];
     } else {
-      // NBA: fetch all 30 teams in parallel (IDs 1-30)
-      const ids = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30];
-      const fetches = ids.map(id =>
-        fetch(`https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/${id}`)
-          .then(r => r.ok ? r.json() : null).catch(() => null)
-      );
-      const results = await Promise.all(fetches);
-      for (const d of results) {
-        if (!d?.team) continue;
-        parseTeamProfile(d.team);
-      }
+      teamIds = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30];
     }
+
+    // Step 2: Fetch team info + statistics in parallel
+    const teamFetches = teamIds.map(id =>
+      fetch(`https://site.api.espn.com/apis/site/v2/sports/basketball/${league}/teams/${id}`)
+        .then(r => r.ok ? r.json() : null).catch(() => null)
+    );
+    const statFetches = teamIds.map(id =>
+      fetch(`https://site.api.espn.com/apis/site/v2/sports/basketball/${league}/teams/${id}/statistics`)
+        .then(r => r.ok ? r.json() : null).catch(() => null)
+    );
+    const [teamResults, statResults] = await Promise.all([
+      Promise.all(teamFetches),
+      Promise.all(statFetches)
+    ]);
+
+    for (let i = 0; i < teamIds.length; i++) {
+      const tData = teamResults[i];
+      const sData = statResults[i];
+      if (!tData?.team) continue;
+      parseTeamProfile(tData.team, sData);
+    }
+
     teamProfileLastFetch = now;
-    console.log(`[TeamProfiles] Cached ${Object.keys(teamProfileCache).length} teams`);
+    console.log(`[TeamProfiles] Cached ${Object.keys(teamProfileCache).length} teams with full stats`);
   } catch (e) {
     console.warn('[TeamProfiles] Fetch error:', e);
   }
 }
 
-function parseTeamProfile(team) {
+function parseTeamProfile(team, statsData) {
   const abbr = team.abbreviation;
   if (!abbr) return;
   const rec = team.record || {};
@@ -1629,7 +1635,16 @@ function parseTeamProfile(team) {
   const home = items.find(i => i.type === 'home') || {};
   const road = items.find(i => i.type === 'road') || {};
   const getStat = (item, name) => { const s = (item.stats || []).find(x => x.name === name); return s ? s.value : null; };
+
+  // Parse statistics categories
+  const cats = statsData?.results?.stats?.categories || [];
+  const offCat = cats.find(c => c.displayName === 'Offensive') || {};
+  const defCat = cats.find(c => c.displayName === 'Defensive') || {};
+  const genCat = cats.find(c => c.displayName === 'General') || {};
+  const getS = (cat, name) => { const s = (cat.stats || []).find(x => x.name === name); return s ? parseFloat(s.displayValue) : null; };
+
   teamProfileCache[abbr] = {
+    // Record
     seed: getStat(total, 'playoffSeed'),
     standing: team.standingSummary || '',
     streak: getStat(total, 'streak'),
@@ -1639,6 +1654,26 @@ function parseTeamProfile(team) {
     homeRec: home.summary || '',
     roadRec: road.summary || '',
     winPct: getStat(total, 'winPercent'),
+    // Offense
+    fgPct: getS(offCat, 'fieldGoalPct'),
+    threePct: getS(offCat, 'threePointPct') || getS(offCat, 'threePointFieldGoalPct'),
+    ftPct: getS(offCat, 'freeThrowPct'),
+    avgPts: getS(offCat, 'avgPoints'),
+    avg3PM: getS(offCat, 'avgThreePointFieldGoalsMade'),
+    avg3PA: getS(offCat, 'avgThreePointFieldGoalsAttempted'),
+    avgAst: getS(offCat, 'avgAssists'),
+    avgTO: getS(offCat, 'avgTurnovers'),
+    avgOReb: getS(offCat, 'avgOffensiveRebounds'),
+    avgFTM: getS(offCat, 'avgFreeThrowsMade'),
+    avgFTA: getS(offCat, 'avgFreeThrowsAttempted'),
+    // Defense
+    avgDReb: getS(defCat, 'avgDefensiveRebounds'),
+    avgBlk: getS(defCat, 'avgBlocks'),
+    avgStl: getS(defCat, 'avgSteals'),
+    // General
+    avgReb: getS(genCat, 'avgRebounds'),
+    astToRatio: getS(genCat, 'assistTurnoverRatio'),
+    avgFouls: getS(genCat, 'avgFouls'),
   };
 }
 
@@ -1649,13 +1684,32 @@ function teamProfileHTML(abbr, homeAway) {
   const diffColor = p.diff > 0 ? '#0d9488' : p.diff < 0 ? 'var(--red)' : 'var(--text-muted)';
   const streakStr = p.streak != null ? (p.streak > 0 ? 'W' + Math.round(p.streak) : 'L' + Math.abs(Math.round(p.streak))) : '';
   const streakColor = p.streak > 0 ? '#0d9488' : 'var(--red)';
-  const ctxRec = homeAway === 'home' ? (p.homeRec ? 'H: ' + p.homeRec : '') : (p.roadRec ? 'R: ' + p.roadRec : '');
+  const ctxRec = homeAway === 'home' ? (p.homeRec ? 'H:' + p.homeRec : '') : (p.roadRec ? 'R:' + p.roadRec : '');
   const seedStr = p.seed != null ? '#' + Math.round(p.seed) : '';
-  const ppgStr = p.ppg != null ? p.ppg.toFixed(1) : '';
-  const oppgStr = p.oppg != null ? p.oppg.toFixed(1) : '';
-  return `<div class="team-profile" style="font-size:9px;color:var(--text-muted);margin-top:2px;line-height:1.5;">
-    ${seedStr ? '<span style="font-weight:700;color:var(--accent);">' + seedStr + '</span> ' : ''}${ctxRec ? '<span>' + ctxRec + '</span> ' : ''}${streakStr ? '<span style="font-weight:700;color:' + streakColor + ';">' + streakStr + '</span> ' : ''}
-    <span>${ppgStr ? ppgStr + '/' + oppgStr + ' <span style="font-weight:700;color:' + diffColor + ';">' + diff + '</span>' : ''}</span>
+  // Compact 2-line profile: line 1 = seed + context rec + streak + PPG diff
+  // Line 2 = OFF stats (FG% 3P% FT%) | DEF stats (Reb Stl Blk)
+  const line1Parts = [];
+  if (seedStr) line1Parts.push(`<b style="color:var(--accent);">${seedStr}</b>`);
+  if (ctxRec) line1Parts.push(ctxRec);
+  if (streakStr) line1Parts.push(`<b style="color:${streakColor};">${streakStr}</b>`);
+  if (p.ppg != null) line1Parts.push(`${p.ppg.toFixed(1)}ppg <b style="color:${diffColor};">${diff}</b>`);
+
+  const offParts = [];
+  if (p.fgPct != null) offParts.push(`FG ${p.fgPct}%`);
+  if (p.threePct != null) offParts.push(`3P ${p.threePct}%`);
+  if (p.ftPct != null) offParts.push(`FT ${p.ftPct}%`);
+  if (p.avgAst != null && p.avgTO != null) offParts.push(`A/T ${p.astToRatio || (p.avgAst/p.avgTO).toFixed(1)}`);
+
+  const defParts = [];
+  if (p.avgReb != null) defParts.push(`Reb ${p.avgReb}`);
+  if (p.avgStl != null) defParts.push(`Stl ${p.avgStl}`);
+  if (p.avgBlk != null) defParts.push(`Blk ${p.avgBlk}`);
+  if (p.oppg != null) defParts.push(`Opp ${p.oppg.toFixed(1)}`);
+
+  return `<div style="font-size:8.5px;color:var(--text-muted);margin-top:2px;line-height:1.4;max-width:140px;margin-left:auto;margin-right:auto;">
+    <div>${line1Parts.join(' ')}</div>
+    <div style="color:#6b7280;">${offParts.join(' | ')}</div>
+    <div style="color:#9ca3af;">${defParts.join(' | ')}</div>
   </div>`;
 }
 
