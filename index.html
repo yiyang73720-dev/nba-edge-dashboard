@@ -951,7 +951,7 @@
   <!-- ==================== STAR TRACKER TAB ==================== -->
   <div class="tab-content" id="content-stars">
     <div class="card">
-      <div class="card-header"><span id="star-db-title">Star Player Database (23+ PPG)</span><span id="star-db-subtitle" style="font-size:10px;color:var(--text-muted);">Signal: &lt;65% of expected pace</span></div>
+      <div class="card-header"><span id="star-db-title">Star Player Database (21+ PPG)</span><span id="star-db-subtitle" style="font-size:10px;color:var(--text-muted);">Signal: &lt;65% of expected pace</span></div>
       <div class="card-body" style="font-size:12px;">
         <p style="margin-bottom:10px;color:var(--text-muted);">Players tracked automatically in live games. Signal fires when scoring falls below 60% of expected pace. Tracks Q1 and halftime pace separately.</p>
         <table>
@@ -1264,7 +1264,7 @@ function switchMode(mode) {
   const starCol = document.getElementById('star-col-q1');
   if (starCol) starCol.textContent = mode === 'ncaab' ? 'H1 Pace' : 'Q1 Pace';
   const starTitle = document.getElementById('star-db-title');
-  if (starTitle) starTitle.textContent = mode === 'ncaab' ? 'Star Player Database (16+ PPG)' : 'Star Player Database (23+ PPG)';
+  if (starTitle) starTitle.textContent = mode === 'ncaab' ? 'Star Player Database (16+ PPG)' : 'Star Player Database (21+ PPG)';
   const starSub = document.getElementById('star-db-subtitle');
   if (starSub) starSub.textContent = mode === 'ncaab' ? 'Signal: <65% pace, 8-35 min, margin ≤12' : 'Signal: <65% of expected pace';
   // Swap star database
@@ -1372,29 +1372,31 @@ function getESPNUrl(){return isNCAA() ? 'https://site.api.espn.com/apis/site/v2/
 
 // ==================== STAR DATABASE (23+ PPG) ====================
 const DEFAULT_STARS = [
-  { name: "Shai Gilgeous-Alexander", team: "OKC", ppg: 32.2 },
-  { name: "Giannis Antetokounmpo", team: "MIL", ppg: 31.5 },
-  { name: "Nikola Jokic", team: "DEN", ppg: 29.0 },
-  { name: "Luka Doncic", team: "DAL", ppg: 28.1 },
-  { name: "Jayson Tatum", team: "BOS", ppg: 27.8 },
-  { name: "Joel Embiid", team: "PHI", ppg: 27.6 },
-  { name: "Kevin Durant", team: "PHX", ppg: 27.3 },
-  { name: "Devin Booker", team: "PHX", ppg: 27.2 },
-  { name: "Anthony Edwards", team: "MIN", ppg: 27.0 },
-  { name: "De'Aaron Fox", team: "SAC", ppg: 26.8 },
-  { name: "Donovan Mitchell", team: "CLE", ppg: 26.5 },
-  { name: "Jalen Brunson", team: "NYK", ppg: 26.3 },
-  { name: "Anthony Davis", team: "LAL", ppg: 25.7 },
-  { name: "Tyrese Maxey", team: "PHI", ppg: 25.5 },
-  { name: "Karl-Anthony Towns", team: "NYK", ppg: 25.3 },
-  { name: "Cade Cunningham", team: "DET", ppg: 24.8 },
-  { name: "Trae Young", team: "ATL", ppg: 24.3 },
-  { name: "Damian Lillard", team: "MIL", ppg: 24.0 },
-  { name: "Jaylen Brown", team: "BOS", ppg: 23.8 },
-  { name: "LeBron James", team: "LAL", ppg: 23.5 },
-  { name: "Jaren Jackson Jr.", team: "MEM", ppg: 23.3 },
-  { name: "Tyrese Haliburton", team: "IND", ppg: 23.2 },
-  { name: "Zion Williamson", team: "NOP", ppg: 23.0 },
+  { name: "Luka Doncic", team: "LAL", ppg: 32.5 },
+  { name: "Shai Gilgeous-Alexander", team: "OKC", ppg: 31.8 },
+  { name: "Anthony Edwards", team: "MIN", ppg: 29.6 },
+  { name: "Jaylen Brown", team: "BOS", ppg: 29.2 },
+  { name: "Tyrese Maxey", team: "PHI", ppg: 29.1 },
+  { name: "Nikola Jokic", team: "DEN", ppg: 28.8 },
+  { name: "Donovan Mitchell", team: "CLE", ppg: 28.5 },
+  { name: "Kawhi Leonard", team: "LAC", ppg: 28.0 },
+  { name: "Lauri Markkanen", team: "UTA", ppg: 26.7 },
+  { name: "Jalen Brunson", team: "NYK", ppg: 26.7 },
+  { name: "Kevin Durant", team: "HOU", ppg: 25.9 },
+  { name: "Jamal Murray", team: "DEN", ppg: 25.5 },
+  { name: "Cade Cunningham", team: "DET", ppg: 25.3 },
+  { name: "Devin Booker", team: "PHX", ppg: 24.7 },
+  { name: "Michael Porter Jr.", team: "BKN", ppg: 24.6 },
+  { name: "James Harden", team: "LAC", ppg: 24.5 },
+  { name: "Deni Avdija", team: "POR", ppg: 24.4 },
+  { name: "Victor Wembanyama", team: "SAS", ppg: 24.2 },
+  { name: "Pascal Siakam", team: "IND", ppg: 23.9 },
+  { name: "Keyonte George", team: "UTA", ppg: 23.8 },
+  { name: "Jalen Johnson", team: "ATL", ppg: 23.0 },
+  { name: "Norman Powell", team: "MIA", ppg: 22.9 },
+  { name: "Trey Murphy III", team: "NOP", ppg: 21.9 },
+  { name: "Julius Randle", team: "MIN", ppg: 21.9 },
+  { name: "Zion Williamson", team: "NOP", ppg: 21.8 },
 ];
 
 const TEAM_MAP = {
@@ -1843,17 +1845,20 @@ function getLeague3PtAvg() { return isNCAA() ? 33.5 : 36.5; }
 
 function getFragile3PtThreshold() { return isNCAA() ? 40 : 42; }
 function getLeagueName() { return isNCAA() ? 'NCAAB' : 'NBA'; }
+let _modeFetchController = null;
 
 async function fetchESPNScoreboard() {
+  if (_modeFetchController) _modeFetchController.abort();
+  _modeFetchController = new AbortController();
   const grid = document.getElementById('live-games-grid');
   const tpGrid = document.getElementById('threept-grid');
   setConnStatus('loading');
     await fetchLiveOdds();
 
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 10000);
-    const res = await fetch(getESPNUrl(), { signal: controller.signal });
+    const modeSignal = _modeFetchController ? _modeFetchController.signal : undefined;
+    const timeout = setTimeout(() => { if (_modeFetchController) _modeFetchController.abort(); }, 10000);
+    const res = await fetch(getESPNUrl(), { signal: modeSignal });
     clearTimeout(timeout);
     if (!res.ok) throw new Error('ESPN ' + res.status);
     const data = await res.json();
@@ -2273,7 +2278,7 @@ async function fetchESPNScoreboard() {
 
         // ===== RELAXED COMBINED CHECK =====
         // NBA: UNCHANGED — 45%/10att (or 50%/8att), fragile ≥38%, <75% pace, per 1-3, reject weak cast
-        // NCAA: LOOSENED — 40%/7att (or 45%/5att), fragile ≥34%, <80% pace, 4-37min, accept weak cast
+        // NCAA: LOOSENED — 40%/7att (or 45%/5att), fragile ≥36%, <80% pace, 4-37min, accept weak cast
         // NCAA combined fires more often because fewer possessions = higher variance = soft convergence is still meaningful
         let soft3ptAway = false, soft3ptHome = false, softStarAny = false;
         let soft3ptAwayDetail = '', soft3ptHomeDetail = '', softStarDetail = '';
@@ -2281,7 +2286,7 @@ async function fetchESPNScoreboard() {
 
         if (!has3ptFragile || !hasStar) {
           // --- Soft 3PT Fragile (only evaluate if strict didn't fire) ---
-          const SOFT_FRAGILE_PCT = isNCAA() ? 34 : 38;
+          const SOFT_FRAGILE_PCT = isNCAA() ? 36 : 38;
           const softHot = isNCAA()
             ? (chk) => (chk.pn >= 40 && chk.an >= 7) || (chk.pn >= 45 && chk.an >= 5)
             : (chk) => (chk.pn >= 45 && chk.an >= 10) || (chk.pn >= 50 && chk.an >= 8);
@@ -2289,7 +2294,7 @@ async function fetchESPNScoreboard() {
           if (!has3ptFragile) {
             // Away soft 3PT
             const awayLd = aS - hS;
-            const _softMaxLd = isNCAA() ? 20 : 18, _softMinScore = isNCAA() ? 12 : 15;
+            const _softMaxLd = isNCAA() ? 18 : 18, _softMinScore = isNCAA() ? 12 : 15;
             if (softHot(a3Check) && awayLd >= 2 && awayLd <= _softMaxLd && aS >= _softMinScore) {
               const aDurSoft = analyzeScoringDurability(aA, aS, a3M, hS);
               if (aDurSoft.pct3 >= SOFT_FRAGILE_PCT) {
@@ -2649,7 +2654,7 @@ async function fetchESPNScoreboard() {
         const aHot=ap>=50&&parseInt(a3A)>=8, hHot=hp>=50&&parseInt(h3A)>=8;
         const aWarm=ap>=45&&parseInt(a3A)>=6&&!aHot, hWarm=hp>=45&&parseInt(h3A)>=6&&!hHot;
         const cb=(aHot||hHot)?'hot-card':(aWarm||hWarm)?'warm-card':'';
-        const qBoxes=(t,p,m,a)=>{const pv=parseFloat(p)||0,mv=parseInt(m)||0,av=parseInt(a)||0;let b='';for(let q=1;q<=4;q++){const act=q===per,past=q<per;if(past||act){const hc2=pv>=50&&av>=8&&act?'hot-q':act?'active-q':'';b+=`<div class="qtr-box ${hc2}"><div class="qtr-label">Q${q}${act?' *':''}</div><div class="qtr-value ${act&&pv>=50?'hot-val':'normal-val'}">${act?pv.toFixed(0)+'%':'-'}</div><div class="qtr-detail">${act?mv+'/'+av:'done'}</div></div>`;}else b+=`<div class="qtr-box"><div class="qtr-label">Q${q}</div><div class="qtr-value normal-val">-</div><div class="qtr-detail">-</div></div>`;}return b;};
+        const _pCount=isNCAA()?2:4,_pPfx=isNCAA()?'H':'Q';const qBoxes=(t,p,m,a)=>{const pv=parseFloat(p)||0,mv=parseInt(m)||0,av=parseInt(a)||0;let b='';for(let q=1;q<=_pCount;q++){const act=q===per,past=q<per;if(past||act){const hc2=pv>=50&&av>=8&&act?'hot-q':act?'active-q':'';b+=`<div class="qtr-box ${hc2}"><div class="qtr-label">${_pPfx}${q}${act?' *':''}</div><div class="qtr-value ${act&&pv>=50?'hot-val':'normal-val'}">${act?pv.toFixed(0)+'%':'-'}</div><div class="qtr-detail">${act?mv+'/'+av:'done'}</div></div>`;}else b+=`<div class="qtr-box"><div class="qtr-label">${_pPfx}${q}</div><div class="qtr-value normal-val">-</div><div class="qtr-detail">-</div></div>`;}return b;};
         const tRow=(t,p,m,a,hot,warm)=>{const badge=hot?'<span class="signal-badge signal-fire">UNSUSTAINABLE</span>':warm?'<span class="signal-badge signal-moderate">ELEVATED</span>':'<span class="signal-badge signal-none">Normal</span>';return `<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><span style="font-weight:800;font-size:14px;color:var(--text-primary);">${t}</span>${badge}</div>${bar3(p,m,a,t)}<div class="qtr-grid">${qBoxes(t,p,m,a)}</div></div>`;};
         tpCards+=`<div class="three-pt-card ${cb}"><div class="three-pt-card-header"><span>${gLabel}</span><span>${periodLabel} ${clk}</span></div><div class="three-pt-card-body">${tRow(aA,a3P,a3M,a3A,aHot,aWarm)}${tRow(hA,h3P,h3M,h3A,hHot,hWarm)}${(aHot||hHot)?`<div style="text-align:center;margin-top:6px;"><button class="btn btn-purple btn-sm" onclick="openLogModal('${gLabel}','3PT Reg','3PT Regression')">Log 3PT Bet</button></div>`:''}</div></div>`;
       }
@@ -2905,7 +2910,7 @@ function updateSignalGuide(mode) {
     : 'A team is <strong>way too hot from 3</strong> (50%+) and their entire lead depends on it. That shooting will cool off → lead will shrink.';
   const starDesc = ncaa
     ? 'A lead scorer (16+ PPG) is cold (&lt;65% pace) AND the game is close (within 12pts) during minutes 8-35. <strong>Compressed spring</strong> — breakout incoming. NCAA teams are more star-dependent.'
-    : 'A star player (23+ PPG) is cold (&lt;65% pace) AND the game is close (within 15pts) in Q2-Q3. <strong>Compressed spring</strong> — breakout incoming.';
+    : 'A star player (21+ PPG) is cold (&lt;65% pace) AND the game is close (within 15pts) in Q2-Q3. <strong>Compressed spring</strong> — breakout incoming.';
   // Update quick reference cells
   const cells = document.querySelectorAll('#guide-fragile-desc');
   if (cells.length) cells[0].innerHTML = fragileDesc;
@@ -2921,11 +2926,11 @@ function updateSignalGuide(mode) {
   const fragileThresh = ncaa ? '40%' : '42%';
   const marginRange = ncaa ? '3-12' : '3-15';
   const enginePPM = ncaa ? '1.1' : '1.3';
-  const starPPG = ncaa ? '16+' : '23+';
+  const starPPG = ncaa ? '16+' : '21+';
   const coilMargin = ncaa ? '12' : '15';
   const coilWindow = ncaa ? 'minutes 8-35 (first half through mid second half)' : 'Q2-Q3';
   const gameMins = ncaa ? '40 min (2×20 halves)' : '48 min (4×12 quarters)';
-  const softHot = ncaa ? '40%/7att (or 45%/5att), fragile ≥34%, margin 2-20pts' : '45%/10att (or 50%/8att), fragile ≥38%, margin 2-18pts';
+  const softHot = ncaa ? '40%/7att (or 45%/5att), fragile ≥36%, margin 2-18pts' : '45%/10att (or 50%/8att), fragile ≥38%, margin 2-18pts';
   const softStar = ncaa ? '&lt;80% pace, minutes 4-37, margin ≤18pts, accepts weak cast' : '&lt;75% pace, Q1-Q3 (not just Q2-Q3), margin ≤18pts';
   const homeCourtNote = ncaa ? '<p style="margin-top:8px;"><strong>Home Court Booster (NCAAB only):</strong> When signals point toward betting the home team, a +0.5 boost is applied. NCAA home court advantage is ~3.5-4 points — significantly stronger than NBA (~2.5). Crowd energy + regression signals = double tailwind.</p>' : '';
 
@@ -3316,7 +3321,7 @@ function getSignalTrackerStats() {
   // By quarter
   const byQ = {};
   completed.forEach(s => {
-    const q = 'Q'+(s.period||'?');
+    const q = s.mode === 'ncaab' ? ((s.period||0) <= 2 ? 'H'+(s.period||'?') : 'OT'+((s.period||3)-2)) : 'Q'+(s.period||'?');
     if (!byQ[q]) byQ[q] = {n:0, mlW:0, mlL:0, atsW:0, atsL:0, mlProfit:0, atsProfit:0, risked:0};
     const b = byQ[q]; b.n++;
     if (s.mlResult==='W') b.mlW++; else b.mlL++;
@@ -3451,7 +3456,8 @@ function renderSignalTracker() {
 
   all.forEach(s => {
     const td = 'padding:8px 6px;border-bottom:1px solid var(--border-light, rgba(255,255,255,0.06));white-space:nowrap';
-    const scoreAt = s.awayScore+'-'+s.homeScore+' Q'+(s.period||'?')+' '+(s.clock||'');
+    const periodStr = s.mode === 'ncaab' ? ((s.period||0) <= 2 ? 'H'+(s.period||'?') : 'OT'+((s.period||3)-2)) : 'Q'+(s.period||'?');
+    const scoreAt = s.awayScore+'-'+s.homeScore+' '+periodStr+' '+(s.clock||'');
     const final_ = s.gameCompleted ? s.finalAwayScore+'-'+s.finalHomeScore : '<span style="color:var(--orange)">Pending</span>';
     const mlC = s.mlResult==='W'?'var(--green)':s.mlResult==='L'?'var(--red)':'var(--text-muted)';
     const atsC = s.atsResult==='W'?'var(--green)':s.atsResult==='L'?'var(--red)':s.atsResult==='P'?'var(--orange)':'var(--text-muted)';
@@ -3942,7 +3948,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const starCol = document.getElementById('star-col-q1');
       if (starCol) starCol.textContent = savedMode === 'ncaab' ? 'H1 Pace' : 'Q1 Pace';
       const starTitle = document.getElementById('star-db-title');
-      if (starTitle) starTitle.textContent = savedMode === 'ncaab' ? 'Star Player Database (16+ PPG)' : 'Star Player Database (23+ PPG)';
+      if (starTitle) starTitle.textContent = savedMode === 'ncaab' ? 'Star Player Database (16+ PPG)' : 'Star Player Database (21+ PPG)';
       const starSub = document.getElementById('star-db-subtitle');
       if (starSub) starSub.textContent = savedMode === 'ncaab' ? 'Signal: <65% pace, 8-35 min, margin ≤12' : 'Signal: <65% of expected pace';
       // Swap star database for NCAA
@@ -4442,7 +4448,7 @@ try {
 </tr>
 <tr style="border-bottom:1px solid var(--border-light);">
 <td style="padding:10px 6px;"><span class="signal-badge badge-star" style="font-size:10px;">STAR COIL</span></td>
-<td id="guide-star-desc" style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">A star player (25+ PPG) is cold (<60% pace) AND the game is close (within 15pts) in Q2-Q3. <strong>Compressed spring</strong> — breakout incoming.</td>
+<td id="guide-star-desc" style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">A star player (21+ PPG) is cold (&lt;65% pace) AND the game is close (within 15pts) in Q2-Q3. <strong>Compressed spring</strong> — breakout incoming.</td>
 <td style="padding:10px 6px;font-weight:700;color:var(--green);">Bet the <strong>star's team moneyline</strong>. Star is cold, game is close, timing is right — the market hasn't priced in the breakout.</td>
 </tr>
 
@@ -4459,7 +4465,7 @@ try {
 <p class="guide-intro" style="margin-bottom:12px;"><strong>Core thesis:</strong> The current score was built on something unsustainable, so the live odds are mispriced. We bet on regression.</p>
 <div class="guide-grid">
 <div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT FRAGILE</span> 3PT Fragile Lead</h3><p class="edge-label">Team is winning because of hot 3PT shooting — and the lead depends on it</p><p>Fires when ALL are true: (1) a team is shooting 50%+ from 3 on 12+ attempts, (2) their lead is built on that 3PT shooting while the opponent scores from paint, AND (3) the lead is 3-15 points. The sweet spot where 3PT cooling flips the game.</p><p><strong>⚠️ Opponent Engine Check:</strong> The system also checks if the trailing team has a real scoring engine (non-3PT points per minute &gt; 1.3). If the trailing team's offense is broken — they can't score from paint, FT, or mid-range — then even if 3s regress, they have no engine to capitalize. Signal is downgraded to ⚠️ (weaker). <em>Regression only matters if the other team can take advantage of it.</em></p><div class="threshold">Trigger: 50%+ on 12+ att AND lead 42%+ from 3PT AND opponent 58%+ non-3PT AND lead 3-15 pts.<br>Weakened: If trailing team non-3PT PPM &lt; 1.3 (broken offense).</div></div>
-<div class="guide-card"><h3><span class="signal-badge badge-star">STAR</span> Star Coil</h3><p class="edge-label">Star is cold + game is close + supporting cast is holding = maximum edge</p><p>When a 25+ PPG star is at &lt;65% of expected pace AND the game is within 15 points during Q2-Q3.</p><p><strong>💪 Supporting Cast Analysis:</strong> The system compares the cast's output (team score minus star's points) directly to the opponent's total score — no season averages, pure live data. If the cast is within 8pts of the opponent, the team is competitive WITHOUT the star. When the star regresses upward, it's regression on top of an already-strong team. Also checks if the star's "missing points" exceed the cast gap — if so, regression alone flips the lead.</p><p><strong>4 tiers:</strong> 🔥 Cast Leading (cast ahead of opponent), 💪 Cast Close (within 8), ➖ Cast Behind (8-15), ⚠️ Cast Broken (&gt;15 behind). Also 🔒 Damage Locked if deficit is stable over 3+ min.</p><div class="threshold">Trigger: Star &lt;65% pace + margin &le;15 + Q2-Q3.<br>Tiers: Elite (cast gap ≥-8), Standard (-8 to -15), Weak (&lt;-15), Locked (deficit stable 3+min).</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-star">STAR</span> Star Coil</h3><p class="edge-label">Star is cold + game is close + supporting cast is holding = maximum edge</p><p>When a 21+ PPG star is at &lt;65% of expected pace AND the game is within 15 points during Q2-Q3.</p><p><strong>💪 Supporting Cast Analysis:</strong> The system compares the cast's output (team score minus star's points) directly to the opponent's total score — no season averages, pure live data. If the cast is within 8pts of the opponent, the team is competitive WITHOUT the star. When the star regresses upward, it's regression on top of an already-strong team. Also checks if the star's "missing points" exceed the cast gap — if so, regression alone flips the lead.</p><p><strong>4 tiers:</strong> 🔥 Cast Leading (cast ahead of opponent), 💪 Cast Close (within 8), ➖ Cast Behind (8-15), ⚠️ Cast Broken (&gt;15 behind). Also 🔒 Damage Locked if deficit is stable over 3+ min.</p><div class="threshold">Trigger: Star &lt;65% pace + margin &le;15 + Q2-Q3.<br>Tiers: Elite (cast gap ≥-8), Standard (-8 to -15), Weak (&lt;-15), Locked (deficit stable 3+min).</div></div>
 
 <div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">Both signals firing on the same game = strongest edge, most confidence</p><p>When 3PT Fragile AND Star Coil fire on the same game, the live odds are wrong from two independent angles. Each signal catches something different — together, the mispricing is larger.</p><div class="threshold">Trigger: Both 3PT Fragile + Star Coil on the same game.</div><p style="margin-top:8px;"><strong>Combined Boost:</strong> When two independent edges converge, each individual signal uses <em>relaxed</em> thresholds. Signals that wouldn't fire solo can still trigger a Combined Edge together:</p><ul style="font-size:12px;margin:4px 0 0 16px;line-height:1.6;"><li><strong>3PT Soft:</strong> 45%/10att (or 50%/8att), fragile ≥38%, margin 2-18pts, no engine check</li><li><strong>Star Soft:</strong> &lt;75% pace, Q1-Q3 (not just Q2-Q3), margin ≤18pts</li></ul><p style="font-size:12px;margin-top:4px;color:var(--text-muted);">These relaxed signals never fire individually — only when both converge on the same game.</p></div>
 

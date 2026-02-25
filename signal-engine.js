@@ -46,7 +46,7 @@ const CFG_NCAAB = {
   starPpgMin: 16,
   // Soft combined (loosened for NCAA)
   softHotCheck: (pn, an) => (pn >= 40 && an >= 7) || (pn >= 45 && an >= 5),
-  softFragilePct: 34, softMaxLd: 20, softMinScore: 12,
+  softFragilePct: 36, softMaxLd: 18, softMinScore: 12,
   softStarPace: 0.80, softStarMargin: 18, softStarWindow: (gMins) => gMins >= 4 && gMins <= 37,
   softCastAcceptWeak: true,
   homeCourtBoost: 0.5,
@@ -63,8 +63,8 @@ const CFG_NBA = {
   warmCheck: (pn, an) => (pn >= 45 && an >= 10),
   engineThreshold: 1.3, fragileMaxMargin: 15,
   coilMaxMargin: 15, coilWindow: (gMins, per) => per >= 2 && per <= 3,
-  starPpgMin: 23,
-  // Soft combined (NBA original — set in stone)
+  starPpgMin: 21,
+  // Soft combined (NBA original)
   softHotCheck: (pn, an) => (pn >= 45 && an >= 10) || (pn >= 50 && an >= 8),
   softFragilePct: 38, softMaxLd: 18, softMinScore: 15,
   softStarPace: 0.75, softStarMargin: 18, softStarWindow: (gMins, per) => per >= 1 && per <= 3,
@@ -314,7 +314,7 @@ async function buildStarDB(cfg) {
         const lResp = await fetch(lUrl);
         if (!lResp.ok) return [];
         const lData = await lResp.json();
-        const ptsCat = (lData.categories || []).find(c => c.name === 'points' || c.displayName === 'Points Per Game');
+        const ptsCat = (lData.categories || []).find(c => c.name === 'pointsPerGame' || c.name === 'points' || c.displayName === 'Points Per Game');
         if (!ptsCat) return [];
         const found = [];
         for (const leader of (ptsCat.leaders || []).slice(0, 3)) {
@@ -343,20 +343,21 @@ async function buildStarDB(cfg) {
   }
 }
 
-// NBA default stars (set in stone)
+// NBA default stars (21+ PPG — 2025-26 season)
 const NBA_STARS = [
-  {name:'Luka Doncic',team:'DAL',ppg:33.9},{name:'Giannis Antetokounmpo',team:'MIL',ppg:31.5},
-  {name:'Shai Gilgeous-Alexander',team:'OKC',ppg:31.4},{name:'Jayson Tatum',team:'BOS',ppg:27.0},
-  {name:'Kevin Durant',team:'PHX',ppg:27.2},{name:'Joel Embiid',team:'PHI',ppg:35.3},
-  {name:'Donovan Mitchell',team:'CLE',ppg:26.6},{name:'De\'Aaron Fox',team:'SAC',ppg:26.6},
-  {name:'Anthony Edwards',team:'MIN',ppg:25.9},{name:'LeBron James',team:'LAL',ppg:25.7},
-  {name:'Devin Booker',team:'PHX',ppg:27.1},{name:'Tyrese Haliburton',team:'IND',ppg:24.0},
-  {name:'Trae Young',team:'ATL',ppg:25.7},{name:'Jalen Brunson',team:'NYK',ppg:28.7},
-  {name:'Anthony Davis',team:'LAL',ppg:24.7},{name:'Karl-Anthony Towns',team:'NYK',ppg:24.9},
-  {name:'Kyrie Irving',team:'DAL',ppg:25.6},{name:'Damian Lillard',team:'MIL',ppg:24.3},
-  {name:'Stephen Curry',team:'GSW',ppg:26.4},{name:'Nikola Jokic',team:'DEN',ppg:26.4},
-  {name:'Zion Williamson',team:'NOP',ppg:23.0},{name:'Ja Morant',team:'MEM',ppg:25.1},
-  {name:'Paolo Banchero',team:'ORL',ppg:23.0},
+  {name:'Luka Doncic',team:'LAL',ppg:32.5},{name:'Shai Gilgeous-Alexander',team:'OKC',ppg:31.8},
+  {name:'Anthony Edwards',team:'MIN',ppg:29.6},{name:'Jaylen Brown',team:'BOS',ppg:29.2},
+  {name:'Tyrese Maxey',team:'PHI',ppg:29.1},{name:'Nikola Jokic',team:'DEN',ppg:28.8},
+  {name:'Donovan Mitchell',team:'CLE',ppg:28.5},{name:'Kawhi Leonard',team:'LAC',ppg:28.0},
+  {name:'Lauri Markkanen',team:'UTA',ppg:26.7},{name:'Jalen Brunson',team:'NYK',ppg:26.7},
+  {name:'Kevin Durant',team:'HOU',ppg:25.9},{name:'Jamal Murray',team:'DEN',ppg:25.5},
+  {name:'Cade Cunningham',team:'DET',ppg:25.3},{name:'Devin Booker',team:'PHX',ppg:24.7},
+  {name:'Michael Porter Jr.',team:'BKN',ppg:24.6},{name:'James Harden',team:'LAC',ppg:24.5},
+  {name:'Deni Avdija',team:'POR',ppg:24.4},{name:'Victor Wembanyama',team:'SAS',ppg:24.2},
+  {name:'Pascal Siakam',team:'IND',ppg:23.9},{name:'Keyonte George',team:'UTA',ppg:23.8},
+  {name:'Jalen Johnson',team:'ATL',ppg:23.0},{name:'Norman Powell',team:'MIA',ppg:22.9},
+  {name:'Trey Murphy III',team:'NOP',ppg:21.9},{name:'Julius Randle',team:'MIN',ppg:21.9},
+  {name:'Zion Williamson',team:'NOP',ppg:21.8},
 ];
 
 function getStars(cfg) { return cfg.mode === 'ncaab' ? starDBs.ncaab : NBA_STARS; }
