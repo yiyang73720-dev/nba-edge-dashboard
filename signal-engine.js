@@ -310,7 +310,7 @@ async function buildStarDB(cfg) {
     for (let i = 0; i < teams.length; i += 5) {
       const batch = teams.slice(i, i + 5);
       const results = await Promise.allSettled(batch.map(async (team) => {
-        const lUrl = `https://sports.core.api.espn.com/v2/sports/basketball/leagues/mens-college-basketball/seasons/2025/types/2/teams/${team.id}/leaders`;
+        const lUrl = `https://sports.core.api.espn.com/v2/sports/basketball/leagues/mens-college-basketball/seasons/2026/types/2/teams/${team.id}/leaders`;
         const lResp = await fetch(lUrl);
         if (!lResp.ok) return [];
         const lData = await lResp.json();

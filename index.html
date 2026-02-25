@@ -1199,7 +1199,7 @@ async function buildNcaaStarDB(forceRefresh) {
           const d = await resp.json();
           const found = [];
           for (const cat of (d.categories || [])) {
-            if (cat.name === 'pointsPerGame') {
+            if (cat.name === 'pointsPerGame' || cat.name === 'points' || cat.displayName === 'Points Per Game') {
               for (const l of (cat.leaders || [])) {
                 const ppg = l.value || 0;
                 if (ppg >= 16) {
@@ -2106,11 +2106,11 @@ async function fetchESPNScoreboard() {
         } else if (a3Check.isHot && aFragileData && awayLead > _fragileMaxMargin) {
           // Hot + fragile but blowout — too large a margin for reliable fade
           signals.push({type:'3ptFragile', text:`${_aD} 3PT fragile but lead too large (${awayLead}pts) — blowout territory.`, level:1});
-          thesis.criteria['3ptfragile_away'] = {met:true, strong:false, label:`${_aD} 3PT Fragile (Blowout)`, detail:`${_aD} has a fragile 3PT lead (${aFragileData.pct3.toFixed(0)}% from 3PT) but the ${awayLead}pt margin is too large. Signal needs 3-15pt lead to fire. Even if 3PT% regresses, blowout margin provides too much cushion.`, value:`${awayLead}pt lead — too wide`, warn:true};
+          thesis.criteria['3ptfragile_away'] = {met:true, strong:false, label:`${_aD} 3PT Fragile (Blowout)`, detail:`${_aD} has a fragile 3PT lead (${aFragileData.pct3.toFixed(0)}% from 3PT) but the ${awayLead}pt margin is too large. Signal needs 3-${_fragileMaxMargin}pt lead to fire. Even if 3PT% regresses, blowout margin provides too much cushion.`, value:`${awayLead}pt lead — too wide`, warn:true};
         } else if (a3Check.isHot && aFragileData && awayLead < 3) {
           // Hot + fragile but lead too small — not enough edge
           signals.push({type:'3ptFragile', text:`${_aD} shooting hot (${a3Check.pn.toFixed(0)}%) + fragile lead but only ${awayLead}pt lead — needs 3+ pts.`, level:1});
-          thesis.criteria['3ptfragile_away'] = {met:true, strong:false, label:`${_aD} 3PT Fragile (Tight)`, detail:`${_aD} has both conditions but only a ${awayLead}pt lead. Signal needs 3-15pt margin to ensure meaningful edge from 3PT regression.`, value:`${awayLead}pt lead — too tight`, warn:true};
+          thesis.criteria['3ptfragile_away'] = {met:true, strong:false, label:`${_aD} 3PT Fragile (Tight)`, detail:`${_aD} has both conditions but only a ${awayLead}pt lead. Signal needs 3-${_fragileMaxMargin}pt margin to ensure meaningful edge from 3PT regression.`, value:`${awayLead}pt lead — too tight`, warn:true};
         } else if (a3Check.isHot && !aFragileData) {
           // Hot shooting but lead not fragile enough — informational only
           signals.push({type:'3ptFragile', text:`${_aD} shooting hot: ${a3Check.pn.toFixed(0)}% from 3 (${a3Check.mn}/${a3Check.an}) — but lead not fragile enough for full signal.`, level:1});
@@ -2142,10 +2142,10 @@ async function fetchESPNScoreboard() {
           thesis.criteria['3ptfragile_home'] = {met:true, strong:!aNoEngine, label:`${_hD} 3PT Fragile Lead${aNoEngine?' ⚠️':''}`, detail:`<strong>3PT Shooting:</strong> ${_hD} is shooting ${h3Check.pn.toFixed(0)}% from 3 on ${h3Check.an} attempts (${getLeagueName()} avg: ${getLeague3PtAvg()}%).<br><strong>Lead Composition:</strong> ${hFragileData.pct3.toFixed(0)}% of ${_hD}'s scoring comes from 3PT (threshold: ${getFragile3PtThreshold()}%).<br><strong>Score Margin:</strong> ${homeLead} pts — in the 3-15pt sweet spot where regression flips the game.<br><strong>Opponent Durability:</strong> ${_aD} has ${hFragileData.oppPaintPct.toFixed(0)}% non-3PT scoring — paint-heavy and sustainable.${hEngineDetail}<br><strong>Signal:</strong> ${aNoEngine ? 'Hot 3PT + fragile lead detected, but trailing team\'s offense is too weak to exploit regression. Proceed with caution.' : 'Hot 3PT + fragile lead + competitive margin. When shooting cools, lead evaporates.'}`, value:`${h3Check.pn.toFixed(0)}% 3PT + ${hFragileData.pct3.toFixed(0)}% fragile | Lead: ${homeLead}${aNoEngine?' ⚠️':''}`};
         } else if (h3Check.isHot && hFragileData && homeLead > _fragileMaxMargin) {
           signals.push({type:'3ptFragile', text:`${_hD} 3PT fragile but lead too large (${homeLead}pts) — blowout territory.`, level:1});
-          thesis.criteria['3ptfragile_home'] = {met:true, strong:false, label:`${_hD} 3PT Fragile (Blowout)`, detail:`${_hD} has a fragile 3PT lead (${hFragileData.pct3.toFixed(0)}% from 3PT) but the ${homeLead}pt margin is too large. Signal needs 3-15pt lead to fire. Even if 3PT% regresses, blowout margin provides too much cushion.`, value:`${homeLead}pt lead — too wide`, warn:true};
+          thesis.criteria['3ptfragile_home'] = {met:true, strong:false, label:`${_hD} 3PT Fragile (Blowout)`, detail:`${_hD} has a fragile 3PT lead (${hFragileData.pct3.toFixed(0)}% from 3PT) but the ${homeLead}pt margin is too large. Signal needs 3-${_fragileMaxMargin}pt lead to fire. Even if 3PT% regresses, blowout margin provides too much cushion.`, value:`${homeLead}pt lead — too wide`, warn:true};
         } else if (h3Check.isHot && hFragileData && homeLead < 3) {
           signals.push({type:'3ptFragile', text:`${_hD} shooting hot (${h3Check.pn.toFixed(0)}%) + fragile lead but only ${homeLead}pt lead — needs 3+ pts.`, level:1});
-          thesis.criteria['3ptfragile_home'] = {met:true, strong:false, label:`${_hD} 3PT Fragile (Tight)`, detail:`${_hD} has both conditions but only a ${homeLead}pt lead. Signal needs 3-15pt margin to ensure meaningful edge from 3PT regression.`, value:`${homeLead}pt lead — too tight`, warn:true};
+          thesis.criteria['3ptfragile_home'] = {met:true, strong:false, label:`${_hD} 3PT Fragile (Tight)`, detail:`${_hD} has both conditions but only a ${homeLead}pt lead. Signal needs 3-${_fragileMaxMargin}pt margin to ensure meaningful edge from 3PT regression.`, value:`${homeLead}pt lead — too tight`, warn:true};
         } else if (h3Check.isHot && !hFragileData) {
           signals.push({type:'3ptFragile', text:`${_hD} shooting hot: ${h3Check.pn.toFixed(0)}% from 3 (${h3Check.mn}/${h3Check.an}) — but lead not fragile enough for full signal.`, level:1});
           thesis.criteria['3ptfragile_home'] = {met:true, strong:false, label:`${_hD} 3PT Hot (no fragile lead)`, detail:`${_hD} is shooting ${h3Check.pn.toFixed(0)}% from 3 on ${h3Check.an} attempts — elevated, but the lead composition isn't fragile enough. Monitoring only.`, value:`${h3Check.pn.toFixed(0)}% 3PT`, warn:true};
@@ -2905,7 +2905,7 @@ function updateSignalGuide(mode) {
     : 'A team is <strong>way too hot from 3</strong> (50%+) and their entire lead depends on it. That shooting will cool off → lead will shrink.';
   const starDesc = ncaa
     ? 'A lead scorer (16+ PPG) is cold (&lt;65% pace) AND the game is close (within 12pts) during minutes 8-35. <strong>Compressed spring</strong> — breakout incoming. NCAA teams are more star-dependent.'
-    : 'A star player (25+ PPG) is cold (&lt;60% pace) AND the game is close (within 15pts) in Q2-Q3. <strong>Compressed spring</strong> — breakout incoming.';
+    : 'A star player (23+ PPG) is cold (&lt;65% pace) AND the game is close (within 15pts) in Q2-Q3. <strong>Compressed spring</strong> — breakout incoming.';
   // Update quick reference cells
   const cells = document.querySelectorAll('#guide-fragile-desc');
   if (cells.length) cells[0].innerHTML = fragileDesc;
@@ -2921,7 +2921,7 @@ function updateSignalGuide(mode) {
   const fragileThresh = ncaa ? '40%' : '42%';
   const marginRange = ncaa ? '3-12' : '3-15';
   const enginePPM = ncaa ? '1.1' : '1.3';
-  const starPPG = ncaa ? '16+' : '25+';
+  const starPPG = ncaa ? '16+' : '23+';
   const coilMargin = ncaa ? '12' : '15';
   const coilWindow = ncaa ? 'minutes 8-35 (first half through mid second half)' : 'Q2-Q3';
   const gameMins = ncaa ? '40 min (2×20 halves)' : '48 min (4×12 quarters)';
