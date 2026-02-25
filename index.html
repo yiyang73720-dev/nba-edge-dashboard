@@ -4633,7 +4633,7 @@ try {
     return histURL;
   }
 
-  // Fetch 24h of historical odds (1 per hour)
+  // Fetch 12h of historical odds (every hour)
   async function fetchOddsHistory(eventId, awayName, homeName) {
     var cacheKey = OH_CACHE_KEY + '_' + eventId;
     var cached = null;
@@ -4653,12 +4653,11 @@ try {
 
     var points = [];
     var now = new Date();
-    // Fetch every 3 hours for last 24h = 8 API calls (saves credits)
-    var intervals = [0, 3, 6, 9, 12, 15, 18, 21, 24];
-    
+    // Fetch every hour for last 12h = 12 API calls
+    var intervals = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
     for (var i = intervals.length - 1; i >= 0; i--) {
       var hrs = intervals[i];
-      if (hrs === 0) continue; // skip current (we already have live)
       var d = new Date(now.getTime() - hrs * 3600000);
       var iso = d.toISOString().replace(/\.\d+Z/, 'Z');
       var url = buildHistoricalURL(iso);
@@ -4803,7 +4802,7 @@ try {
     var existing = card.querySelector('.odds-history-panel');
     if (existing) {
       existing.remove();
-      btn.textContent = '24h Odds';
+      btn.textContent = '12h Odds';
       btn.style.background = '#f0f4ff';
       return;
     }
@@ -4816,7 +4815,7 @@ try {
     var panel = document.createElement('div');
     panel.className = 'odds-history-panel';
     panel.style.cssText = 'margin-top:8px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);';
-    panel.innerHTML = '<div style="padding:10px 14px;background:linear-gradient(135deg,#f8fafc,#f0f4ff);border-bottom:1px solid #e5e7eb;font-size:12px;font-weight:700;color:#1e3a5f;display:flex;align-items:center;gap:6px;">ML Movement (24h) <span style="font-size:10px;color:#9ca3af;font-weight:500;">via Historical API</span></div>' +
+    panel.innerHTML = '<div style="padding:10px 14px;background:linear-gradient(135deg,#f8fafc,#f0f4ff);border-bottom:1px solid #e5e7eb;font-size:12px;font-weight:700;color:#1e3a5f;display:flex;align-items:center;gap:6px;">ML Movement (12h, hourly) <span style="font-size:10px;color:#9ca3af;font-weight:500;">via Historical API</span></div>' +
       buildOddsHistoryHTML(points, awayName, homeName);
     card.appendChild(panel);
     btn.textContent = 'Hide';
@@ -4849,8 +4848,8 @@ try {
 
       var btn = document.createElement('button');
       btn.className = 'odds-hist-btn';
-      btn.textContent = '24h Odds';
-      btn.style.cssText = 'margin:6px 8px;padding:5px 14px;font-size:11px;font-weight:700;border:1px solid #1e3a5f;color:#1e3a5f;background:#f0f4ff;border-radius:20px;cursor:pointer;transition:all 0.2s;';
+      btn.textContent = '12h Odds';
+      btn.style.cssText = 'display:block;margin:8px auto;padding:5px 14px;font-size:11px;font-weight:700;border:1px solid #1e3a5f;color:#1e3a5f;background:#f0f4ff;border-radius:20px;cursor:pointer;transition:all 0.2s;';
       btn.onmouseover = function() { this.style.background='#dbeafe'; };
       btn.onmouseout = function() { if(this.textContent!=='Hide') this.style.background='#f0f4ff'; };
       btn.onclick = function() { toggleOddsHistory(this, matchKey, awayName, homeName); };
