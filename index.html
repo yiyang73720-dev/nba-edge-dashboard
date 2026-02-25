@@ -373,6 +373,11 @@
     .team-name img { flex-shrink: 0; }
     .watch-link { display: inline-flex; align-items: center; gap: 3px; font-size: 9px; font-weight: 600; color: var(--accent); background: var(--accent-light); padding: 2px 7px; border-radius: 3px; text-decoration: none; letter-spacing: 0.3px; transition: opacity 0.15s; }
     .watch-link:hover { opacity: 0.7; }
+    .tp-wrap { position: relative; }
+    .tp-tooltip { display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; box-shadow: 0 8px 24px rgba(0,0,0,.12); z-index: 100; min-width: 180px; white-space: nowrap; pointer-events: none; }
+    .tp-tooltip td { padding: 1px 8px 1px 0; }
+    .tp-tooltip td:last-child { text-align: right; font-weight: 600; color: var(--text-primary); }
+    .tp-wrap:hover .tp-tooltip { display: block; }
     .team-score { font-size: 28px; font-weight: 900; color: var(--text-primary); margin-top: 4px; letter-spacing: -1px; line-height: 1; }
     .team-record { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
     .team-3pt-avg { font-size: 10px; color: var(--text-muted); }
@@ -1683,33 +1688,43 @@ function teamProfileHTML(abbr, homeAway) {
   const diff = p.diff != null ? (p.diff > 0 ? '+' + p.diff.toFixed(1) : p.diff.toFixed(1)) : '';
   const diffColor = p.diff > 0 ? '#0d9488' : p.diff < 0 ? 'var(--red)' : 'var(--text-muted)';
   const streakStr = p.streak != null ? (p.streak > 0 ? 'W' + Math.round(p.streak) : 'L' + Math.abs(Math.round(p.streak))) : '';
-  const streakColor = p.streak > 0 ? '#0d9488' : 'var(--red)';
-  const ctxRec = homeAway === 'home' ? (p.homeRec ? 'H:' + p.homeRec : '') : (p.roadRec ? 'R:' + p.roadRec : '');
+  const streakColor = p.streak > 0 ? '#0d9488' : 'var(--text-muted)';
   const seedStr = p.seed != null ? '#' + Math.round(p.seed) : '';
-  // Compact 2-line profile: line 1 = seed + context rec + streak + PPG diff
-  // Line 2 = OFF stats (FG% 3P% FT%) | DEF stats (Reb Stl Blk)
-  const line1Parts = [];
-  if (seedStr) line1Parts.push(`<b style="color:var(--accent);">${seedStr}</b>`);
-  if (ctxRec) line1Parts.push(ctxRec);
-  if (streakStr) line1Parts.push(`<b style="color:${streakColor};">${streakStr}</b>`);
-  if (p.ppg != null) line1Parts.push(`${p.ppg.toFixed(1)}ppg <b style="color:${diffColor};">${diff}</b>`);
+  const ctxRec = homeAway === 'home' ? (p.homeRec || '') : (p.roadRec || '');
 
-  const offParts = [];
-  if (p.fgPct != null) offParts.push(`FG ${p.fgPct}%`);
-  if (p.threePct != null) offParts.push(`3P ${p.threePct}%`);
-  if (p.ftPct != null) offParts.push(`FT ${p.ftPct}%`);
-  if (p.avgAst != null && p.avgTO != null) offParts.push(`A/T ${p.astToRatio || (p.avgAst/p.avgTO).toFixed(1)}`);
+  // Tooltip content — full stats table
+  const rows = [];
+  if (p.standing) rows.push(`<tr><td colspan="2" style="font-weight:700;color:var(--accent);padding-bottom:4px;">${p.standing}</td></tr>`);
+  rows.push(`<tr><td colspan="2" style="font-weight:700;border-bottom:1px solid var(--border);padding-bottom:3px;margin-bottom:3px;">OFFENSE</td></tr>`);
+  if (p.avgPts != null) rows.push(`<tr><td>PPG</td><td>${p.avgPts}</td></tr>`);
+  if (p.fgPct != null) rows.push(`<tr><td>FG%</td><td>${p.fgPct}%</td></tr>`);
+  if (p.threePct != null) rows.push(`<tr><td>3P%</td><td>${p.threePct}% <span style="color:#9ca3af;">(${p.avg3PM?.toFixed(1)||'-'}/${p.avg3PA?.toFixed(1)||'-'})</span></td></tr>`);
+  if (p.ftPct != null) rows.push(`<tr><td>FT%</td><td>${p.ftPct}%</td></tr>`);
+  if (p.avgAst != null) rows.push(`<tr><td>AST</td><td>${p.avgAst}</td></tr>`);
+  if (p.avgTO != null) rows.push(`<tr><td>TO</td><td>${p.avgTO}</td></tr>`);
+  if (p.astToRatio != null) rows.push(`<tr><td>A/T</td><td>${p.astToRatio}</td></tr>`);
+  rows.push(`<tr><td colspan="2" style="font-weight:700;border-bottom:1px solid var(--border);padding:3px 0 3px;">DEFENSE</td></tr>`);
+  if (p.oppg != null) rows.push(`<tr><td>Opp PPG</td><td>${p.oppg.toFixed(1)}</td></tr>`);
+  if (p.avgReb != null) rows.push(`<tr><td>REB</td><td>${p.avgReb}</td></tr>`);
+  if (p.avgStl != null) rows.push(`<tr><td>STL</td><td>${p.avgStl}</td></tr>`);
+  if (p.avgBlk != null) rows.push(`<tr><td>BLK</td><td>${p.avgBlk}</td></tr>`);
+  if (p.avgOReb != null) rows.push(`<tr><td>OREB</td><td>${p.avgOReb}</td></tr>`);
+  rows.push(`<tr><td colspan="2" style="font-weight:700;border-bottom:1px solid var(--border);padding:3px 0 3px;">RECORD</td></tr>`);
+  if (p.homeRec) rows.push(`<tr><td>Home</td><td>${p.homeRec}</td></tr>`);
+  if (p.roadRec) rows.push(`<tr><td>Road</td><td>${p.roadRec}</td></tr>`);
+  if (p.diff != null) rows.push(`<tr><td>Diff</td><td style="font-weight:700;color:${diffColor};">${diff}</td></tr>`);
 
-  const defParts = [];
-  if (p.avgReb != null) defParts.push(`Reb ${p.avgReb}`);
-  if (p.avgStl != null) defParts.push(`Stl ${p.avgStl}`);
-  if (p.avgBlk != null) defParts.push(`Blk ${p.avgBlk}`);
-  if (p.oppg != null) defParts.push(`Opp ${p.oppg.toFixed(1)}`);
+  const tooltip = `<table style="font-size:10px;width:100%;border-collapse:collapse;">${rows.map(r => r).join('')}</table>`;
 
-  return `<div style="font-size:8.5px;color:var(--text-muted);margin-top:2px;line-height:1.4;max-width:140px;margin-left:auto;margin-right:auto;">
-    <div>${line1Parts.join(' ')}</div>
-    <div style="color:#6b7280;">${offParts.join(' | ')}</div>
-    <div style="color:#9ca3af;">${defParts.join(' | ')}</div>
+  // Inline: just seed + streak (one clean line)
+  const chips = [];
+  if (seedStr) chips.push(`<span style="font-weight:700;color:var(--accent);">${seedStr}</span>`);
+  if (ctxRec) chips.push(`<span>${homeAway === 'home' ? 'H' : 'R'}:${ctxRec}</span>`);
+  if (streakStr) chips.push(`<span style="font-weight:700;color:${streakColor};">${streakStr}</span>`);
+
+  return `<div class="tp-wrap" style="font-size:9px;color:var(--text-muted);margin-top:1px;position:relative;cursor:pointer;">
+    <span class="tp-inline">${chips.join(' ')}</span>
+    <div class="tp-tooltip">${tooltip}</div>
   </div>`;
 }
 
