@@ -671,7 +671,7 @@ function analyzeSupportingCast(starPts, teamScore, opponentScore, starPPG, elaps
   };
 }
 
-const currentMode='nba';
+let currentMode='nba';
 
 // NCAA Star Database — built PRE-GAME from ESPN team leaders API (real season PPG)
 let ncaaStarCache = JSON.parse(localStorage.getItem('ncaaStarCache') || '[]');
