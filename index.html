@@ -373,11 +373,20 @@
     .team-name img { flex-shrink: 0; }
     .watch-link { display: inline-flex; align-items: center; gap: 3px; font-size: 9px; font-weight: 600; color: var(--accent); background: var(--accent-light); padding: 2px 7px; border-radius: 3px; text-decoration: none; letter-spacing: 0.3px; transition: opacity 0.15s; }
     .watch-link:hover { opacity: 0.7; }
-    .tp-wrap { position: relative; }
-    .tp-tooltip { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; box-shadow: 0 8px 24px rgba(0,0,0,.15); z-index: 200; min-width: 190px; white-space: nowrap; }
-    .tp-tooltip td { padding: 1px 8px 1px 0; }
-    .tp-tooltip td:last-child { text-align: right; font-weight: 600; color: var(--text-primary); }
-    .tp-wrap:hover .tp-tooltip { display: block; }
+    .tp-inline { cursor: pointer; }
+    .tp-inline:hover { text-decoration: underline; }
+    .tp-modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.35); z-index: 1000; justify-content: center; align-items: center; }
+    .tp-modal-overlay.active { display: flex; }
+    .tp-modal { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; box-shadow: 0 12px 40px rgba(0,0,0,.2); min-width: 280px; max-width: 340px; animation: slideUp 0.2s ease; }
+    .tp-modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .tp-modal-header h3 { font-size: 16px; font-weight: 800; margin: 0; display: flex; align-items: center; gap: 8px; }
+    .tp-modal-close { background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-muted); padding: 4px 8px; border-radius: 4px; }
+    .tp-modal-close:hover { background: var(--bg); }
+    .tp-section { margin-bottom: 10px; }
+    .tp-section-title { font-size: 9px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; padding-bottom: 4px; border-bottom: 1px solid var(--border-light); margin-bottom: 4px; }
+    .tp-row { display: flex; justify-content: space-between; padding: 2px 0; font-size: 12px; }
+    .tp-row .tp-label { color: var(--text-muted); }
+    .tp-row .tp-val { font-weight: 700; color: var(--text-primary); }
     .team-score { font-size: 28px; font-weight: 900; color: var(--text-primary); margin-top: 4px; letter-spacing: -1px; line-height: 1; }
     .team-record { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
     .team-3pt-avg { font-size: 10px; color: var(--text-muted); }
@@ -1682,50 +1691,85 @@ function parseTeamProfile(team, statsData) {
   };
 }
 
-function teamProfileHTML(abbr, homeAway) {
+function teamProfileHTML(abbr, homeAway, logoUrl) {
   const p = teamProfileCache[abbr];
   if (!p) return '';
-  const diff = p.diff != null ? (p.diff > 0 ? '+' + p.diff.toFixed(1) : p.diff.toFixed(1)) : '';
-  const diffColor = p.diff > 0 ? '#0d9488' : p.diff < 0 ? 'var(--red)' : 'var(--text-muted)';
   const streakStr = p.streak != null ? (p.streak > 0 ? 'W' + Math.round(p.streak) : 'L' + Math.abs(Math.round(p.streak))) : '';
-  const streakColor = p.streak > 0 ? '#0d9488' : 'var(--text-muted)';
+  const streakColor = p.streak > 0 ? '#0d9488' : 'var(--red)';
   const seedStr = p.seed != null ? '#' + Math.round(p.seed) : '';
   const ctxRec = homeAway === 'home' ? (p.homeRec || '') : (p.roadRec || '');
 
-  // Tooltip content — full stats table
-  const rows = [];
-  if (p.standing) rows.push(`<tr><td colspan="2" style="font-weight:700;color:var(--accent);padding-bottom:4px;">${p.standing}</td></tr>`);
-  rows.push(`<tr><td colspan="2" style="font-weight:700;border-bottom:1px solid var(--border);padding-bottom:3px;margin-bottom:3px;">OFFENSE</td></tr>`);
-  if (p.avgPts != null) rows.push(`<tr><td>PPG</td><td>${p.avgPts}</td></tr>`);
-  if (p.fgPct != null) rows.push(`<tr><td>FG%</td><td>${p.fgPct}%</td></tr>`);
-  if (p.threePct != null) rows.push(`<tr><td>3P%</td><td>${p.threePct}% <span style="color:#9ca3af;">(${p.avg3PM?.toFixed(1)||'-'}/${p.avg3PA?.toFixed(1)||'-'})</span></td></tr>`);
-  if (p.ftPct != null) rows.push(`<tr><td>FT%</td><td>${p.ftPct}%</td></tr>`);
-  if (p.avgAst != null) rows.push(`<tr><td>AST</td><td>${p.avgAst}</td></tr>`);
-  if (p.avgTO != null) rows.push(`<tr><td>TO</td><td>${p.avgTO}</td></tr>`);
-  if (p.astToRatio != null) rows.push(`<tr><td>A/T</td><td>${p.astToRatio}</td></tr>`);
-  rows.push(`<tr><td colspan="2" style="font-weight:700;border-bottom:1px solid var(--border);padding:3px 0 3px;">DEFENSE</td></tr>`);
-  if (p.oppg != null) rows.push(`<tr><td>Opp PPG</td><td>${p.oppg.toFixed(1)}</td></tr>`);
-  if (p.avgReb != null) rows.push(`<tr><td>REB</td><td>${p.avgReb}</td></tr>`);
-  if (p.avgStl != null) rows.push(`<tr><td>STL</td><td>${p.avgStl}</td></tr>`);
-  if (p.avgBlk != null) rows.push(`<tr><td>BLK</td><td>${p.avgBlk}</td></tr>`);
-  if (p.avgOReb != null) rows.push(`<tr><td>OREB</td><td>${p.avgOReb}</td></tr>`);
-  rows.push(`<tr><td colspan="2" style="font-weight:700;border-bottom:1px solid var(--border);padding:3px 0 3px;">RECORD</td></tr>`);
-  if (p.homeRec) rows.push(`<tr><td>Home</td><td>${p.homeRec}</td></tr>`);
-  if (p.roadRec) rows.push(`<tr><td>Road</td><td>${p.roadRec}</td></tr>`);
-  if (p.diff != null) rows.push(`<tr><td>Diff</td><td style="font-weight:700;color:${diffColor};">${diff}</td></tr>`);
-
-  const tooltip = `<table style="font-size:10px;width:100%;border-collapse:collapse;">${rows.map(r => r).join('')}</table>`;
-
-  // Inline: just seed + streak (one clean line)
   const chips = [];
   if (seedStr) chips.push(`<span style="font-weight:700;color:var(--accent);">${seedStr}</span>`);
   if (ctxRec) chips.push(`<span>${homeAway === 'home' ? 'H' : 'R'}:${ctxRec}</span>`);
   if (streakStr) chips.push(`<span style="font-weight:700;color:${streakColor};">${streakStr}</span>`);
 
-  return `<div class="tp-wrap" style="font-size:9px;color:var(--text-muted);margin-top:1px;position:relative;cursor:pointer;">
-    <span class="tp-inline">${chips.join(' ')}</span>
-    <div class="tp-tooltip">${tooltip}</div>
+  return `<div style="font-size:9px;color:var(--text-muted);margin-top:1px;">
+    <span class="tp-inline" onclick="openTeamProfile('${abbr}','${homeAway}','${(logoUrl||'').replace(/'/g,'')}')">${chips.join(' ')}</span>
   </div>`;
+}
+
+function openTeamProfile(abbr, homeAway, logoUrl) {
+  const p = teamProfileCache[abbr];
+  if (!p) return;
+  const diff = p.diff != null ? (p.diff > 0 ? '+' + p.diff.toFixed(1) : p.diff.toFixed(1)) : '';
+  const diffColor = p.diff > 0 ? '#0d9488' : p.diff < 0 ? 'var(--red)' : 'var(--text-muted)';
+
+  const row = (label, val, color) => `<div class="tp-row"><span class="tp-label">${label}</span><span class="tp-val"${color ? ' style="color:'+color+'"' : ''}>${val}</span></div>`;
+
+  let html = `<div class="tp-modal">
+    <div class="tp-modal-header">
+      <h3>${logoUrl ? '<img src="'+logoUrl+'" style="width:24px;height:24px;object-fit:contain;">' : ''}${abbr}</h3>
+      <button class="tp-modal-close" onclick="this.closest('.tp-modal-overlay').classList.remove('active')">&times;</button>
+    </div>`;
+
+  if (p.standing) html += `<div style="font-size:11px;color:var(--accent);font-weight:600;margin-bottom:8px;">${p.standing}</div>`;
+
+  // Record
+  html += `<div class="tp-section"><div class="tp-section-title">Record</div>`;
+  if (p.homeRec) html += row('Home', p.homeRec);
+  if (p.roadRec) html += row('Road', p.roadRec);
+  if (p.diff != null) html += row('Point Diff', diff, diffColor);
+  html += `</div>`;
+
+  // Offense
+  html += `<div class="tp-section"><div class="tp-section-title">Offense</div>`;
+  if (p.avgPts != null) html += row('PPG', p.avgPts);
+  if (p.fgPct != null) html += row('FG%', p.fgPct + '%');
+  if (p.threePct != null) html += row('3PT%', p.threePct + '%' + (p.avg3PM != null ? ' (' + p.avg3PM.toFixed(1) + '/' + p.avg3PA.toFixed(1) + ')' : ''));
+  if (p.ftPct != null) html += row('FT%', p.ftPct + '%');
+  if (p.avgAst != null) html += row('Assists', p.avgAst);
+  if (p.avgTO != null) html += row('Turnovers', p.avgTO);
+  if (p.astToRatio != null) html += row('AST/TO', p.astToRatio);
+  html += `</div>`;
+
+  // Defense
+  html += `<div class="tp-section"><div class="tp-section-title">Defense</div>`;
+  if (p.oppg != null) html += row('Opp PPG', p.oppg.toFixed(1));
+  if (p.avgReb != null) html += row('Rebounds', p.avgReb);
+  if (p.avgOReb != null) html += row('Off Reb', p.avgOReb);
+  if (p.avgDReb != null) html += row('Def Reb', p.avgDReb);
+  if (p.avgStl != null) html += row('Steals', p.avgStl);
+  if (p.avgBlk != null) html += row('Blocks', p.avgBlk);
+  html += `</div>`;
+
+  // General
+  html += `<div class="tp-section"><div class="tp-section-title">General</div>`;
+  if (p.avgFouls != null) html += row('Fouls/Game', p.avgFouls);
+  if (p.avgReb != null) html += row('Total Reb', p.avgReb);
+  html += `</div></div>`;
+
+  // Create or reuse overlay
+  let overlay = document.getElementById('tp-modal-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'tp-modal-overlay';
+    overlay.className = 'tp-modal-overlay';
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.classList.remove('active'); });
+    document.body.appendChild(overlay);
+  }
+  overlay.innerHTML = html;
+  overlay.classList.add('active');
 }
 
 // Kill browser notifications permanently — we use in-app toasts only
@@ -2267,7 +2311,7 @@ async function fetchESPNScoreboard() {
               <div class="team-block">
                 <div class="team-name">${teamLogoImg(aLogo, 20)}${teamDisplayShort(aA, aFull)}</div>
                 <div class="team-record">${aRec}</div>
-                ${teamProfileHTML(aA, 'away')}
+                ${teamProfileHTML(aA, 'away', aLogo)}
                 <div class="team-score" style="color:var(--text-muted);">-</div>
               </div>
               <div class="vs-block">
@@ -2276,7 +2320,7 @@ async function fetchESPNScoreboard() {
               <div class="team-block">
                 <div class="team-name">${teamLogoImg(hLogo, 20)}${teamDisplayShort(hA, hFull)}</div>
                 <div class="team-record">${hRec}</div>
-                ${teamProfileHTML(hA, 'home')}
+                ${teamProfileHTML(hA, 'home', hLogo)}
                 <div class="team-score" style="color:var(--text-muted);">-</div>
               </div>
             </div>
@@ -2304,7 +2348,7 @@ async function fetchESPNScoreboard() {
               <div class="team-block">
                 <div class="team-name" ${winner==='away'?'style="color:var(--accent);font-weight:900;"':''}>${teamLogoImg(aLogo, 20)}${teamDisplayShort(aA, aFull)}</div>
                 <div class="team-record">${aRec}</div>
-                ${teamProfileHTML(aA, 'away')}
+                ${teamProfileHTML(aA, 'away', aLogo)}
                 <div class="team-score" ${winner==='away'?'style="color:var(--accent);"':'style="color:var(--text-muted);"'}>${aS}</div>
               </div>
               <div class="vs-block">
@@ -2313,7 +2357,7 @@ async function fetchESPNScoreboard() {
               <div class="team-block">
                 <div class="team-name" ${winner==='home'?'style="color:var(--accent);font-weight:900;"':''}>${teamLogoImg(hLogo, 20)}${teamDisplayShort(hA, hFull)}</div>
                 <div class="team-record">${hRec}</div>
-                ${teamProfileHTML(hA, 'home')}
+                ${teamProfileHTML(hA, 'home', hLogo)}
                 <div class="team-score" ${winner==='home'?'style="color:var(--accent);"':'style="color:var(--text-muted);"'}>${hS}</div>
               </div>
             </div>
@@ -2946,7 +2990,7 @@ async function fetchESPNScoreboard() {
             <div class="team-block">
               <div class="team-name">${teamLogoImg(aLogo, 20)}${teamDisplayShort(aA, aFull)}</div>
                             <div class="team-record">${aRec}</div>
-              ${teamProfileHTML(aA, 'away')}
+              ${teamProfileHTML(aA, 'away', aLogo)}
               <div class="team-score">${isLive?aS:'-'}</div>
             </div>
             <div class="vs-block">
@@ -2956,7 +3000,7 @@ async function fetchESPNScoreboard() {
             <div class="team-block">
               <div class="team-name">${teamLogoImg(hLogo, 20)}${teamDisplayShort(hA, hFull)}</div>
                             <div class="team-record">${hRec}</div>
-              ${teamProfileHTML(hA, 'home')}
+              ${teamProfileHTML(hA, 'home', hLogo)}
               <div class="team-score">${isLive?hS:'-'}</div>
             </div>
           </div>
