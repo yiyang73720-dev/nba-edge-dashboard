@@ -1632,15 +1632,144 @@ async function fetchESPNScoreboard() {
         // COMBINED - 2 independent signals on same game = combined edge
         const has3ptFragile=signals.some(s=>s.type==='3ptFragile'&&s.level===2);
         const hasStar=signals.some(s=>s.type==='star'&&s.level===2);
-        const activeSignals = [has3ptFragile, hasStar].filter(Boolean).length;
-        if (activeSignals >= 2) { signalLevel=2; sigCombined++; }
-        else if (activeSignals === 1) signalLevel=1;
+        let activeSignals = [has3ptFragile, hasStar].filter(Boolean).length;
+        if (activeSignals >= 2) { sigCombined++; }
+
+        // ===== RELAXED COMBINED CHECK =====
+        // When two independent edges converge, each individual signal doesn't need to be as strict.
+        // "Soft" thresholds only fire as a COMBINED signal — never individually.
+        // 3PT Soft: 45%/10att (or 50%/8att), fragile ≥38%, margin 2-18pts, no engine check required
+        // Star Soft: <75% pace, Q1-Q3, margin ≤18pts
+        let soft3ptAway = false, soft3ptHome = false, softStarAny = false;
+        let soft3ptAwayDetail = '', soft3ptHomeDetail = '', softStarDetail = '';
+        let softStarCoilTeams = {};
+
+        if (!has3ptFragile || !hasStar) {
+          // --- Soft 3PT Fragile (only evaluate if strict didn't fire) ---
+          const SOFT_FRAGILE_PCT = 38;
+          const softHot = (chk) => (chk.pn >= 45 && chk.an >= 10) || (chk.pn >= 50 && chk.an >= 8);
+
+          if (!has3ptFragile) {
+            // Away soft 3PT
+            const awayLd = aS - hS;
+            if (softHot(a3Check) && awayLd >= 2 && awayLd <= 18 && aS >= 15) {
+              const aDurSoft = analyzeScoringDurability(aA, aS, a3M, hS);
+              if (aDurSoft.pct3 >= SOFT_FRAGILE_PCT) {
+                soft3ptAway = true;
+                soft3ptAwayDetail = `${_aD} soft 3PT Fragile: ${a3Check.pn.toFixed(0)}% on ${a3Check.an} att, ${aDurSoft.pct3.toFixed(0)}% 3PT-dependent, lead ${awayLd}pts`;
+              }
+            }
+            // Home soft 3PT
+            const homeLd = hS - aS;
+            if (softHot(h3Check) && homeLd >= 2 && homeLd <= 18 && hS >= 15) {
+              const hDurSoft = analyzeScoringDurability(hA, hS, h3M, aS);
+              if (hDurSoft.pct3 >= SOFT_FRAGILE_PCT) {
+                soft3ptHome = true;
+                soft3ptHomeDetail = `${_hD} soft 3PT Fragile: ${h3Check.pn.toFixed(0)}% on ${h3Check.an} att, ${hDurSoft.pct3.toFixed(0)}% 3PT-dependent, lead ${homeLd}pts`;
+              }
+            }
+          } else {
+            // Strict already fired — carry forward
+            soft3ptAway = signals.some(s => s.type === '3ptFragile' && s.level === 2 && s.text.includes(_aD));
+            soft3ptHome = signals.some(s => s.type === '3ptFragile' && s.level === 2 && s.text.includes(_hD));
+          }
+
+          // --- Soft Star Coil (only evaluate if strict didn't fire) ---
+          if (!hasStar) {
+            [...aLeaders, ...hLeaders].forEach(leader => {
+              const star = state.stars.find(s => leader.name.toLowerCase().includes(s.name.split(' ').pop().toLowerCase()) && s.team === leader.team);
+              if (star) {
+                const exp = getExpectedByTime(star.ppg, gMins);
+                const pr = exp > 0 ? leader.pts / exp : 1;
+                // Soft: <75% pace, Q1-Q3, margin ≤18pts
+                if (pr < 0.75 && per >= 1 && per <= 3 && scoreMargin <= 18) {
+                  const starTeamSide = leader.team === aA ? 'away' : 'home';
+                  const starTeamScore = starTeamSide === 'away' ? aS : hS;
+                  const oppScore = starTeamSide === 'away' ? hS : aS;
+                  const cast = analyzeSupportingCast(leader.pts, starTeamScore, oppScore, star.ppg, gMins);
+                  // For soft combined, accept elite or standard cast tiers
+                  const starTeamTrailing = (starTeamSide === 'away' && aS < hS) || (starTeamSide === 'home' && hS < aS);
+                  const dmg = analyzeDamageLocked(gid, starTeamSide, 4, gMins);
+                  const damageLocked = starTeamTrailing && dmg.locked;
+                  let coilTier;
+                  if (damageLocked) coilTier = 'locked';
+                  else if (cast.strong) coilTier = 'elite';
+                  else if (cast.moderate) coilTier = 'standard';
+                  else coilTier = 'weak';
+                  if (coilTier !== 'weak') {
+                    softStarAny = true;
+                    const starTeamFull = leader.team === aA ? aFull : hFull;
+                    softStarDetail = `${leader.name} (${teamDisplay(leader.team, starTeamFull)}) soft Star Coil: ${(pr*100).toFixed(0)}% pace, Q${per}, margin ${scoreMargin}pts, cast tier ${coilTier}`;
+                    softStarCoilTeams[leader.team] = { name: leader.name, damageLocked, dmg, cast, coilTier };
+                  }
+                }
+              }
+            });
+          } else {
+            // Strict already fired
+            softStarAny = true;
+            softStarCoilTeams = { ...starCoilTeams };
+          }
+
+          // --- Check if soft combined fires ---
+          const hasSoft3pt = has3ptFragile || soft3ptAway || soft3ptHome;
+          const hasSoftStar = hasStar || softStarAny;
+          if (hasSoft3pt && hasSoftStar && activeSignals < 2) {
+            // Soft combined fires! Promote to combined signal level
+            activeSignals = 2;
+            signalLevel = 2;
+            sigCombined++;
+            // Merge soft star coil teams into main starCoilTeams for bet-side logic
+            Object.keys(softStarCoilTeams).forEach(k => { if (!starCoilTeams[k]) starCoilTeams[k] = softStarCoilTeams[k]; });
+            // Add soft signals to the signals array so thesis cards show them
+            const softParts = [];
+            if (!has3ptFragile && (soft3ptAway || soft3ptHome)) {
+              const detail = soft3ptAway ? soft3ptAwayDetail : soft3ptHomeDetail;
+              signals.push({ type: '3ptFragile', text: `COMBINED BOOST: ${detail} (relaxed threshold — fires only with Star Coil convergence)`, level: 2 });
+              softParts.push('3PT Fragile (soft)');
+              sig3Fragile++;
+              if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
+              // Add thesis criteria for the soft 3PT signal
+              if (soft3ptAway) {
+                const aDurSoft = analyzeScoringDurability(aA, aS, a3M, hS);
+                thesis.criteria['3ptfragile_away'] = { met: true, strong: true, label: `${_aD} 3PT Fragile (Combined Boost)`, detail: `<strong>Combined Boost:</strong> ${_aD} shooting ${a3Check.pn.toFixed(0)}% from 3 on ${a3Check.an} att with ${aDurSoft.pct3.toFixed(0)}% 3PT-dependent lead. Below strict solo thresholds, but combined with Star Coil convergence, the edge is actionable.<br><strong>Relaxed thresholds:</strong> 45%/10att (or 50%/8att), 38% fragile, 2-18pt margin.`, value: `${a3Check.pn.toFixed(0)}% 3PT + ${aDurSoft.pct3.toFixed(0)}% fragile (soft)` };
+              }
+              if (soft3ptHome) {
+                const hDurSoft = analyzeScoringDurability(hA, hS, h3M, aS);
+                thesis.criteria['3ptfragile_home'] = { met: true, strong: true, label: `${_hD} 3PT Fragile (Combined Boost)`, detail: `<strong>Combined Boost:</strong> ${_hD} shooting ${h3Check.pn.toFixed(0)}% from 3 on ${h3Check.an} att with ${hDurSoft.pct3.toFixed(0)}% 3PT-dependent lead. Below strict solo thresholds, but combined with Star Coil convergence, the edge is actionable.<br><strong>Relaxed thresholds:</strong> 45%/10att (or 50%/8att), 38% fragile, 2-18pt margin.`, value: `${h3Check.pn.toFixed(0)}% 3PT + ${hDurSoft.pct3.toFixed(0)}% fragile (soft)` };
+              }
+            } else { softParts.push('3PT Fragile'); }
+            if (!hasStar && softStarAny) {
+              signals.push({ type: 'star', text: `COMBINED BOOST: ${softStarDetail} (relaxed threshold — fires only with 3PT Fragile convergence)`, level: 2 });
+              softParts.push('Star Coil (soft)');
+              sigStar++;
+              if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
+              // Add thesis criteria for the soft star signal
+              Object.keys(softStarCoilTeams).forEach(teamKey => {
+                const sc = softStarCoilTeams[teamKey];
+                const side = teamKey === aA ? 'away' : 'home';
+                const oppSide = side === 'away' ? 'home' : 'away';
+                if (!thesis.criteria[`star_${oppSide}`] || !thesis.criteria[`star_${oppSide}`].strong) {
+                  const teamFull = teamKey === aA ? aFull : hFull;
+                  thesis.criteria[`star_${oppSide}`] = { met: true, strong: sc.coilTier === 'elite' || sc.coilTier === 'standard', label: `Star Coil (Combined Boost): ${sc.name} (${teamDisplay(teamKey, teamFull)})`, detail: `<strong>Combined Boost:</strong> ${sc.name} below pace in a competitive game. Below strict solo thresholds (Q${per}, pace relaxed to <75%), but combined with 3PT Fragile convergence, the edge is actionable.<br><strong>Cast:</strong> ${sc.cast.castScore}pts vs opp (gap: ${sc.cast.castGap > 0 ? '+' : ''}${sc.cast.castGap}). Tier: ${sc.coilTier}.`, value: `Soft coil | Cast gap: ${sc.cast.castGap > 0 ? '+' : ''}${sc.cast.castGap} | ${sc.coilTier}` };
+                }
+              });
+            } else { softParts.push('Star Coil'); }
+            sendSignalNotification('🔗 Combined Edge (Boost): ' + gLabel, softParts.join(' + ') + ' — relaxed thresholds converge', gid, 'combined_soft');
+          }
+        }
+
+        // Any strict L2 signal (solo or combined) should be actionable and recorded
+        const hasAnyStrictL2 = signals.some(s => s.level === 2);
+        if (activeSignals >= 2) { signalLevel = 2; }
+        else if (hasAnyStrictL2) { signalLevel = 2; }
+        else if (signals.some(s => s.level >= 1)) { signalLevel = 1; }
 
         // Track which games have which signals for chip click-to-expand
         const _gameInfo = { game: gLabel, gameFull: gLabelFull, aScore: aS, hScore: hS, per, clk, detail, eventId: gid };
-        if (has3ptFragile) signalGames['3ptfragile'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='3ptFragile'&&s.level===2).map(s=>s.text).join('; ') });
-        if (hasStar) signalGames['star'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='star'&&s.level===2).map(s=>s.text).join('; ') });
-        if (activeSignals >= 2) signalGames['combined'].push({ ..._gameInfo, sigDetail: `${activeSignals} signals active: ${[has3ptFragile?'3PT Fragile':'',hasStar?'Star Coil':''].filter(Boolean).join(' + ')}` });
+        if (has3ptFragile || soft3ptAway || soft3ptHome) signalGames['3ptfragile'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='3ptFragile'&&s.level===2).map(s=>s.text).join('; ') });
+        if (hasStar || softStarAny) signalGames['star'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='star'&&s.level===2).map(s=>s.text).join('; ') });
+        if (activeSignals >= 2) signalGames['combined'].push({ ..._gameInfo, sigDetail: `${activeSignals} signals active: ${[has3ptFragile||soft3ptAway||soft3ptHome?'3PT Fragile':'',hasStar||softStarAny?'Star Coil':''].filter(Boolean).join(' + ')}${(!has3ptFragile&&(soft3ptAway||soft3ptHome))||(!hasStar&&softStarAny)?' (Combined Boost)':''}` });
 
         // Determine bet side and build thesis logic
         if (signalLevel >= 2) {
@@ -2983,6 +3112,11 @@ document.addEventListener('DOMContentLoaded', function() {
   if (btn) {
     btn.classList.toggle('active', soundEnabled);
     btn.innerHTML = soundEnabled ? '&#x1F50A; Sound' : '&#x1F507; Muted';
+  }
+
+  // Auto-start refresh so signals are detected without manual interaction
+  if (!state.autoRefresh) {
+    toggleAutoRefresh();
   }
 });
 
@@ -4372,7 +4506,7 @@ try {
 <div class="guide-card"><h3><span class="signal-badge badge-3pt">3PT FRAGILE</span> 3PT Fragile Lead</h3><p class="edge-label">Team is winning because of hot 3PT shooting — and the lead depends on it</p><p>Fires when ALL are true: (1) a team is shooting 50%+ from 3 on 12+ attempts, (2) their lead is built on that 3PT shooting while the opponent scores from paint, AND (3) the lead is 3-15 points. The sweet spot where 3PT cooling flips the game.</p><p><strong>⚠️ Opponent Engine Check:</strong> The system also checks if the trailing team has a real scoring engine (non-3PT points per minute &gt; 1.3). If the trailing team's offense is broken — they can't score from paint, FT, or mid-range — then even if 3s regress, they have no engine to capitalize. Signal is downgraded to ⚠️ (weaker). <em>Regression only matters if the other team can take advantage of it.</em></p><div class="threshold">Trigger: 50%+ on 12+ att AND lead 42%+ from 3PT AND opponent 58%+ non-3PT AND lead 3-15 pts.<br>Weakened: If trailing team non-3PT PPM &lt; 1.3 (broken offense).</div></div>
 <div class="guide-card"><h3><span class="signal-badge badge-star">STAR</span> Star Coil</h3><p class="edge-label">Star is cold + game is close + supporting cast is holding = maximum edge</p><p>When a 25+ PPG star is at &lt;65% of expected pace AND the game is within 15 points during Q2-Q3.</p><p><strong>💪 Supporting Cast Analysis:</strong> The system compares the cast's output (team score minus star's points) directly to the opponent's total score — no season averages, pure live data. If the cast is within 8pts of the opponent, the team is competitive WITHOUT the star. When the star regresses upward, it's regression on top of an already-strong team. Also checks if the star's "missing points" exceed the cast gap — if so, regression alone flips the lead.</p><p><strong>4 tiers:</strong> 🔥 Cast Leading (cast ahead of opponent), 💪 Cast Close (within 8), ➖ Cast Behind (8-15), ⚠️ Cast Broken (&gt;15 behind). Also 🔒 Damage Locked if deficit is stable over 3+ min.</p><div class="threshold">Trigger: Star &lt;65% pace + margin &le;15 + Q2-Q3.<br>Tiers: Elite (cast gap ≥-8), Standard (-8 to -15), Weak (&lt;-15), Locked (deficit stable 3+min).</div></div>
 
-<div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">Both signals firing on the same game = strongest edge, most confidence</p><p>When 3PT Fragile AND Star Coil fire on the same game, the live odds are wrong from two independent angles. Each signal catches something different — together, the mispricing is larger.</p><div class="threshold">Trigger: Both 3PT Fragile + Star Coil on the same game.</div></div>
+<div class="guide-card"><h3><span class="signal-badge badge-combined">COMBINED</span> Combined Edge</h3><p class="edge-label">Both signals firing on the same game = strongest edge, most confidence</p><p>When 3PT Fragile AND Star Coil fire on the same game, the live odds are wrong from two independent angles. Each signal catches something different — together, the mispricing is larger.</p><div class="threshold">Trigger: Both 3PT Fragile + Star Coil on the same game.</div><p style="margin-top:8px;"><strong>Combined Boost:</strong> When two independent edges converge, each individual signal uses <em>relaxed</em> thresholds. Signals that wouldn't fire solo can still trigger a Combined Edge together:</p><ul style="font-size:12px;margin:4px 0 0 16px;line-height:1.6;"><li><strong>3PT Soft:</strong> 45%/10att (or 50%/8att), fragile ≥38%, margin 2-18pts, no engine check</li><li><strong>Star Soft:</strong> &lt;75% pace, Q1-Q3 (not just Q2-Q3), margin ≤18pts</li></ul><p style="font-size:12px;margin-top:4px;color:var(--text-muted);">These relaxed signals never fire individually — only when both converge on the same game.</p></div>
 
 </div></div>
 <div id="theory-panel" class="theory-panel">
@@ -4409,7 +4543,7 @@ try {
   <h4>3. Combined Edge</h4>
   <p><strong>What it detects:</strong> When both 3PT Fragile and Star Coil fire on the same game. These two signals measure genuinely different dimensions of unsustainability — no overlap or double-counting.</p>
   <div class="edge-box purple">
-    <p><strong>How it works:</strong> The system checks for Level 2 signals on both types. When both fire, the thesis elevates to signalLevel = 2 (strong combined).</p>
+    <p><strong>How it works:</strong> The system first checks for strict Level 2 signals. If both fire, thesis elevates to signalLevel = 2 (strong combined). If only one fires (or neither), the system runs a <strong>Combined Boost</strong> pass with relaxed thresholds — when two independent edges converge, each doesn't need to be as strict. Soft signals never fire solo.</p>
     <p style="margin-top:6px"><strong>3PT Fragile + Star Coil:</strong> Opponent's lead is built on hot 3PT shooting AND their star is cold in a close game. When the star heats up and 3PT% drops, momentum shifts hard. This is the maximum edge scenario.</p>
   </div>
   <hr class="signal-divider">
