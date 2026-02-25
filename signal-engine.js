@@ -30,6 +30,7 @@ const DATA_DIR = path.dirname(process.argv[1] || __filename);
 const SIGNALS_FILE = path.join(DATA_DIR, 'engine-signals.json');
 const STATE_FILE = path.join(DATA_DIR, 'engine-state.json');
 const STARS_FILE = path.join(DATA_DIR, 'engine-stars.json');
+const TEAM3PT_FILE = path.join(DATA_DIR, 'engine-team3pt.json');
 
 // === THRESHOLD CONFIGS (NBA is set in stone, NCAA has its own values) ===
 const CFG_NCAAB = {
@@ -81,6 +82,7 @@ let engineState = {
 };
 let signalLog = [];
 let starDBs = { nba: [], ncaab: [] };
+let ncaaTeam3pt = {}; // { abbr: 3pt% }
 
 function loadState() {
   try {
@@ -98,6 +100,7 @@ function loadState() {
     if (!engineState.ncaab) engineState.ncaab = { scoreHistory: {}, oddsCache: {}, oddsCacheTime: 0 };
   } catch(e) { /* fresh */ }
   try { signalLog = JSON.parse(fs.readFileSync(SIGNALS_FILE, 'utf8')); } catch(e) { signalLog = []; }
+  try { ncaaTeam3pt = JSON.parse(fs.readFileSync(TEAM3PT_FILE, 'utf8')); } catch(e) { ncaaTeam3pt = {}; }
   try {
     const raw = JSON.parse(fs.readFileSync(STARS_FILE, 'utf8'));
     if (Array.isArray(raw)) {
@@ -354,7 +357,8 @@ function matchOdds(modeState, aAbbr, hAbbr, aFull, hFull) {
   return null;
 }
 
-// === NCAA STAR DATABASE ===
+// === NCAA STAR DATABASE + TEAM 3PT AVERAGES ===
+// Fetches ALL 362 D-I teams (not just today's games), builds star DB + team 3PT cache
 async function buildStarDB(cfg) {
   if (cfg.mode !== 'ncaab') return; // NBA uses hardcoded stars
   const db = starDBs.ncaab;
@@ -363,56 +367,100 @@ async function buildStarDB(cfg) {
     try {
       const stat = fs.statSync(STARS_FILE);
       if (Date.now() - stat.mtimeMs < 86400000) {
-        log(`[${cfg.league}] Star DB cached: ${db.length} stars`);
+        log(`[${cfg.league}] Star DB cached: ${db.length} stars, ${Object.keys(ncaaTeam3pt).length} team 3PT avgs`);
         return;
       }
     } catch(e) { /* rebuild */ }
   }
-  log(`[${cfg.league}] Building NCAA star database from ESPN...`);
+  log(`[${cfg.league}] Building FULL NCAA database (all D-I teams)...`);
   try {
-    const sbResp = await fetch(cfg.espnUrl);
-    const sbData = await sbResp.json();
-    const teams = [];
-    for (const e of (sbData.events || [])) {
-      for (const c of (e.competitions?.[0]?.competitors || [])) {
-        const tid = c.team?.id;
-        const abbr = c.team?.abbreviation || '';
-        if (tid && !teams.find(t => t.id === tid)) teams.push({ id: tid, abbr });
+    // Step 1: Get ALL D-I teams from ESPN teams endpoint
+    const teamsResp = await fetch('https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams?limit=500');
+    if (!teamsResp.ok) throw new Error('Teams endpoint failed: ' + teamsResp.status);
+    const teamsData = await teamsResp.json();
+    const allTeams = [];
+    const leagueTeams = teamsData.sports?.[0]?.leagues?.[0]?.teams || [];
+    for (const t of leagueTeams) {
+      const team = t.team || {};
+      if (team.id && team.abbreviation) {
+        allTeams.push({ id: team.id, abbr: team.abbreviation, name: team.displayName || '' });
       }
     }
-    log(`[${cfg.league}] Found ${teams.length} teams in today's games`);
+    log(`[${cfg.league}] Found ${allTeams.length} D-I teams — fetching leaders + 3PT stats...`);
+
     const stars = [];
-    for (let i = 0; i < teams.length; i += 5) {
-      const batch = teams.slice(i, i + 5);
+    const team3pt = {};
+    const batchSize = 8; // 8 concurrent requests
+
+    for (let i = 0; i < allTeams.length; i += batchSize) {
+      const batch = allTeams.slice(i, i + batchSize);
+      if (i > 0 && i % 80 === 0) {
+        log(`[${cfg.league}]   ... processed ${i}/${allTeams.length} teams (${stars.length} stars, ${Object.keys(team3pt).length} 3PT avgs)`);
+      }
+
       const results = await Promise.allSettled(batch.map(async (team) => {
-        const lUrl = `https://sports.core.api.espn.com/v2/sports/basketball/leagues/mens-college-basketball/seasons/2026/types/2/teams/${team.id}/leaders`;
-        const lResp = await fetch(lUrl);
-        if (!lResp.ok) return [];
-        const lData = await lResp.json();
-        const ptsCat = (lData.categories || []).find(c => c.name === 'pointsPerGame' || c.name === 'points' || c.displayName === 'Points Per Game');
-        if (!ptsCat) return [];
-        const found = [];
-        for (const leader of (ptsCat.leaders || []).slice(0, 3)) {
-          const ppg = leader.value || 0;
-          if (ppg < cfg.starPpgMin) continue;
-          const ref = leader.athlete?.$ref || leader.athlete?.href;
-          if (!ref) continue;
-          try {
-            const aResp = await fetch(ref);
-            if (!aResp.ok) continue;
-            const aData = await aResp.json();
-            found.push({ name: aData.displayName || aData.shortName || '?', team: team.abbr, ppg });
-          } catch(e) { /* skip */ }
-        }
-        return found;
+        const teamStars = [];
+        let fg3Pct = null;
+
+        // Fetch team leaders (PPG) for star DB
+        try {
+          const lUrl = `https://sports.core.api.espn.com/v2/sports/basketball/leagues/mens-college-basketball/seasons/2026/types/2/teams/${team.id}/leaders`;
+          const lResp = await fetch(lUrl);
+          if (lResp.ok) {
+            const lData = await lResp.json();
+            const ptsCat = (lData.categories || []).find(c => c.name === 'pointsPerGame' || c.name === 'points' || c.displayName === 'Points Per Game');
+            if (ptsCat) {
+              for (const leader of (ptsCat.leaders || []).slice(0, 3)) {
+                const ppg = leader.value || 0;
+                if (ppg < cfg.starPpgMin) continue;
+                const ref = leader.athlete?.$ref || leader.athlete?.href;
+                if (!ref) continue;
+                try {
+                  const aResp = await fetch(ref);
+                  if (aResp.ok) {
+                    const aData = await aResp.json();
+                    teamStars.push({ name: aData.displayName || aData.shortName || '?', team: team.abbr, ppg });
+                  }
+                } catch(e) { /* skip */ }
+              }
+            }
+          }
+        } catch(e) { /* skip leaders */ }
+
+        // Fetch team statistics for 3PT average
+        try {
+          const sUrl = `https://sports.core.api.espn.com/v2/sports/basketball/leagues/mens-college-basketball/seasons/2026/types/2/teams/${team.id}/statistics`;
+          const sResp = await fetch(sUrl);
+          if (sResp.ok) {
+            const sData = await sResp.json();
+            const cats = sData.splits?.categories || [];
+            for (const cat of cats) {
+              for (const stat of (cat.stats || [])) {
+                if (stat.name === 'threePointFieldGoalPct') {
+                  fg3Pct = parseFloat(stat.value) || null;
+                }
+              }
+            }
+          }
+        } catch(e) { /* skip stats */ }
+
+        return { stars: teamStars, abbr: team.abbr, fg3Pct };
       }));
+
       for (const r of results) {
-        if (r.status === 'fulfilled' && r.value) stars.push(...r.value);
+        if (r.status !== 'fulfilled' || !r.value) continue;
+        stars.push(...r.value.stars);
+        if (r.value.fg3Pct !== null) {
+          team3pt[r.value.abbr] = Math.round(r.value.fg3Pct * 10) / 10;
+        }
       }
     }
+
     starDBs.ncaab = stars;
+    ncaaTeam3pt = team3pt;
     saveStars();
-    log(`[${cfg.league}] Star DB built: ${stars.length} stars`);
+    fs.writeFileSync(TEAM3PT_FILE, JSON.stringify(team3pt, null, 2));
+    log(`[${cfg.league}] FULL DB built: ${stars.length} stars across ${allTeams.length} teams, ${Object.keys(team3pt).length} team 3PT averages`);
   } catch(e) {
     log(`[${cfg.league}] Star DB build failed: ${e.message}`);
   }
@@ -436,6 +484,13 @@ const NBA_STARS = [
 ];
 
 function getStars(cfg) { return cfg.mode === 'ncaab' ? starDBs.ncaab : NBA_STARS; }
+
+// Get team-specific 3PT% for NCAA (season average)
+// Returns null for NBA (uses hardcoded TEAM_3PT_AVG in frontend)
+function getTeam3PtAvg(cfg, abbr) {
+  if (cfg.mode !== 'ncaab') return null;
+  return ncaaTeam3pt[abbr] || cfg.league3PtAvg; // fallback to league avg if team not found
+}
 
 function matchStar(cfg, leaderName, leaderTeam) {
   const stars = getStars(cfg);
