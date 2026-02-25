@@ -76,8 +76,8 @@ function getCFG(mode) { return mode === 'ncaab' ? CFG_NCAAB : CFG_NBA; }
 
 // === STATE (shared signal log, per-mode sub-state) ===
 let engineState = {
-  nba: { scoreHistory: {}, oddsCache: {}, oddsCacheTime: 0 },
-  ncaab: { scoreHistory: {}, oddsCache: {}, oddsCacheTime: 0 },
+  nba: { scoreHistory: {}, oddsCache: {}, oddsCacheTime: 0, oddsHistory: {} },
+  ncaab: { scoreHistory: {}, oddsCache: {}, oddsCacheTime: 0, oddsHistory: {} },
 };
 let signalLog = [];
 let starDBs = { nba: [], ncaab: [] };
@@ -275,23 +275,81 @@ async function fetchOdds(cfg) {
     }
     modeState.oddsCache = cache;
     modeState.oddsCacheTime = now;
+    // Record odds history for LEC tracking
+    if (!modeState.oddsHistory) modeState.oddsHistory = {};
+    for (const k of Object.keys(cache)) {
+      if (!cache[k].home) continue; // skip alias keys
+      const fullKey = cache[k].away + ' vs ' + cache[k].home;
+      if (!modeState.oddsHistory[fullKey]) modeState.oddsHistory[fullKey] = [];
+      const hist = modeState.oddsHistory[fullKey];
+      if (hist.length === 0 || now - hist[hist.length-1].ts > 60000) {
+        hist.push({ ts: now, homeML: cache[k].homeML, awayML: cache[k].awayML });
+        if (hist.length > 50) hist.splice(0, hist.length - 50);
+      }
+    }
+    // Update LEC on active signals
+    updateEngineLEC(cfg);
   } catch (e) { /* keep existing cache */ }
+}
+
+function updateEngineLEC(cfg) {
+  const modeState = engineState[cfg.mode];
+  const now = Date.now();
+  let changed = false;
+  for (const sig of signalLog) {
+    if (sig.gameCompleted || sig.mode !== cfg.mode) continue;
+    if (!sig.oddsKey) continue;
+    const hist = modeState.oddsHistory[sig.oddsKey];
+    if (!hist || hist.length === 0) continue;
+    const entryTs = sig.timestamp;
+    const sigIsAway = sig.betTeam === sig.game?.split(' @ ')?.[0];
+    const entryML = sig.marketOdds;
+    if (!sig.lec5minOdds && (now - entryTs) >= 300000) {
+      const snap5 = hist.find(h => h.ts >= entryTs + 240000 && h.ts <= entryTs + 420000);
+      if (snap5) {
+        sig.lec5minOdds = sigIsAway ? snap5.awayML : snap5.homeML;
+        sig.lec5min = entryML - sig.lec5minOdds;
+        changed = true;
+      }
+    }
+    if (!sig.lec10minOdds && (now - entryTs) >= 600000) {
+      const snap10 = hist.find(h => h.ts >= entryTs + 540000 && h.ts <= entryTs + 720000);
+      if (snap10) {
+        sig.lec10minOdds = sigIsAway ? snap10.awayML : snap10.homeML;
+        sig.lec10min = entryML - sig.lec10minOdds;
+        changed = true;
+      }
+    }
+  }
+  if (changed) saveState();
 }
 
 function matchOdds(modeState, aAbbr, hAbbr, aFull, hFull) {
   const c = modeState.oddsCache;
   if (!c || Object.keys(c).length === 0) return null;
-  const key1 = (aFull + ' vs ' + hFull).toLowerCase();
-  if (c[key1]) return c[key1];
+  // Strategy 1: Exact full-name match
   for (const k of Object.keys(c)) {
     const v = c[k];
     if (!v.home || !v.away) continue;
-    const hm = v.home.toLowerCase();
-    const am = v.away.toLowerCase();
-    if ((hFull.toLowerCase().includes(hm.split(' ').pop()) || hm.includes(hFull.toLowerCase().split(' ').pop())) &&
-        (aFull.toLowerCase().includes(am.split(' ').pop()) || am.includes(aFull.toLowerCase().split(' ').pop()))) {
-      return v;
-    }
+    if (v.home.toUpperCase() === hFull.toUpperCase() && v.away.toUpperCase() === aFull.toUpperCase()) return v;
+  }
+  // Strategy 2: Full name contains (one direction) — both teams must match
+  for (const k of Object.keys(c)) {
+    const v = c[k];
+    if (!v.home || !v.away) continue;
+    const gH = v.home.toUpperCase(), gA = v.away.toUpperCase();
+    const hUp = hFull.toUpperCase(), aUp = aFull.toUpperCase();
+    if ((gH.includes(hUp) || hUp.includes(gH)) && (gA.includes(aUp) || aUp.includes(gA))) return v;
+  }
+  // Strategy 3: Match BOTH first AND last word (prevents Alabama vs Alabama A&M)
+  for (const k of Object.keys(c)) {
+    const v = c[k];
+    if (!v.home || !v.away) continue;
+    const gHW = v.home.toUpperCase().split(' '), gAW = v.away.toUpperCase().split(' ');
+    const hW = hFull.toUpperCase().split(' '), aW = aFull.toUpperCase().split(' ');
+    const hM = (gHW[0] === hW[0] && gHW[gHW.length-1] === hW[hW.length-1]) || gHW.includes(hAbbr);
+    const aM = (gAW[0] === aW[0] && gAW[gAW.length-1] === aW[aW.length-1]) || gAW.includes(aAbbr);
+    if (hM && aM) return v;
   }
   return null;
 }
@@ -601,11 +659,17 @@ async function detectSignals(cfg) {
         log(`  [${cfg.league}] ${gLabel}: Conflicting signals (awayFade=${awayFade.toFixed(1)}, homeFade=${homeFade.toFixed(1)}) — downgraded from COMBINED`);
       }
 
-      // Home Court Booster (NCAA only)
+      // Home Court Factor (NCAA only — bidirectional)
+      // Tailwind when betting home (+0.5), headwind when betting road (+0.5 to other side)
       let homeCourtEdge = false;
-      if (isNCAA && awayFade > 0) {
-        awayFade += cfg.homeCourtBoost;
-        homeCourtEdge = true;
+      if (isNCAA && cfg.homeCourtBoost > 0) {
+        if (awayFade > 0) {
+          awayFade += cfg.homeCourtBoost; // tailwind for home bet
+          homeCourtEdge = true;
+        }
+        if (homeFade > 0) {
+          homeFade += cfg.homeCourtBoost; // headwind for road bet
+        }
       }
 
       let betTeam, fadeTeam;
@@ -617,6 +681,7 @@ async function detectSignals(cfg) {
       // ======== URGENCY + KELLY + ODDS ========
       const urgency = getUrgency(cfg, per, clk);
       const odds = matchOdds(modeState, aA, hA, aFull, hFull);
+      const oddsKey = odds ? (odds.away + ' vs ' + odds.home) : null;
       const betML = odds ? (betTeam === aA ? odds.awayML : odds.homeML) : -110;
       const impliedP = betML < 0 ? Math.abs(betML) / (Math.abs(betML) + 100) : 100 / (betML + 100);
       const kelly = kellySize(impliedP, betML, signalCount, urgency.mult);
@@ -652,6 +717,7 @@ async function detectSignals(cfg) {
         recMargin: rec.margin,
         recMinRemaining: rec.minRemaining,
         marketOdds: betML,
+        oddsKey: oddsKey,
         hasLiveOdds: !!odds,
         impliedP: Math.round(impliedP * 1000) / 10,
         kellyPct: kelly.fStar,

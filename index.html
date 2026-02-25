@@ -1351,17 +1351,97 @@ async function fetchLiveOdds(){
       }
       nc[g.away_team+' vs '+g.home_team]={home:g.home_team,away:g.away_team,homeML,awayML,book:bookName,ouLine,overPrice,underPrice};
     }
-    oddsCache=nc;oddsCacheTime=now;return nc;
+    oddsCache=nc;oddsCacheTime=now;
+    // Record odds history for LEC (Live Edge Captured) tracking
+    const ts = Date.now();
+    for (const k of Object.keys(nc)) {
+      if (!state.oddsHistory[k]) state.oddsHistory[k] = [];
+      const hist = state.oddsHistory[k];
+      // Only record if odds changed or >60s since last snapshot
+      if (hist.length === 0 || ts - hist[hist.length-1].ts > 60000) {
+        hist.push({ ts, homeML: nc[k].homeML, awayML: nc[k].awayML });
+        if (hist.length > 50) hist.splice(0, hist.length - 50); // keep last 50 snapshots
+      }
+    }
+    // Prune stale game keys (>24h old)
+    for (const k of Object.keys(state.oddsHistory)) {
+      const h = state.oddsHistory[k];
+      if (h.length > 0 && ts - h[h.length-1].ts > 86400000) delete state.oddsHistory[k];
+    }
+    localStorage.setItem('oddsHistory', JSON.stringify(state.oddsHistory));
+    // Update LEC on any active signals
+    updateLEC();
+    return nc;
   }catch(e){console.warn('Odds error:',e);return oddsCache;}
 }
+// === LIVE EDGE CAPTURED (LEC) ===
+// Tracks whether the line moved in your favor after signal entry.
+// LEC > 0 = you captured edge (line moved your way). LEC < 0 = you paid a premium.
+function updateLEC() {
+  const now = Date.now();
+  let changed = false;
+  for (const sig of state.signalTracker) {
+    if (sig.gameCompleted) continue;
+    if (!sig.entryOddsKey) continue; // no odds key recorded
+    const hist = state.oddsHistory[sig.entryOddsKey];
+    if (!hist || hist.length === 0) continue;
+    const entryTs = sig.timestamp;
+    const sigIsAway = sig.signalSide === sig.awayTeam;
+    const entryML = sig.marketOdds;
+    // Find odds ~5 min after entry
+    if (!sig.lec5minOdds && (now - entryTs) >= 300000) {
+      const snap5 = hist.find(h => h.ts >= entryTs + 240000 && h.ts <= entryTs + 420000);
+      if (snap5) {
+        const postML = sigIsAway ? snap5.awayML : snap5.homeML;
+        sig.lec5minOdds = postML;
+        sig.lec5min = entryML - postML; // positive = line moved in your favor (you got better odds)
+        changed = true;
+      }
+    }
+    // Find odds ~10 min after entry
+    if (!sig.lec10minOdds && (now - entryTs) >= 600000) {
+      const snap10 = hist.find(h => h.ts >= entryTs + 540000 && h.ts <= entryTs + 720000);
+      if (snap10) {
+        const postML = sigIsAway ? snap10.awayML : snap10.homeML;
+        sig.lec10minOdds = postML;
+        sig.lec10min = entryML - postML;
+        changed = true;
+      }
+    }
+  }
+  if (changed) {
+    localStorage.setItem('signalTracker', JSON.stringify(state.signalTracker));
+  }
+}
+
 function matchOdds(aAbbr,hAbbr,aFull,hFull){
+  // Strategy 1: Exact full-name match (most reliable)
   for(const k of Object.keys(oddsCache)){
     const g=oddsCache[k];
-    const gH=g.home.toUpperCase();
-    const gA=g.away.toUpperCase();
-    // Try multiple matching strategies: abbreviation, last word of full name, full name contains
-    const hM=gH.includes(hAbbr)||(hFull&&(gH.includes(hFull.toUpperCase().split(' ').pop())||gH.includes(hFull.toUpperCase().split(' ')[0])));
-    const aM=gA.includes(aAbbr)||(aFull&&(gA.includes(aFull.toUpperCase().split(' ').pop())||gA.includes(aFull.toUpperCase().split(' ')[0])));
+    if(!g.home||!g.away)continue;
+    if(g.home.toUpperCase()===hFull.toUpperCase()&&g.away.toUpperCase()===aFull.toUpperCase())return g;
+  }
+  // Strategy 2: Full name contains (one direction) — require BOTH teams match
+  for(const k of Object.keys(oddsCache)){
+    const g=oddsCache[k];
+    if(!g.home||!g.away)continue;
+    const gH=g.home.toUpperCase(),gA=g.away.toUpperCase();
+    const hUp=hFull.toUpperCase(),aUp=aFull.toUpperCase();
+    // Check if ESPN name is contained in Odds API name or vice versa
+    const hM=gH.includes(hUp)||hUp.includes(gH);
+    const aM=gA.includes(aUp)||aUp.includes(gA);
+    if(hM&&aM)return g;
+  }
+  // Strategy 3: Match on BOTH first word AND last word (prevents Alabama vs Alabama A&M)
+  for(const k of Object.keys(oddsCache)){
+    const g=oddsCache[k];
+    if(!g.home||!g.away)continue;
+    const gHW=g.home.toUpperCase().split(' '),gAW=g.away.toUpperCase().split(' ');
+    const hW=hFull.toUpperCase().split(' '),aW=aFull.toUpperCase().split(' ');
+    const hFirst=hW[0],hLast=hW[hW.length-1],aFirst=aW[0],aLast=aW[aW.length-1];
+    const gHFirst=gHW[0],gHLast=gHW[gHW.length-1],gAFirst=gAW[0],gALast=gAW[gAW.length-1];
+    const hM=(gHFirst===hFirst&&gHLast===hLast)||(gHW.includes(hAbbr));
+    const aM=(gAFirst===aFirst&&gALast===aLast)||(gAW.includes(aAbbr));
     if(hM&&aM)return g;
   }
   return null;
@@ -1427,6 +1507,8 @@ let state = {
   favorites: JSON.parse(localStorage.getItem('favorites') || '[]'),
   signalHistory: JSON.parse(localStorage.getItem('signalHistory') || '[]'),
   signalTracker: JSON.parse(localStorage.getItem('signalTracker') || '[]'),
+  oddsHistory: JSON.parse(localStorage.getItem('oddsHistory') || '{}'), // { gameKey: [{ts, homeML, awayML}, ...] }
+  nearMisses: JSON.parse(localStorage.getItem('nearMisses') || '[]'), // counterfactual: level-1 signals
 };
 
 // ==================== INIT ====================
@@ -2478,18 +2560,20 @@ async function fetchESPNScoreboard() {
             console.log(`[Conflict] ${gLabel}: awayFade=${awayFade.toFixed(1)}, homeFade=${homeFade.toFixed(1)} — downgraded from COMBINED`);
           }
 
-          // ===== HOME COURT BOOSTER (NCAA ONLY) =====
-          // NCAA home court = 3.5-4 pts (vs NBA 2.5). This is a structural tailwind for the home team.
-          // When signals say bet the HOME team: crowd energy + regression = double tailwind → boost.
-          // When signals say bet the ROAD team: home court is a headwind → no boost.
-          // NBA: NO CHANGE — this booster does not apply to NBA. NBA is set in stone.
+          // ===== HOME COURT FACTOR (NCAA ONLY — BIDIRECTIONAL) =====
+          // NCAA home court = 3.5-4 pts (vs NBA 2.5). This is a structural force.
+          // When signals say bet HOME: tailwind (+0.5 boost to fading away)
+          // When signals say bet ROAD: headwind (+0.5 boost to fading home = penalty for road bet)
+          // NBA: NO CHANGE — this factor does not apply to NBA. NBA is set in stone.
           let homeCourtEdge = false;
           if (isNCAA()) {
-            const _hcBoost = 0.5;
-            // awayFade > 0 means "reasons to fade the away team" = "reasons to bet the home team"
+            const _hcFactor = 0.5;
             if (awayFade > 0) {
-              awayFade += _hcBoost; // boost fading away = boost betting home team
+              awayFade += _hcFactor; // boost fading away = tailwind for home bet
               homeCourtEdge = true;
+            }
+            if (homeFade > 0) {
+              homeFade += _hcFactor; // boost fading home = headwind for road bet
             }
           }
 
@@ -2513,10 +2597,13 @@ async function fetchESPNScoreboard() {
           else if (hStarCoil?.coilTier === 'locked') reasons.push(`🔒 ${hStarCoil.name} (${_hD}) is coiled BUT damage locked — deficit baked in. Fade ${_hD}.`);
           else if (hStarCoil?.coilTier === 'weak') reasons.push(`⚠️ ${hStarCoil.name} (${_hD}) is coiled but cast gap is ${hStarCoil.cast.castGap} — whole team broken. No directional weight.`);
 
-          // Home Court Edge narrative (NCAA only — homeCourtEdge is always false for NBA)
-          if (homeCourtEdge && betTeam === hA) {
-            reasons.push(`🏟️ HOME COURT EDGE: Betting ${_hD} (home team). NCAAB home court ~3.5-4 pts — crowd energy + regression signals = double tailwind. Home team bouncebacks are structurally stronger.`);
-            thesis.criteria['homecourt_edge'] = { met: true, strong: true, label: `Home Court Booster`, detail: `<strong>Home Court Advantage:</strong> ${_hD} is at home. NCAAB home court advantage averages ~3.5-4 pts — the strongest in American sports.<br><strong>Why it amplifies your signal:</strong> When regression signals fire in the home team's favor (opponent's 3s will cool down, or home star will heat up), the crowd energy creates a compounding effect. The home crowd fuels momentum swings. Refs show documented home bias in foul calls. Home players are in familiar surroundings.<br><strong>The edge:</strong> Your regression signal + home court structural advantage = stronger expected outcome than the same signal on a neutral court.`, value: `Home court tailwind` };
+          // Home Court Factor narrative (NCAA only — homeCourtEdge is always false for NBA)
+          if (isNCAA() && betTeam === hA) {
+            reasons.push(`🏟️ HOME COURT TAILWIND: Betting ${_hD} (home team). NCAAB home court ~3.5-4 pts — crowd energy + regression signals = double tailwind.`);
+            thesis.criteria['homecourt_edge'] = { met: true, strong: true, label: `Home Court Tailwind`, detail: `<strong>Home Court Advantage:</strong> ${_hD} is at home. NCAAB home court averages ~3.5-4 pts.<br><strong>Why it amplifies your signal:</strong> Regression signals + crowd energy = compounding effect. Refs show documented home bias in foul calls.<br><strong>The edge:</strong> Regression signal + home court = stronger expected outcome.`, value: `Home court tailwind (+0.5)` };
+          } else if (isNCAA() && betTeam === aA && homeFade > 0) {
+            reasons.push(`⚠️ HOME COURT HEADWIND: Betting ${_aD} (road team). NCAAB home court ~3.5-4 pts works against road comebacks — signal must overcome structural disadvantage.`);
+            thesis.criteria['homecourt_edge'] = { met: true, strong: false, label: `Home Court Headwind`, detail: `<strong>Home Court Headwind:</strong> ${_aD} is on the road. NCAAB home court averages ~3.5-4 pts working AGAINST the road team.<br><strong>Why it weakens your signal:</strong> Even if regression happens, the home crowd fuels counter-runs. Road teams need stronger regression to overcome the structural disadvantage.<br><strong>Impact:</strong> Headwind factor applied (-0.5). Signal must be strong enough to overcome home court.`, value: `Road headwind (-0.5)` };
           }
 
           const strongCriteria = Object.values(thesis.criteria).filter(c => c.met && c.strong).length;
@@ -2545,6 +2632,8 @@ async function fetchESPNScoreboard() {
             _implP = _betML < 0 ? Math.abs(_betML)/(Math.abs(_betML)+100) : 100/(_betML+100);
             thesis.marketOdds = _betML;
             thesis.impliedP = _implP;
+            // Store odds key for LEC tracking
+            thesis.oddsKey = _tOdds.away + ' vs ' + _tOdds.home;
             const _k = kellySize(_implP, _betML, null, activeSignals, _urgency.mult);
             thesis.kellyPct = _k.fStar;
             thesis.kellyBet = _k.bet;
@@ -2556,8 +2645,32 @@ async function fetchESPNScoreboard() {
           // Always log the bet — use default -110 odds if live odds unavailable
           const _logOdds = _betML || -110;
           const _logImplP = _betML ? _implP : 0.524; // -110 implied = 52.4%
-          autoLogBet(event.id, betTeam, 'ML', signals.filter(x=>x.level===2).map(x=>x.type), _logOdds, _logImplP);
+          autoLogBet(event.id, betTeam, 'ML', signals.filter(x=>x.level===2).map(x=>x.type), _logOdds, _logImplP, activeSignals, _urgency.mult);
           gameTheses.push(thesis);
+        }
+
+        // Counterfactual: track near-miss signals (level 1 only, no level 2)
+        // Games where conditions were developing but didn't fully trigger
+        if (signalLevel === 1 && isLive) {
+          const l1signals = signals.filter(s => s.level === 1);
+          if (l1signals.length > 0) {
+            const nmKey = event.id + '_nm';
+            if (!state.nearMisses.find(n => n.key === nmKey)) {
+              const trailing = aS < hS ? aA : hA;
+              state.nearMisses.push({
+                key: nmKey, eventId: event.id, game: gLabel,
+                awayTeam: aA, homeTeam: hA,
+                hypotheticalSide: trailing,
+                signals: l1signals.map(s => s.type),
+                signalTexts: l1signals.map(s => s.text),
+                awayScore: aS, homeScore: hS, period: per, clock: clk,
+                timestamp: Date.now(), mode: currentMode,
+                gameCompleted: false, finalAwayScore: null, finalHomeScore: null, wouldHaveWon: null
+              });
+              if (state.nearMisses.length > 300) state.nearMisses = state.nearMisses.slice(-200);
+              localStorage.setItem('nearMisses', JSON.stringify(state.nearMisses));
+            }
+          }
         }
       }
 
@@ -2739,6 +2852,7 @@ async function fetchESPNScoreboard() {
         autoTrackSignal(t, rec);
       }
     });
+
 
     // Update counts
     document.getElementById('live-3ptfragile-signals').textContent = sig3Fragile;
@@ -3010,11 +3124,11 @@ function kellySize(impliedP, odds, fraction, signalCount, urgencyMult) {
   return { bet, fStar: Math.round(fStar * 1000) / 10, p: Math.round(p * 1000) / 10, edge: Math.round(edge * 1000) / 10, fraction, bankroll };
 }
 
-function autoLogBet(gameId, team, side, signals, marketOdds, impliedP) {
+function autoLogBet(gameId, team, side, signals, marketOdds, impliedP, signalCount, urgencyMult) {
   let log = JSON.parse(localStorage.getItem('betLog') || '[]');
   const key = gameId + '_' + team;
   if (log.find(x => x.key === key)) return;
-  const k = kellySize(impliedP, marketOdds);
+  const k = kellySize(impliedP, marketOdds, null, signalCount || 1, urgencyMult);
   log.push({
     id: Date.now(),
     key: key,
@@ -3037,22 +3151,48 @@ function autoLogBet(gameId, team, side, signals, marketOdds, impliedP) {
 
 // ==================== SIGNAL BACKTEST TRACKER ====================
 const TRACKER_BANKROLL = 20000;
-const TRACKER_DEFAULT_EDGE = 0.08; // 8% estimated edge for strong signals (2+ combined)
-const TRACKER_MAX_KELLY = 0.05;    // Max 5% of bankroll per bet (quarter-Kelly cap)
+const TRACKER_MAX_KELLY = 0.05;    // Max 5% of bankroll per bet (half-Kelly cap)
 
-function trackerKellyBet(odds, edge) {
-  // Kelly: f* = (bp - q) / b where b=decimal odds-1, p=estimated win prob, q=1-p
-  // For mean-reversion live bets at -110: b = 100/110 = 0.909
-  // Estimated p based on edge above break-even
+const TRACKER_FLAT_UNIT = 200; // Flat $200/bet until 200+ resolved signals
+const TRACKER_MIN_SAMPLE = 200; // Minimum resolved signals before using Kelly
+
+function trackerKellyBet(odds, signalCount, urgencyMult) {
+  // Check if we have enough data for Kelly — if not, use flat units
+  const resolved = (state.signalTracker || []).filter(s => s.gameCompleted).length;
+  const sc = signalCount || 1;
+
+  if (resolved < TRACKER_MIN_SAMPLE) {
+    // FLAT UNIT MODE: $200/bet regardless of signal strength
+    // Still compute estimated edge for display, but don't size on it
+    const baseEdge = 0.035 + Math.min(sc - 1, 3) * 0.01;
+    const edge = Math.min(baseEdge, 0.08);
+    const impliedP = odds < 0 ? Math.abs(odds)/(Math.abs(odds)+100) : 100/(odds+100);
+    const p = Math.min(0.90, impliedP + edge);
+    const f = TRACKER_FLAT_UNIT / TRACKER_BANKROLL;
+    return { f: Math.round(f*1000)/10, p: Math.round(p*1000)/10, bet: TRACKER_FLAT_UNIT, edge: Math.round(edge*1000)/10, flatMode: true };
+  }
+
+  // KELLY MODE: 200+ resolved signals — use empirical edge if available
+  const completed = state.signalTracker.filter(s => s.gameCompleted && s.mlResult);
+  const wins = completed.filter(s => s.mlResult === 'W').length;
+  const empiricalWR = completed.length > 0 ? wins / completed.length : 0.524;
   const breakEven = odds < 0 ? Math.abs(odds)/(Math.abs(odds)+100) : 100/(odds+100);
-  const p = Math.min(0.70, breakEven + edge); // cap at 70%
+  const empiricalEdge = Math.max(0, empiricalWR - breakEven);
+  // Blend: 70% empirical + 30% formula (hedge against recency)
+  const formulaEdge = 0.035 + Math.min(sc - 1, 3) * 0.01;
+  const edge = Math.min(empiricalEdge * 0.7 + formulaEdge * 0.3, 0.08);
+  const impliedP = breakEven;
+  const p = Math.min(0.90, impliedP + edge);
   const q = 1 - p;
   const b = odds < 0 ? 100/Math.abs(odds) : odds/100;
   let f = (b * p - q) / b;
-  if (f <= 0) f = 0.01; // minimum 1% if edge exists
-  f = Math.min(f, TRACKER_MAX_KELLY); // cap at 5%
-  const bet = Math.round(TRACKER_BANKROLL * f);
-  return { f: Math.round(f*1000)/10, p: Math.round(p*1000)/10, bet, edge: Math.round(edge*1000)/10 };
+  if (f <= 0) f = 0;
+  f = f * 0.5; // half-Kelly
+  if (urgencyMult !== undefined) f *= urgencyMult;
+  f = Math.min(f, TRACKER_MAX_KELLY);
+  if (edge < 0.03) f = 0;
+  const bet = Math.max(0, Math.round(TRACKER_BANKROLL * f));
+  return { f: Math.round(f*1000)/10, p: Math.round(p*1000)/10, bet, edge: Math.round(edge*1000)/10, flatMode: false };
 }
 
 function autoTrackSignal(thesis, rec) {
@@ -3061,15 +3201,10 @@ function autoTrackSignal(thesis, rec) {
   const trackerKey = thesis.eventId + '_' + (thesis.betSide||'');
   if (state.signalTracker.find(s => s.key === trackerKey)) return;
 
-  // Estimate edge based on signal strength
   const sigCount = (thesis.signals||[]).filter(s=>s.level===2).length;
-  let edge = TRACKER_DEFAULT_EDGE;
-  if (sigCount >= 3) edge = 0.12;      // 3+ strong signals = 12% edge
-  else if (sigCount >= 2) edge = 0.08;  // 2 strong = 8%
-  else edge = 0.05;                      // 1 strong = 5%
-
   const odds = thesis.marketOdds || -110;
-  const kelly = trackerKellyBet(odds, edge);
+  const urgMult = thesis.urgency?.mult !== undefined ? thesis.urgency.mult : (thesis.urgencyMult !== undefined ? thesis.urgencyMult : 1.0);
+  const kelly = trackerKellyBet(odds, sigCount, urgMult);
 
   const entry = {
     id: Date.now() + '_' + Math.random().toString(36).substr(2,6),
@@ -3102,6 +3237,10 @@ function autoTrackSignal(thesis, rec) {
     timestamp: Date.now(),
     date: new Date().toLocaleDateString(),
     mode: currentMode,
+    // LEC tracking — odds key for matching post-entry odds
+    entryOddsKey: thesis.oddsKey || null,
+    lec5minOdds: null, lec5min: null,
+    lec10minOdds: null, lec10min: null,
     // Result fields — filled by resolveSignalTracker
     finalAwayScore: null,
     finalHomeScore: null,
@@ -3215,7 +3354,8 @@ async function importEngineSignals() {
 
 async function resolveSignalTracker(specificDateStr) {
   const pending = state.signalTracker.filter(s => !s.gameCompleted);
-  if (pending.length === 0) { renderSignalTracker(); return; }
+  const pendingNearMisses = (state.nearMisses || []).filter(s => !s.gameCompleted);
+  if (pending.length === 0 && pendingNearMisses.length === 0) { renderSignalTracker(); return; }
 
   const datesToFetch = new Set();
   if (specificDateStr) {
@@ -3309,6 +3449,32 @@ async function resolveSignalTracker(specificDateStr) {
   if (changed) {
     localStorage.setItem('signalTracker', JSON.stringify(state.signalTracker));
   }
+
+  // Resolve near-miss (counterfactual) signals too
+  const pendingNM = (state.nearMisses || []).filter(s => !s.gameCompleted);
+  let nmChanged = false;
+  pendingNM.forEach(nm => {
+    const event = eventMap[nm.eventId] || eventMap[String(nm.eventId)];
+    if (!event || event.status?.type?.state !== 'post') return;
+    const comp = event.competitions?.[0];
+    if (!comp) return;
+    const away = comp.competitors?.find(c => c.homeAway === 'away');
+    const home = comp.competitors?.find(c => c.homeAway === 'home');
+    if (!away || !home) return;
+    nm.finalAwayScore = parseInt(away.score) || 0;
+    nm.finalHomeScore = parseInt(home.score) || 0;
+    nm.gameCompleted = true;
+    // Would the hypothetical bet have won?
+    const isAway = nm.hypotheticalSide === nm.awayTeam;
+    const betFinal = isAway ? nm.finalAwayScore : nm.finalHomeScore;
+    const oppFinal = isAway ? nm.finalHomeScore : nm.finalAwayScore;
+    nm.wouldHaveWon = betFinal > oppFinal;
+    nmChanged = true;
+  });
+  if (nmChanged) {
+    localStorage.setItem('nearMisses', JSON.stringify(state.nearMisses));
+  }
+
   renderSignalTracker();
 }
 
@@ -3371,12 +3537,29 @@ function getSignalTrackerStats() {
   const totalRisked = completed.reduce((s,x) => s+(x.kellyBet||0), 0);
   const currentBankroll = TRACKER_BANKROLL + mlProfit;
 
+  // LEC (Live Edge Captured) stats
+  const lec5arr = all.filter(s => s.lec5min !== null && s.lec5min !== undefined);
+  const lec10arr = all.filter(s => s.lec10min !== null && s.lec10min !== undefined);
+  const avgLec5 = lec5arr.length > 0 ? Math.round(lec5arr.reduce((s,x) => s + x.lec5min, 0) / lec5arr.length * 10) / 10 : null;
+  const avgLec10 = lec10arr.length > 0 ? Math.round(lec10arr.reduce((s,x) => s + x.lec10min, 0) / lec10arr.length * 10) / 10 : null;
+  const lecPositive5 = lec5arr.filter(s => s.lec5min > 0).length;
+  const lecPositive10 = lec10arr.filter(s => s.lec10min > 0).length;
+
+  // Near-miss (counterfactual) stats
+  const nearMisses = state.nearMisses || [];
+  const nmCompleted = nearMisses.filter(s => s.gameCompleted);
+  const nmWins = nmCompleted.filter(s => s.wouldHaveWon).length;
+  const nmWR = nmCompleted.length > 0 ? Math.round(nmWins / nmCompleted.length * 1000) / 10 : 0;
+
   return {
     total: all.length, completed: completed.length, pending: pending.length,
     mlW, mlL, mlWR, mlProfit, mlROI, mlRisked,
     atsW, atsL, atsP, atsWR, atsProfit, atsROI, atsRisked,
     bySig, byQ, byRec,
-    totalRisked, currentBankroll
+    totalRisked, currentBankroll,
+    avgLec5, avgLec10, lecCount5: lec5arr.length, lecCount10: lec10arr.length,
+    lecPositive5, lecPositive10,
+    nearMissTotal: nearMisses.length, nearMissCompleted: nmCompleted.length, nearMissWR: nmWR
   };
 }
 
@@ -3404,7 +3587,11 @@ function renderSignalTracker() {
   h += '<div style="font-size:28px;font-weight:800;color:'+bkColor+'">$'+st.currentBankroll.toLocaleString()+'</div>';
   h += '<div style="font-size:11px;color:var(--text-muted)">Started: $'+TRACKER_BANKROLL.toLocaleString()+' | P&L: <span style="color:'+bkColor+'">'+pnlSign+'$'+pnl.toLocaleString()+'</span></div></div>';
   h += '<div style="text-align:right"><div style="font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:1px;margin-bottom:4px">KELLY SIZING</div>';
-  h += '<div style="font-size:12px;color:var(--text-secondary);line-height:1.6">Edge est: 5-12% by signal strength<br>Max bet: '+Math.round(TRACKER_MAX_KELLY*100)+'% of bankroll ($'+(TRACKER_BANKROLL*TRACKER_MAX_KELLY).toLocaleString()+')<br>Odds: live market or -110 default</div></div>';
+  const _resolved = st.completed;
+  const _sizingMode = _resolved < TRACKER_MIN_SAMPLE
+    ? 'FLAT UNIT: $'+TRACKER_FLAT_UNIT+'/bet ('+_resolved+'/'+TRACKER_MIN_SAMPLE+' signals to unlock Kelly)'
+    : 'KELLY: empirical edge · Half-Kelly · Max '+Math.round(TRACKER_MAX_KELLY*100)+'% ($'+(TRACKER_BANKROLL*TRACKER_MAX_KELLY).toLocaleString()+')';
+  h += '<div style="font-size:12px;color:var(--text-secondary);line-height:1.6">'+_sizingMode+'<br>Odds: live market or -110 default</div></div>';
   h += '</div></div>';
 
   // ===== SUMMARY STATS GRID =====
@@ -3420,6 +3607,15 @@ function renderSignalTracker() {
   h += statCard('ML P&L', (st.mlProfit>=0?'+':'')+' $'+st.mlProfit.toLocaleString(), 'ROI: '+(st.mlROI>=0?'+':'')+st.mlROI+'%', st.mlProfit>=0?'var(--green)':'var(--red)');
   h += statCard('ATS P&L', (st.atsProfit>=0?'+':'')+' $'+st.atsProfit.toLocaleString(), 'ROI: '+(st.atsROI>=0?'+':'')+st.atsROI+'%', st.atsProfit>=0?'var(--green)':'var(--red)');
   h += statCard('TOTAL RISKED', '$'+st.totalRisked.toLocaleString(), st.completed+' resolved', 'var(--text-primary)');
+  // LEC card
+  const lecVal = st.avgLec5 !== null ? (st.avgLec5 > 0 ? '+' : '') + st.avgLec5 : '--';
+  const lecColor = st.avgLec5 === null ? 'var(--text-muted)' : st.avgLec5 > 0 ? 'var(--green)' : 'var(--red)';
+  const lecSub = st.lecCount5 > 0 ? st.lecPositive5 + '/' + st.lecCount5 + ' moved in favor (5m)' : 'Needs live odds data';
+  h += statCard('LEC (5 MIN)', lecVal, lecSub, lecColor);
+  // Near-miss counterfactual card
+  const nmVal = st.nearMissCompleted > 0 ? st.nearMissWR + '%' : '--';
+  const nmColor = st.nearMissCompleted === 0 ? 'var(--text-muted)' : st.nearMissWR >= 52.4 ? 'var(--orange)' : 'var(--text-muted)';
+  h += statCard('NEAR-MISS WR', nmVal, st.nearMissTotal + ' tracked (' + st.nearMissCompleted + ' resolved)', nmColor);
   h += '</div>';
 
   // ===== BREAKDOWN BY SIGNAL TYPE =====
