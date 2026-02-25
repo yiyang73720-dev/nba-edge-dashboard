@@ -1566,6 +1566,99 @@ if (_bsEl) _bsEl.value = state.bankroll.start || '';
 if (_bcEl) _bcEl.value = state.bankroll.current || '';
 renderBetLog(); renderStarDB(); renderQtrAlerts(); loadBankrollSettings();
 
+// ==================== TEAM PROFILES CACHE ====================
+// Fetches full team data: standing, seed, streak, PPG, OppPPG, diff, home/road records
+let teamProfileCache = {}; // { 'BOS': { seed: 2, standing: '1st Atlantic', streak: 4, ppg: 115.0, oppg: 107.6, diff: 7.4, homeRec: '18-9', roadRec: '20-10' }, ... }
+let teamProfileLastFetch = 0;
+
+async function fetchTeamProfiles() {
+  const now = Date.now();
+  // Refresh every 30 min max
+  if (now - teamProfileLastFetch < 30 * 60 * 1000 && Object.keys(teamProfileCache).length > 0) return;
+  try {
+    const league = isNCAA() ? 'mens-college-basketball' : 'nba';
+    // NBA: 30 teams via IDs 1-30. NCAA: too many — use scoreboard teams only.
+    if (isNCAA()) {
+      // For NCAA, fetch profiles from today's scoreboard teams only
+      const sbRes = await fetch(`https://site.api.espn.com/apis/site/v2/sports/basketball/${league}/scoreboard`);
+      if (!sbRes.ok) return;
+      const sbData = await sbRes.json();
+      const teamIds = new Set();
+      for (const ev of (sbData.events || [])) {
+        const comp = ev.competitions?.[0];
+        if (!comp) continue;
+        for (const c of (comp.competitors || [])) {
+          if (c.team?.id) teamIds.add(c.team.id);
+        }
+      }
+      const fetches = [...teamIds].map(id =>
+        fetch(`https://site.api.espn.com/apis/site/v2/sports/basketball/${league}/teams/${id}`)
+          .then(r => r.ok ? r.json() : null).catch(() => null)
+      );
+      const results = await Promise.all(fetches);
+      for (const d of results) {
+        if (!d?.team) continue;
+        parseTeamProfile(d.team);
+      }
+    } else {
+      // NBA: fetch all 30 teams in parallel (IDs 1-30)
+      const ids = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30];
+      const fetches = ids.map(id =>
+        fetch(`https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/${id}`)
+          .then(r => r.ok ? r.json() : null).catch(() => null)
+      );
+      const results = await Promise.all(fetches);
+      for (const d of results) {
+        if (!d?.team) continue;
+        parseTeamProfile(d.team);
+      }
+    }
+    teamProfileLastFetch = now;
+    console.log(`[TeamProfiles] Cached ${Object.keys(teamProfileCache).length} teams`);
+  } catch (e) {
+    console.warn('[TeamProfiles] Fetch error:', e);
+  }
+}
+
+function parseTeamProfile(team) {
+  const abbr = team.abbreviation;
+  if (!abbr) return;
+  const rec = team.record || {};
+  const items = rec.items || [];
+  const total = items.find(i => i.type === 'total') || {};
+  const home = items.find(i => i.type === 'home') || {};
+  const road = items.find(i => i.type === 'road') || {};
+  const getStat = (item, name) => { const s = (item.stats || []).find(x => x.name === name); return s ? s.value : null; };
+  teamProfileCache[abbr] = {
+    seed: getStat(total, 'playoffSeed'),
+    standing: team.standingSummary || '',
+    streak: getStat(total, 'streak'),
+    ppg: getStat(total, 'avgPointsFor'),
+    oppg: getStat(total, 'avgPointsAgainst'),
+    diff: getStat(total, 'differential'),
+    homeRec: home.summary || '',
+    roadRec: road.summary || '',
+    winPct: getStat(total, 'winPercent'),
+  };
+}
+
+function teamProfileHTML(abbr, homeAway) {
+  const p = teamProfileCache[abbr];
+  if (!p) return '';
+  const diff = p.diff != null ? (p.diff > 0 ? '+' + p.diff.toFixed(1) : p.diff.toFixed(1)) : '';
+  const diffColor = p.diff > 0 ? '#0d9488' : p.diff < 0 ? 'var(--red)' : 'var(--text-muted)';
+  const streakStr = p.streak != null ? (p.streak > 0 ? 'W' + Math.round(p.streak) : 'L' + Math.abs(Math.round(p.streak))) : '';
+  const streakColor = p.streak > 0 ? '#0d9488' : 'var(--red)';
+  const ctxRec = homeAway === 'home' ? (p.homeRec ? 'H: ' + p.homeRec : '') : (p.roadRec ? 'R: ' + p.roadRec : '');
+  const seedStr = p.seed != null ? '#' + Math.round(p.seed) : '';
+  const ppgStr = p.ppg != null ? p.ppg.toFixed(1) : '';
+  const oppgStr = p.oppg != null ? p.oppg.toFixed(1) : '';
+  return `<div class="team-profile" style="font-size:9px;color:var(--text-muted);margin-top:2px;line-height:1.5;">
+    ${seedStr ? '<span style="font-weight:700;color:var(--accent);">' + seedStr + '</span> ' : ''}${ctxRec ? '<span>' + ctxRec + '</span> ' : ''}${streakStr ? '<span style="font-weight:700;color:' + streakColor + ';">' + streakStr + '</span> ' : ''}
+    <span>${ppgStr ? ppgStr + '/' + oppgStr + ' <span style="font-weight:700;color:' + diffColor + ';">' + diff + '</span>' : ''}</span>
+  </div>`;
+}
+
 // Kill browser notifications permanently — we use in-app toasts only
 if (window.Notification) { window.Notification = function(){}; window.Notification.permission = 'denied'; window.Notification.requestPermission = function(){ return Promise.resolve('denied'); }; }
 
@@ -1994,6 +2087,7 @@ async function fetchESPNScoreboard() {
   const tpGrid = document.getElementById('threept-grid');
   setConnStatus('loading');
     await fetchLiveOdds();
+    fetchTeamProfiles(); // non-blocking — caches in background
 
   try {
     const modeSignal = _modeFetchController ? _modeFetchController.signal : undefined;
@@ -2104,6 +2198,7 @@ async function fetchESPNScoreboard() {
               <div class="team-block">
                 <div class="team-name">${teamLogoImg(aLogo, 20)}${teamDisplayShort(aA, aFull)}</div>
                 <div class="team-record">${aRec}</div>
+                ${teamProfileHTML(aA, 'away')}
                 <div class="team-score" style="color:var(--text-muted);">-</div>
               </div>
               <div class="vs-block">
@@ -2112,6 +2207,7 @@ async function fetchESPNScoreboard() {
               <div class="team-block">
                 <div class="team-name">${teamLogoImg(hLogo, 20)}${teamDisplayShort(hA, hFull)}</div>
                 <div class="team-record">${hRec}</div>
+                ${teamProfileHTML(hA, 'home')}
                 <div class="team-score" style="color:var(--text-muted);">-</div>
               </div>
             </div>
@@ -2139,6 +2235,7 @@ async function fetchESPNScoreboard() {
               <div class="team-block">
                 <div class="team-name" ${winner==='away'?'style="color:var(--accent);font-weight:900;"':''}>${teamLogoImg(aLogo, 20)}${teamDisplayShort(aA, aFull)}</div>
                 <div class="team-record">${aRec}</div>
+                ${teamProfileHTML(aA, 'away')}
                 <div class="team-score" ${winner==='away'?'style="color:var(--accent);"':'style="color:var(--text-muted);"'}>${aS}</div>
               </div>
               <div class="vs-block">
@@ -2147,6 +2244,7 @@ async function fetchESPNScoreboard() {
               <div class="team-block">
                 <div class="team-name" ${winner==='home'?'style="color:var(--accent);font-weight:900;"':''}>${teamLogoImg(hLogo, 20)}${teamDisplayShort(hA, hFull)}</div>
                 <div class="team-record">${hRec}</div>
+                ${teamProfileHTML(hA, 'home')}
                 <div class="team-score" ${winner==='home'?'style="color:var(--accent);"':'style="color:var(--text-muted);"'}>${hS}</div>
               </div>
             </div>
@@ -2779,15 +2877,17 @@ async function fetchESPNScoreboard() {
             <div class="team-block">
               <div class="team-name">${teamLogoImg(aLogo, 20)}${teamDisplayShort(aA, aFull)}</div>
                             <div class="team-record">${aRec}</div>
+              ${teamProfileHTML(aA, 'away')}
               <div class="team-score">${isLive?aS:'-'}</div>
             </div>
             <div class="vs-block">
               <div class="vs-text" style="font-size:11px;font-weight:500;color:var(--text-muted);opacity:0.6;">vs</div>
-              ${isLive && !isNCAA() ? '<a href="https://sports.qq.com/nba/" target="_blank" class="watch-link" style="margin-top:4px;">WATCH</a>' : ''}
+              ${isLive && !isNCAA() ? '<a href="https://sports.qq.com/nba/" target="_blank" class="watch-link" style="margin-top:4px;">WATCH 腾讯</a>' : ''}
             </div>
             <div class="team-block">
               <div class="team-name">${teamLogoImg(hLogo, 20)}${teamDisplayShort(hA, hFull)}</div>
                             <div class="team-record">${hRec}</div>
+              ${teamProfileHTML(hA, 'home')}
               <div class="team-score">${isLive?hS:'-'}</div>
             </div>
           </div>
