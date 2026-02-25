@@ -192,6 +192,16 @@ function analyzeDamageLocked(modeState, gameId, teamSide, gMins) {
   return { locked: isTrailing && deficitStable && consistentlyBehind, deficitNow, deficitThen };
 }
 
+// === SIGNAL URGENCY ===
+function getUrgency(cfg, per, clk) {
+  const gMins = getElapsedMinutes(cfg, per, clk);
+  const pct = gMins / cfg.totalMins;
+  if (pct < 0.30) return { level: 'DEVELOPING', mult: 0.70, pct };
+  if (pct < 0.60) return { level: 'PRIME', mult: 1.00, pct };
+  if (pct < 0.85) return { level: 'ACT_NOW', mult: 0.85, pct };
+  return { level: 'CLOSING', mult: 0.50, pct };
+}
+
 // === BET RECOMMENDATION ===
 function getRecommendation(cfg, aS, hS, per, clk, signalLevel) {
   const margin = Math.abs(hS - aS);
@@ -214,17 +224,24 @@ function getRecommendation(cfg, aS, hS, per, clk, signalLevel) {
   return { type, margin, minRemaining: Math.round(gameMinRemaining), units };
 }
 
-// === KELLY ===
-function kellySize(impliedP, odds, signalCount) {
-  const edge = signalCount >= 3 ? 0.12 : signalCount >= 2 ? 0.08 : 0.05;
+// === KELLY (unified with frontend moderate formula) ===
+function kellySize(impliedP, odds, signalCount, urgencyMult) {
+  // Unified edge: base 3.5% + 1% per extra signal, capped at 8%
+  // Matches frontend getEdgeBonus('moderate') exactly
+  const sc = signalCount || 1;
+  const baseEdge = 0.035 + Math.min(sc - 1, 3) * 0.01;
+  const edge = Math.min(baseEdge, 0.08);
   const p = Math.min(0.90, impliedP + edge);
   const q = 1 - p;
   const b = odds > 0 ? odds / 100 : 100 / Math.abs(odds);
   let fStar = (b * p - q) / b;
   if (fStar < 0) fStar = 0;
   fStar = fStar * 0.5; // half-Kelly
+  // Apply urgency multiplier (PRIME=1.0, ACT_NOW=0.85, DEVELOPING=0.7, CLOSING=0.5)
+  if (urgencyMult !== undefined) fStar *= urgencyMult;
   if (fStar > 0.05) fStar = 0.05;
-  if (fStar > 0 && fStar < 0.005) fStar = 0.005;
+  // Minimum edge threshold: if edge < 3%, don't bet (noise territory)
+  if (edge < 0.03) { fStar = 0; }
   const bankroll = 20000;
   const bet = Math.max(0, Math.round(bankroll * fStar));
   return { bet, fStar: Math.round(fStar * 1000) / 10, p: Math.round(p * 1000) / 10, edge: Math.round(edge * 1000) / 10 };
@@ -556,8 +573,8 @@ async function detectSignals(cfg) {
         } else { softStar = true; }
       }
 
-      const isCombined = (has3ptFragile && hasStar) || (soft3pt && softStar && !(has3ptFragile && hasStar));
-      const signalCount = [has3ptFragile || soft3pt, hasStar || softStar].filter(Boolean).length;
+      let isCombined = (has3ptFragile && hasStar) || (soft3pt && softStar && !(has3ptFragile && hasStar));
+      let signalCount = [has3ptFragile || soft3pt, hasStar || softStar].filter(Boolean).length;
 
       if (signalCount === 0) continue;
 
@@ -575,6 +592,15 @@ async function detectSignals(cfg) {
       else if (hStarCoil?.coilTier === 'standard') awayFade += 1;
       else if (hStarCoil?.coilTier === 'locked') homeFade += 1;
 
+      // Conflict detection: if both sides have fade weight, signals oppose each other
+      // When net difference < 0.5, they effectively cancel — downgrade to single signal
+      const conflicting = awayFade > 0 && homeFade > 0 && Math.abs(awayFade - homeFade) < 0.5;
+      if (conflicting && isCombined) {
+        isCombined = false;
+        signalCount = 1;
+        log(`  [${cfg.league}] ${gLabel}: Conflicting signals (awayFade=${awayFade.toFixed(1)}, homeFade=${homeFade.toFixed(1)}) — downgraded from COMBINED`);
+      }
+
       // Home Court Booster (NCAA only)
       let homeCourtEdge = false;
       if (isNCAA && awayFade > 0) {
@@ -588,11 +614,12 @@ async function detectSignals(cfg) {
       else if (awayFade > 0) { betTeam = hA; fadeTeam = aA; }
       else { betTeam = aS < hS ? aA : hA; fadeTeam = aS < hS ? hA : aA; }
 
-      // ======== KELLY + ODDS ========
+      // ======== URGENCY + KELLY + ODDS ========
+      const urgency = getUrgency(cfg, per, clk);
       const odds = matchOdds(modeState, aA, hA, aFull, hFull);
       const betML = odds ? (betTeam === aA ? odds.awayML : odds.homeML) : -110;
       const impliedP = betML < 0 ? Math.abs(betML) / (Math.abs(betML) + 100) : 100 / (betML + 100);
-      const kelly = kellySize(impliedP, betML, signalCount);
+      const kelly = kellySize(impliedP, betML, signalCount, urgency.mult);
       const rec = getRecommendation(cfg, aS, hS, per, clk, 2);
 
       // ======== RECORD SIGNAL ========
@@ -619,6 +646,8 @@ async function detectSignals(cfg) {
         signalCount,
         isCombined,
         homeCourtEdge,
+        urgency: urgency.level,
+        urgencyMult: urgency.mult,
         recType: rec.type,
         recMargin: rec.margin,
         recMinRemaining: rec.minRemaining,
@@ -646,7 +675,8 @@ async function detectSignals(cfg) {
       const sigTypes = entry.signalTypes.join(' + ');
       const combined = isCombined ? ' [COMBINED]' : '';
       const hc = homeCourtEdge ? ' [HOME COURT]' : '';
-      log(`  [${cfg.league}] SIGNAL: ${gLabel} ${aS}-${hS} ${periodLabel(cfg, per)} ${clk} | BET ${betTeam} ${rec.type} @ ${betML} | Kelly: $${kelly.bet} (${kelly.fStar}%) | ${sigTypes}${combined}${hc}`);
+      const urg = ` [${urgency.level}]`;
+      log(`  [${cfg.league}] SIGNAL: ${gLabel} ${aS}-${hS} ${periodLabel(cfg, per)} ${clk} | BET ${betTeam} ${rec.type} @ ${betML} | Kelly: $${kelly.bet} (${kelly.fStar}%) | ${sigTypes}${combined}${hc}${urg}`);
     }
 
     if (newSignals > 0) {

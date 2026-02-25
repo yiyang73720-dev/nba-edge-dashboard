@@ -1589,6 +1589,16 @@ function getQ1Expected(ppg) { return ppg * 0.25; }
 function getHalfExpected(ppg) { return ppg * 0.5; }
 function getExpectedByTime(ppg, mins) { return ppg * (mins / getTotalGameMinutes()); }
 
+// ==================== SIGNAL URGENCY ====================
+function getUrgency(period, clock) {
+  const gMins = getElapsedMinutes(period, clock);
+  const pct = gMins / getTotalGameMinutes();
+  if (pct < 0.30) return { level: 'DEVELOPING', mult: 0.70, pct, color: 'var(--text-muted)', icon: '◔' };
+  if (pct < 0.60) return { level: 'PRIME', mult: 1.00, pct, color: 'var(--green)', icon: '●' };
+  if (pct < 0.85) return { level: 'ACT_NOW', mult: 0.85, pct, color: 'var(--orange)', icon: '▲' };
+  return { level: 'CLOSING', mult: 0.50, pct, color: 'var(--red)', icon: '◉' };
+}
+
 // ==================== BET RECOMMENDATION ENGINE ====================
 // Uses live margin + time remaining to decide: ML, Spread, or Watch
 // Signal detection is unchanged — this only runs AFTER a signal fires
@@ -2458,6 +2468,16 @@ async function fetchESPNScoreboard() {
           else if (hStarCoil?.coilTier === 'standard') { awayFade += 1; } // home standard coil = home bounces back = fade away
           else if (hStarCoil?.coilTier === 'locked') { homeFade += 1; }   // home locked = home done = fade home
 
+          // ===== CONFLICT DETECTION =====
+          // When both sides have fade weight and the net difference is < 0.5,
+          // signals effectively cancel each other — downgrade from COMBINED
+          const _conflicting = awayFade > 0 && homeFade > 0 && Math.abs(awayFade - homeFade) < 0.5;
+          if (_conflicting && activeSignals >= 2) {
+            activeSignals = 1;
+            sigCombined = Math.max(0, sigCombined - 1);
+            console.log(`[Conflict] ${gLabel}: awayFade=${awayFade.toFixed(1)}, homeFade=${homeFade.toFixed(1)} — downgraded from COMBINED`);
+          }
+
           // ===== HOME COURT BOOSTER (NCAA ONLY) =====
           // NCAA home court = 3.5-4 pts (vs NBA 2.5). This is a structural tailwind for the home team.
           // When signals say bet the HOME team: crowd energy + regression = double tailwind → boost.
@@ -2515,6 +2535,9 @@ async function fetchESPNScoreboard() {
           thesis.signals = signals;
           thesis.signalLevel = signalLevel;
           thesis.homeCourtEdge = homeCourtEdge && betTeam === hA;
+          // Urgency: how much game runway remains for regression
+          const _urgency = getUrgency(per, clk);
+          thesis.urgency = _urgency;
           const _tOdds = matchOdds(aA, hA, aFull, hFull);
           let _betML = null, _implP = 0;
           if (_tOdds) {
@@ -2522,7 +2545,7 @@ async function fetchESPNScoreboard() {
             _implP = _betML < 0 ? Math.abs(_betML)/(Math.abs(_betML)+100) : 100/(_betML+100);
             thesis.marketOdds = _betML;
             thesis.impliedP = _implP;
-            const _k = kellySize(_implP, _betML);
+            const _k = kellySize(_implP, _betML, null, activeSignals, _urgency.mult);
             thesis.kellyPct = _k.fStar;
             thesis.kellyBet = _k.bet;
             thesis.kellyEdge = _k.edge;
@@ -2677,11 +2700,13 @@ async function fetchESPNScoreboard() {
           return '<span class="signal-badge badge-' + s.type + '">' + (badges[s.type]||s.type.toUpperCase()) + '</span>';
         }).join(' ');
         if (t.homeCourtEdge) sigs += ' <span class="signal-badge badge-road">HOME COURT</span>';
+        const _urg = t.urgency || { level: 'PRIME', icon: '●', color: 'var(--green)' };
+        sigs += ' <span class="signal-badge" style="background:' + _urg.color + ';color:#fff;font-size:9px;">' + _urg.icon + ' ' + _urg.level.replace('_', ' ') + '</span>';
         const oddsStr = t.marketOdds ? ' @ ' + (t.marketOdds > 0 ? '+' : '') + t.marketOdds : '';
         const kellyStr = t.kellyPct ? ' (Kelly: ' + (t.kellyPct*100).toFixed(1) + '%)' : '';
         const elapsed = state.signalFirstSeen[t.eventId] ? Math.floor((Date.now() - state.signalFirstSeen[t.eventId]) / 60000) : 0;
         const elapsedStr = elapsed > 0 ? ' \u2022 Signal active ' + elapsed + 'm' : ' \u2022 NEW';
-        return '<div style="background:var(--card-bg);border:1px solid var(--accent);border-radius:var(--radius);padding:14px 18px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow-sm);animation:slideUp 0.3s ease;border-left:4px solid var(--accent);">' +
+        return '<div style="background:var(--card-bg);border:1px solid var(--accent);border-radius:var(--radius);padding:14px 18px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow-sm);animation:slideUp 0.3s ease;border-left:4px solid ' + _urg.color + ';">' +
           '<div><div style="font-size:14px;font-weight:800;color:var(--accent);letter-spacing:-0.3px;">BET ' + t.betSide + ' ML' + oddsStr + '</div>' +
           '<div style="font-size:11px;color:var(--text-secondary);margin-top:3px;">' + t.game + ' \u2022 ' + (isNCAA() ? ((t.per||0)<=2 ? 'H'+(t.per||'?') : 'OT') : 'Q'+(t.per||'?')) + ' ' + (t.clk||'') + kellyStr + elapsedStr + '</div>' +
           '<div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap;">' + sigs + '</div></div>' +
@@ -2963,7 +2988,7 @@ function getEdgeBonus(signalCount) {
   return Math.min(base + bonus, 0.08);
 }
 
-function kellySize(impliedP, odds, fraction, signalCount) {
+function kellySize(impliedP, odds, fraction, signalCount, urgencyMult) {
   if (!fraction) {
     const sel = document.getElementById('kelly-fraction');
     fraction = sel ? parseFloat(sel.value) : 0.5;
@@ -2976,8 +3001,11 @@ function kellySize(impliedP, odds, fraction, signalCount) {
   let fStar = (b * p - q) / b;
   if (fStar < 0) fStar = 0;
   fStar = fStar * fraction;
+  // Apply urgency multiplier (PRIME=1.0, ACT_NOW=0.85, DEVELOPING=0.7, CLOSING=0.5)
+  if (urgencyMult !== undefined) fStar *= urgencyMult;
   if (fStar > 0.05) fStar = 0.05;
-  if (fStar > 0 && fStar < 0.005) fStar = 0.005;
+  // Minimum edge threshold: if edge < 3%, don't bet
+  if (edge < 0.03) { fStar = 0; }
   const bet = Math.max(0, Math.round(bankroll * fStar));
   return { bet, fStar: Math.round(fStar * 1000) / 10, p: Math.round(p * 1000) / 10, edge: Math.round(edge * 1000) / 10, fraction, bankroll };
 }
