@@ -369,11 +369,14 @@
     .team-block { text-align: center; flex: 1; min-width: 0; }
     .team-block strong, .team-block b { display: block; font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 1px; }
     .team-block small { font-size: 11px; color: var(--text-muted); }
-    .team-name { font-size: 15px; font-weight: 800; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 160px; margin: 0 auto; letter-spacing: -0.3px; }
+    .team-name { font-size: 15px; font-weight: 800; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 160px; margin: 0 auto; letter-spacing: -0.3px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+    .team-name img { flex-shrink: 0; }
+    .watch-link { display: inline-flex; align-items: center; gap: 3px; font-size: 9px; font-weight: 600; color: var(--accent); background: var(--accent-light); padding: 2px 7px; border-radius: 3px; text-decoration: none; letter-spacing: 0.3px; transition: opacity 0.15s; }
+    .watch-link:hover { opacity: 0.7; }
     .team-score { font-size: 28px; font-weight: 900; color: var(--text-primary); margin-top: 4px; letter-spacing: -1px; line-height: 1; }
     .team-record { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
     .team-3pt-avg { font-size: 10px; color: var(--text-muted); }
-    .vs-block { padding: 0 10px; color: var(--border); font-size: 14px; font-weight: 300; }
+    .vs-block { padding: 0 10px; color: var(--border); font-size: 14px; font-weight: 300; display: flex; flex-direction: column; align-items: center; gap: 4px; }
     .sound-toggle { display: none!important; }
     .scenario-alert-panel { position: fixed; bottom: 0; left: 0; right: 0; z-index: 500; background: var(--white); border-top: 1px solid var(--border); box-shadow: 0 -4px 20px rgba(0,0,0,.06); padding: 14px 28px; max-height: 160px; overflow-y: auto; }
 
@@ -1536,6 +1539,7 @@ const TEAM_MAP = {
 function shortName(n) { return TEAM_MAP[n] || n.split(' ').pop().substring(0,3).toUpperCase(); }
 function teamDisplay(abbr, fullName) { return abbr; }
 function teamDisplayShort(abbr, fullName) { return abbr; }
+function teamLogoImg(logoUrl, size) { if (!logoUrl) return ''; return `<img src="${logoUrl}" alt="" style="width:${size||20}px;height:${size||20}px;object-fit:contain;vertical-align:middle;">`; }
 
 // ==================== STATE ====================
 let state = {
@@ -2055,6 +2059,8 @@ async function fetchESPNScoreboard() {
       const aFull = away.team?.displayName||'';
       const hFull = home.team?.displayName||'';
       const hA = home.team?.abbreviation || shortName(home.team?.displayName||'');
+      const aLogo = away.team?.logo || '';
+      const hLogo = home.team?.logo || '';
       const aS = parseInt(away.score)||0, hS = parseInt(home.score)||0;
       const gameState = event.status?.type?.state;
       const isLive = gameState === 'in';
@@ -2096,7 +2102,7 @@ async function fetchESPNScoreboard() {
           <div class="game-card-body">
             <div class="game-teams">
               <div class="team-block">
-                <div class="team-name">${teamDisplayShort(aA, aFull)}</div>
+                <div class="team-name">${teamLogoImg(aLogo, 20)}${teamDisplayShort(aA, aFull)}</div>
                 <div class="team-record">${aRec}</div>
                 <div class="team-score" style="color:var(--text-muted);">-</div>
               </div>
@@ -2104,7 +2110,7 @@ async function fetchESPNScoreboard() {
                 <div class="vs-text" style="font-size:11px;font-weight:500;color:var(--text-muted);opacity:0.6;">vs</div>
               </div>
               <div class="team-block">
-                <div class="team-name">${teamDisplayShort(hA, hFull)}</div>
+                <div class="team-name">${teamLogoImg(hLogo, 20)}${teamDisplayShort(hA, hFull)}</div>
                 <div class="team-record">${hRec}</div>
                 <div class="team-score" style="color:var(--text-muted);">-</div>
               </div>
@@ -2112,6 +2118,7 @@ async function fetchESPNScoreboard() {
             <div style="text-align:center;padding:8px 0 4px;">
               <div style="font-size:12px;font-weight:600;color:var(--text-secondary);">${tipoffStr}</div>
               ${oddsDetail || ou ? '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">' + (oddsDetail ? oddsDetail : '') + (ou ? ' | O/U ' + ou : '') + '</div>' : ''}
+              ${!isNCAA() ? '<div style="margin-top:4px;"><a href="https://sports.qq.com/nba/" target="_blank" class="watch-link">WATCH 腾讯</a></div>' : ''}
             </div>
           </div>
         </div>`;
@@ -2130,7 +2137,7 @@ async function fetchESPNScoreboard() {
           <div class="game-card-body">
             <div class="game-teams">
               <div class="team-block">
-                <div class="team-name" ${winner==='away'?'style="color:var(--accent);font-weight:900;"':''}>${teamDisplayShort(aA, aFull)}</div>
+                <div class="team-name" ${winner==='away'?'style="color:var(--accent);font-weight:900;"':''}>${teamLogoImg(aLogo, 20)}${teamDisplayShort(aA, aFull)}</div>
                 <div class="team-record">${aRec}</div>
                 <div class="team-score" ${winner==='away'?'style="color:var(--accent);"':'style="color:var(--text-muted);"'}>${aS}</div>
               </div>
@@ -2138,7 +2145,7 @@ async function fetchESPNScoreboard() {
                 <div class="vs-text" style="font-size:11px;font-weight:500;color:var(--text-muted);opacity:0.6;">vs</div>
               </div>
               <div class="team-block">
-                <div class="team-name" ${winner==='home'?'style="color:var(--accent);font-weight:900;"':''}>${teamDisplayShort(hA, hFull)}</div>
+                <div class="team-name" ${winner==='home'?'style="color:var(--accent);font-weight:900;"':''}>${teamLogoImg(hLogo, 20)}${teamDisplayShort(hA, hFull)}</div>
                 <div class="team-record">${hRec}</div>
                 <div class="team-score" ${winner==='home'?'style="color:var(--accent);"':'style="color:var(--text-muted);"'}>${hS}</div>
               </div>
@@ -2179,7 +2186,7 @@ async function fetchESPNScoreboard() {
 
       let signals=[], signalLevel=0;
       const gLabelFull = gLabel;
-      let thesis = { game: gLabel, gameFull: gLabelFull, aTeam: aA, hTeam: hA, aTeamFull: aFull, hTeamFull: hFull, aScore: aS, hScore: hS, per, clk, detail, criteria: {}, betSide: '', betSideFull: '', betLogic: '', signals: [] };
+      let thesis = { game: gLabel, gameFull: gLabelFull, aTeam: aA, hTeam: hA, aTeamFull: aFull, hTeamFull: hFull, aLogo, hLogo, aScore: aS, hScore: hS, per, clk, detail, criteria: {}, betSide: '', betSideFull: '', betLogic: '', signals: [] };
 
       if (isLive) {
         // 3PT CHECK — evaluate shooting stats (used as input for 3PT Fragile signal)
@@ -2770,15 +2777,16 @@ async function fetchESPNScoreboard() {
           <!-- SCOREBOARD -->
           <div class="game-teams">
             <div class="team-block">
-              <div class="team-name">${teamDisplayShort(aA, aFull)}</div>
+              <div class="team-name">${teamLogoImg(aLogo, 20)}${teamDisplayShort(aA, aFull)}</div>
                             <div class="team-record">${aRec}</div>
               <div class="team-score">${isLive?aS:'-'}</div>
             </div>
             <div class="vs-block">
               <div class="vs-text" style="font-size:11px;font-weight:500;color:var(--text-muted);opacity:0.6;">vs</div>
+              ${isLive && !isNCAA() ? '<a href="https://sports.qq.com/nba/" target="_blank" class="watch-link" style="margin-top:4px;">WATCH</a>' : ''}
             </div>
             <div class="team-block">
-              <div class="team-name">${teamDisplayShort(hA, hFull)}</div>
+              <div class="team-name">${teamLogoImg(hLogo, 20)}${teamDisplayShort(hA, hFull)}</div>
                             <div class="team-record">${hRec}</div>
               <div class="team-score">${isLive?hS:'-'}</div>
             </div>
@@ -2836,7 +2844,7 @@ async function fetchESPNScoreboard() {
         const cb=(aHot||hHot)?'hot-card':(aWarm||hWarm)?'warm-card':'';
         const _pCount=isNCAA()?2:4,_pPfx=isNCAA()?'H':'Q';const qBoxes=(t,p,m,a)=>{const pv=parseFloat(p)||0,mv=parseInt(m)||0,av=parseInt(a)||0;let b='';for(let q=1;q<=_pCount;q++){const act=q===per,past=q<per;if(past||act){const hc2=pv>=50&&av>=8&&act?'hot-q':act?'active-q':'';b+=`<div class="qtr-box ${hc2}"><div class="qtr-label">${_pPfx}${q}${act?' *':''}</div><div class="qtr-value ${act&&pv>=50?'hot-val':'normal-val'}">${act?pv.toFixed(0)+'%':'-'}</div><div class="qtr-detail">${act?mv+'/'+av:'done'}</div></div>`;}else b+=`<div class="qtr-box"><div class="qtr-label">${_pPfx}${q}</div><div class="qtr-value normal-val">-</div><div class="qtr-detail">-</div></div>`;}return b;};
         const tRow=(t,p,m,a,hot,warm)=>{const badge=hot?'<span class="signal-badge signal-fire">UNSUSTAINABLE</span>':warm?'<span class="signal-badge signal-moderate">ELEVATED</span>':'<span class="signal-badge signal-none">Normal</span>';return `<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><span style="font-weight:800;font-size:14px;color:var(--text-primary);">${t}</span>${badge}</div>${bar3(p,m,a,t)}<div class="qtr-grid">${qBoxes(t,p,m,a)}</div></div>`;};
-        tpCards+=`<div class="three-pt-card ${cb}"><div class="three-pt-card-header"><span>${gLabel}</span><span>${periodLabel} ${clk}</span></div><div class="three-pt-card-body">${tRow(aA,a3P,a3M,a3A,aHot,aWarm)}${tRow(hA,h3P,h3M,h3A,hHot,hWarm)}${(aHot||hHot)?`<div style="text-align:center;margin-top:6px;"><button class="btn btn-purple btn-sm" onclick="openLogModal('${gLabel}','3PT Reg','3PT Regression')">Log 3PT Bet</button></div>`:''}</div></div>`;
+        tpCards+=`<div class="three-pt-card ${cb}"><div class="three-pt-card-header"><span style="display:inline-flex;align-items:center;gap:4px;">${teamLogoImg(aLogo,16)}${gLabel}${teamLogoImg(hLogo,16)}</span><span>${periodLabel} ${clk}</span></div><div class="three-pt-card-body">${tRow(aA,a3P,a3M,a3A,aHot,aWarm)}${tRow(hA,h3P,h3M,h3A,hHot,hWarm)}${(aHot||hHot)?`<div style="text-align:center;margin-top:6px;"><button class="btn btn-purple btn-sm" onclick="openLogModal('${gLabel}','3PT Reg','3PT Regression')">Log 3PT Bet</button></div>`:''}</div></div>`;
       }
     }
 
@@ -2864,7 +2872,7 @@ async function fetchESPNScoreboard() {
         const elapsed = state.signalFirstSeen[t.eventId] ? Math.floor((Date.now() - state.signalFirstSeen[t.eventId]) / 60000) : 0;
         const elapsedStr = elapsed > 0 ? ' \u2022 Signal active ' + elapsed + 'm' : ' \u2022 NEW';
         return '<div style="background:var(--card-bg);border:1px solid var(--accent);border-radius:var(--radius);padding:14px 18px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow-sm);animation:slideUp 0.3s ease;border-left:4px solid ' + _urg.color + ';">' +
-          '<div><div style="font-size:14px;font-weight:800;color:var(--accent);letter-spacing:-0.3px;">BET ' + t.betSide + ' ML' + oddsStr + '</div>' +
+          '<div><div style="font-size:14px;font-weight:800;color:var(--accent);letter-spacing:-0.3px;display:flex;align-items:center;gap:5px;">' + teamLogoImg(t.betSide === t.aTeam ? t.aLogo : t.hLogo, 20) + 'BET ' + t.betSide + ' ML' + oddsStr + '</div>' +
           '<div style="font-size:11px;color:var(--text-secondary);margin-top:3px;">' + t.game + ' \u2022 ' + (isNCAA() ? ((t.per||0)<=2 ? 'H'+(t.per||'?') : 'OT') : 'Q'+(t.per||'?')) + ' ' + (t.clk||'') + kellyStr + elapsedStr + '</div>' +
           '<div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap;">' + sigs + '</div></div>' +
           '<div style="text-align:right;padding-left:16px;"><div style="font-size:24px;font-weight:900;color:var(--accent);letter-spacing:-1px;line-height:1;">' + (t.strongCount||0) + '</div><div style="font-size:9px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;">SIGNALS</div></div></div>';
@@ -2958,7 +2966,7 @@ async function fetchESPNScoreboard() {
         return `<div class="thesis-card">
           <div class="thesis-game-bar">
             <div>
-              <div class="thesis-game-label">${t.gameFull || t.game}</div>
+              <div class="thesis-game-label" style="display:flex;align-items:center;gap:6px;">${teamLogoImg(t.aLogo, 18)}${t.gameFull || t.game}${teamLogoImg(t.hLogo, 18)}</div>
               <div class="thesis-game-period">${isNCAA() ? (t.per<=2 ? 'H'+t.per : 'OT'+(t.per-2)) : 'Q'+t.per} ${t.clk} ${leading!=='TIE'?`| ${leading} leads by ${scoreDiff}`:'| Tied'}</div>
             </div>
             <div class="thesis-confidence">
@@ -2985,7 +2993,7 @@ async function fetchESPNScoreboard() {
             </div>
             <div class="thesis-criteria">${criteriaHTML}</div>
             <div class="thesis-actions">
-              <span style="font-size:10px;color:#666;">${aTeamDisplay} ${t.aScore} - ${t.hScore} ${hTeamDisplay} | ${t.detail}</span>
+              <span style="font-size:10px;color:#666;display:inline-flex;align-items:center;gap:3px;">${teamLogoImg(t.aLogo, 14)}${aTeamDisplay} ${t.aScore} - ${t.hScore} ${hTeamDisplay}${teamLogoImg(t.hLogo, 14)} | ${t.detail}</span>
               <button class="btn btn-green btn-sm" onclick="openLogModal('${t.game}','Live ML','Mean Reversion')">Log Bet</button>
             </div>
           </div>
@@ -3026,6 +3034,7 @@ function updateStarTracker(events) {
     const gMins=getElapsedMinutes(per, clk), gPct=getGamePct(per, clk);
     for (const team of (comp.competitors||[])) {
       const tA=team.team?.abbreviation||'';
+      const tLogo=team.team?.logo||'';
       const aT=comp.competitors?.find(c=>c.homeAway==='away'), hT=comp.competitors?.find(c=>c.homeAway==='home');
       const gl=`${aT?.team?.abbreviation||''} @ ${hT?.team?.abbreviation||''}`;
       for (const cat of (team.leaders||[])) {
@@ -3059,7 +3068,7 @@ function updateStarTracker(events) {
           const fc=pr<60?'var(--red)':pr<80?'var(--orange)':'var(--green)';
           const sig=pr<60&&gPct>=0.2&&per<=_regPer?'<span class="signal-badge signal-fire">COLD - BET</span>':pr<75?'<span class="signal-badge signal-moderate">Below Pace</span>':'<span class="signal-badge signal-none">On Pace</span>';
           const _pLabel = isNCAA() ? (per <= 2 ? `H${per}` : `OT${per-2}`) : `Q${per}`;
-          rows+=`<tr class="star-row"><td><strong>${nm}</strong><br><span style="font-size:9px;color:var(--text-muted);">${star.ppg} PPG</span></td><td>${gl}</td><td style="font-size:16px;font-weight:800;">${pts}</td><td>${q1T}</td><td>${hT2}</td><td><div class="pace-indicator"><div class="pace-fill" style="width:${Math.min(pr,100)}%;background:${fc};"></div></div> ${pr.toFixed(0)}%</td><td>${_pLabel} ${clk}</td><td>${sig}</td></tr>`;
+          rows+=`<tr class="star-row"><td style="display:flex;align-items:center;gap:4px;">${teamLogoImg(tLogo, 16)}<div><strong>${nm}</strong><br><span style="font-size:9px;color:var(--text-muted);">${star.ppg} PPG</span></div></td><td>${gl}</td><td style="font-size:16px;font-weight:800;">${pts}</td><td>${q1T}</td><td>${hT2}</td><td><div class="pace-indicator"><div class="pace-fill" style="width:${Math.min(pr,100)}%;background:${fc};"></div></div> ${pr.toFixed(0)}%</td><td>${_pLabel} ${clk}</td><td>${sig}</td></tr>`;
         }
       }
     }
