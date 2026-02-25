@@ -4846,15 +4846,18 @@ try {
       }
       if (!matchKey) matchKey = awayName + ' vs ' + homeName;
 
+      var wrap = document.createElement('div');
+      wrap.className = 'odds-hist-btn';
+      wrap.style.cssText = 'text-align:center;padding:4px 0;';
       var btn = document.createElement('button');
-      btn.className = 'odds-hist-btn';
       btn.textContent = '12h Odds';
-      btn.style.cssText = 'display:block;margin:8px auto;padding:5px 14px;font-size:11px;font-weight:700;border:1px solid #1e3a5f;color:#1e3a5f;background:#f0f4ff;border-radius:20px;cursor:pointer;transition:all 0.2s;';
+      btn.style.cssText = 'padding:5px 14px;font-size:11px;font-weight:700;border:1px solid #1e3a5f;color:#1e3a5f;background:#f0f4ff;border-radius:20px;cursor:pointer;transition:all 0.2s;';
       btn.onmouseover = function() { this.style.background='#dbeafe'; };
       btn.onmouseout = function() { if(this.textContent!=='Hide') this.style.background='#f0f4ff'; };
       btn.onclick = function() { toggleOddsHistory(this, matchKey, awayName, homeName); };
+      wrap.appendChild(btn);
       var cardBody = card.querySelector('.game-card-body') || card;
-      cardBody.appendChild(btn);
+      cardBody.appendChild(wrap);
     });
   }
 
