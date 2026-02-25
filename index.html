@@ -1834,26 +1834,52 @@ async function fetchESPNScoreboard() {
     if (!res.ok) throw new Error('ESPN ' + res.status);
     const data = await res.json();
     setConnStatus('ok');
-    const events = data.events || [];
+    let events = data.events || [];
     document.getElementById('live-last-update').textContent = new Date().toLocaleTimeString();
 
-    const liveEvents = events.filter(e => { const s = e.status?.type?.state; return s === 'in' || s === 'pre'; });
+    // Also fetch upcoming games (tomorrow) if no live games
     const inProgress = events.filter(e => e.status?.type?.state === 'in');
+    const preGames = events.filter(e => e.status?.type?.state === 'pre');
+    const postGames = events.filter(e => e.status?.type?.state === 'post');
     document.getElementById('live-games-count').textContent = inProgress.length;
 
-    if (liveEvents.length === 0) {
+    // If no live/pre games, fetch tomorrow's schedule too
+    if (inProgress.length === 0 && preGames.length === 0) {
+      try {
+        const tmrw = new Date(Date.now() + 86400000);
+        const dateStr = tmrw.getFullYear() + String(tmrw.getMonth()+1).padStart(2,'0') + String(tmrw.getDate()).padStart(2,'0');
+        const tmrwRes = await fetch(getESPNUrl() + '?dates=' + dateStr, { signal: AbortSignal.timeout(8000) });
+        if (tmrwRes.ok) {
+          const tmrwData = await tmrwRes.json();
+          const tmrwEvents = (tmrwData.events || []).filter(e => e.status?.type?.state === 'pre');
+          tmrwEvents.forEach(e => { e._upcoming = true; });
+          events = events.concat(tmrwEvents);
+        }
+      } catch(e) { /* tomorrow fetch optional */ }
+    }
+
+    // Build ordered event list: live first, then pre, then post
+    const liveEvents = events.filter(e => e.status?.type?.state === 'in');
+    const upcomingEvents = events.filter(e => e.status?.type?.state === 'pre');
+    const completedEvents = events.filter(e => e.status?.type?.state === 'post');
+    const allDisplayEvents = [...liveEvents, ...upcomingEvents, ...completedEvents];
+
+    if (allDisplayEvents.length === 0) {
       grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div style="width:56px;height:56px;margin:0 auto 16px;background:var(--bg);border:2px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><p style="font-weight:600;color:var(--text-secondary);margin-bottom:4px;">No ${getLeagueName()} games right now</p><p style="font-size:12px;">Check back when games are scheduled or in progress.</p></div>`;
       tpGrid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">&#x1F3AF;</div><p>No live games.</p></div>`;
       document.getElementById('edgeThesisContainer').classList.remove('active');
       return;
     }
 
+    // Section headers
+    let sectionHeaders = { live: false, upcoming: false, completed: false };
+
     let sig3Fragile=0, sigStar=0, sigCombined=0, hotTeams=0, warmTeams=0;
     let cards='', tpCards='', gameTheses=[];
     // Per-signal game tracking for chip click-to-expand
     let signalGames = { '3ptfragile': [], 'star': [], 'combined': [] };
 
-    for (const event of liveEvents) {
+    for (const event of allDisplayEvents) {
       const comp = event.competitions?.[0]; if (!comp) continue;
       const away = comp.competitors?.find(c => c.homeAway==='away');
       const home = comp.competitors?.find(c => c.homeAway==='home');
@@ -1865,11 +1891,97 @@ async function fetchESPNScoreboard() {
       const hFull = home.team?.displayName||'';
       const hA = home.team?.abbreviation || shortName(home.team?.displayName||'');
       const aS = parseInt(away.score)||0, hS = parseInt(home.score)||0;
-      const isLive = event.status?.type?.state === 'in';
+      const gameState = event.status?.type?.state;
+      const isLive = gameState === 'in';
+      const isUpcoming = gameState === 'pre';
+      const isCompleted = gameState === 'post';
       const per = event.status?.period||0, clk = event.status?.displayClock||'';
       const detail = event.status?.type?.shortDetail||'';
       const gLabel = `${aA} @ ${hA}`;
       const aRec = away.records?.[0]?.summary||'', hRec = home.records?.[0]?.summary||'';
+
+      // Section headers
+      if (isLive && !sectionHeaders.live) {
+        cards += `<div style="grid-column:1/-1;padding:8px 0 4px;"><span style="font-size:11px;font-weight:700;color:var(--red);letter-spacing:1px;text-transform:uppercase;">LIVE</span></div>`;
+        sectionHeaders.live = true;
+      } else if (isUpcoming && !sectionHeaders.upcoming) {
+        cards += `<div style="grid-column:1/-1;padding:12px 0 4px;border-top:1px solid var(--border);margin-top:8px;"><span style="font-size:11px;font-weight:700;color:var(--accent);letter-spacing:1px;text-transform:uppercase;">UPCOMING</span></div>`;
+        sectionHeaders.upcoming = true;
+      } else if (isCompleted && !sectionHeaders.completed) {
+        cards += `<div style="grid-column:1/-1;padding:12px 0 4px;border-top:1px solid var(--border);margin-top:8px;"><span style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;">COMPLETED</span></div>`;
+        sectionHeaders.completed = true;
+      }
+
+      // Upcoming game card — minimal style with tipoff time
+      if (isUpcoming) {
+        const tipoff = event.date ? new Date(event.date) : null;
+        const tipoffStr = tipoff ? tipoff.toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : detail;
+        const broadcast = comp.broadcasts?.[0]?.names?.[0] || '';
+        const oddsDetail = comp.odds?.[0]?.details || '';
+        const ou = comp.odds?.[0]?.overUnder || '';
+        const isFav = state.favorites.includes(gid);
+        cards += `<div class="game-card" data-game-id="${gid}" style="opacity:0.85;">
+          <div class="game-card-header">
+            <span style="color:var(--accent);font-weight:600;">UPCOMING</span>
+            <span style="display:flex;align-items:center;gap:6px;">
+              ${broadcast ? '<span style="font-size:9px;font-weight:600;color:var(--text-muted);background:var(--bg);padding:1px 6px;border-radius:3px;">' + broadcast + '</span>' : ''}
+              <span class="fav-star" onclick="toggleFavorite('${gid}')" style="cursor:pointer;font-size:14px;">${isFav?'\u2605':'\u2606'}</span>
+            </span>
+          </div>
+          <div class="game-card-body">
+            <div class="game-teams">
+              <div class="team-block">
+                <div class="team-name">${teamDisplayShort(aA, aFull)}</div>
+                <div class="team-record">${aRec}</div>
+                <div class="team-score" style="color:var(--text-muted);">-</div>
+              </div>
+              <div class="vs-block">
+                <div class="vs-text" style="font-size:11px;font-weight:500;color:var(--text-muted);opacity:0.6;">vs</div>
+              </div>
+              <div class="team-block">
+                <div class="team-name">${teamDisplayShort(hA, hFull)}</div>
+                <div class="team-record">${hRec}</div>
+                <div class="team-score" style="color:var(--text-muted);">-</div>
+              </div>
+            </div>
+            <div style="text-align:center;padding:8px 0 4px;">
+              <div style="font-size:12px;font-weight:600;color:var(--text-secondary);">${tipoffStr}</div>
+              ${oddsDetail || ou ? '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">' + (oddsDetail ? oddsDetail : '') + (ou ? ' | O/U ' + ou : '') + '</div>' : ''}
+            </div>
+          </div>
+        </div>`;
+        continue;
+      }
+
+      // Completed game card — muted style with final score
+      if (isCompleted) {
+        const winner = aS > hS ? 'away' : 'home';
+        const isFav = state.favorites.includes(gid);
+        cards += `<div class="game-card" data-game-id="${gid}" style="opacity:0.6;">
+          <div class="game-card-header">
+            <span style="color:var(--text-muted);font-weight:600;">FINAL</span>
+            <span class="fav-star" onclick="toggleFavorite('${gid}')" style="cursor:pointer;font-size:14px;">${isFav?'\u2605':'\u2606'}</span>
+          </div>
+          <div class="game-card-body">
+            <div class="game-teams">
+              <div class="team-block">
+                <div class="team-name" ${winner==='away'?'style="color:var(--accent);font-weight:900;"':''}>${teamDisplayShort(aA, aFull)}</div>
+                <div class="team-record">${aRec}</div>
+                <div class="team-score" ${winner==='away'?'style="color:var(--accent);"':'style="color:var(--text-muted);"'}>${aS}</div>
+              </div>
+              <div class="vs-block">
+                <div class="vs-text" style="font-size:11px;font-weight:500;color:var(--text-muted);opacity:0.6;">vs</div>
+              </div>
+              <div class="team-block">
+                <div class="team-name" ${winner==='home'?'style="color:var(--accent);font-weight:900;"':''}>${teamDisplayShort(hA, hFull)}</div>
+                <div class="team-record">${hRec}</div>
+                <div class="team-score" ${winner==='home'?'style="color:var(--accent);"':'style="color:var(--text-muted);"'}>${hS}</div>
+              </div>
+            </div>
+          </div>
+        </div>`;
+        continue;
+      }
 
       let aStats={}, hStats={};
       (away.statistics||[]).forEach(s => { aStats[s.name]=s.displayValue; });
