@@ -374,7 +374,7 @@
     .watch-link { display: inline-flex; align-items: center; gap: 3px; font-size: 9px; font-weight: 600; color: var(--accent); background: var(--accent-light); padding: 2px 7px; border-radius: 3px; text-decoration: none; letter-spacing: 0.3px; transition: opacity 0.15s; }
     .watch-link:hover { opacity: 0.7; }
     .tp-wrap { position: relative; }
-    .tp-tooltip { display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; box-shadow: 0 8px 24px rgba(0,0,0,.12); z-index: 100; min-width: 180px; white-space: nowrap; pointer-events: none; }
+    .tp-tooltip { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; box-shadow: 0 8px 24px rgba(0,0,0,.15); z-index: 200; min-width: 190px; white-space: nowrap; }
     .tp-tooltip td { padding: 1px 8px 1px 0; }
     .tp-tooltip td:last-child { text-align: right; font-weight: 600; color: var(--text-primary); }
     .tp-wrap:hover .tp-tooltip { display: block; }
@@ -2156,7 +2156,7 @@ async function fetchESPNScoreboard() {
   const tpGrid = document.getElementById('threept-grid');
   setConnStatus('loading');
     await fetchLiveOdds();
-    fetchTeamProfiles(); // non-blocking — caches in background
+    await fetchTeamProfiles(); // must complete before rendering cards
 
   try {
     const modeSignal = _modeFetchController ? _modeFetchController.signal : undefined;
