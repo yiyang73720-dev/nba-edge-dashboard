@@ -3211,7 +3211,7 @@ async function fetchESPNScoreboard() {
               ${betBtn}
               ${state.signalFirstSeen[gid]?`<div style="font-size:9px;color:var(--text-muted);margin-top:4px;">\u23F1 ${Math.floor((Date.now()-state.signalFirstSeen[gid])/60000)}m ago</div>`:''}
             </div>`;
-          })():''}
+          })():`<div style="margin-top:8px;padding:6px 10px;border-radius:6px;background:var(--bg);border-left:3px solid var(--border);"><div style="font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:0.5px;">NO SIGNAL — DO NOT BET</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Wait for edge. No signal = no edge = no bet.</div></div>`}
         </div>
       </div>`;
 
