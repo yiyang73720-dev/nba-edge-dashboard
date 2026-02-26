@@ -2397,13 +2397,24 @@ async function fetchESPNScoreboard() {
         sectionHeaders.completed = true;
       }
 
-      // Upcoming game card — minimal style with tipoff time
+      // Upcoming game card — minimal style with tipoff time + live odds
       if (isUpcoming) {
         const tipoff = event.date ? new Date(event.date) : null;
         const tipoffStr = tipoff ? tipoff.toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : detail;
         const broadcast = comp.broadcasts?.[0]?.names?.[0] || '';
-        const oddsDetail = comp.odds?.[0]?.details || '';
         const ou = comp.odds?.[0]?.overUnder || '';
+        const _preOddsHTML = buildOddsHTML(aA,hA,aFull,hFull);
+        // Build O/U row from the-odds-api if available, else fallback to ESPN
+        const _preOddsMatch = matchOdds(aA,hA,aFull,hFull);
+        let _ouHTML = '';
+        if (_preOddsMatch && _preOddsMatch.ouLine) {
+          const oP = _preOddsMatch.overPrice, uP = _preOddsMatch.underPrice;
+          const oStr = oP ? ((oP>0?'+':'')+oP) : '';
+          const uStr = uP ? ((uP>0?'+':'')+uP) : '';
+          _ouHTML = `<div class="odds-row" style="margin-top:2px;"><span><span class="odds-label">OVER</span> <span class="odds-val even">${_preOddsMatch.ouLine}</span> ${oStr ? '<span class="odds-implied">(' + oStr + ')</span>' : ''}</span><span class="odds-src">${_preOddsMatch.book}</span><span>${uStr ? '<span class="odds-implied">(' + uStr + ')</span>' : ''} <span class="odds-val even">${_preOddsMatch.ouLine}</span> <span class="odds-label">UNDER</span></span></div>`;
+        } else if (ou) {
+          _ouHTML = `<div style="font-size:11px;color:var(--text-muted);text-align:center;margin:2px 0;">O/U ${ou}</div>`;
+        }
         const isFav = state.favorites.includes(gid);
         cards += `<div class="game-card" data-game-id="${gid}" style="opacity:0.85;">
           <div class="game-card-header">
@@ -2431,10 +2442,11 @@ async function fetchESPNScoreboard() {
                 <div class="team-score" style="color:var(--text-muted);">-</div>
               </div>
             </div>
-            <div style="text-align:center;padding:8px 0 4px;">
+            ${gameLinksHTML(espnLink, leaguePassLink)}
+            ${_preOddsHTML}
+            ${_ouHTML}
+            <div style="text-align:center;padding:4px 0;">
               <div style="font-size:12px;font-weight:600;color:var(--text-secondary);">${tipoffStr}</div>
-              ${oddsDetail || ou ? '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">' + (oddsDetail ? oddsDetail : '') + (ou ? ' | O/U ' + ou : '') + '</div>' : ''}
-              ${gameLinksHTML(espnLink, leaguePassLink)}
             </div>
           </div>
         </div>`;
@@ -3128,6 +3140,15 @@ async function fetchESPNScoreboard() {
       const isFav = state.favorites.includes(gid);
       const periodLabel = isNCAA() ? (per <= 2 ? `H${per}` : `OT${per-2}`) : `Q${per}`;
       const _oddsHTML = buildOddsHTML(aA,hA,aFull,hFull);
+      // O/U line for live cards
+      const _liveOddsMatch = matchOdds(aA,hA,aFull,hFull);
+      let _liveOUHTML = '';
+      if (_liveOddsMatch && _liveOddsMatch.ouLine) {
+        const oP = _liveOddsMatch.overPrice, uP = _liveOddsMatch.underPrice;
+        const oStr = oP ? ((oP>0?'+':'')+oP) : '';
+        const uStr = uP ? ((uP>0?'+':'')+uP) : '';
+        _liveOUHTML = `<div class="odds-row" style="margin-top:2px;"><span><span class="odds-label">OVER</span> <span class="odds-val even">${_liveOddsMatch.ouLine}</span> ${oStr ? '<span class="odds-implied">(' + oStr + ')</span>' : ''}</span><span class="odds-src">${_liveOddsMatch.book}</span><span>${uStr ? '<span class="odds-implied">(' + uStr + ')</span>' : ''} <span class="odds-val even">${_liveOddsMatch.ouLine}</span> <span class="odds-label">UNDER</span></span></div>`;
+      }
 
       // Signal summary for card header
       const sigSummary = signals.filter(s=>s.level===2).map(s => {
@@ -3165,6 +3186,7 @@ async function fetchESPNScoreboard() {
           ${gameLinksHTML(espnLink, leaguePassLink)}
           <!-- ODDS -->
           ${_oddsHTML}
+          ${_liveOUHTML}
           <!-- LIVE STATS -->
           ${isLive?`<div class="stat-bars">
             ${bar3(a3P,a3M,a3A,aA)}
