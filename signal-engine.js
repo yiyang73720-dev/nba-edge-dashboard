@@ -18,6 +18,32 @@
 const fs = require('fs');
 const path = require('path');
 const http = require('http');
+const { execSync } = require('child_process');
+
+// === NOTIFICATION CONFIG ===
+const NOTIFY_IMESSAGE = '+19493169809'; // phone number or Apple ID email for iMessage
+const NOTIFY_EMAIL = 'wangyiyang@live.com';     // email address for notifications
+const NOTIFY_ENABLED = true;
+
+function sendNotification(title, body) {
+  if (!NOTIFY_ENABLED) return;
+  if (NOTIFY_IMESSAGE) {
+    try {
+      const msg = `${title}\n${body}`;
+      const escaped = msg.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
+      execSync(`osascript -e 'tell application "Messages" to send "${escaped}" to buddy "${NOTIFY_IMESSAGE}"'`);
+      log('[NOTIFY] iMessage sent');
+    } catch (e) { log('[NOTIFY] iMessage failed: ' + e.message); }
+  }
+  if (NOTIFY_EMAIL) {
+    try {
+      const escaped = body.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+      const titleEscaped = title.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+      execSync(`echo "${escaped}" | mail -s "${titleEscaped}" ${NOTIFY_EMAIL}`);
+      log('[NOTIFY] Email sent');
+    } catch (e) { log('[NOTIFY] Email failed: ' + e.message); }
+  }
+}
 
 // === CONFIG ===
 const ARG_MODE = (process.argv[2] || 'both').toLowerCase();
@@ -256,7 +282,7 @@ async function fetchOdds(cfg) {
   const now = Date.now();
   if (now - modeState.oddsCacheTime < 120000 && Object.keys(modeState.oddsCache).length > 0) return;
   try {
-    const url = `https://api.the-odds-api.com/v4/sports/${cfg.oddsSport}/odds/?apiKey=${ODDS_API_KEY}&regions=us&markets=h2h&oddsFormat=american&bookmakers=fanduel,draftkings,betmgm`;
+    const url = `https://api.the-odds-api.com/v4/sports/${cfg.oddsSport}/odds/?apiKey=${ODDS_API_KEY}&regions=us&markets=h2h,spreads&oddsFormat=american&bookmakers=fanduel,draftkings,betmgm`;
     const resp = await fetch(url);
     if (!resp.ok) return;
     const data = await resp.json();
@@ -269,7 +295,16 @@ async function fetchOdds(cfg) {
         const ao = mk.outcomes?.find(o => o.name === g.away_team);
         if (ho && ao) {
           const key = (g.away_team + ' vs ' + g.home_team).toLowerCase();
-          cache[key] = { homeML: ho.price, awayML: ao.price, home: g.home_team, away: g.away_team };
+          const entry = { homeML: ho.price, awayML: ao.price, home: g.home_team, away: g.away_team };
+          // Parse spreads market
+          const spMk = bk.markets?.find(m => m.key === 'spreads');
+          if (spMk) {
+            const hSpread = spMk.outcomes?.find(o => o.name === g.home_team);
+            const aSpread = spMk.outcomes?.find(o => o.name === g.away_team);
+            if (hSpread) { entry.homeSpread = hSpread.point; entry.homeSpreadPrice = hSpread.price; }
+            if (aSpread) { entry.awaySpread = aSpread.point; entry.awaySpreadPrice = aSpread.price; }
+          }
+          cache[key] = entry;
           cache[g.home_team.toLowerCase()] = cache[key];
           cache[g.away_team.toLowerCase()] = cache[key];
         }
@@ -689,6 +724,94 @@ async function detectSignals(cfg) {
       let isCombined = (has3ptFragile && hasStar) || (soft3pt && softStar && !(has3ptFragile && hasStar));
       let signalCount = [has3ptFragile || soft3pt, hasStar || softStar].filter(Boolean).length;
 
+      // ======== QUALITY EDGE (independent of 3PT/Star signals) ========
+      // Fires when a significantly stronger team (by record) is trailing by a small margin
+      // and the book spread still favors them. Proven 62% cover rate Q1-Q3 from backtesting.
+      if (cfg.mode === 'nba' && per >= 1 && per <= 3) {
+        const getWinPct = (competitor) => {
+          const rec = (competitor.records || []).find(r => r.type === 'total');
+          if (!rec || !rec.summary) return 0.5;
+          const [w, l] = rec.summary.split('-').map(Number);
+          return (w + l) > 0 ? w / (w + l) : 0.5;
+        };
+        const homeWinPct = getWinPct(home);
+        const awayWinPct = getWinPct(away);
+        const qualityGap = Math.abs(homeWinPct - awayWinPct);
+
+        if (qualityGap >= 0.10) {
+          // Determine which team is stronger
+          const strongerIsHome = homeWinPct > awayWinPct;
+          const strongerTeam = strongerIsHome ? hA : aA;
+          const strongerTeamFull = strongerIsHome ? hFull : aFull;
+          const weakerTeam = strongerIsHome ? aA : hA;
+          const strongerScore = strongerIsHome ? hS : aS;
+          const weakerScore = strongerIsHome ? aS : hS;
+          const strongerWinPct = strongerIsHome ? homeWinPct : awayWinPct;
+          const weakerWinPct = strongerIsHome ? awayWinPct : homeWinPct;
+          const trailingBy = weakerScore - strongerScore; // positive if stronger is behind
+
+          // Stronger team must be trailing by 1-10 points
+          if (trailingBy >= 1 && trailingBy <= 14) {
+            // Check book spread on stronger team
+            const qeOdds = matchOdds(modeState, aA, hA, aFull, hFull);
+            const bookSpread = qeOdds ? (strongerIsHome ? qeOdds.homeSpread : qeOdds.awaySpread) : null;
+
+            // Spread must be between -4 and 0 (still favored despite trailing)
+            if (bookSpread !== null && bookSpread !== undefined && bookSpread >= -7 && bookSpread <= 1.5) {
+              const qeKey = `${gid}_quality_edge`;
+              if (!signalLog.find(s => s.key === qeKey)) {
+                const qeEntry = {
+                  key: qeKey,
+                  eventId: gid,
+                  type: 'quality_edge',
+                  game: gLabel,
+                  gameFullAway: aFull,
+                  gameFullHome: hFull,
+                  awayScore: aS,
+                  homeScore: hS,
+                  period: per,
+                  clock: clk,
+                  periodLabel: periodLabel(cfg, per),
+                  betTeam: strongerTeam,
+                  betTeamFull: strongerTeamFull,
+                  fadeTeam: weakerTeam,
+                  betType: 'SPREAD',
+                  signalTypes: ['quality_edge'],
+                  signalCount: 1,
+                  qualityGap: Math.round(qualityGap * 1000) / 10,
+                  strongerTeam,
+                  strongerWinPct: Math.round(strongerWinPct * 1000) / 10,
+                  weakerWinPct: Math.round(weakerWinPct * 1000) / 10,
+                  bookSpread,
+                  trailingBy,
+                  marketOdds: qeOdds ? (strongerIsHome ? (qeOdds.homeSpreadPrice || -110) : (qeOdds.awaySpreadPrice || -110)) : -110,
+                  hasLiveOdds: !!qeOdds,
+                  urgency: getUrgency(cfg, per, clk).level,
+                  timestamp: Date.now(),
+                  date: new Date().toLocaleDateString(),
+                  time: new Date().toLocaleTimeString(),
+                  mode: cfg.mode,
+                  scores: { away: aS, home: hS },
+                  finalAwayScore: null,
+                  finalHomeScore: null,
+                  gameCompleted: false,
+                  spreadResult: null,
+                  spreadPayout: null
+                };
+                signalLog.push(qeEntry);
+                newSignals++;
+                log(`  [${cfg.league}] QUALITY EDGE: ${gLabel} ${aS}-${hS} ${periodLabel(cfg, per)} ${clk} | ${strongerTeamFull} (.${(strongerWinPct*1000|0)}) trailing by ${trailingBy} | Spread: ${bookSpread} | Gap: ${qeEntry.qualityGap}%`);
+
+                // Send notification
+                const notifTitle = `QUALITY EDGE: ${gLabel}`;
+                const notifBody = `${strongerTeamFull} (.${(strongerWinPct*1000|0).toString().replace(/^0/, '')}) trailing by ${trailingBy} in ${periodLabel(cfg, per)}\nBook spread: ${bookSpread} | Gap: ${qeEntry.qualityGap}%\nBet: ${strongerTeam} to cover the spread`;
+                sendNotification(notifTitle, notifBody);
+              }
+            }
+          }
+        }
+      }
+
       if (signalCount === 0) continue;
 
       // ======== BET SIDE ========
@@ -833,17 +956,33 @@ async function resolveCompletedGames(cfg, events) {
     sig.finalHomeScore = fHS;
     sig.gameCompleted = true;
 
-    const betWon = (sig.betTeam === (away.team?.abbreviation || '') && fAS > fHS) ||
-                   (sig.betTeam === (home.team?.abbreviation || '') && fHS > fAS);
-    sig.mlResult = betWon ? 'WIN' : 'LOSS';
-
-    if (betWon) {
-      sig.mlPayout = sig.marketOdds > 0 ? sig.kellyBet * (sig.marketOdds / 100) : sig.kellyBet * (100 / Math.abs(sig.marketOdds));
+    // Quality Edge signals resolve on spread, not ML
+    if (sig.type === 'quality_edge') {
+      const betIsHome = sig.betTeam === (home.team?.abbreviation || '');
+      const finalMargin = betIsHome ? (fHS - fAS) : (fAS - fHS);
+      const covered = (finalMargin + (sig.bookSpread || 0)) > 0;
+      sig.spreadResult = covered ? 'WIN' : 'LOSS';
+      const betAmt = 100; // standard $100 bet for QE
+      if (covered) {
+        sig.spreadPayout = sig.marketOdds > 0 ? betAmt * (sig.marketOdds / 100) : betAmt * (100 / Math.abs(sig.marketOdds));
+      } else {
+        sig.spreadPayout = -betAmt;
+      }
+      resolved++;
+      log(`  [${cfg.league}] RESOLVED QE: ${sig.game} -> ${fAS}-${fHS} | ${sig.betTeam} spread ${sig.bookSpread} ${sig.spreadResult} | P&L: ${sig.spreadPayout > 0 ? '+' : ''}$${sig.spreadPayout.toFixed(0)}`);
     } else {
-      sig.mlPayout = -sig.kellyBet;
+      const betWon = (sig.betTeam === (away.team?.abbreviation || '') && fAS > fHS) ||
+                     (sig.betTeam === (home.team?.abbreviation || '') && fHS > fAS);
+      sig.mlResult = betWon ? 'WIN' : 'LOSS';
+
+      if (betWon) {
+        sig.mlPayout = sig.marketOdds > 0 ? sig.kellyBet * (sig.marketOdds / 100) : sig.kellyBet * (100 / Math.abs(sig.marketOdds));
+      } else {
+        sig.mlPayout = -sig.kellyBet;
+      }
+      resolved++;
+      log(`  [${cfg.league}] RESOLVED: ${sig.game} -> ${fAS}-${fHS} | ${sig.betTeam} ${sig.mlResult} | P&L: ${sig.mlPayout > 0 ? '+' : ''}$${sig.mlPayout.toFixed(0)}`);
     }
-    resolved++;
-    log(`  [${cfg.league}] RESOLVED: ${sig.game} -> ${fAS}-${fHS} | ${sig.betTeam} ${sig.mlResult} | P&L: ${sig.mlPayout > 0 ? '+' : ''}$${sig.mlPayout.toFixed(0)}`);
   }
   if (resolved > 0) saveState();
 }
