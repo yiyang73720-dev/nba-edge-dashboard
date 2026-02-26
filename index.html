@@ -1597,6 +1597,38 @@ let teamProfileCache = {};
 let teamProfileLastFetch = 0;
 let _teamProfileMode = ''; // track mode changes
 
+// Top 3 scorers per team by season PPG — { teamAbbr: [{name, ppg}] }
+let teamScorerCache = {};
+let teamScorerLastFetch = 0;
+async function fetchTeamScorers() {
+  const now = Date.now();
+  if (now - teamScorerLastFetch < 60 * 60 * 1000 && Object.keys(teamScorerCache).length > 0) return;
+  try {
+    const res = await fetch('https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/statistics/byathlete?season=2025&limit=500&sort=offensive.avgPoints', { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) return;
+    const data = await res.json();
+    const byTeam = {};
+    (data.athletes || []).forEach(a => {
+      const name = a.athlete?.displayName || '';
+      const team = a.athlete?.teamShortName || '';
+      const ppg = parseFloat(a.categories?.[1]?.values?.[0]) || 0;
+      if (!name || !team || ppg <= 0) return;
+      if (!byTeam[team]) byTeam[team] = [];
+      byTeam[team].push({ name, ppg });
+    });
+    // Keep top 3 by PPG per team
+    for (const t in byTeam) {
+      byTeam[t].sort((a, b) => b.ppg - a.ppg);
+      byTeam[t] = byTeam[t].slice(0, 3);
+    }
+    teamScorerCache = byTeam;
+    teamScorerLastFetch = now;
+    console.log(`[TeamScorers] Cached top 3 scorers for ${Object.keys(byTeam).length} teams`);
+  } catch (e) {
+    console.warn('[TeamScorers] Fetch error:', e);
+  }
+}
+
 async function fetchTeamProfiles() {
   const now = Date.now();
   const mode = isNCAA() ? 'ncaab' : 'nba';
@@ -2211,7 +2243,7 @@ async function fetchESPNScoreboard() {
   const tpGrid = document.getElementById('threept-grid');
   setConnStatus('loading');
     await fetchLiveOdds();
-    await fetchTeamProfiles(); // must complete before rendering cards
+    await Promise.all([fetchTeamProfiles(), fetchTeamScorers()]); // must complete before rendering cards
 
   try {
     const modeSignal = _modeFetchController ? _modeFetchController.signal : undefined;
@@ -3077,53 +3109,33 @@ async function fetchESPNScoreboard() {
           ${(()=>{
             const _gMins = getElapsedMinutes(per, clk);
             const bx = _boxscoreMap[gid];
-            if (!bx) {
-              // Fallback: show leader from scoreboard if boxscore unavailable
-              if (!aLeaders.length && !hLeaders.length) return '';
-              return `<div style="display:flex;gap:8px;margin-top:6px;font-size:11px;">${aLeaders.length?`<div style="flex:1;padding:4px 8px;background:var(--bg);border-radius:4px;"><span style="color:var(--text-muted);">${aA}</span> <strong>${aLeaders[0].name.split(' ').pop()}: ${aLeaders[0].pts}pts</strong></div>`:''}${hLeaders.length?`<div style="flex:1;padding:4px 8px;background:var(--bg);border-radius:4px;"><span style="color:var(--text-muted);">${hA}</span> <strong>${hLeaders[0].name.split(' ').pop()}: ${hLeaders[0].pts}pts</strong></div>`:''}</div>`;
-            }
-            const starDB = isNCAA() ? ncaaStarCache : state.stars;
-            const getTopScorers = (side, teamAbbr) => {
-              const roster = bx[side] || [];
-              const teamStars = starDB.filter(s => s.team === teamAbbr);
-              // Always include tracked stars first (even if 0 pts)
-              const starPlayers = [];
-              teamStars.forEach(star => {
-                const starLast = star.name.split(' ').pop().toLowerCase();
-                const player = roster.find(p => p.name.toLowerCase().split(' ').pop() === starLast);
-                if (player) starPlayers.push({ ...player, star });
-                else starPlayers.push({ name: star.name, pts: 0, team: teamAbbr, star });
+            const getTeamTop3 = (side, teamAbbr) => {
+              const top3 = teamScorerCache[teamAbbr] || [];
+              if (top3.length === 0) return [];
+              const roster = bx?.[side] || [];
+              return top3.map(s => {
+                const sLast = s.name.split(' ').pop().toLowerCase();
+                const player = roster.find(p => p.name.toLowerCase().split(' ').pop() === sLast);
+                return { name: s.name, ppg: s.ppg, pts: player ? player.pts : null };
               });
-              // Fill remaining slots with top scorers not already shown
-              const starNames = new Set(starPlayers.map(s => s.name.toLowerCase()));
-              const others = roster
-                .filter(p => p.pts > 0 && !starNames.has(p.name.toLowerCase()))
-                .sort((a, b) => b.pts - a.pts)
-                .slice(0, Math.max(0, 5 - starPlayers.length))
-                .map(p => ({ ...p, star: null }));
-              // Sort: stars first (by pts desc), then others
-              starPlayers.sort((a, b) => b.pts - a.pts);
-              return [...starPlayers, ...others].map(p => {
-                  return { ...p };
-                });
             };
-            const aTop = getTopScorers('away', aA);
-            const hTop = getTopScorers('home', hA);
-            if (aTop.length === 0 && hTop.length === 0) return '';
+            const aTop3 = getTeamTop3('away', aA);
+            const hTop3 = getTeamTop3('home', hA);
+            if (aTop3.length === 0 && hTop3.length === 0) return '';
             const renderPlayer = (p) => {
               const lastName = p.name.split(' ').pop();
-              if (!p.star) return `<div style="display:flex;align-items:center;gap:4px;padding:2px 0;color:var(--text-secondary);"><span style="min-width:70px;">${lastName}</span> <span>${p.pts}pts</span></div>`;
-              const exp = getExpectedByTime(p.star.ppg, _gMins);
+              if (p.pts === null) return `<div style="display:flex;align-items:center;gap:4px;padding:2px 0;color:var(--text-muted);"><span style="min-width:75px;">${lastName}</span> <span style="font-size:10px;">${p.ppg} PPG</span> <span style="font-size:9px;">DNP</span></div>`;
+              const exp = getExpectedByTime(p.ppg, _gMins);
               const pr = exp > 0 ? (p.pts / exp * 100) : 100;
               const fc = pr < 60 ? 'var(--red)' : pr < 80 ? 'var(--orange)' : 'var(--green)';
               const tag = pr < 60 ? 'COLD' : pr < 80 ? 'BEHIND' : '✓';
-              return `<div style="display:flex;align-items:center;gap:4px;padding:2px 0;"><strong style="min-width:70px;">${lastName}</strong> <span>${p.pts}pts</span> <span style="color:${fc};font-weight:700;">${pr.toFixed(0)}%</span> <span style="color:var(--text-muted);font-size:10px;">of ${exp.toFixed(0)}</span> <span style="font-size:9px;font-weight:700;color:${fc};">${tag}</span></div>`;
+              return `<div style="display:flex;align-items:center;gap:4px;padding:2px 0;"><strong style="min-width:75px;">${lastName}</strong> <span>${p.pts}pts</span> <span style="color:${fc};font-weight:700;">${pr.toFixed(0)}%</span> <span style="color:var(--text-muted);font-size:10px;">${p.ppg} ppg</span> <span style="font-size:9px;font-weight:700;color:${fc};">${tag}</span></div>`;
             };
             const renderTeam = (abbr, players) => {
               if (players.length === 0) return '';
               return `<div style="flex:1;padding:5px 8px;background:var(--bg);border-radius:6px;"><div style="font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;">${abbr}</div>${players.map(renderPlayer).join('')}</div>`;
             };
-            return `<div style="display:flex;gap:8px;margin-top:6px;font-size:11px;">${renderTeam(aA, aTop)}${renderTeam(hA, hTop)}</div>`;
+            return `<div style="display:flex;gap:8px;margin-top:6px;font-size:11px;">${renderTeam(aA, aTop3)}${renderTeam(hA, hTop3)}</div>`;
           })()}`:''}
           <!-- SIGNALS -->
           ${signals.length?(()=>{
