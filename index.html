@@ -2277,8 +2277,8 @@ async function fetchESPNScoreboard() {
         const homeAbbr = comp?.competitors?.find(c=>c.homeAway==='home')?.team?.abbreviation || '';
         const map = { away: [], home: [] };
         bx.boxscore.players.forEach(team => {
-          const side = team.homeAway || 'away';
-          const abbr = side === 'away' ? awayAbbr : homeAbbr;
+          const abbr = team.team?.abbreviation || '';
+          const side = abbr === awayAbbr ? 'away' : 'home';
           (team.statistics?.[0]?.athletes || []).forEach(a => {
             const pts = parseFloat(a.stats?.[1]) || 0;
             const name = a.athlete?.displayName || a.athlete?.shortName || '?';
