@@ -3107,7 +3107,6 @@ async function fetchESPNScoreboard() {
           </div>
           ${durabilityHTML}
           ${(()=>{
-            const _gMins = getElapsedMinutes(per, clk);
             const bx = _boxscoreMap[gid];
             const getTeamTop3 = (side, teamAbbr) => {
               const top3 = teamScorerCache[teamAbbr] || [];
@@ -3116,7 +3115,7 @@ async function fetchESPNScoreboard() {
               return top3.map(s => {
                 const sLast = s.name.split(' ').pop().toLowerCase();
                 const player = roster.find(p => p.name.toLowerCase().split(' ').pop() === sLast);
-                return { name: s.name, ppg: s.ppg, pts: player ? player.pts : null };
+                return { name: s.name, ppg: Math.round(s.ppg * 10) / 10, pts: player ? player.pts : null };
               });
             };
             const aTop3 = getTeamTop3('away', aA);
@@ -3124,12 +3123,8 @@ async function fetchESPNScoreboard() {
             if (aTop3.length === 0 && hTop3.length === 0) return '';
             const renderPlayer = (p) => {
               const lastName = p.name.split(' ').pop();
-              if (p.pts === null) return `<div style="display:flex;align-items:center;gap:4px;padding:2px 0;color:var(--text-muted);"><span style="min-width:75px;">${lastName}</span> <span style="font-size:10px;">${p.ppg} PPG</span> <span style="font-size:9px;">DNP</span></div>`;
-              const exp = getExpectedByTime(p.ppg, _gMins);
-              const pr = exp > 0 ? (p.pts / exp * 100) : 100;
-              const fc = pr < 60 ? 'var(--red)' : pr < 80 ? 'var(--orange)' : 'var(--green)';
-              const tag = pr < 60 ? 'COLD' : pr < 80 ? 'BEHIND' : '✓';
-              return `<div style="display:flex;align-items:center;gap:4px;padding:2px 0;"><strong style="min-width:75px;">${lastName}</strong> <span>${p.pts}pts</span> <span style="color:${fc};font-weight:700;">${pr.toFixed(0)}%</span> <span style="color:var(--text-muted);font-size:10px;">${p.ppg} ppg</span> <span style="font-size:9px;font-weight:700;color:${fc};">${tag}</span></div>`;
+              if (p.pts === null) return `<div style="display:flex;align-items:center;gap:6px;padding:2px 0;color:var(--text-muted);"><span style="min-width:75px;">${lastName}</span> <span style="font-size:10px;">${p.ppg} ppg</span> <span style="font-size:9px;">DNP</span></div>`;
+              return `<div style="display:flex;align-items:center;gap:6px;padding:2px 0;"><strong style="min-width:75px;">${lastName}</strong> <span>${p.pts}pts</span> <span style="color:var(--text-muted);font-size:10px;">${p.ppg} ppg</span></div>`;
             };
             const renderTeam = (abbr, players) => {
               if (players.length === 0) return '';
