@@ -2900,6 +2900,37 @@ async function fetchESPNScoreboard() {
             console.log(`[Conflict] ${gLabel}: awayFade=${awayFade.toFixed(1)}, homeFade=${homeFade.toFixed(1)} — downgraded from COMBINED`);
           }
 
+          // ===== DOUBLE REGRESSION CAVEAT =====
+          // When 3PT Fragile fires on a team AND that same team has a cold star (below 70% pace),
+          // the star's upward regression can offset their 3PT downward regression.
+          // Their 3PT cools off (lose points) but their star heats up (gain points) → lead may hold.
+          // Flag this as a caveat and reduce confidence.
+          let doubleRegression = false;
+          const _bxGame = _boxscoreMap[gid];
+          if (_bxGame) {
+            const checkDoubleRegress = (fragile3ptSide, fragileTeamAbbr) => {
+              const top3 = teamScorerCache[fragileTeamAbbr] || [];
+              const roster = _bxGame[fragile3ptSide] || [];
+              for (const scorer of top3) {
+                const sLast = scorer.name.split(' ').pop().toLowerCase();
+                const player = roster.find(p => p.name.toLowerCase().split(' ').pop() === sLast);
+                if (!player) continue;
+                const exp = getExpectedByTime(scorer.ppg, gMins);
+                const pr = exp > 0 ? (player.pts / exp) : 1;
+                if (pr < 0.70) {
+                  // This team's star is cold — their mean reversion UP offsets 3PT regression DOWN
+                  doubleRegression = true;
+                  const starName = scorer.name.split(' ').pop();
+                  reasons.push(`⚠️ DOUBLE REGRESSION: ${fragileTeamAbbr}'s 3PT will regress down, but ${starName} is at ${(pr*100).toFixed(0)}% pace (${player.pts}pts vs ${exp.toFixed(0)} exp). Star's upward regression could offset 3PT cooldown — lead may hold. Be cautious.`);
+                  thesis.criteria['double_regression'] = { met: true, strong: false, label: `⚠️ Double Regression`, detail: `<strong>Double Regression Caveat:</strong> ${fragileTeamAbbr} is shooting hot from 3 (fragile), but ${starName} is cold at ${(pr*100).toFixed(0)}% pace.<br><strong>Problem:</strong> When ${fragileTeamAbbr}'s 3PT cools off, they lose points. But when ${starName} heats up, they gain points back. These two regressions offset each other.<br><strong>Impact:</strong> The 3PT fragile edge is weaker. The lead may not evaporate because the star picks up the slack. Do not auto-lock this bet.`, value: `${starName} at ${(pr*100).toFixed(0)}% pace`, warn: true };
+                  break;
+                }
+              }
+            };
+            if (a3F?.met && a3F?.strong) checkDoubleRegress('away', aA);
+            if (h3F?.met && h3F?.strong) checkDoubleRegress('home', hA);
+          }
+
           // ===== HOME COURT FACTOR (NCAA ONLY — BIDIRECTIONAL BOOSTER) =====
           // NCAA home court = 3.5-4 pts (vs NBA 2.5). This is a structural force.
           // BOOSTER, not standalone signal. Amplifies existing signals:
@@ -2969,6 +3000,11 @@ async function fetchESPNScoreboard() {
           // NCAA: home court booster counts as strong criteria for confidence level
           const _boostCriteria = thesis.homeCourtBoost ? 1 : 0;
           thesis.confidence = (strongCriteria + _boostCriteria) >= 3 ? 'high' : (strongCriteria + _boostCriteria) >= 2 ? 'high' : allCriteria >= 2 ? 'medium' : 'low';
+          thesis.doubleRegression = doubleRegression;
+          // Double regression caveat: downgrade confidence — don't auto-lock
+          if (doubleRegression) {
+            thesis.confidence = thesis.confidence === 'high' ? 'medium' : 'low';
+          }
           thesis.strongCount = strongCriteria;
           thesis.totalMet = allCriteria;
           thesis.signals = signals;
@@ -2989,7 +3025,8 @@ async function fetchESPNScoreboard() {
             thesis.impliedP = _implP;
             // Store odds key for LEC tracking
             thesis.oddsKey = _tOdds.away + ' vs ' + _tOdds.home;
-            const _k = kellySize(_implP, _betML, null, effectiveSignals, _urgency.mult);
+            const _drMult = doubleRegression ? 0.5 : 1; // halve Kelly when double regression detected
+            const _k = kellySize(_implP, _betML, null, effectiveSignals, _urgency.mult * _drMult);
             thesis.kellyPct = _k.fStar;
             thesis.kellyBet = _k.bet;
             thesis.kellyEdge = _k.edge;
