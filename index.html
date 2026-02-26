@@ -3147,20 +3147,34 @@ async function fetchESPNScoreboard() {
             const bx = _boxscoreMap[gid];
             const getTeamTop3 = (side, teamAbbr) => {
               const top3 = teamScorerCache[teamAbbr] || [];
-              if (top3.length === 0) return [];
               const roster = bx?.[side] || [];
-              return top3.map(s => {
+              if (roster.length === 0 && top3.length === 0) return [];
+              // Start with season top scorers who are actually playing
+              const result = [];
+              const usedNames = new Set();
+              top3.forEach(s => {
                 const sLast = s.name.split(' ').pop().toLowerCase();
                 const player = roster.find(p => p.name.toLowerCase().split(' ').pop() === sLast);
-                return { name: s.name, ppg: Math.round(s.ppg * 10) / 10, pts: player ? player.pts : null };
+                if (player) {
+                  result.push({ name: s.name, pts: player.pts });
+                  usedNames.add(player.name.toLowerCase());
+                }
               });
+              // Backfill with top scorers from boxscore if we have <3
+              if (result.length < 3) {
+                roster
+                  .filter(p => p.pts > 0 && !usedNames.has(p.name.toLowerCase()))
+                  .sort((a, b) => b.pts - a.pts)
+                  .slice(0, 3 - result.length)
+                  .forEach(p => result.push({ name: p.name, pts: p.pts }));
+              }
+              return result.slice(0, 3);
             };
             const aTop3 = getTeamTop3('away', aA);
             const hTop3 = getTeamTop3('home', hA);
             if (aTop3.length === 0 && hTop3.length === 0) return '';
             const renderPlayer = (p) => {
               const lastName = p.name.split(' ').pop();
-              if (p.pts === null) return `<div style="display:flex;align-items:center;gap:6px;padding:2px 0;color:var(--text-muted);"><span style="min-width:75px;">${lastName}</span> <span style="font-size:9px;">DNP</span></div>`;
               return `<div style="display:flex;align-items:center;gap:6px;padding:2px 0;"><strong style="min-width:75px;">${lastName}</strong> <span>${p.pts}pts</span></div>`;
             };
             const renderTeam = (abbr, players) => {
