@@ -3044,8 +3044,26 @@ async function fetchESPNScoreboard() {
           </div>
           ${durabilityHTML}
           ${aLeaders.length||hLeaders.length?`<div style="display:flex;gap:8px;margin-top:6px;font-size:11px;">
-            ${aLeaders.length?`<div style="flex:1;padding:4px 8px;background:var(--bg);border-radius:4px;"><span style="color:var(--text-muted);">${aA}</span> <strong>${aLeaders[0]?.name?.split(' ').pop()}: ${aLeaders[0]?.pts}pts</strong></div>`:''}
-            ${hLeaders.length?`<div style="flex:1;padding:4px 8px;background:var(--bg);border-radius:4px;"><span style="color:var(--text-muted);">${hA}</span> <strong>${hLeaders[0]?.name?.split(' ').pop()}: ${hLeaders[0]?.pts}pts</strong></div>`:''}
+            ${(()=>{
+              const _gMins = getElapsedMinutes(per, clk);
+              const starChip = (leader) => {
+                if (!leader) return '';
+                let star;
+                if (isNCAA()) {
+                  star = ncaaStarCache.find(s => { const ll=leader.name.toLowerCase().split(' ').pop(); const sl=s.name.split(' ').pop().toLowerCase(); return ll===sl&&s.team===leader.team; });
+                } else {
+                  star = state.stars.find(s=>leader.name.toLowerCase().includes(s.name.split(' ').pop().toLowerCase())&&s.team===leader.team);
+                }
+                const lastName = leader.name.split(' ').pop();
+                if (!star) return `<div style="flex:1;padding:4px 8px;background:var(--bg);border-radius:4px;"><span style="color:var(--text-muted);">${leader.team}</span> <strong>${lastName}: ${leader.pts}pts</strong></div>`;
+                const exp = getExpectedByTime(star.ppg, _gMins);
+                const pr = exp > 0 ? (leader.pts / exp * 100) : 100;
+                const fc = pr < 60 ? 'var(--red)' : pr < 80 ? 'var(--orange)' : 'var(--green)';
+                const tag = pr < 60 ? '🔥 COLD' : pr < 80 ? 'BEHIND' : '✓';
+                return `<div style="flex:1;padding:4px 8px;background:var(--bg);border-radius:4px;"><span style="color:var(--text-muted);">${leader.team}</span> <strong>${lastName}: ${leader.pts}pts</strong> <span style="color:${fc};font-weight:700;">${pr.toFixed(0)}%</span> <span style="color:var(--text-muted);">of ${exp.toFixed(0)} exp</span> <span style="font-size:9px;font-weight:700;color:${fc};">${tag}</span></div>`;
+              };
+              return (aLeaders.length ? starChip(aLeaders[0]) : '') + (hLeaders.length ? starChip(hLeaders[0]) : '');
+            })()}
           </div>`:''}`:''}
           <!-- SIGNALS -->
           ${signals.length?(()=>{
