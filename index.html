@@ -2279,10 +2279,23 @@ async function fetchESPNScoreboard() {
     document.getElementById('live-games-count').textContent = inProgress.length;
 
     // If no live/pre games, fetch tomorrow's schedule too
+    // Use ESPN's own day.date (ET-based) to compute "tomorrow" correctly
     if (inProgress.length === 0 && preGames.length === 0) {
       try {
-        const tmrw = new Date(Date.now() + 86400000);
-        const dateStr = tmrw.getFullYear() + String(tmrw.getMonth()+1).padStart(2,'0') + String(tmrw.getDate()).padStart(2,'0');
+        const espnToday = data.day?.date; // e.g. "2026-02-25" (ET)
+        let dateStr;
+        if (espnToday) {
+          // Add 1 day to ESPN's date (avoids timezone mismatch with Date.now())
+          const parts = espnToday.split('-');
+          const d = new Date(+parts[0], +parts[1] - 1, +parts[2]);
+          d.setDate(d.getDate() + 1);
+          dateStr = d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0');
+        } else {
+          // Fallback: use ET-based "tomorrow" (ESPN uses Eastern Time)
+          const nowET = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
+          nowET.setDate(nowET.getDate() + 1);
+          dateStr = nowET.getFullYear() + String(nowET.getMonth()+1).padStart(2,'0') + String(nowET.getDate()).padStart(2,'0');
+        }
         const tmrwRes = await fetch(getESPNUrl() + '?dates=' + dateStr, { signal: AbortSignal.timeout(8000) });
         if (tmrwRes.ok) {
           const tmrwData = await tmrwRes.json();
