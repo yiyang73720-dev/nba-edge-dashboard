@@ -3123,8 +3123,8 @@ async function fetchESPNScoreboard() {
             if (aTop3.length === 0 && hTop3.length === 0) return '';
             const renderPlayer = (p) => {
               const lastName = p.name.split(' ').pop();
-              if (p.pts === null) return `<div style="display:flex;align-items:center;gap:6px;padding:2px 0;color:var(--text-muted);"><span style="min-width:75px;">${lastName}</span> <span style="font-size:10px;">${p.ppg} ppg</span> <span style="font-size:9px;">DNP</span></div>`;
-              return `<div style="display:flex;align-items:center;gap:6px;padding:2px 0;"><strong style="min-width:75px;">${lastName}</strong> <span>${p.pts}pts</span> <span style="color:var(--text-muted);font-size:10px;">${p.ppg} ppg</span></div>`;
+              if (p.pts === null) return `<div style="display:flex;align-items:center;gap:6px;padding:2px 0;color:var(--text-muted);"><span style="min-width:75px;">${lastName}</span> <span style="font-size:9px;">DNP</span></div>`;
+              return `<div style="display:flex;align-items:center;gap:6px;padding:2px 0;"><strong style="min-width:75px;">${lastName}</strong> <span>${p.pts}pts</span></div>`;
             };
             const renderTeam = (abbr, players) => {
               if (players.length === 0) return '';
