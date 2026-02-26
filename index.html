@@ -3085,14 +3085,26 @@ async function fetchESPNScoreboard() {
             const starDB = isNCAA() ? ncaaStarCache : state.stars;
             const getTopScorers = (side, teamAbbr) => {
               const roster = bx[side] || [];
-              return roster
-                .filter(p => p.pts > 0)
+              const teamStars = starDB.filter(s => s.team === teamAbbr);
+              // Always include tracked stars first (even if 0 pts)
+              const starPlayers = [];
+              teamStars.forEach(star => {
+                const starLast = star.name.split(' ').pop().toLowerCase();
+                const player = roster.find(p => p.name.toLowerCase().split(' ').pop() === starLast);
+                if (player) starPlayers.push({ ...player, star });
+                else starPlayers.push({ name: star.name, pts: 0, team: teamAbbr, star });
+              });
+              // Fill remaining slots with top scorers not already shown
+              const starNames = new Set(starPlayers.map(s => s.name.toLowerCase()));
+              const others = roster
+                .filter(p => p.pts > 0 && !starNames.has(p.name.toLowerCase()))
                 .sort((a, b) => b.pts - a.pts)
-                .slice(0, 5)
-                .map(p => {
-                  const starLast = p.name.toLowerCase().split(' ').pop();
-                  const star = starDB.find(s => s.team === teamAbbr && s.name.split(' ').pop().toLowerCase() === starLast);
-                  return { ...p, star };
+                .slice(0, Math.max(0, 5 - starPlayers.length))
+                .map(p => ({ ...p, star: null }));
+              // Sort: stars first (by pts desc), then others
+              starPlayers.sort((a, b) => b.pts - a.pts);
+              return [...starPlayers, ...others].map(p => {
+                  return { ...p };
                 });
             };
             const aTop = getTopScorers('away', aA);
