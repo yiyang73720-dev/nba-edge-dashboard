@@ -4533,6 +4533,8 @@ async function importEngineSignals() {
     if (!Array.isArray(engineSignals) || engineSignals.length === 0) return;
     let imported = 0;
     for (const sig of engineSignals) {
+      // Quality Edge signals are spread bets — handled by renderQualityEdge(), not the ML tracker
+      if (sig.type === 'quality_edge') continue;
       // Skip if already in tracker
       const trackerKey = sig.eventId + '_' + (sig.betTeam || '');
       if (state.signalTracker.find(s => s.key === trackerKey)) continue;

@@ -725,17 +725,21 @@ async function detectSignals(cfg) {
       let signalCount = [has3ptFragile || soft3pt, hasStar || softStar].filter(Boolean).length;
 
       // ======== QUALITY EDGE (independent of 3PT/Star signals) ========
-      // Fires when a significantly stronger team (by record) is trailing by a small margin
-      // and the book spread still favors them. Proven 62% cover rate Q1-Q3 from backtesting.
-      if (cfg.mode === 'nba' && per >= 1 && per <= 3) {
+      // Fires when a stronger team (10%+ win% gap) trails by 1-14 pts with spread -7 to +1.5.
+      // Q1-Q3 only (min 3 mins elapsed). Based on regression-to-quality thesis.
+      if (cfg.mode === 'nba' && per >= 1 && per <= 3 && gMins >= 3) {
         const getWinPct = (competitor) => {
           const rec = (competitor.records || []).find(r => r.type === 'total');
-          if (!rec || !rec.summary) return 0.5;
-          const [w, l] = rec.summary.split('-').map(Number);
-          return (w + l) > 0 ? w / (w + l) : 0.5;
+          if (!rec || !rec.summary) return null;
+          const parts = rec.summary.split('-').map(Number);
+          const w = parts[0], l = parts[1];
+          if (isNaN(w) || isNaN(l) || (w + l) <= 0) return null;
+          return w / (w + l);
         };
         const homeWinPct = getWinPct(home);
         const awayWinPct = getWinPct(away);
+        if (homeWinPct === null || awayWinPct === null) { /* skip — record data unavailable */ }
+        else {
         const qualityGap = Math.abs(homeWinPct - awayWinPct);
 
         if (qualityGap >= 0.10) {
@@ -750,13 +754,13 @@ async function detectSignals(cfg) {
           const weakerWinPct = strongerIsHome ? awayWinPct : homeWinPct;
           const trailingBy = weakerScore - strongerScore; // positive if stronger is behind
 
-          // Stronger team must be trailing by 1-10 points
+          // Stronger team must be trailing by 1-14 points
           if (trailingBy >= 1 && trailingBy <= 14) {
-            // Check book spread on stronger team
+            // Check book spread on stronger team (pre-game spread from Odds API)
             const qeOdds = matchOdds(modeState, aA, hA, aFull, hFull);
             const bookSpread = qeOdds ? (strongerIsHome ? qeOdds.homeSpread : qeOdds.awaySpread) : null;
 
-            // Spread must be between -4 and 0 (still favored despite trailing)
+            // Spread between -7 and +1.5 (moderate favorite to slight underdog)
             if (bookSpread !== null && bookSpread !== undefined && bookSpread >= -7 && bookSpread <= 1.5) {
               const qeKey = `${gid}_quality_edge`;
               if (!signalLog.find(s => s.key === qeKey)) {
@@ -810,6 +814,7 @@ async function detectSignals(cfg) {
             }
           }
         }
+      } // end else (records available)
       }
 
       if (signalCount === 0) continue;
@@ -960,12 +965,16 @@ async function resolveCompletedGames(cfg, events) {
     if (sig.type === 'quality_edge') {
       const betIsHome = sig.betTeam === (home.team?.abbreviation || '');
       const finalMargin = betIsHome ? (fHS - fAS) : (fAS - fHS);
-      const covered = (finalMargin + (sig.bookSpread || 0)) > 0;
-      sig.spreadResult = covered ? 'WIN' : 'LOSS';
+      const spreadMargin = finalMargin + (sig.bookSpread || 0);
       const betAmt = 100; // standard $100 bet for QE
-      if (covered) {
+      if (spreadMargin > 0) {
+        sig.spreadResult = 'WIN';
         sig.spreadPayout = sig.marketOdds > 0 ? betAmt * (sig.marketOdds / 100) : betAmt * (100 / Math.abs(sig.marketOdds));
+      } else if (spreadMargin === 0) {
+        sig.spreadResult = 'PUSH';
+        sig.spreadPayout = 0;
       } else {
+        sig.spreadResult = 'LOSS';
         sig.spreadPayout = -betAmt;
       }
       resolved++;
