@@ -1557,7 +1557,7 @@ const TEAM_MAP = {
 function shortName(n) { return TEAM_MAP[n] || n.split(' ').pop().substring(0,3).toUpperCase(); }
 function teamDisplay(abbr, fullName) { return abbr; }
 function teamDisplayShort(abbr, fullName) { return abbr; }
-function teamLogoImg(logoUrl, size) { if (!logoUrl) return ''; return `<img src="${logoUrl}" alt="" style="width:${size||20}px;height:${size||20}px;object-fit:contain;vertical-align:middle;">`; }
+function teamLogoImg(logoUrl, size) { if (!logoUrl) return ''; return `<img src="${logoUrl}" alt="" onerror="this.style.display='none'" style="width:${size||20}px;height:${size||20}px;object-fit:contain;vertical-align:middle;">`; }
 function gameLinksHTML(espnLink, leaguePassLink) {
   let links = [];
   if (espnLink) links.push(`<a href="${espnLink}" target="_blank" class="watch-link">ESPN</a>`);
