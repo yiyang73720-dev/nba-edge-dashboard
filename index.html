@@ -1381,7 +1381,7 @@ async function fetchLiveOdds(){
   if(oddsRequestCount>=480){console.warn('Odds API near limit');return oddsCache;}
   try{
     const sport=getOddsSport();
-    const resp=await fetch('https://api.the-odds-api.com/v4/sports/'+sport+'/odds/?apiK'+'ey=4ca2c6a2ed9e162809eb03722e2dc734&regions=us&markets=h2h,totals&oddsFormat=american&bookmakers=fanduel,draftkings,betmgm');
+    const resp=await fetch('https://api.the-odds-api.com/v4/sports/'+sport+'/odds/?apiK'+'ey=4ca2c6a2ed9e162809eb03722e2dc734&regions=us&markets=h2h,spreads&oddsFormat=american&bookmakers=fanduel,draftkings,betmgm');
     if(!resp.ok){console.warn('Odds API:',resp.status);return oddsCache;}
     const data=await resp.json();
     oddsRequestCount++;
@@ -1403,19 +1403,17 @@ async function fetchLiveOdds(){
         }
       }
       if(homeML===null||awayML===null)continue;
-      // Find totals from ANY bookmaker (not just the first one)
-      let ouLine=null,overPrice=null,underPrice=null;
+      // Find spreads from ANY bookmaker
+      let homeSpread=null,awaySpread=null,homeSpreadPrice=null,awaySpreadPrice=null;
       for(const bk of (g.bookmakers||[])){
-        const totMkt=bk.markets?.find(m=>m.key==='totals');
-        if(totMkt){
-          const overO=totMkt.outcomes?.find(o=>o.name==='Over');
-          const underO=totMkt.outcomes?.find(o=>o.name==='Under');
-          if(overO){ouLine=overO.point;overPrice=overO.price;}
-          if(underO){underPrice=underO.price;if(!ouLine)ouLine=underO.point;}
-          if(ouLine)break; // found it, stop searching
+        const spMkt=bk.markets?.find(m=>m.key==='spreads');
+        if(spMkt){
+          const hO=spMkt.outcomes?.find(o=>o.name===g.home_team);
+          const aO=spMkt.outcomes?.find(o=>o.name===g.away_team);
+          if(hO&&aO){homeSpread=hO.point;homeSpreadPrice=hO.price;awaySpread=aO.point;awaySpreadPrice=aO.price;break;}
         }
       }
-      nc[g.away_team+' vs '+g.home_team]={home:g.home_team,away:g.away_team,homeML,awayML,book:bookName,ouLine,overPrice,underPrice};
+      nc[g.away_team+' vs '+g.home_team]={home:g.home_team,away:g.away_team,homeML,awayML,book:bookName,homeSpread,awaySpread,homeSpreadPrice,awaySpreadPrice};
     }
     oddsCache=nc;oddsCacheTime=now;
     // Record odds history for LEC (Live Edge Captured) tracking
@@ -2402,18 +2400,21 @@ async function fetchESPNScoreboard() {
         const tipoff = event.date ? new Date(event.date) : null;
         const tipoffStr = tipoff ? tipoff.toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : detail;
         const broadcast = comp.broadcasts?.[0]?.names?.[0] || '';
-        const ou = comp.odds?.[0]?.overUnder || '';
         const _preOddsHTML = buildOddsHTML(aA,hA,aFull,hFull);
-        // Build O/U row from the-odds-api if available, else fallback to ESPN
+        // Build spread row from the-odds-api if available, else fallback to ESPN
         const _preOddsMatch = matchOdds(aA,hA,aFull,hFull);
-        let _ouHTML = '';
-        if (_preOddsMatch && _preOddsMatch.ouLine) {
-          const oP = _preOddsMatch.overPrice, uP = _preOddsMatch.underPrice;
-          const oStr = oP ? ((oP>0?'+':'')+oP) : '';
-          const uStr = uP ? ((uP>0?'+':'')+uP) : '';
-          _ouHTML = `<div class="odds-row" style="margin-top:2px;"><span><span class="odds-label">OVER</span> <span class="odds-val even">${_preOddsMatch.ouLine}</span> ${oStr ? '<span class="odds-implied">(' + oStr + ')</span>' : ''}</span><span class="odds-src">${_preOddsMatch.book}</span><span>${uStr ? '<span class="odds-implied">(' + uStr + ')</span>' : ''} <span class="odds-val even">${_preOddsMatch.ouLine}</span> <span class="odds-label">UNDER</span></span></div>`;
-        } else if (ou) {
-          _ouHTML = `<div style="font-size:11px;color:var(--text-muted);text-align:center;margin:2px 0;">O/U ${ou}</div>`;
+        const espnSpread = comp.odds?.[0]?.details || '';
+        let _spreadHTML = '';
+        if (_preOddsMatch && _preOddsMatch.awaySpread !== null) {
+          const aSp = _preOddsMatch.awaySpread, hSp = _preOddsMatch.homeSpread;
+          const aSpP = _preOddsMatch.awaySpreadPrice, hSpP = _preOddsMatch.homeSpreadPrice;
+          const aSpStr = (aSp>0?'+':'')+aSp;
+          const hSpStr = (hSp>0?'+':'')+hSp;
+          const aPrice = aSpP ? ' ('+(aSpP>0?'+':'')+aSpP+')' : '';
+          const hPrice = hSpP ? ' ('+(hSpP>0?'+':'')+hSpP+')' : '';
+          _spreadHTML = `<div class="odds-row" style="margin-top:2px;"><span><span class="odds-label">${aA} SPR</span> <span class="odds-val ${aSp<0?'fav':'dog'}">${aSpStr}</span><span class="odds-implied">${aPrice}</span></span><span class="odds-src">${_preOddsMatch.book}</span><span><span class="odds-implied">${hPrice}</span> <span class="odds-val ${hSp<0?'fav':'dog'}">${hSpStr}</span> <span class="odds-label">${hA} SPR</span></span></div>`;
+        } else if (espnSpread) {
+          _spreadHTML = `<div style="font-size:11px;color:var(--text-muted);text-align:center;margin:2px 0;">${espnSpread}</div>`;
         }
         const isFav = state.favorites.includes(gid);
         cards += `<div class="game-card" data-game-id="${gid}" style="opacity:0.85;">
@@ -2444,7 +2445,7 @@ async function fetchESPNScoreboard() {
             </div>
             ${gameLinksHTML(espnLink, leaguePassLink)}
             ${_preOddsHTML}
-            ${_ouHTML}
+            ${_spreadHTML}
             <div style="text-align:center;padding:4px 0;">
               <div style="font-size:12px;font-weight:600;color:var(--text-secondary);">${tipoffStr}</div>
             </div>
@@ -3140,14 +3141,17 @@ async function fetchESPNScoreboard() {
       const isFav = state.favorites.includes(gid);
       const periodLabel = isNCAA() ? (per <= 2 ? `H${per}` : `OT${per-2}`) : `Q${per}`;
       const _oddsHTML = buildOddsHTML(aA,hA,aFull,hFull);
-      // O/U line for live cards
+      // Spread line for live cards
       const _liveOddsMatch = matchOdds(aA,hA,aFull,hFull);
-      let _liveOUHTML = '';
-      if (_liveOddsMatch && _liveOddsMatch.ouLine) {
-        const oP = _liveOddsMatch.overPrice, uP = _liveOddsMatch.underPrice;
-        const oStr = oP ? ((oP>0?'+':'')+oP) : '';
-        const uStr = uP ? ((uP>0?'+':'')+uP) : '';
-        _liveOUHTML = `<div class="odds-row" style="margin-top:2px;"><span><span class="odds-label">OVER</span> <span class="odds-val even">${_liveOddsMatch.ouLine}</span> ${oStr ? '<span class="odds-implied">(' + oStr + ')</span>' : ''}</span><span class="odds-src">${_liveOddsMatch.book}</span><span>${uStr ? '<span class="odds-implied">(' + uStr + ')</span>' : ''} <span class="odds-val even">${_liveOddsMatch.ouLine}</span> <span class="odds-label">UNDER</span></span></div>`;
+      let _liveSpreadHTML = '';
+      if (_liveOddsMatch && _liveOddsMatch.awaySpread !== null) {
+        const aSp = _liveOddsMatch.awaySpread, hSp = _liveOddsMatch.homeSpread;
+        const aSpP = _liveOddsMatch.awaySpreadPrice, hSpP = _liveOddsMatch.homeSpreadPrice;
+        const aSpStr = (aSp>0?'+':'')+aSp;
+        const hSpStr = (hSp>0?'+':'')+hSp;
+        const aPrice = aSpP ? ' ('+(aSpP>0?'+':'')+aSpP+')' : '';
+        const hPrice = hSpP ? ' ('+(hSpP>0?'+':'')+hSpP+')' : '';
+        _liveSpreadHTML = `<div class="odds-row" style="margin-top:2px;"><span><span class="odds-label">${aA} SPR</span> <span class="odds-val ${aSp<0?'fav':'dog'}">${aSpStr}</span><span class="odds-implied">${aPrice}</span></span><span class="odds-src">${_liveOddsMatch.book}</span><span><span class="odds-implied">${hPrice}</span> <span class="odds-val ${hSp<0?'fav':'dog'}">${hSpStr}</span> <span class="odds-label">${hA} SPR</span></span></div>`;
       }
 
       // Signal summary for card header
@@ -3186,7 +3190,7 @@ async function fetchESPNScoreboard() {
           ${gameLinksHTML(espnLink, leaguePassLink)}
           <!-- ODDS -->
           ${_oddsHTML}
-          ${_liveOUHTML}
+          ${_liveSpreadHTML}
           <!-- LIVE STATS -->
           ${isLive?`<div class="stat-bars">
             ${bar3(a3P,a3M,a3A,aA)}
