@@ -1346,6 +1346,7 @@ function switchMode(mode) {
   // Update Signal Guide for current mode
   updateSignalGuide(mode);
   // Reset caches for fresh data
+  teamScorerCache = {}; teamScorerLastFetch = 0;
   oddsCache = {}; oddsCacheTime = 0;
   state.scoreHistory = {};
   state.lastKnownPeriods = {};
@@ -1603,6 +1604,22 @@ let teamScorerLastFetch = 0;
 async function fetchTeamScorers() {
   const now = Date.now();
   if (now - teamScorerLastFetch < 60 * 60 * 1000 && Object.keys(teamScorerCache).length > 0) return;
+  if (isNCAA()) {
+    // NCAA: build from ncaaStarCache (already fetched per-team leaders)
+    const byTeam = {};
+    ncaaStarCache.forEach(s => {
+      if (!byTeam[s.team]) byTeam[s.team] = [];
+      byTeam[s.team].push({ name: s.name, ppg: s.ppg });
+    });
+    for (const t in byTeam) {
+      byTeam[t].sort((a, b) => b.ppg - a.ppg);
+      byTeam[t] = byTeam[t].slice(0, 3);
+    }
+    teamScorerCache = byTeam;
+    teamScorerLastFetch = now;
+    console.log(`[TeamScorers] NCAA: Cached top 3 scorers for ${Object.keys(byTeam).length} teams from ncaaStarCache`);
+    return;
+  }
   try {
     const res = await fetch('https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/statistics/byathlete?season=2025&limit=500&sort=offensive.avgPoints', { signal: AbortSignal.timeout(8000) });
     if (!res.ok) return;
@@ -1616,14 +1633,13 @@ async function fetchTeamScorers() {
       if (!byTeam[team]) byTeam[team] = [];
       byTeam[team].push({ name, ppg });
     });
-    // Keep top 3 by PPG per team
     for (const t in byTeam) {
       byTeam[t].sort((a, b) => b.ppg - a.ppg);
       byTeam[t] = byTeam[t].slice(0, 3);
     }
     teamScorerCache = byTeam;
     teamScorerLastFetch = now;
-    console.log(`[TeamScorers] Cached top 3 scorers for ${Object.keys(byTeam).length} teams`);
+    console.log(`[TeamScorers] NBA: Cached top 3 scorers for ${Object.keys(byTeam).length} teams`);
   } catch (e) {
     console.warn('[TeamScorers] Fetch error:', e);
   }
@@ -3911,8 +3927,9 @@ async function resolveSignalTracker(specificDateStr) {
   renderSignalTracker();
 }
 
-function getSignalTrackerStats() {
-  const all = state.signalTracker;
+function getSignalTrackerStats(modeFilter) {
+  const allRaw = state.signalTracker;
+  const all = modeFilter ? allRaw.filter(s => s.mode === modeFilter) : allRaw;
   const completed = all.filter(s => s.gameCompleted);
   const pending = all.filter(s => !s.gameCompleted);
 
@@ -3996,19 +4013,39 @@ function getSignalTrackerStats() {
   };
 }
 
+let _trackerModeFilter = null; // null = all, 'nba', 'ncaab'
+function setTrackerMode(mode) {
+  _trackerModeFilter = mode;
+  renderSignalTracker();
+}
 function renderSignalTracker() {
   const el = document.getElementById('signal-tracker-content');
   if (!el) return;
 
-  const st = getSignalTrackerStats();
-  const all = state.signalTracker.slice().reverse();
+  const st = getSignalTrackerStats(_trackerModeFilter);
+  const allFiltered = _trackerModeFilter
+    ? state.signalTracker.filter(s => s.mode === _trackerModeFilter)
+    : state.signalTracker;
+  const all = allFiltered.slice().reverse();
 
-  if (all.length === 0) {
-    el.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--text-muted);font-size:13px;">No signals tracked yet. Signals are automatically recorded when combined signals (level 2) fire during live games with auto-refresh on.</div>';
-    return;
-  }
+  // Count by mode for tab badges
+  const nbaCount = state.signalTracker.filter(s => s.mode === 'nba').length;
+  const ncaaCount = state.signalTracker.filter(s => s.mode === 'ncaab').length;
 
   let h = '';
+
+  // Mode filter tabs
+  h += '<div style="display:flex;gap:6px;margin-bottom:14px;">';
+  const tabStyle = (active) => `padding:6px 14px;font-size:11px;font-weight:700;border-radius:20px;cursor:pointer;border:1px solid ${active ? 'var(--accent)' : 'var(--border)'};background:${active ? 'var(--accent-light)' : 'var(--card-bg)'};color:${active ? 'var(--accent)' : 'var(--text-muted)'};`;
+  h += `<div style="${tabStyle(!_trackerModeFilter)}" onclick="setTrackerMode(null)">ALL (${state.signalTracker.length})</div>`;
+  h += `<div style="${tabStyle(_trackerModeFilter==='nba')}" onclick="setTrackerMode('nba')">NBA (${nbaCount})</div>`;
+  h += `<div style="${tabStyle(_trackerModeFilter==='ncaab')}" onclick="setTrackerMode('ncaab')">NCAA (${ncaaCount})</div>`;
+  h += '</div>';
+
+  if (all.length === 0) {
+    el.innerHTML = h + '<div style="text-align:center;padding:40px 20px;color:var(--text-muted);font-size:13px;">No signals tracked' + (_trackerModeFilter ? ' for ' + (_trackerModeFilter === 'ncaab' ? 'NCAA' : 'NBA') : '') + '. Signals are automatically recorded when combined signals (level 2) fire during live games with auto-refresh on.</div>';
+    return;
+  }
 
   // ===== BANKROLL HEADER =====
   const bkColor = st.currentBankroll >= TRACKER_BANKROLL ? 'var(--green)' : 'var(--red)';
@@ -4114,6 +4151,7 @@ function renderSignalTracker() {
   all.forEach(s => {
     const td = 'padding:8px 6px;border-bottom:1px solid var(--border-light, rgba(255,255,255,0.06));white-space:nowrap';
     const periodStr = s.mode === 'ncaab' ? ((s.period||0) <= 2 ? 'H'+(s.period||'?') : 'OT'+((s.period||3)-2)) : 'Q'+(s.period||'?');
+    const modeBadge = s.mode === 'ncaab' ? '<span style="font-size:8px;font-weight:700;color:var(--orange);background:var(--orange-light);padding:1px 4px;border-radius:3px;margin-right:3px;">NCAA</span>' : '';
     const scoreAt = s.awayScore+'-'+s.homeScore+' '+periodStr+' '+(s.clock||'');
     const final_ = s.gameCompleted ? s.finalAwayScore+'-'+s.finalHomeScore : '<span style="color:var(--orange)">Pending</span>';
     const mlC = s.mlResult==='W'?'var(--green)':s.mlResult==='L'?'var(--red)':'var(--text-muted)';
@@ -4126,7 +4164,7 @@ function renderSignalTracker() {
 
     h += '<tr>';
     h += '<td style="'+td+';font-size:10px;color:var(--text-muted)">'+s.date+'</td>';
-    h += '<td style="'+td+';font-weight:600">'+s.game+'</td>';
+    h += '<td style="'+td+';font-weight:600">'+modeBadge+s.game+'</td>';
     h += '<td style="'+td+';color:var(--accent);font-weight:700">'+s.signalSide+' '+sigs+'</td>';
     h += '<td style="'+td+';font-weight:700;color:'+(s.recType==='ML'?'var(--orange)':'var(--purple, #7c3aed)')+'">'+s.recType+'</td>';
     h += '<td style="'+td+';font-family:monospace">'+(s.spreadLine||'-')+'</td>';
