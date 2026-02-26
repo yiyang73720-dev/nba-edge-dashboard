@@ -263,12 +263,12 @@
     .signal-chip .chip-value { font-size: 22px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.5px; line-height: 1.2; }
     .signal-chip .chip-label { font-size: 9px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
     .signal-chip .chip-value.orange { color: var(--orange); }
-    .signal-chip .chip-value.teal { color: #0d9488; }
+    .signal-chip .chip-value.teal { color: var(--green); }
     .signal-chip .chip-value.red { color: var(--red); }
     .signal-chip .chip-value.purple { color: var(--purple); }
     .signal-chip .chip-value.green { color: var(--green); }
     .signal-chip .chip-label.orange { color: var(--orange); }
-    .signal-chip .chip-label.teal { color: #0d9488; }
+    .signal-chip .chip-label.teal { color: var(--green); }
     .signal-chip .chip-label.red { color: var(--red); }
     .signal-chip .chip-label.purple { color: var(--purple); }
     .signal-chip .chip-label.green { color: var(--green); }
@@ -436,6 +436,9 @@
       box-shadow: var(--shadow-xs);
     }
     .panel-header, .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--border-light); }
+    .grid-section-label { grid-column: 1/-1; padding: 12px 0 4px; border-top: 1px solid var(--border); margin-top: 8px; }
+    .grid-section-label span { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .grid-section-label:first-child { border-top: none; margin-top: 0; }
 
     /* ===== TABLES ===== */
     table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; }
@@ -1703,7 +1706,7 @@ function teamProfileHTML(abbr, homeAway, logoUrl) {
   const p = teamProfileCache[abbr];
   if (!p) return '';
   const streakStr = p.streak != null ? (p.streak > 0 ? 'W' + Math.round(p.streak) : 'L' + Math.abs(Math.round(p.streak))) : '';
-  const streakColor = p.streak > 0 ? '#0d9488' : 'var(--red)';
+  const streakColor = p.streak > 0 ? 'var(--green)' : 'var(--red)';
   const seedStr = p.seed != null ? '#' + Math.round(p.seed) : '';
   const ctxRec = homeAway === 'home' ? (p.homeRec || '') : (p.roadRec || '');
 
@@ -1713,7 +1716,7 @@ function teamProfileHTML(abbr, homeAway, logoUrl) {
   if (streakStr) chips.push(`<span style="font-weight:700;color:${streakColor};">${streakStr}</span>`);
 
   return `<div style="font-size:9px;color:var(--text-muted);margin-top:1px;">
-    <span class="tp-inline" onclick="openTeamProfile('${abbr}','${homeAway}','${(logoUrl||'').replace(/'/g,'')}')">${chips.join(' ')}</span>
+    <span class="tp-inline" onclick="openTeamProfile('${abbr}','${homeAway}','${(logoUrl||'').replace(/'/g,'')}')">${chips.join(' <span style="opacity:0.4;">·</span> ')}</span>
   </div>`;
 }
 
@@ -1721,7 +1724,7 @@ function openTeamProfile(abbr, homeAway, logoUrl) {
   const p = teamProfileCache[abbr];
   if (!p) return;
   const diff = p.diff != null ? (p.diff > 0 ? '+' + p.diff.toFixed(1) : p.diff.toFixed(1)) : '';
-  const diffColor = p.diff > 0 ? '#0d9488' : p.diff < 0 ? 'var(--red)' : 'var(--text-muted)';
+  const diffColor = p.diff > 0 ? 'var(--green)' : p.diff < 0 ? 'var(--red)' : 'var(--text-muted)';
 
   const row = (label, val, color) => `<div class="tp-row"><span class="tp-label">${label}</span><span class="tp-val"${color ? ' style="color:'+color+'"' : ''}>${val}</span></div>`;
 
@@ -2292,13 +2295,13 @@ async function fetchESPNScoreboard() {
 
       // Section headers
       if (isLive && !sectionHeaders.live) {
-        cards += `<div style="grid-column:1/-1;padding:8px 0 4px;"><span style="font-size:11px;font-weight:700;color:var(--red);letter-spacing:1px;text-transform:uppercase;">LIVE</span></div>`;
+        cards += `<div class="grid-section-label" style="border-top:none;margin-top:0;padding-top:8px;"><span style="color:var(--red);">LIVE</span></div>`;
         sectionHeaders.live = true;
       } else if (isUpcoming && !sectionHeaders.upcoming) {
-        cards += `<div style="grid-column:1/-1;padding:12px 0 4px;border-top:1px solid var(--border);margin-top:8px;"><span style="font-size:11px;font-weight:700;color:var(--accent);letter-spacing:1px;text-transform:uppercase;">UPCOMING</span></div>`;
+        cards += `<div class="grid-section-label"><span style="color:var(--accent);">UPCOMING</span></div>`;
         sectionHeaders.upcoming = true;
       } else if (isCompleted && !sectionHeaders.completed) {
-        cards += `<div style="grid-column:1/-1;padding:12px 0 4px;border-top:1px solid var(--border);margin-top:8px;"><span style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;">COMPLETED</span></div>`;
+        cards += `<div class="grid-section-label"><span style="color:var(--text-muted);">COMPLETED</span></div>`;
         sectionHeaders.completed = true;
       }
 
@@ -2350,7 +2353,7 @@ async function fetchESPNScoreboard() {
       if (isCompleted) {
         const winner = aS > hS ? 'away' : 'home';
         const isFav = state.favorites.includes(gid);
-        cards += `<div class="game-card" data-game-id="${gid}" style="opacity:0.6;">
+        cards += `<div class="game-card" data-game-id="${gid}" style="opacity:0.75;">
           <div class="game-card-header">
             <span style="color:var(--text-muted);font-weight:600;">FINAL</span>
             <span class="fav-star" onclick="toggleFavorite('${gid}')" style="cursor:pointer;font-size:14px;">${isFav?'\u2605':'\u2606'}</span>
@@ -2834,20 +2837,29 @@ async function fetchESPNScoreboard() {
             console.log(`[Conflict] ${gLabel}: awayFade=${awayFade.toFixed(1)}, homeFade=${homeFade.toFixed(1)} — downgraded from COMBINED`);
           }
 
-          // ===== HOME COURT FACTOR (NCAA ONLY — BIDIRECTIONAL) =====
+          // ===== HOME COURT FACTOR (NCAA ONLY — BIDIRECTIONAL BOOSTER) =====
           // NCAA home court = 3.5-4 pts (vs NBA 2.5). This is a structural force.
-          // When signals say bet HOME: tailwind (+0.5 boost to fading away)
-          // When signals say bet ROAD: headwind (+0.5 boost to fading home = penalty for road bet)
-          // NBA: NO CHANGE — this factor does not apply to NBA. NBA is set in stone.
+          // BOOSTER, not standalone signal. Amplifies existing signals:
+          //   - When signals say bet HOME: tailwind (+0.5 fade weight + Kelly boost)
+          //   - When signals say bet ROAD: headwind (+0.5 fade weight = penalty for road bet)
+          // KEY CHANGE: In NCAA, 1 strict signal + home court tailwind = combined-level Kelly.
+          // Rationale: Each standalone signal is already 5-condition strict. Fewer possessions
+          // in NCAA = stronger regression certainty. Home court adds a 6th independent factor
+          // (crowd energy, ref bias, travel fatigue) that compounds the edge. Requiring a
+          // second strict signal to fire simultaneously is over-restrictive for NCAA.
+          // NBA: NO CHANGE — this factor does not apply. NBA lines are sharper, need true combined.
           let homeCourtEdge = false;
+          let homeCourtBoost = 0; // Kelly signal count boost (0 or 1)
           if (isNCAA()) {
             const _hcFactor = 0.5;
             if (awayFade > 0) {
               awayFade += _hcFactor; // boost fading away = tailwind for home bet
               homeCourtEdge = true;
+              homeCourtBoost = 1;    // home court tailwind → treat as combined-level Kelly
             }
             if (homeFade > 0) {
               homeFade += _hcFactor; // boost fading home = headwind for road bet
+              // No Kelly boost for road bets — headwind doesn't add confidence
             }
           }
 
@@ -2873,11 +2885,12 @@ async function fetchESPNScoreboard() {
 
           // Home Court Factor narrative (NCAA only — homeCourtEdge is always false for NBA)
           if (isNCAA() && betTeam === hA) {
-            reasons.push(`🏟️ HOME COURT TAILWIND: Betting ${_hD} (home team). NCAAB home court ~3.5-4 pts — crowd energy + regression signals = double tailwind.`);
-            thesis.criteria['homecourt_edge'] = { met: true, strong: true, label: `Home Court Tailwind`, detail: `<strong>Home Court Advantage:</strong> ${_hD} is at home. NCAAB home court averages ~3.5-4 pts.<br><strong>Why it amplifies your signal:</strong> Regression signals + crowd energy = compounding effect. Refs show documented home bias in foul calls.<br><strong>The edge:</strong> Regression signal + home court = stronger expected outcome.`, value: `Home court tailwind (+0.5)` };
+            const boostLabel = thesis.homeCourtBoost ? ' Kelly boosted to combined-level.' : '';
+            reasons.push(`🏟️ HOME COURT TAILWIND: Betting ${_hD} (home team). NCAAB home court ~3.5-4 pts — crowd energy + regression signals = double tailwind.${boostLabel}`);
+            thesis.criteria['homecourt_boost'] = { met: true, strong: true, label: `🏟️ Home Court Booster`, detail: `<strong>Home Court Booster (NCAA):</strong> ${_hD} is at home. NCAAB home court averages ~3.5-4 pts — an independent structural factor.<br><strong>Why this is a BOOSTER, not a standalone signal:</strong> Home court alone doesn't generate alpha. But when a strict signal fires AND the bet is on the home team, the home court compounds the edge:<br>&nbsp;&nbsp;• Crowd energy sustains runs triggered by regression<br>&nbsp;&nbsp;• Ref bias in foul calls (documented ~60% home foul advantage)<br>&nbsp;&nbsp;• Travel fatigue amplifies road team's 3PT regression<br><strong>Kelly Impact:</strong> Single strict signal + home court booster = combined-level Kelly sizing.${activeSignals >= 2 ? ' (Already combined — booster adds further confidence.)' : ` Effective signal count: ${activeSignals} → ${effectiveSignals}.`}<br><strong>The math:</strong> Each standalone signal is already 5-condition strict. Fewer NCAA possessions = stronger regression certainty. Home court is the 6th independent factor. Requiring a 2nd strict signal to also fire simultaneously is over-restrictive for NCAA.`, value: `Tailwind (+0.5 weight, +1 Kelly boost)` };
           } else if (isNCAA() && betTeam === aA && homeFade > 0) {
             reasons.push(`⚠️ HOME COURT HEADWIND: Betting ${_aD} (road team). NCAAB home court ~3.5-4 pts works against road comebacks — signal must overcome structural disadvantage.`);
-            thesis.criteria['homecourt_edge'] = { met: true, strong: false, label: `Home Court Headwind`, detail: `<strong>Home Court Headwind:</strong> ${_aD} is on the road. NCAAB home court averages ~3.5-4 pts working AGAINST the road team.<br><strong>Why it weakens your signal:</strong> Even if regression happens, the home crowd fuels counter-runs. Road teams need stronger regression to overcome the structural disadvantage.<br><strong>Impact:</strong> Headwind factor applied (-0.5). Signal must be strong enough to overcome home court.`, value: `Road headwind (-0.5)` };
+            thesis.criteria['homecourt_boost'] = { met: true, strong: false, label: `⚠️ Home Court Headwind`, detail: `<strong>Home Court Headwind:</strong> ${_aD} is on the road. NCAAB home court averages ~3.5-4 pts working AGAINST the road team.<br><strong>Why it weakens your signal:</strong> Even if regression happens, the home crowd fuels counter-runs. Road teams need stronger regression to overcome the structural disadvantage.<br><strong>Kelly Impact:</strong> No Kelly boost for road bets. Signal must stand on its own merit.<br><strong>Impact:</strong> Headwind weight applied (+0.5 to fade). No Kelly confidence boost.`, value: `Road headwind (+0.5 weight, no Kelly boost)` };
           }
 
           const strongCriteria = Object.values(thesis.criteria).filter(c => c.met && c.strong).length;
@@ -2890,12 +2903,17 @@ async function fetchESPNScoreboard() {
           thesis.fadeSide = fadeTeam;
           thesis.fadeSideFull = fadeTeamFull;
           thesis.betLogic = reasons.join('. ') + '.';
-          thesis.confidence = strongCriteria >= 3 ? 'high' : strongCriteria >= 2 ? 'high' : allCriteria >= 2 ? 'medium' : 'low';
+          // NCAA: home court booster counts as strong criteria for confidence level
+          const _boostCriteria = thesis.homeCourtBoost ? 1 : 0;
+          thesis.confidence = (strongCriteria + _boostCriteria) >= 3 ? 'high' : (strongCriteria + _boostCriteria) >= 2 ? 'high' : allCriteria >= 2 ? 'medium' : 'low';
           thesis.strongCount = strongCriteria;
           thesis.totalMet = allCriteria;
           thesis.signals = signals;
           thesis.signalLevel = signalLevel;
           thesis.homeCourtEdge = homeCourtEdge && betTeam === hA;
+          thesis.homeCourtBoost = homeCourtBoost > 0 && betTeam === hA;
+          // Effective signal count: base signals + home court booster (NCAA only, home bets only)
+          const effectiveSignals = activeSignals + (thesis.homeCourtBoost ? homeCourtBoost : 0);
           // Urgency: how much game runway remains for regression
           const _urgency = getUrgency(per, clk);
           thesis.urgency = _urgency;
@@ -2908,7 +2926,7 @@ async function fetchESPNScoreboard() {
             thesis.impliedP = _implP;
             // Store odds key for LEC tracking
             thesis.oddsKey = _tOdds.away + ' vs ' + _tOdds.home;
-            const _k = kellySize(_implP, _betML, null, activeSignals, _urgency.mult);
+            const _k = kellySize(_implP, _betML, null, effectiveSignals, _urgency.mult);
             thesis.kellyPct = _k.fStar;
             thesis.kellyBet = _k.bet;
             thesis.kellyEdge = _k.edge;
@@ -2919,7 +2937,7 @@ async function fetchESPNScoreboard() {
           // Always log the bet — use default -110 odds if live odds unavailable
           const _logOdds = _betML || -110;
           const _logImplP = _betML ? _implP : 0.524; // -110 implied = 52.4%
-          autoLogBet(event.id, betTeam, 'ML', signals.filter(x=>x.level===2).map(x=>x.type), _logOdds, _logImplP, activeSignals, _urgency.mult);
+          autoLogBet(event.id, betTeam, 'ML', signals.filter(x=>x.level===2).map(x=>x.type), _logOdds, _logImplP, effectiveSignals, _urgency.mult);
           gameTheses.push(thesis);
         }
 
@@ -2965,7 +2983,7 @@ async function fetchESPNScoreboard() {
           if (dur.pct3 <= 0) return '';
           const cls = dur.durability;
           const w = Math.min(dur.pct3, 100);
-          const col = dur.fragile ? 'var(--red)' : dur.durable ? '#0d9488' : 'var(--accent)';
+          const col = dur.fragile ? 'var(--red)' : dur.durable ? 'var(--green)' : 'var(--accent)';
           return `<div class="durability-bar ${cls}"><span>${team}</span><div class="durability-meter"><div class="durability-meter-fill" style="width:${w}%;background:${col};"></div></div><span>${dur.label}</span></div>`;
         };
         durabilityHTML = durBar(aA, aDur) + durBar(hA, hDur);
@@ -3001,21 +3019,21 @@ async function fetchESPNScoreboard() {
           <div class="game-teams">
             <div class="team-block">
               <div class="team-name">${teamLogoImg(aLogo, 20)}${teamDisplayShort(aA, aFull)}</div>
-                            <div class="team-record">${aRec}</div>
+              <div class="team-record">${aRec}</div>
               ${teamProfileHTML(aA, 'away', aLogo)}
               <div class="team-score">${isLive?aS:'-'}</div>
             </div>
             <div class="vs-block">
               <div class="vs-text" style="font-size:11px;font-weight:500;color:var(--text-muted);opacity:0.6;">vs</div>
-              ${isLive ? '<div class="game-links" style="flex-direction:column;gap:3px;">' + (espnLink ? '<a href="'+espnLink+'" target="_blank" class="watch-link">ESPN</a>' : '') + (leaguePassLink ? '<a href="'+leaguePassLink+'" target="_blank" class="watch-link">LP</a>' : '') + (!isNCAA() ? '<a href="https://sports.qq.com/nba/" target="_blank" class="watch-link">腾讯</a>' : '') + '</div>' : ''}
             </div>
             <div class="team-block">
               <div class="team-name">${teamLogoImg(hLogo, 20)}${teamDisplayShort(hA, hFull)}</div>
-                            <div class="team-record">${hRec}</div>
+              <div class="team-record">${hRec}</div>
               ${teamProfileHTML(hA, 'home', hLogo)}
               <div class="team-score">${isLive?hS:'-'}</div>
             </div>
           </div>
+          ${gameLinksHTML(espnLink, leaguePassLink)}
           <!-- ODDS -->
           ${_oddsHTML}
           <!-- LIVE STATS -->
@@ -3037,11 +3055,11 @@ async function fetchESPNScoreboard() {
               titleText='DEVELOPING';
             } else if(rec.type==='ML'){
               titleText=`EDGE \u2014 ML PLAY: ${rec.side} ML`;
-              recDetail=`<div style="font-size:11px;margin-top:4px;font-weight:700;color:#155724;">&#x1F4B0; ${rec.reasoning}</div>`;
+              recDetail=`<div style="font-size:11px;margin-top:4px;font-weight:700;color:var(--green);">&#x1F4B0; ${rec.reasoning}</div>`;
               betBtn=`<div style="margin-top:6px;"><button class="btn btn-orange btn-sm" onclick="openLogModal('${aA} @ ${hA}','${rec.side} ML','Mean Reversion - ML')">Log ML Bet (${rec.units}u)</button></div>`;
             } else if(rec.type==='SPREAD'){
               titleText=`EDGE \u2014 SPREAD: ${rec.side} ${rec.spreadLine}`;
-              recDetail=`<div style="font-size:11px;margin-top:4px;font-weight:700;color:#4a235a;">&#x1F3AF; ${rec.reasoning}</div>`;
+              recDetail=`<div style="font-size:11px;margin-top:4px;font-weight:700;color:var(--purple);">&#x1F3AF; ${rec.reasoning}</div>`;
               betBtn=`<div style="margin-top:6px;"><button class="btn btn-purple btn-sm" onclick="openLogModal('${aA} @ ${hA}','${rec.side} ${rec.spreadLine}','Mean Reversion - Spread')">Log Spread Bet (${rec.units}u)</button></div>`;
             } else {
               titleText='EDGE \u2014 WATCH';
@@ -3089,7 +3107,8 @@ async function fetchESPNScoreboard() {
           const badges = {'3pt':'3PT','star':'STAR','fragile':'FRAGILE'};
           return '<span class="signal-badge badge-' + s.type + '">' + (badges[s.type]||s.type.toUpperCase()) + '</span>';
         }).join(' ');
-        if (t.homeCourtEdge) sigs += ' <span class="signal-badge badge-road">HOME COURT</span>';
+        if (t.homeCourtBoost) sigs += ' <span class="signal-badge badge-road">🏟️ HOME BOOST</span>';
+        else if (t.homeCourtEdge) sigs += ' <span class="signal-badge badge-road">HOME COURT</span>';
         const _urg = t.urgency || { level: 'PRIME', icon: '●', color: 'var(--green)' };
         sigs += ' <span class="signal-badge" style="background:' + _urg.color + ';color:#fff;font-size:9px;">' + _urg.icon + ' ' + _urg.level.replace('_', ' ') + '</span>';
         const oddsStr = t.marketOdds ? ' @ ' + (t.marketOdds > 0 ? '+' : '') + t.marketOdds : '';
@@ -3202,7 +3221,7 @@ async function fetchESPNScoreboard() {
           <div class="thesis-body">
             <div class="thesis-bet-line">
               <div>
-                <div class="thesis-bet-action">BET ${betSideDisplay} ML ${t.marketOdds ? "(" + (t.marketOdds > 0 ? "+" : "") + t.marketOdds + ")" : ""}</div>${t.kellyPct ? '<div style="color:#4ade80;font-size:12px;margin-top:4px"><strong>KELLY:</strong> ' + t.kellyPct + '% of bankroll ($' + t.kellyBet + ') &bull; <strong>Our P:</strong> ' + t.estimatedP + '% vs <strong>Market:</strong> ' + (t.impliedP * 100).toFixed(1) + '%</div>' : ""}
+                <div class="thesis-bet-action">BET ${betSideDisplay} ML ${t.marketOdds ? "(" + (t.marketOdds > 0 ? "+" : "") + t.marketOdds + ")" : ""}</div>${t.kellyPct ? '<div style="color:var(--green);font-size:12px;margin-top:4px"><strong>KELLY:</strong> ' + t.kellyPct + '% of bankroll ($' + t.kellyBet + ') &bull; <strong>Our P:</strong> ' + t.estimatedP + '% vs <strong>Market:</strong> ' + (t.impliedP * 100).toFixed(1) + '%</div>' : ""}
                 <div class="thesis-bet-side">Fade ${fadeSideDisplay} — ${t.confidence.toUpperCase()} confidence</div>
               </div>
               <button class="btn btn-orange btn-sm" onclick="openLogModal('${t.game}','Live ML','Mean Reversion')">Log This Bet</button>
@@ -4763,7 +4782,7 @@ try {
 
   function buildOddsHistoryHTML(points, awayName, homeName) {
     if (!points || points.length === 0) {
-      return '<div style="padding:16px;color:#9ca3af;font-size:13px;text-align:center;">No historical data available. Click Refresh first to load games.</div>';
+      return '<div style="padding:16px;color:var(--text-muted);font-size:13px;text-align:center;">No historical data available. Click Refresh first to load games.</div>';
     }
 
     var rows = '';
@@ -4776,14 +4795,14 @@ try {
       // Arrow indicators for movement
       var aDelta = prevA !== null && p.a !== null ? (p.a > prevA ? ' \u2191' : p.a < prevA ? ' \u2193' : '') : '';
       var hDelta = prevH !== null && p.h !== null ? (p.h > prevH ? ' \u2191' : p.h < prevH ? ' \u2193' : '') : '';
-      var aColor = p.a > 0 ? '#dc2626' : '#059669';
-      var hColor = p.h > 0 ? '#dc2626' : '#059669';
+      var aColor = p.a > 0 ? 'var(--red)' : 'var(--green)';
+      var hColor = p.h > 0 ? 'var(--red)' : 'var(--green)';
 
-      rows += '<tr style="border-bottom:1px solid #f3f4f6;">' +
-        '<td style="padding:5px 10px;font-size:11px;color:#6b7280;white-space:nowrap;">' + timeStr + '</td>' +
+      rows += '<tr style="border-bottom:1px solid var(--border-light);">' +
+        '<td style="padding:5px 10px;font-size:11px;color:var(--text-secondary);white-space:nowrap;">' + timeStr + '</td>' +
         '<td style="padding:5px 10px;font-size:13px;font-weight:700;color:' + aColor + ';text-align:right;font-variant-numeric:tabular-nums;">' + awayML + '<span style="font-size:10px;">' + aDelta + '</span></td>' +
         '<td style="padding:5px 10px;font-size:13px;font-weight:700;color:' + hColor + ';text-align:right;font-variant-numeric:tabular-nums;">' + homeML + '<span style="font-size:10px;">' + hDelta + '</span></td>' +
-        '<td style="padding:5px 10px;font-size:10px;color:#9ca3af;">' + (p.src || '') + '</td></tr>';
+        '<td style="padding:5px 10px;font-size:10px;color:var(--text-muted);">' + (p.src || '') + '</td></tr>';
 
       prevA = p.a; prevH = p.h;
     });
@@ -4792,19 +4811,19 @@ try {
     var first = points[0], last = points[points.length - 1];
     var aMoved = first.a && last.a ? (last.a - first.a) : 0;
     var hMoved = first.h && last.h ? (last.h - first.h) : 0;
-    var summary = '<div style="display:flex;gap:16px;padding:8px 12px;background:#f8fafc;font-size:11px;color:#4b5563;">' +
+    var summary = '<div style="display:flex;gap:16px;padding:8px 12px;background:var(--bg);font-size:11px;color:var(--text-secondary);">' +
       '<span><b>' + (awayName || 'Away') + '</b> moved ' + (aMoved > 0 ? '+' : '') + aMoved + '</span>' +
       '<span><b>' + (homeName || 'Home') + '</b> moved ' + (hMoved > 0 ? '+' : '') + hMoved + '</span>' +
-      '<span style="margin-left:auto;color:#9ca3af;">' + points.length + ' snapshots</span></div>';
+      '<span style="margin-left:auto;color:var(--text-muted);">' + points.length + ' snapshots</span></div>';
 
     return summary +
       '<div style="max-height:260px;overflow-y:auto;">' +
       '<table style="width:100%;border-collapse:collapse;font-family:Inter,sans-serif;">' +
-      '<thead><tr style="background:#f8fafc;position:sticky;top:0;">' +
-      '<th style="padding:5px 10px;font-size:9px;color:#9ca3af;text-align:left;font-weight:700;text-transform:uppercase;">Time</th>' +
-      '<th style="padding:5px 10px;font-size:9px;color:#9ca3af;text-align:right;font-weight:700;text-transform:uppercase;">' + (awayName || 'Away') + '</th>' +
-      '<th style="padding:5px 10px;font-size:9px;color:#9ca3af;text-align:right;font-weight:700;text-transform:uppercase;">' + (homeName || 'Home') + '</th>' +
-      '<th style="padding:5px 10px;font-size:9px;color:#9ca3af;font-weight:700;text-transform:uppercase;">Book</th>' +
+      '<thead><tr style="background:var(--bg);position:sticky;top:0;">' +
+      '<th style="padding:5px 10px;font-size:9px;color:var(--text-muted);text-align:left;font-weight:700;text-transform:uppercase;">Time</th>' +
+      '<th style="padding:5px 10px;font-size:9px;color:var(--text-muted);text-align:right;font-weight:700;text-transform:uppercase;">' + (awayName || 'Away') + '</th>' +
+      '<th style="padding:5px 10px;font-size:9px;color:var(--text-muted);text-align:right;font-weight:700;text-transform:uppercase;">' + (homeName || 'Home') + '</th>' +
+      '<th style="padding:5px 10px;font-size:9px;color:var(--text-muted);font-weight:700;text-transform:uppercase;">Book</th>' +
       '</tr></thead><tbody>' + rows + '</tbody></table></div>';
   }
 
@@ -4815,19 +4834,19 @@ try {
     if (existing) {
       existing.remove();
       btn.textContent = '12h Odds';
-      btn.style.background = '#f0f4ff';
+      btn.style.background = 'var(--accent-light)';
       return;
     }
 
     btn.textContent = 'Loading...';
-    btn.style.background = '#dbeafe';
+    btn.style.background = 'var(--purple-light)';
 
     var points = await fetchOddsHistory(matchKey, awayName, homeName);
 
     var panel = document.createElement('div');
     panel.className = 'odds-history-panel';
-    panel.style.cssText = 'margin-top:8px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);';
-    panel.innerHTML = '<div style="padding:10px 14px;background:linear-gradient(135deg,#f8fafc,#f0f4ff);border-bottom:1px solid #e5e7eb;font-size:12px;font-weight:700;color:#1e3a5f;display:flex;align-items:center;gap:6px;">ML Movement (12h, hourly) <span style="font-size:10px;color:#9ca3af;font-weight:500;">via Historical API</span></div>' +
+    panel.style.cssText = 'margin-top:8px;border:1px solid var(--border);border-radius:10px;background:var(--card-bg);overflow:hidden;box-shadow:var(--shadow-sm);';
+    panel.innerHTML = '<div style="padding:10px 14px;background:var(--bg);border-bottom:1px solid var(--border);font-size:12px;font-weight:700;color:var(--text-primary);display:flex;align-items:center;gap:6px;">ML Movement (12h, hourly) <span style="font-size:10px;color:var(--text-muted);font-weight:500;">via Historical API</span></div>' +
       buildOddsHistoryHTML(points, awayName, homeName);
     card.appendChild(panel);
     btn.textContent = 'Hide';
@@ -4863,9 +4882,9 @@ try {
       wrap.style.cssText = 'text-align:center;padding:4px 0;';
       var btn = document.createElement('button');
       btn.textContent = '12h Odds';
-      btn.style.cssText = 'padding:5px 14px;font-size:11px;font-weight:700;border:1px solid #1e3a5f;color:#1e3a5f;background:#f0f4ff;border-radius:20px;cursor:pointer;transition:all 0.2s;';
-      btn.onmouseover = function() { this.style.background='#dbeafe'; };
-      btn.onmouseout = function() { if(this.textContent!=='Hide') this.style.background='#f0f4ff'; };
+      btn.style.cssText = 'padding:5px 14px;font-size:11px;font-weight:700;border:1px solid var(--border);color:var(--text-primary);background:var(--accent-light);border-radius:20px;cursor:pointer;transition:all 0.2s;';
+      btn.onmouseover = function() { this.style.background='var(--purple-light)'; };
+      btn.onmouseout = function() { if(this.textContent!=='Hide') this.style.background='var(--accent-light)'; };
       btn.onclick = function() { toggleOddsHistory(this, matchKey, awayName, homeName); };
       wrap.appendChild(btn);
       var cardBody = card.querySelector('.game-card-body') || card;
