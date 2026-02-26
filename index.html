@@ -2258,6 +2258,37 @@ async function fetchESPNScoreboard() {
       return;
     }
 
+    // Fetch boxscores for live games (parallel) — gives us all player stats, not just leader
+    const _boxscoreMap = {}; // gameId → { away: [{name,pts}], home: [{name,pts}] }
+    if (liveEvents.length > 0) {
+      const league = isNCAA() ? 'mens-college-basketball' : 'nba';
+      const boxFetches = liveEvents.map(e =>
+        fetch(`https://site.api.espn.com/apis/site/v2/sports/basketball/${league}/summary?event=${e.id}`, { signal: AbortSignal.timeout(6000) })
+          .then(r => r.ok ? r.json() : null)
+          .catch(() => null)
+      );
+      const boxResults = await Promise.all(boxFetches);
+      boxResults.forEach((bx, i) => {
+        if (!bx?.boxscore?.players) return;
+        const ev = liveEvents[i];
+        const gid = ev.id;
+        const comp = ev.competitions?.[0];
+        const awayAbbr = comp?.competitors?.find(c=>c.homeAway==='away')?.team?.abbreviation || '';
+        const homeAbbr = comp?.competitors?.find(c=>c.homeAway==='home')?.team?.abbreviation || '';
+        const map = { away: [], home: [] };
+        bx.boxscore.players.forEach(team => {
+          const side = team.homeAway || 'away';
+          const abbr = side === 'away' ? awayAbbr : homeAbbr;
+          (team.statistics?.[0]?.athletes || []).forEach(a => {
+            const pts = parseFloat(a.stats?.[1]) || 0;
+            const name = a.athlete?.displayName || a.athlete?.shortName || '?';
+            map[side].push({ name, pts, team: abbr });
+          });
+        });
+        _boxscoreMap[gid] = map;
+      });
+    }
+
     // Section headers
     let sectionHeaders = { live: false, upcoming: false, completed: false };
 
@@ -3043,28 +3074,38 @@ async function fetchESPNScoreboard() {
             ${foulHTML}
           </div>
           ${durabilityHTML}
-          ${aLeaders.length||hLeaders.length?`<div style="display:flex;gap:8px;margin-top:6px;font-size:11px;">
-            ${(()=>{
-              const _gMins = getElapsedMinutes(per, clk);
-              const starChip = (leader) => {
-                if (!leader) return '';
-                let star;
-                if (isNCAA()) {
-                  star = ncaaStarCache.find(s => { const ll=leader.name.toLowerCase().split(' ').pop(); const sl=s.name.split(' ').pop().toLowerCase(); return ll===sl&&s.team===leader.team; });
-                } else {
-                  star = state.stars.find(s=>leader.name.toLowerCase().includes(s.name.split(' ').pop().toLowerCase())&&s.team===leader.team);
-                }
-                const lastName = leader.name.split(' ').pop();
-                if (!star) return `<div style="flex:1;padding:4px 8px;background:var(--bg);border-radius:4px;"><span style="color:var(--text-muted);">${leader.team}</span> <strong>${lastName}: ${leader.pts}pts</strong></div>`;
-                const exp = getExpectedByTime(star.ppg, _gMins);
-                const pr = exp > 0 ? (leader.pts / exp * 100) : 100;
-                const fc = pr < 60 ? 'var(--red)' : pr < 80 ? 'var(--orange)' : 'var(--green)';
-                const tag = pr < 60 ? '🔥 COLD' : pr < 80 ? 'BEHIND' : '✓';
-                return `<div style="flex:1;padding:4px 8px;background:var(--bg);border-radius:4px;"><span style="color:var(--text-muted);">${leader.team}</span> <strong>${lastName}: ${leader.pts}pts</strong> <span style="color:${fc};font-weight:700;">${pr.toFixed(0)}%</span> <span style="color:var(--text-muted);">of ${exp.toFixed(0)} exp</span> <span style="font-size:9px;font-weight:700;color:${fc};">${tag}</span></div>`;
-              };
-              return (aLeaders.length ? starChip(aLeaders[0]) : '') + (hLeaders.length ? starChip(hLeaders[0]) : '');
-            })()}
-          </div>`:''}`:''}
+          ${(()=>{
+            const _gMins = getElapsedMinutes(per, clk);
+            const bx = _boxscoreMap[gid];
+            // Find all tracked stars for each team using boxscore (full roster) or fallback to leader
+            const findTeamStars = (teamAbbr, side) => {
+              const starDB = isNCAA() ? ncaaStarCache : state.stars;
+              const roster = bx?.[side] || [];
+              const results = [];
+              starDB.filter(s => s.team === teamAbbr).forEach(star => {
+                const starLast = star.name.split(' ').pop().toLowerCase();
+                const player = roster.find(p => p.name.toLowerCase().split(' ').pop() === starLast);
+                if (player) results.push({ name: player.name, pts: player.pts, star });
+              });
+              return results;
+            };
+            const aStars = findTeamStars(aA, 'away');
+            const hStars = findTeamStars(hA, 'home');
+            if (aStars.length === 0 && hStars.length === 0) return '';
+            const renderStar = (s) => {
+              const exp = getExpectedByTime(s.star.ppg, _gMins);
+              const pr = exp > 0 ? (s.pts / exp * 100) : 100;
+              const fc = pr < 60 ? 'var(--red)' : pr < 80 ? 'var(--orange)' : 'var(--green)';
+              const tag = pr < 60 ? 'COLD' : pr < 80 ? 'BEHIND' : 'ON PACE';
+              const lastName = s.name.split(' ').pop();
+              return `<div style="display:flex;align-items:center;gap:6px;padding:3px 0;"><strong style="min-width:70px;">${lastName}</strong> <span>${s.pts}pts</span> <span style="color:${fc};font-weight:700;">${pr.toFixed(0)}%</span> <span style="color:var(--text-muted);">of ${exp.toFixed(0)}</span> <span style="font-size:9px;font-weight:700;color:${fc};">${tag}</span></div>`;
+            };
+            const renderTeam = (abbr, stars) => {
+              if (stars.length === 0) return '';
+              return `<div style="flex:1;padding:4px 8px;background:var(--bg);border-radius:6px;"><div style="font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;">${abbr} Stars</div>${stars.map(renderStar).join('')}</div>`;
+            };
+            return `<div style="display:flex;gap:8px;margin-top:6px;font-size:11px;">${renderTeam(aA, aStars)}${renderTeam(hA, hStars)}</div>`;
+          })()}`:''}
           <!-- SIGNALS -->
           ${signals.length?(()=>{
             const rec=getRecommendation(aS,hS,aA,hA,per,clk,signalLevel);
