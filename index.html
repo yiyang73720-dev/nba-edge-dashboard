@@ -1926,7 +1926,7 @@ function toggleSignalDetail(type) {
 
   // Build panel content from stored signal games
   const games = window._signalGames ? window._signalGames[type] : [];
-  const labels = { 'star': 'Star Coil', 'starcoilplus': 'Star Coil+', 'combined': 'Combined Edge', '3ptfragile': '3PT Fragile' };
+  const labels = { 'star': 'Star Coil', 'starcoilplus': 'Star Coil+', 'quality_edge': 'Quality Edge' };
 
   if (!games || games.length === 0) {
     panel.innerHTML = `<div class="chip-detail-header">${labels[type] || type} Games</div><div class="chip-detail-empty">No active ${labels[type] || ''} signals right now</div>`;
@@ -2392,9 +2392,6 @@ function evaluateSignalsFromState(gs, starDB, mode) {
   let sigStar = 0, sigStarPlus = 0;
   let starCoilTeams = {};
 
-  const awayLead = aS - hS;
-  const homeLead = hS - aS;
-
   // ==================== STAR COIL SIGNAL ====================
 
   const allLeaders = [...awayLeaders, ...homeLeaders];
@@ -2450,13 +2447,14 @@ function evaluateSignalsFromState(gs, starDB, mode) {
   let activeSignals = hasStar ? 1 : 0;
 
   if (hasStar) {
-    // Get opponent (leading team) shooting stats from ESPN
-    const aFGPctVal = parseFloat(game.aStats?.fieldGoalPct || 0) / 100;
-    const hFGPctVal = parseFloat(game.hStats?.fieldGoalPct || 0) / 100;
-    const aFGM = parseInt(game.aStats?.fieldGoalsMade || 0);
-    const hFGM = parseInt(game.hStats?.fieldGoalsMade || 0);
-    const aFGAtt = parseInt(game.aStats?.fieldGoalsAttempted || 0);
-    const hFGAtt = parseInt(game.hStats?.fieldGoalsAttempted || 0);
+    // Get opponent (leading team) shooting stats
+    // In live mode gs may carry aStats/hStats from ESPN; in backtest mode it won't — gracefully default to 0
+    const aFGPctVal = parseFloat(gs.aStats?.fieldGoalPct || 0) / 100;
+    const hFGPctVal = parseFloat(gs.hStats?.fieldGoalPct || 0) / 100;
+    const aFGM = parseInt(gs.aStats?.fieldGoalsMade || 0);
+    const hFGM = parseInt(gs.hStats?.fieldGoalsMade || 0);
+    const aFGAtt = parseInt(gs.aStats?.fieldGoalsAttempted || 0);
+    const hFGAtt = parseInt(gs.hStats?.fieldGoalsAttempted || 0);
     const a2PA = aFGAtt - (parseInt(a3A) || 0);
     const h2PA = hFGAtt - (parseInt(h3A) || 0);
     const a2PM = aFGM - (parseInt(a3M) || 0);
@@ -3360,8 +3358,9 @@ async function fetchESPNScoreboard() {
               const isStrongSignal = coilTier === 'elite' || coilTier === 'standard';
 
               let ctx = per===2?` Half exp: ${getHalfExpected(star.ppg).toFixed(0)}`:'';
-              signals.push({type:'star',text:`${tierEmoji} ${leader.name} ${leader.pts}pts (exp ~${exp.toFixed(0)}, ${(pr*100).toFixed(0)}% pace). Margin: ${scoreMargin}pts. Cast: ${cast.castScore}pts vs opp ${oppScore}pts (gap: ${cast.castGap > 0 ? '+' : ''}${cast.castGap}) ${tierLabel}.${cast.regressionFlips ? ' ✅ Regression flips lead.' : ''}${ctx}`,level:2});
-              sigStar++;
+              // Only elite/standard coils are level 2 (actionable). Weak/locked = level 1 (info only, matching backtester).
+              signals.push({type:'star',text:`${tierEmoji} ${leader.name} ${leader.pts}pts (exp ~${exp.toFixed(0)}, ${(pr*100).toFixed(0)}% pace). Margin: ${scoreMargin}pts. Cast: ${cast.castScore}pts vs opp ${oppScore}pts (gap: ${cast.castGap > 0 ? '+' : ''}${cast.castGap}) ${tierLabel}.${cast.regressionFlips ? ' ✅ Regression flips lead.' : ''}${ctx}`,level: isStrongSignal ? 2 : 1});
+              if (isStrongSignal) sigStar++;
               fireStarCoilAlert(leader, star, gMins, per, clk, gLabel, pr, scoreMargin);
               sendSignalNotification(`${tierEmoji} Star Coil [${tierLabel}]: ${leader.name}`, `${leader.name} ${leader.pts}pts (exp ~${exp.toFixed(0)}). Cast ${cast.castScore}pts vs opp ${oppScore} (gap: ${cast.castGap}). ${cast.regressionFlips ? 'Regression flips!' : ''} Margin: ${scoreMargin}pts.`, gid, 'star_' + leader.team);
               if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
@@ -3542,6 +3541,9 @@ async function fetchESPNScoreboard() {
           else if (hStarCoil?.coilTier === 'weak') reasons.push(`⚠️ ${hStarCoil.name} (${_hD}) is coiled but cast gap is ${hStarCoil.cast.castGap} — whole team broken. No directional weight.`);
           if (sigStarPlus > 0) reasons.push(`STAR COIL+: Opponent shooting cold. Star cold + opponent cold = double regression. Backtest: 57% win rate.`);
 
+          // Effective signal count: compute early so NCAA home court detail can reference it
+          const effectiveSignals = activeSignals + (homeCourtBoost > 0 && betTeam === hA ? homeCourtBoost : 0);
+
           // Home Court Factor narrative (NCAA only — homeCourtEdge is always false for NBA)
           if (isNCAA() && betTeam === hA) {
             const boostLabel = thesis.homeCourtBoost ? ' Kelly boosted to combined-level.' : '';
@@ -3577,8 +3579,7 @@ async function fetchESPNScoreboard() {
           thesis.sigStarPlus = sigStarPlus;
           thesis.homeCourtEdge = homeCourtEdge && betTeam === hA;
           thesis.homeCourtBoost = homeCourtBoost > 0 && betTeam === hA;
-          // Effective signal count: base signals + home court booster (NCAA only, home bets only)
-          const effectiveSignals = activeSignals + (thesis.homeCourtBoost ? homeCourtBoost : 0);
+          // effectiveSignals already computed above (before NCAA home court block)
           // Urgency: how much game runway remains for regression
           const _urgency = getUrgency(per, clk);
           thesis.urgency = _urgency;

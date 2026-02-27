@@ -30,16 +30,16 @@ function sendNotification(title, body) {
   if (NOTIFY_IMESSAGE) {
     try {
       const msg = `${title}\n${body}`;
-      const escaped = msg.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
+      const escaped = msg.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/'/g, "'\\''");
       execSync(`osascript -e 'tell application "Messages" to send "${escaped}" to buddy "${NOTIFY_IMESSAGE}"'`);
       log('[NOTIFY] iMessage sent');
     } catch (e) { log('[NOTIFY] iMessage failed: ' + e.message); }
   }
   if (NOTIFY_EMAIL) {
     try {
-      const escaped = body.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-      const titleEscaped = title.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-      execSync(`echo "${escaped}" | mail -s "${titleEscaped}" ${NOTIFY_EMAIL}`);
+      const escaped = body.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\$/g, '\\$').replace(/`/g, '\\`');
+      const titleEscaped = title.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\$/g, '\\$').replace(/`/g, '\\`');
+      execSync(`echo "${escaped}" | mail -s "${titleEscaped}" "${NOTIFY_EMAIL}"`);
       log('[NOTIFY] Email sent');
     } catch (e) { log('[NOTIFY] Email failed: ' + e.message); }
   }
@@ -626,10 +626,7 @@ async function detectSignals(cfg) {
       let hasStar = false;
       let starCoilTeams = {};
 
-      // ======== 3PT FRAGILE — DISABLED (backtest: 31.3% win rate, below 35.1% baseline) ========
-      // Kept for future spread-betting evaluation. Does not generate ML signals.
-      const awayLead = aS - hS;
-      const homeLead = hS - aS;
+      // 3PT Fragile removed (backtest: 31.3% win rate, below 35.1% baseline)
 
       // ======== STAR COIL ========
       [...aLeaders, ...hLeaders].forEach(leader => {
@@ -677,9 +674,14 @@ async function detectSignals(cfg) {
       let starCoilPlus = false;
       if (hasStar) {
         // Determine which team is leading (opponent of star coil team)
+        // Backtest validated: "leadingFGPct" and "leading2Pct" = the LEADING team's stats
+        // So we must ensure the star's team is actually trailing for this to match backtest
         const starTeamKeys = Object.keys(starCoilTeams);
         for (const stk of starTeamKeys) {
           const isAway = stk === aA;
+          // Star's team must be trailing (backtest was on trailing team's star)
+          const starTeamTrailing = (isAway && aS < hS) || (!isAway && hS < aS);
+          if (!starTeamTrailing) continue;
           // Leading team's shooting stats (opponent of the coiled star's team)
           const leadFGPct = isAway ? hFGPct : aFGPct; // star is away → opponent is home
           const lead2Pct = isAway ? h2Pct : a2Pct;
@@ -846,7 +848,7 @@ async function detectSignals(cfg) {
           homeCourtEdge = true;
         }
         if (homeFade > 0) {
-          homeFade += cfg.homeCourtBoost; // headwind for road bet
+          awayFade += cfg.homeCourtBoost; // headwind AGAINST road bet — boosts home side
         }
       }
 
