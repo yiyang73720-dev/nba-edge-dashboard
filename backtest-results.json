@@ -1,0 +1,427 @@
+{
+  "existingEdges": {
+    "3pt_fragile": {
+      "name": "3PT Fragile (50%+ on 12+ att, fragile lead, 3-15 margin)",
+      "count": 1093,
+      "wins": 342,
+      "winRate": 0.312900274473925
+    },
+    "star_coil": {
+      "name": "Star Coil (<65% pace, Q2-Q3, margin <=15)",
+      "count": 2181,
+      "wins": 1278,
+      "winRate": 0.5859697386519945
+    },
+    "combined": {
+      "name": "Combined (3PT Fragile + Star Coil same game)",
+      "count": 303,
+      "wins": 92,
+      "winRate": 0.30363036303630364
+    }
+  },
+  "mlDiscoveries": [
+    {
+      "feature": "margin",
+      "direction": "<",
+      "threshold": 4,
+      "count": 5195,
+      "winRate": 0.4465832531280077,
+      "lift": 0.09524005964777826
+    },
+    {
+      "feature": "margin",
+      "direction": "<",
+      "threshold": 5,
+      "count": 6483,
+      "winRate": 0.4339040567638439,
+      "lift": 0.0825608632836145
+    },
+    {
+      "feature": "margin",
+      "direction": "<",
+      "threshold": 6,
+      "count": 7550,
+      "winRate": 0.4247682119205298,
+      "lift": 0.07342501844030042
+    },
+    {
+      "feature": "margin",
+      "direction": "<",
+      "threshold": 3,
+      "count": 3726,
+      "winRate": 0.45544820182501344,
+      "lift": 0.10410500834478403
+    },
+    {
+      "feature": "margin",
+      "direction": "<",
+      "threshold": 8,
+      "count": 9144,
+      "winRate": 0.4138232720909886,
+      "lift": 0.062480078610759215
+    },
+    {
+      "feature": "margin",
+      "direction": "<",
+      "threshold": 9,
+      "count": 9781,
+      "winRate": 0.4071158368265004,
+      "lift": 0.05577264334627097
+    },
+    {
+      "feature": "margin",
+      "direction": "<",
+      "threshold": 2,
+      "count": 2019,
+      "winRate": 0.4616146607231303,
+      "lift": 0.11027146724290088
+    },
+    {
+      "feature": "margin",
+      "direction": "<",
+      "threshold": 2,
+      "count": 2019,
+      "winRate": 0.4616146607231303,
+      "lift": 0.11027146724290088
+    },
+    {
+      "feature": "bestStarPace",
+      "direction": "<",
+      "threshold": 1.556,
+      "count": 6593,
+      "winRate": 0.4078568178370999,
+      "lift": 0.05651362435687052
+    },
+    {
+      "feature": "bestStarPace",
+      "direction": ">",
+      "threshold": 0.46,
+      "count": 6598,
+      "winRate": 0.4066383752652319,
+      "lift": 0.05529518178500248
+    },
+    {
+      "feature": "bestStarPace",
+      "direction": "<",
+      "threshold": 1.284,
+      "count": 5861,
+      "winRate": 0.40487971335949496,
+      "lift": 0.053536519879265554
+    },
+    {
+      "feature": "bestStarPace",
+      "direction": "<",
+      "threshold": 1.183,
+      "count": 5499,
+      "winRate": 0.40625568285142755,
+      "lift": 0.05491248937119814
+    },
+    {
+      "feature": "bestStarPace",
+      "direction": "<",
+      "threshold": 1.095,
+      "count": 5128,
+      "winRate": 0.40698127925117006,
+      "lift": 0.05563808577094065
+    },
+    {
+      "feature": "bestStarPace",
+      "direction": ">",
+      "threshold": 0.573,
+      "count": 5862,
+      "winRate": 0.40208120095530536,
+      "lift": 0.05073800747507595
+    },
+    {
+      "feature": "bestStarPace",
+      "direction": "<",
+      "threshold": 0.85,
+      "count": 3664,
+      "winRate": 0.4134825327510917,
+      "lift": 0.06213933927086229
+    },
+    {
+      "feature": "bestStarPace",
+      "direction": "<",
+      "threshold": 0.96,
+      "count": 4396,
+      "winRate": 0.4067333939945405,
+      "lift": 0.055390200514311094
+    },
+    {
+      "feature": "bestStarPace",
+      "direction": "<",
+      "threshold": 0.737,
+      "count": 2927,
+      "winRate": 0.41646737273659035,
+      "lift": 0.06512417925636094
+    },
+    {
+      "feature": "bestStarPace",
+      "direction": "<",
+      "threshold": 0.649,
+      "count": 2197,
+      "winRate": 0.42330450614474285,
+      "lift": 0.07196131266451344
+    },
+    {
+      "feature": "bestStarPace",
+      "direction": "<",
+      "threshold": 0.612,
+      "count": 1803,
+      "winRate": 0.4276206322795341,
+      "lift": 0.07627743879930471
+    },
+    {
+      "feature": "leadingFGPct(<0.431) AND bestStarPace(<0.612)",
+      "direction": "combo",
+      "threshold": null,
+      "count": 234,
+      "winRate": 0.5598290598290598,
+      "lift": 0.20848586634883043
+    },
+    {
+      "feature": "leading2Pct(<0.467) AND bestStarPace(<0.612)",
+      "direction": "combo",
+      "threshold": null,
+      "count": 208,
+      "winRate": 0.5721153846153846,
+      "lift": 0.22077219113515517
+    },
+    {
+      "feature": "margin(<2) AND bestStarPace(<0.612)",
+      "direction": "combo",
+      "threshold": null,
+      "count": 266,
+      "winRate": 0.5375939849624061,
+      "lift": 0.18625079148217666
+    },
+    {
+      "feature": "bestStarPace",
+      "direction": ">",
+      "threshold": 0.96,
+      "count": 2920,
+      "winRate": 0.4075342465753425,
+      "lift": 0.056191053095113075
+    },
+    {
+      "feature": "leading2Pct",
+      "direction": "<",
+      "threshold": 0.515,
+      "count": 2642,
+      "winRate": 0.4080242240726722,
+      "lift": 0.05668103059244278
+    },
+    {
+      "feature": "bestStarPace(<0.612) AND leadingPPM(<2.11)",
+      "direction": "combo",
+      "threshold": null,
+      "count": 248,
+      "winRate": 0.5362903225806451,
+      "lift": 0.18494712910041572
+    },
+    {
+      "feature": "leadingPPM",
+      "direction": "<",
+      "threshold": 2.33,
+      "count": 3227,
+      "winRate": 0.40223117446544776,
+      "lift": 0.05088798098521835
+    },
+    {
+      "feature": "leadingFGPct",
+      "direction": "<",
+      "threshold": 0.431,
+      "count": 1316,
+      "winRate": 0.42933130699088146,
+      "lift": 0.07798811351065205
+    },
+    {
+      "feature": "leading2Pct",
+      "direction": "<",
+      "threshold": 0.467,
+      "count": 1297,
+      "winRate": 0.42945258288357746,
+      "lift": 0.07810938940334805
+    },
+    {
+      "feature": "bestStarPace",
+      "direction": "<",
+      "threshold": 0.573,
+      "count": 1456,
+      "winRate": 0.42376373626373626,
+      "lift": 0.07242054278350685
+    },
+    {
+      "feature": "trailingPPM",
+      "direction": ">",
+      "threshold": 2.62,
+      "count": 1199,
+      "winRate": 0.4303586321934946,
+      "lift": 0.07901543871326516
+    },
+    {
+      "feature": "leadingPPM",
+      "direction": "<",
+      "threshold": 2.11,
+      "count": 1298,
+      "winRate": 0.4268104776579353,
+      "lift": 0.07546728417770587
+    },
+    {
+      "feature": "leadingFGPct(<0.431) AND leading2Pct(<0.467)",
+      "direction": "combo",
+      "threshold": null,
+      "count": 656,
+      "winRate": 0.4573170731707317,
+      "lift": 0.10597387969050232
+    },
+    {
+      "feature": "leadingPPM",
+      "direction": "<",
+      "threshold": 2.28,
+      "count": 2642,
+      "winRate": 0.40348221044663135,
+      "lift": 0.05213901696640194
+    },
+    {
+      "feature": "leadingFGPct",
+      "direction": "<",
+      "threshold": 0.467,
+      "count": 2585,
+      "winRate": 0.40386847195357833,
+      "lift": 0.052525278473348924
+    },
+    {
+      "feature": "bestStarPace",
+      "direction": ">",
+      "threshold": 1.095,
+      "count": 2195,
+      "winRate": 0.40637813211845103,
+      "lift": 0.05503493863822162
+    },
+    {
+      "feature": "leaderMomentumDrop",
+      "direction": ">",
+      "threshold": 9,
+      "count": 2193,
+      "winRate": 0.4062927496580027,
+      "lift": 0.05494955617777331
+    },
+    {
+      "feature": "bestStarPace",
+      "direction": ">",
+      "threshold": 1.183,
+      "count": 1829,
+      "winRate": 0.40896664844177144,
+      "lift": 0.05762345496154203
+    },
+    {
+      "feature": "bestStarPace",
+      "direction": ">",
+      "threshold": 1.284,
+      "count": 1466,
+      "winRate": 0.4154160982264666,
+      "lift": 0.06407290474623717
+    },
+    {
+      "feature": "margin(<2) AND trailingPPM(>2.62)",
+      "direction": "combo",
+      "threshold": null,
+      "count": 339,
+      "winRate": 0.4808259587020649,
+      "lift": 0.1294827652218355
+    },
+    {
+      "feature": "leading2Pct(<0.467) AND leadingPPM(<2.11)",
+      "direction": "combo",
+      "threshold": null,
+      "count": 352,
+      "winRate": 0.4772727272727273,
+      "lift": 0.12592953379249788
+    },
+    {
+      "feature": "leadingFGPct(<0.431) AND leadingPPM(<2.11)",
+      "direction": "combo",
+      "threshold": null,
+      "count": 645,
+      "winRate": 0.4418604651162791,
+      "lift": 0.09051727163604967
+    },
+    {
+      "feature": "margin(<2) AND leadingFGPct(<0.431)",
+      "direction": "combo",
+      "threshold": null,
+      "count": 365,
+      "winRate": 0.4684931506849315,
+      "lift": 0.11714995720470212
+    },
+    {
+      "feature": "margin(<2) AND leaderMomentumDrop(>12)",
+      "direction": "combo",
+      "threshold": null,
+      "count": 94,
+      "winRate": 0.574468085106383,
+      "lift": 0.22312489162615362
+    },
+    {
+      "feature": "margin(<2) AND leading2Pct(<0.467)",
+      "direction": "combo",
+      "threshold": null,
+      "count": 293,
+      "winRate": 0.47440273037542663,
+      "lift": 0.12305953689519722
+    },
+    {
+      "feature": "leaderMomentumDrop",
+      "direction": ">",
+      "threshold": 12,
+      "count": 1169,
+      "winRate": 0.41146278870829767,
+      "lift": 0.06011959522806826
+    },
+    {
+      "feature": "totalPace",
+      "direction": "<",
+      "threshold": 184,
+      "count": 1280,
+      "winRate": 0.40390625,
+      "lift": 0.05256305651977061
+    },
+    {
+      "feature": "trailingFGPct",
+      "direction": ">",
+      "threshold": 0.577,
+      "count": 1318,
+      "winRate": 0.4013657056145675,
+      "lift": 0.050022512134338115
+    },
+    {
+      "feature": "bestStarPace(<0.612) AND trailingPPM(>2.62)",
+      "direction": "combo",
+      "threshold": null,
+      "count": 78,
+      "winRate": 0.5512820512820513,
+      "lift": 0.1999388578018219
+    },
+    {
+      "feature": "leadingFGPct(<0.431) AND leaderMomentumDrop(>12)",
+      "direction": "combo",
+      "threshold": null,
+      "count": 55,
+      "winRate": 0.5636363636363636,
+      "lift": 0.2122931701561342
+    },
+    {
+      "feature": "bestStarPace",
+      "direction": "<",
+      "threshold": 0.46,
+      "count": 732,
+      "winRate": 0.40846994535519127,
+      "lift": 0.057126751874961856
+    }
+  ],
+  "baseWinRate": 0.3513431934802294,
+  "totalSamples": 13252,
+  "totalGames": 3517
+}

@@ -587,6 +587,21 @@ async function detectSignals(cfg) {
       const a3A = parseInt(aStats.threePointFieldGoalsAttempted || 0);
       const h3A = parseInt(hStats.threePointFieldGoalsAttempted || 0);
 
+      // FG% and 2PT% for Star Coil Plus detection
+      const aFGPct = parseFloat(aStats.fieldGoalPct || 0) / 100; // ESPN gives e.g. "45.2" → 0.452
+      const hFGPct = parseFloat(hStats.fieldGoalPct || 0) / 100;
+      const aFGM = parseInt(aStats.fieldGoalsMade || 0);
+      const hFGM = parseInt(hStats.fieldGoalsMade || 0);
+      const aFGA = parseInt(aStats.fieldGoalsAttempted || 0);
+      const hFGA = parseInt(hStats.fieldGoalsAttempted || 0);
+      // 2PT% = (FGM - 3PM) / (FGA - 3PA)
+      const a2PA = aFGA - (parseInt(a3A) || 0);
+      const h2PA = hFGA - (parseInt(h3A) || 0);
+      const a2PM = aFGM - (parseInt(a3M) || 0);
+      const h2PM = hFGM - (parseInt(h3M) || 0);
+      const a2Pct = a2PA > 0 ? a2PM / a2PA : 0;
+      const h2Pct = h2PA > 0 ? h2PM / h2PA : 0;
+
       // Leaders
       let aLeaders = [], hLeaders = [];
       (comp.competitors || []).forEach(c => {
@@ -608,36 +623,13 @@ async function detectSignals(cfg) {
       const scoreMargin = Math.abs(aS - hS);
 
       let signals = [];
-      let has3ptFragile = false, hasStar = false;
+      let hasStar = false;
       let starCoilTeams = {};
 
-      // ======== 3PT FRAGILE ========
-      const check3pt = (pn, an, mn, score, oppScore, opp3M, teamAbbr, oppAbbr, lead) => {
-        const isHot = cfg.hotCheck(pn, an);
-        if (!isHot) return null;
-        const dur = analyzeScoringDurability(cfg, score, mn, oppScore);
-        if (!dur.fragile) return null;
-        if (lead < 3 || lead > cfg.fragileMaxMargin) return null;
-        const _gMinsNow = gMins || 1;
-        const oppNon3Pts = oppScore - (parseInt(opp3M) || 0) * 3;
-        const oppNon3Ppm = oppNon3Pts / _gMinsNow;
-        const noEngine = oppNon3Ppm < cfg.engineThreshold && _gMinsNow >= 10;
-        return {
-          type: '3ptFragile',
-          text: `${teamAbbr} 3PT FRAGILE: ${pn.toFixed(0)}% on ${an} att, ${dur.pct3.toFixed(0)}% 3PT-dependent, lead ${lead}pts. ${noEngine ? 'Weak opp engine.' : 'Opp has engine.'}`,
-          strong: !noEngine,
-          teamAbbr, oppAbbr, lead, pct: pn, att: an, fragile: dur.pct3, oppEngine: !noEngine
-        };
-      };
-
+      // ======== 3PT FRAGILE — DISABLED (backtest: 31.3% win rate, below 35.1% baseline) ========
+      // Kept for future spread-betting evaluation. Does not generate ML signals.
       const awayLead = aS - hS;
       const homeLead = hS - aS;
-
-      const aFragile = check3pt(a3P, a3A, a3M, aS, hS, h3M, aA, hA, awayLead);
-      if (aFragile) { signals.push(aFragile); has3ptFragile = true; }
-
-      const hFragile = check3pt(h3P, h3A, h3M, hS, aS, a3M, hA, aA, homeLead);
-      if (hFragile) { signals.push(hFragile); has3ptFragile = true; }
 
       // ======== STAR COIL ========
       [...aLeaders, ...hLeaders].forEach(leader => {
@@ -676,53 +668,51 @@ async function detectSignals(cfg) {
         }
       });
 
-      // ======== SOFT COMBINED ========
-      let soft3pt = false, softStar = false;
-      if (!has3ptFragile || !hasStar) {
-        if (!has3ptFragile) {
-          const checkSoft3 = (pn, an, mn, score, oppScore, lead) => {
-            if (!cfg.softHotCheck(pn, an)) return false;
-            if (lead < 2 || lead > cfg.softMaxLd || score < cfg.softMinScore) return false;
-            const dur = analyzeScoringDurability(cfg, score, mn, oppScore);
-            return dur.pct3 >= cfg.softFragilePct;
-          };
-          if (checkSoft3(a3P, a3A, a3M, aS, hS, awayLead)) soft3pt = true;
-          if (checkSoft3(h3P, h3A, h3M, hS, aS, homeLead)) soft3pt = true;
-        } else { soft3pt = true; }
+      // Combined/Soft Combined removed — backtest showed 3PT Fragile drags down Star Coil (30.4% combined win rate)
+      let signalCount = hasStar ? 1 : 0;
 
-        if (!hasStar) {
-          [...aLeaders, ...hLeaders].forEach(leader => {
-            const star = matchStar(cfg, leader.name, leader.team);
-            if (!star) return;
-            const exp = getExpectedByTime(cfg, star.ppg, gMins);
-            const pr = exp > 0 ? leader.pts / exp : 1;
-            const inWindow = isNCAA ? cfg.softStarWindow(gMins) : cfg.softStarWindow(gMins, per);
-            if (pr >= cfg.softStarPace || !inWindow || scoreMargin > cfg.softStarMargin) return;
-            const side = leader.team === aA ? 'away' : 'home';
-            const teamScore = side === 'away' ? aS : hS;
-            const oppScore = side === 'away' ? hS : aS;
-            const cast = analyzeSupportingCast(cfg, leader.pts, teamScore, oppScore, star.ppg, gMins);
-            const trailing = (side === 'away' && aS < hS) || (side === 'home' && hS < aS);
-            const dmg = analyzeDamageLocked(modeState, gid, side, gMins);
-            const damageLocked = trailing && dmg.locked;
-            let coilTier;
-            if (damageLocked) coilTier = 'locked';
-            else if (cast.strong) coilTier = 'elite';
-            else if (cast.moderate) coilTier = 'standard';
-            else coilTier = 'weak';
-            const ok = cfg.softCastAcceptWeak ? coilTier !== 'locked' : (coilTier !== 'weak' && coilTier !== 'locked');
-            if (ok) {
-              softStar = true;
-              if (!starCoilTeams[leader.team]) {
-                starCoilTeams[leader.team] = { name: leader.name, coilTier, cast, damageLocked };
-              }
-            }
-          });
-        } else { softStar = true; }
+      // ======== STAR COIL PLUS (enhanced edge: star cold + opponent shooting cold) ========
+      // Backtest: leading2Pct < 0.467 AND bestStarPace < 0.612 → 57.2% on 208 signals
+      // Backtest: leadingFGPct < 0.431 AND bestStarPace < 0.612 → 56.0% on 234 signals
+      let starCoilPlus = false;
+      if (hasStar) {
+        // Determine which team is leading (opponent of star coil team)
+        const starTeamKeys = Object.keys(starCoilTeams);
+        for (const stk of starTeamKeys) {
+          const isAway = stk === aA;
+          // Leading team's shooting stats (opponent of the coiled star's team)
+          const leadFGPct = isAway ? hFGPct : aFGPct; // star is away → opponent is home
+          const lead2Pct = isAway ? h2Pct : a2Pct;
+
+          // Star Coil Plus: opponent FG% < 43% OR opponent 2PT% < 47%
+          if (leadFGPct > 0 && leadFGPct < 0.43) {
+            starCoilPlus = true;
+            signals.push({
+              type: 'starCoilPlus',
+              text: `STAR COIL+: Opponent FG% ${(leadFGPct * 100).toFixed(1)}% (< 43%). Double regression edge.`,
+              strong: true, teamAbbr: stk
+            });
+          } else if (lead2Pct > 0 && lead2Pct < 0.47) {
+            starCoilPlus = true;
+            signals.push({
+              type: 'starCoilPlus',
+              text: `STAR COIL+: Opponent 2PT% ${(lead2Pct * 100).toFixed(1)}% (< 47%). Inside game cold.`,
+              strong: true, teamAbbr: stk
+            });
+          }
+        }
+        if (starCoilPlus) {
+          signalCount = 2; // Elevated confidence
+          log(`  [${cfg.league}] ${gLabel}: STAR COIL PLUS — opponent shooting cold, double edge`);
+
+          // Notify on Star Coil Plus
+          const scpStarTeam = starTeamKeys[0];
+          const scpOppTeam = scpStarTeam === aA ? hA : aA;
+          const notifTitle = `STAR COIL+: ${gLabel}`;
+          const notifBody = `Star cold + ${scpOppTeam} shooting cold\nDouble regression edge — higher confidence`;
+          sendNotification(notifTitle, notifBody);
+        }
       }
-
-      let isCombined = (has3ptFragile && hasStar) || (soft3pt && softStar && !(has3ptFragile && hasStar));
-      let signalCount = [has3ptFragile || soft3pt, hasStar || softStar].filter(Boolean).length;
 
       // ======== QUALITY EDGE (independent of 3PT/Star signals) ========
       // Fires when a stronger team (10%+ win% gap) trails by 1-14 pts with spread -7 to +1.5.
@@ -819,10 +809,8 @@ async function detectSignals(cfg) {
 
       if (signalCount === 0) continue;
 
-      // ======== BET SIDE ========
+      // ======== BET SIDE (Star Coil only — 3PT Fragile removed) ========
       let awayFade = 0, homeFade = 0;
-      if (aFragile?.strong) awayFade++;
-      if (hFragile?.strong) homeFade++;
 
       const aStarCoil = starCoilTeams[aA];
       const hStarCoil = starCoilTeams[hA];
@@ -832,15 +820,6 @@ async function detectSignals(cfg) {
       if (hStarCoil?.coilTier === 'elite') awayFade += 1.5;
       else if (hStarCoil?.coilTier === 'standard') awayFade += 1;
       else if (hStarCoil?.coilTier === 'locked') homeFade += 1;
-
-      // Conflict detection: if both sides have fade weight, signals oppose each other
-      // When net difference < 0.5, they effectively cancel — downgrade to single signal
-      const conflicting = awayFade > 0 && homeFade > 0 && Math.abs(awayFade - homeFade) < 0.5;
-      if (conflicting && isCombined) {
-        isCombined = false;
-        signalCount = 1;
-        log(`  [${cfg.league}] ${gLabel}: Conflicting signals (awayFade=${awayFade.toFixed(1)}, homeFade=${homeFade.toFixed(1)}) — downgraded from COMBINED`);
-      }
 
       // Home Court Factor (NCAA only — bidirectional)
       // Tailwind when betting home (+0.5), headwind when betting road (+0.5 to other side)
@@ -892,7 +871,8 @@ async function detectSignals(cfg) {
         signals: signals.map(s => ({ type: s.type, text: s.text, strong: s.strong })),
         signalTypes: [...new Set(signals.map(s => s.type))],
         signalCount,
-        isCombined,
+        isCombined: false,
+        starCoilPlus,
         homeCourtEdge,
         urgency: urgency.level,
         urgencyMult: urgency.mult,
@@ -922,10 +902,10 @@ async function detectSignals(cfg) {
       newSignals++;
 
       const sigTypes = entry.signalTypes.join(' + ');
-      const combined = isCombined ? ' [COMBINED]' : '';
+      const scPlus = entry.starCoilPlus ? ' [STAR COIL+]' : '';
       const hc = homeCourtEdge ? ' [HOME COURT]' : '';
       const urg = ` [${urgency.level}]`;
-      log(`  [${cfg.league}] SIGNAL: ${gLabel} ${aS}-${hS} ${periodLabel(cfg, per)} ${clk} | BET ${betTeam} ${rec.type} @ ${betML} | Kelly: $${kelly.bet} (${kelly.fStar}%) | ${sigTypes}${combined}${hc}${urg}`);
+      log(`  [${cfg.league}] SIGNAL: ${gLabel} ${aS}-${hS} ${periodLabel(cfg, per)} ${clk} | BET ${betTeam} ${rec.type} @ ${betML} | Kelly: $${kelly.bet} (${kelly.fStar}%) | ${sigTypes}${scPlus}${hc}${urg}`);
     }
 
     if (newSignals > 0) {
