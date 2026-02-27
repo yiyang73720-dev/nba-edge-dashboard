@@ -848,7 +848,7 @@ async function detectSignals(cfg) {
           homeCourtEdge = true;
         }
         if (homeFade > 0) {
-          awayFade += cfg.homeCourtBoost; // headwind AGAINST road bet — boosts home side
+          homeFade += cfg.homeCourtBoost; // headwind AGAINST road bet — makes road bet harder to win
         }
       }
 

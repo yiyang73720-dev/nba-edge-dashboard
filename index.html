@@ -973,9 +973,9 @@
     <div class="card">
       <div class="card-header"><span id="star-db-title">Star Player Database (21+ PPG)</span><span id="star-db-subtitle" style="font-size:10px;color:var(--text-muted);">Signal: &lt;65% of expected pace</span></div>
       <div class="card-body" style="font-size:12px;">
-        <p style="margin-bottom:10px;color:var(--text-muted);">Players tracked automatically in live games. Signal fires when scoring falls below 60% of expected pace. Tracks Q1 and halftime pace separately.</p>
+        <p style="margin-bottom:10px;color:var(--text-muted);">Players tracked automatically in live games. Signal fires when scoring falls below 65% of expected pace. Tracks Q1 and halftime pace separately.</p>
         <table>
-          <thead><tr><th>Player</th><th>Team</th><th>PPG</th><th>Q1 Exp</th><th>Half Exp</th><th>Signal (&lt;60%)</th><th></th></tr></thead>
+          <thead><tr><th>Player</th><th>Team</th><th>PPG</th><th>Q1 Exp</th><th>Half Exp</th><th>Signal (&lt;65%)</th><th></th></tr></thead>
           <tbody id="star-db-body"></tbody>
         </table>
         <div style="margin-top:10px;">
@@ -2465,6 +2465,9 @@ function evaluateSignalsFromState(gs, starDB, mode) {
     // Check each star coil team — is their opponent's shooting cold?
     Object.keys(starCoilTeams).forEach(stk => {
       const isAway = stk === aA;
+      // Star's team must be trailing (backtest only validated trailing team's star)
+      const _starTrailing = (isAway && aS < hS) || (!isAway && hS < aS);
+      if (!_starTrailing) return; // skip — star's team is leading
       const leadFGPct = isAway ? hFGPctVal : aFGPctVal;
       const lead2Pct = isAway ? h2Pct : a2Pct;
       const side = isAway ? 'away' : 'home';
@@ -3424,6 +3427,9 @@ async function fetchESPNScoreboard() {
 
           Object.keys(starCoilTeams).forEach(stk => {
             const isAway = stk === aA;
+            // Star's team must be trailing (backtest only validated trailing team's star)
+            const _starTrailing = (isAway && aS < hS) || (!isAway && hS < aS);
+            if (!_starTrailing) return; // skip — star's team is leading, not a valid signal
             const leadFGPct = isAway ? hFGPctLive : aFGPctLive;
             const lead2Pct = isAway ? h2PctLive : a2PctLive;
             const oppTeam = isAway ? hA : aA;
@@ -3817,7 +3823,7 @@ async function fetchESPNScoreboard() {
         const _urg = t.urgency || { level: 'PRIME', icon: '●', color: 'var(--green)' };
         sigs += ' <span class="signal-badge" style="background:' + _urg.color + ';color:#fff;font-size:9px;">' + _urg.icon + ' ' + _urg.level.replace('_', ' ') + '</span>';
         const oddsStr = t.marketOdds ? ' @ ' + (t.marketOdds > 0 ? '+' : '') + t.marketOdds : '';
-        const kellyStr = t.kellyPct ? ' (Kelly: ' + (t.kellyPct*100).toFixed(1) + '%)' : '';
+        const kellyStr = t.kellyPct ? ' (Kelly: ' + t.kellyPct.toFixed(1) + '%)' : '';
         const elapsed = state.signalFirstSeen[t.eventId] ? Math.floor((Date.now() - state.signalFirstSeen[t.eventId]) / 60000) : 0;
         const elapsedStr = elapsed > 0 ? ' \u2022 Signal active ' + elapsed + 'm' : ' \u2022 NEW';
         return '<div style="background:var(--card-bg);border:1px solid var(--accent);border-radius:var(--radius);padding:14px 18px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow-sm);animation:slideUp 0.3s ease;border-left:4px solid ' + _urg.color + ';">' +
