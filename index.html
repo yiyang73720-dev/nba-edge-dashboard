@@ -3237,30 +3237,29 @@ async function fetchESPNScoreboard() {
         const _fragileMaxMargin = isNCAA() ? 12 : 15;
         if (a3Check.isHot && aFragileData && awayLead >= 3 && awayLead <= _fragileMaxMargin) {
           const fragileStrength = hNoEngine ? 'weakened' : 'strong';
-          // 3PT Fragile demoted to info-only (backtest: 31.3% ML win rate, below 35.1% baseline)
-          signals.push({type:'3ptFragile', text:`${_aD} 3PT FRAGILE (info): shooting ${a3Check.pn.toFixed(0)}% from 3 (${a3Check.mn}/${a3Check.an}) AND lead is ${aFragileData.pct3.toFixed(0)}% 3PT-dependent. Lead: ${awayLead}pts.`, level:1});
-          if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
+          // 3PT Fragile REMOVED from signals array (backtest: 31.3% ML win rate, below 35.1% baseline)
+          // Thesis criteria below still populate the detail panel for informational purposes
           const engineDetail = hNoEngine
             ? `<br><strong>⚠️ Opponent Engine Check:</strong> ${_hD} is producing only ${hNon3Ppm.toFixed(1)} non-3PT points/min (threshold: ${NO_ENGINE_THRESHOLD}). Their offense is broken beyond just 3PT variance — even if ${_aD}'s 3s cool down, ${_hD} may not have the scoring engine to capitalize. <strong>Signal is weaker.</strong>`
             : `<br><strong>✅ Opponent Engine:</strong> ${_hD} is producing ${hNon3Ppm.toFixed(1)} non-3PT points/min — they have a real scoring engine from paint/FT/mid-range. When ${_aD}'s 3s regress, ${_hD} can capitalize.`;
           thesis.criteria['3ptfragile_away'] = {met:true, strong:!hNoEngine, label:`${_aD} 3PT Fragile Lead${hNoEngine?' ⚠️':''}`, detail:`<strong>3PT Shooting:</strong> ${_aD} is shooting ${a3Check.pn.toFixed(0)}% from 3 on ${a3Check.an} attempts (${getLeagueName()} avg: ${getLeague3PtAvg()}%).<br><strong>Lead Composition:</strong> ${aFragileData.pct3.toFixed(0)}% of ${_aD}'s scoring comes from 3PT (threshold: ${getFragile3PtThreshold()}%).<br><strong>Score Margin:</strong> ${awayLead} pts — in the 3-15pt sweet spot where regression flips the game.<br><strong>Opponent Durability:</strong> ${_hD} has ${aFragileData.oppPaintPct.toFixed(0)}% non-3PT scoring — paint-heavy and sustainable.${engineDetail}<br><strong>Signal:</strong> ${hNoEngine ? 'Hot 3PT + fragile lead detected, but trailing team\'s offense is too weak to exploit regression. Proceed with caution.' : 'Hot 3PT + fragile lead + competitive margin. When shooting cools, lead evaporates.'}`, value:`${a3Check.pn.toFixed(0)}% 3PT + ${aFragileData.pct3.toFixed(0)}% fragile | Lead: ${awayLead}${hNoEngine?' ⚠️':''}`};
         } else if (a3Check.isHot && aFragileData && awayLead > _fragileMaxMargin) {
           // Hot + fragile but blowout — too large a margin for reliable fade
-          signals.push({type:'3ptFragile', text:`${_aD} 3PT fragile but lead too large (${awayLead}pts) — blowout territory.`, level:1});
+          // 3PT Fragile removed from signals (blowout case) — thesis criteria only
           thesis.criteria['3ptfragile_away'] = {met:true, strong:false, label:`${_aD} 3PT Fragile (Blowout)`, detail:`${_aD} has a fragile 3PT lead (${aFragileData.pct3.toFixed(0)}% from 3PT) but the ${awayLead}pt margin is too large. Signal needs 3-${_fragileMaxMargin}pt lead to fire. Even if 3PT% regresses, blowout margin provides too much cushion.`, value:`${awayLead}pt lead — too wide`, warn:true};
         } else if (a3Check.isHot && aFragileData && awayLead < 3) {
           // Hot + fragile but lead too small — not enough edge
-          signals.push({type:'3ptFragile', text:`${_aD} shooting hot (${a3Check.pn.toFixed(0)}%) + fragile lead but only ${awayLead}pt lead — needs 3+ pts.`, level:1});
+          // 3PT Fragile removed from signals (tight margin case) — thesis criteria only
           thesis.criteria['3ptfragile_away'] = {met:true, strong:false, label:`${_aD} 3PT Fragile (Tight)`, detail:`${_aD} has both conditions but only a ${awayLead}pt lead. Signal needs 3-${_fragileMaxMargin}pt margin to ensure meaningful edge from 3PT regression.`, value:`${awayLead}pt lead — too tight`, warn:true};
         } else if (a3Check.isHot && !aFragileData) {
           // Hot shooting but lead not fragile enough — informational only
-          signals.push({type:'3ptFragile', text:`${_aD} shooting hot: ${a3Check.pn.toFixed(0)}% from 3 (${a3Check.mn}/${a3Check.an}) — but lead not fragile enough for full signal.`, level:1});
+          // 3PT Fragile removed from signals (no fragile lead case) — thesis criteria only
           thesis.criteria['3ptfragile_away'] = {met:true, strong:false, label:`${_aD} 3PT Hot (no fragile lead)`, detail:`${_aD} is shooting ${a3Check.pn.toFixed(0)}% from 3 on ${a3Check.an} attempts — elevated, but the lead composition isn't fragile enough (needs 3PT-heavy lead vs paint-heavy opponent). Monitoring only.`, value:`${a3Check.pn.toFixed(0)}% 3PT`, warn:true};
         } else if (!a3Check.isHot && aFragileData) {
           // Fragile lead but shooting not extreme — informational only
           thesis.criteria['3ptfragile_away'] = {met:true, strong:false, label:`${_aD} Fragile Lead (not hot enough)`, detail:`${_aD}'s lead is ${aFragileData.pct3.toFixed(0)}% from 3PT — fragile composition detected, but current 3PT shooting rate isn't extreme enough to trigger. Needs 50%+ on 12+ attempts.`, value:`${aFragileData.pct3.toFixed(0)}% fragile`, warn:true};
         } else if (a3Check.isWarm) {
-          signals.push({type:'3ptFragile', text:`${_aD} ${a3Check.pn.toFixed(0)}% from 3 (${a3Check.mn}/${a3Check.an}) — elevated, watch for increase.`, level:1});
+          // 3PT warm — no signal push (removed)
           thesis.criteria['3ptfragile_away'] = {met:false, label:`${_aD} 3PT: ${a3Check.pn.toFixed(0)}%`, detail:`Elevated but no fragile lead. Both conditions needed.`, value:'Watching'};
         } else {
           thesis.criteria['3ptfragile_away'] = {met:false, label:`${_aD} 3PT Fragile`, detail:`No 3PT fragile signal. Normal shooting range and/or no fragile lead composition.`, value:'N/A'};
@@ -3273,26 +3272,25 @@ async function fetchESPNScoreboard() {
         const aEngineLabel = aNoEngine ? ` ⚠️ BUT ${_aD} has no scoring engine (${aNon3Ppm.toFixed(1)} non-3PT PPM) — may not capitalize even if 3s regress` : '';
 
         if (h3Check.isHot && hFragileData && homeLead >= 3 && homeLead <= _fragileMaxMargin) {
-          // 3PT Fragile demoted to info-only (backtest: 31.3% ML win rate, below 35.1% baseline)
-          signals.push({type:'3ptFragile', text:`${_hD} 3PT FRAGILE (info): shooting ${h3Check.pn.toFixed(0)}% from 3 (${h3Check.mn}/${h3Check.an}) AND lead is ${hFragileData.pct3.toFixed(0)}% 3PT-dependent. Lead: ${homeLead}pts.`, level:1});
-          if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
+          // 3PT Fragile REMOVED from signals array (backtest: 31.3% ML win rate, below 35.1% baseline)
+          // Thesis criteria below still populate the detail panel for informational purposes
           const hEngineDetail = aNoEngine
             ? `<br><strong>⚠️ Opponent Engine Check:</strong> ${_aD} is producing only ${aNon3Ppm.toFixed(1)} non-3PT points/min (threshold: ${NO_ENGINE_THRESHOLD}). Their offense is broken beyond just 3PT variance — even if ${_hD}'s 3s cool down, ${_aD} may not have the scoring engine to capitalize. <strong>Signal is weaker.</strong>`
             : `<br><strong>✅ Opponent Engine:</strong> ${_aD} is producing ${aNon3Ppm.toFixed(1)} non-3PT points/min — they have a real scoring engine from paint/FT/mid-range. When ${_hD}'s 3s regress, ${_aD} can capitalize.`;
           thesis.criteria['3ptfragile_home'] = {met:true, strong:!aNoEngine, label:`${_hD} 3PT Fragile Lead${aNoEngine?' ⚠️':''}`, detail:`<strong>3PT Shooting:</strong> ${_hD} is shooting ${h3Check.pn.toFixed(0)}% from 3 on ${h3Check.an} attempts (${getLeagueName()} avg: ${getLeague3PtAvg()}%).<br><strong>Lead Composition:</strong> ${hFragileData.pct3.toFixed(0)}% of ${_hD}'s scoring comes from 3PT (threshold: ${getFragile3PtThreshold()}%).<br><strong>Score Margin:</strong> ${homeLead} pts — in the 3-15pt sweet spot where regression flips the game.<br><strong>Opponent Durability:</strong> ${_aD} has ${hFragileData.oppPaintPct.toFixed(0)}% non-3PT scoring — paint-heavy and sustainable.${hEngineDetail}<br><strong>Signal:</strong> ${aNoEngine ? 'Hot 3PT + fragile lead detected, but trailing team\'s offense is too weak to exploit regression. Proceed with caution.' : 'Hot 3PT + fragile lead + competitive margin. When shooting cools, lead evaporates.'}`, value:`${h3Check.pn.toFixed(0)}% 3PT + ${hFragileData.pct3.toFixed(0)}% fragile | Lead: ${homeLead}${aNoEngine?' ⚠️':''}`};
         } else if (h3Check.isHot && hFragileData && homeLead > _fragileMaxMargin) {
-          signals.push({type:'3ptFragile', text:`${_hD} 3PT fragile but lead too large (${homeLead}pts) — blowout territory.`, level:1});
+          // 3PT Fragile removed from signals (blowout case) — thesis criteria only
           thesis.criteria['3ptfragile_home'] = {met:true, strong:false, label:`${_hD} 3PT Fragile (Blowout)`, detail:`${_hD} has a fragile 3PT lead (${hFragileData.pct3.toFixed(0)}% from 3PT) but the ${homeLead}pt margin is too large. Signal needs 3-${_fragileMaxMargin}pt lead to fire. Even if 3PT% regresses, blowout margin provides too much cushion.`, value:`${homeLead}pt lead — too wide`, warn:true};
         } else if (h3Check.isHot && hFragileData && homeLead < 3) {
-          signals.push({type:'3ptFragile', text:`${_hD} shooting hot (${h3Check.pn.toFixed(0)}%) + fragile lead but only ${homeLead}pt lead — needs 3+ pts.`, level:1});
+          // 3PT Fragile removed from signals (tight margin case) — thesis criteria only
           thesis.criteria['3ptfragile_home'] = {met:true, strong:false, label:`${_hD} 3PT Fragile (Tight)`, detail:`${_hD} has both conditions but only a ${homeLead}pt lead. Signal needs 3-${_fragileMaxMargin}pt margin to ensure meaningful edge from 3PT regression.`, value:`${homeLead}pt lead — too tight`, warn:true};
         } else if (h3Check.isHot && !hFragileData) {
-          signals.push({type:'3ptFragile', text:`${_hD} shooting hot: ${h3Check.pn.toFixed(0)}% from 3 (${h3Check.mn}/${h3Check.an}) — but lead not fragile enough for full signal.`, level:1});
+          // 3PT Fragile removed from signals (no fragile lead case) — thesis criteria only
           thesis.criteria['3ptfragile_home'] = {met:true, strong:false, label:`${_hD} 3PT Hot (no fragile lead)`, detail:`${_hD} is shooting ${h3Check.pn.toFixed(0)}% from 3 on ${h3Check.an} attempts — elevated, but the lead composition isn't fragile enough. Monitoring only.`, value:`${h3Check.pn.toFixed(0)}% 3PT`, warn:true};
         } else if (!h3Check.isHot && hFragileData) {
           thesis.criteria['3ptfragile_home'] = {met:true, strong:false, label:`${_hD} Fragile Lead (not hot enough)`, detail:`${_hD}'s lead is ${hFragileData.pct3.toFixed(0)}% from 3PT — fragile composition detected, but 3PT shooting rate isn't extreme enough. Needs 50%+ on 12+ attempts.`, value:`${hFragileData.pct3.toFixed(0)}% fragile`, warn:true};
         } else if (h3Check.isWarm) {
-          signals.push({type:'3ptFragile', text:`${_hD} ${h3Check.pn.toFixed(0)}% from 3 (${h3Check.mn}/${h3Check.an}) — elevated, watch for increase.`, level:1});
+          // 3PT warm — no signal push (removed)
           thesis.criteria['3ptfragile_home'] = {met:false, label:`${_hD} 3PT: ${h3Check.pn.toFixed(0)}%`, detail:`Elevated but no fragile lead. Both conditions needed.`, value:'Watching'};
         } else {
           thesis.criteria['3ptfragile_home'] = {met:false, label:`${_hD} 3PT Fragile`, detail:`No 3PT fragile signal. Normal shooting and/or no fragile lead composition.`, value:'N/A'};
