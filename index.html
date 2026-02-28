@@ -856,6 +856,7 @@
 <div class="tab-bar" id="tabBar">
   <div class="tab active" onclick="switchTab('live')" id="tab-live">Live Games <span class="badge" id="live-badge" style="display:none;">0</span></div>
   <div class="tab" onclick="switchTab('log')" id="tab-log">Bet Log</div>
+  <div class="tab" onclick="switchTab('history');renderSignalHistoryFull();" id="tab-history">History</div>
   <div class="tab" onclick="switchTab('guide')" id="tab-guide">Signal Guide</div>
 </div>
 
@@ -1375,7 +1376,7 @@ async function fetchLiveOdds(){
   if(oddsRequestCount>=480){console.warn('Odds API near limit');return oddsCache;}
   try{
     const sport=getOddsSport();
-    const oddsUrl='https://api.the-odds-api.com/v4/sports/'+sport+'/odds/?apiK'+'ey=4ca2c6a2ed9e162809eb03722e2dc734&regions=us&markets=h2h,spreads&oddsFormat=american&bookmakers=fanduel,draftkings,betmgm';
+    const oddsUrl='https://api.the-odds-api.com/v4/sports/'+sport+'/odds/?apiK'+'ey=62f4929bae56381c5961625f82335e39&regions=us&markets=h2h,spreads&oddsFormat=american&bookmakers=fanduel,draftkings,betmgm';
     const _ost=document.getElementById('odds-status');
     if(_ost)_ost.textContent='| Odds: loading...';
     const resp=await fetch(oddsUrl);
@@ -5254,21 +5255,93 @@ function toggleFavorite(gameId) {
 }
 
 // Signal History Dashboard
-function renderSignalHistory() {
-  const hist = state.signalHistory;
-  if (!hist.length) return '<div style="text-align:center;padding:20px;color:var(--text-muted);">No signals recorded yet. Start auto-refresh during live games.</div>';
-  const total = hist.length;
+function renderSignalHistory() {}
+function renderSignalHistoryFull() {
+  const el = document.getElementById('historyContent');
+  if (!el) return;
+  const tracker = state.signalTracker || [];
+  const hist = state.signalHistory || [];
+  const all = tracker.length ? tracker : [];
+  if (!all.length && !hist.length) { el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-muted);">No signals recorded yet. Start auto-refresh during live games.</div>'; return; }
+
+  // Stats
+  const completed = all.filter(s => s.gameCompleted);
+  const pending = all.filter(s => !s.gameCompleted);
+  const wins = completed.filter(s => s.mlResult === 'W').length;
+  const losses = completed.filter(s => s.mlResult === 'L').length;
+  const atsWins = completed.filter(s => s.atsResult === 'W').length;
+  const atsLosses = completed.filter(s => s.atsResult === 'L').length;
+  const totalPL = completed.reduce((sum, s) => sum + (s.mlPayout || 0), 0);
+  const winRate = completed.length ? (wins / completed.length * 100).toFixed(1) : '—';
+  const atsRate = (atsWins + atsLosses) ? (atsWins / (atsWins + atsLosses) * 100).toFixed(1) : '—';
+
+  // Signal type breakdown
   const byType = {};
-  hist.forEach(h => { (h.signals||[]).forEach(s => { byType[s] = (byType[s]||0) + 1; }); });
-  const typeStats = Object.entries(byType).map(([k,v]) => `<span style="background:var(--accent-light);color:var(--accent);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;">${k.toUpperCase()}: ${v}</span>`).join(' ');
-  const recent = hist.slice(-10).reverse().map(h => 
-    `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border-light);font-size:11px;">` +
-    `<span style="font-weight:600;">${h.game}</span>` +
-    `<span style="color:var(--accent);font-weight:700;">BET ${h.betSide}</span>` +
-    `<span>${h.signals.map(s=>s.toUpperCase()).join('+')}</span>` +
-    `<span style="color:var(--text-muted);">${h.date}</span></div>`
-  ).join('');
-  return `<div style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;margin-bottom:6px;">Signal Summary</div><div style="font-size:22px;font-weight:800;color:var(--accent);">${total}</div><div style="font-size:10px;color:var(--text-muted);">Total signals recorded</div><div style="margin-top:8px;">${typeStats}</div></div><div style="font-size:13px;font-weight:700;margin-bottom:6px;">Recent Signals</div>${recent}`;
+  all.forEach(s => { const t = (s.signals || s.signalTypes || []).join('+') || 'unknown'; byType[t] = byType[t] || {n:0,w:0}; byType[t].n++; if (s.mlResult === 'W') byType[t].w++; });
+
+  let html = '';
+  // Summary cards
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin-bottom:16px;">';
+  html += `<div style="background:var(--bg);border-radius:var(--radius-sm);padding:12px;text-align:center;"><div style="font-size:22px;font-weight:800;">${all.length}</div><div style="font-size:10px;color:var(--text-muted);font-weight:600;">TOTAL</div></div>`;
+  html += `<div style="background:var(--bg);border-radius:var(--radius-sm);padding:12px;text-align:center;"><div style="font-size:22px;font-weight:800;color:var(--green);">${wins}</div><div style="font-size:10px;color:var(--text-muted);font-weight:600;">WINS</div></div>`;
+  html += `<div style="background:var(--bg);border-radius:var(--radius-sm);padding:12px;text-align:center;"><div style="font-size:22px;font-weight:800;color:var(--red);">${losses}</div><div style="font-size:10px;color:var(--text-muted);font-weight:600;">LOSSES</div></div>`;
+  html += `<div style="background:var(--bg);border-radius:var(--radius-sm);padding:12px;text-align:center;"><div style="font-size:22px;font-weight:800;color:${parseFloat(winRate)>=55?'var(--green)':'var(--text-primary)'};">${winRate}%</div><div style="font-size:10px;color:var(--text-muted);font-weight:600;">WIN RATE</div></div>`;
+  html += `<div style="background:var(--bg);border-radius:var(--radius-sm);padding:12px;text-align:center;"><div style="font-size:22px;font-weight:800;color:${totalPL>=0?'var(--green)':'var(--red)'};">$${totalPL>=0?'+':''}${totalPL}</div><div style="font-size:10px;color:var(--text-muted);font-weight:600;">P&L</div></div>`;
+  html += '</div>';
+
+  // Pending signals
+  if (pending.length) {
+    html += `<div style="font-size:11px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">ACTIVE (${pending.length})</div>`;
+    html += '<div style="margin-bottom:16px;">';
+    pending.slice().reverse().forEach(s => {
+      const types = (s.signals || s.signalTypes || []).map(t => t.toUpperCase()).join('+');
+      const isFav = types.includes('FAV');
+      const color = isFav ? '#10b981' : '#7c3aed';
+      html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border-light);font-size:12px;">`;
+      html += `<span style="font-weight:700;">${s.game||s.gameFull||''}</span>`;
+      html += `<span style="color:${color};font-weight:800;">${types}</span>`;
+      html += `<span style="font-weight:700;">BET ${s.signalSide||s.betTeam||''}</span>`;
+      html += `<span style="background:var(--orange-light);color:var(--orange);font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;">LIVE</span>`;
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
+  // Completed signals
+  if (completed.length) {
+    html += `<div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">COMPLETED (${completed.length})</div>`;
+    completed.slice().reverse().slice(0, 50).forEach(s => {
+      const types = (s.signals || s.signalTypes || []).map(t => t.toUpperCase()).join('+');
+      const isFav = types.includes('FAV');
+      const color = isFav ? '#10b981' : '#7c3aed';
+      const won = s.mlResult === 'W';
+      const resultColor = won ? 'var(--green)' : 'var(--red)';
+      const resultBg = won ? 'var(--green-light)' : 'var(--red-light)';
+      const payout = s.mlPayout || 0;
+      const score = s.finalAwayScore != null ? `${s.finalAwayScore}-${s.finalHomeScore}` : '';
+      const date = s.timestamp ? new Date(s.timestamp).toLocaleDateString() : '';
+      html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border-light);font-size:12px;">`;
+      html += `<span style="font-weight:700;min-width:120px;">${s.game||s.gameFull||''}</span>`;
+      html += `<span style="color:${color};font-weight:800;min-width:60px;">${types}</span>`;
+      html += `<span style="min-width:60px;">BET ${s.signalSide||s.betTeam||''}</span>`;
+      html += `<span style="color:var(--text-muted);min-width:50px;">${score}</span>`;
+      html += `<span style="background:${resultBg};color:${resultColor};font-size:10px;font-weight:800;padding:2px 8px;border-radius:4px;min-width:24px;text-align:center;">${s.mlResult}</span>`;
+      html += `<span style="font-weight:700;color:${resultColor};min-width:50px;text-align:right;">${payout>=0?'+':''}$${payout}</span>`;
+      html += `<span style="color:var(--text-muted);font-size:10px;min-width:70px;text-align:right;">${date}</span>`;
+      html += '</div>';
+    });
+  }
+
+  // Fallback to simple history if no tracker data
+  if (!all.length && hist.length) {
+    html += `<div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:8px;">SIGNAL LOG (${hist.length})</div>`;
+    hist.slice().reverse().slice(0, 30).forEach(h => {
+      html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border-light);font-size:11px;">`;
+      html += `<span style="font-weight:600;">${h.game}</span><span style="color:var(--accent);font-weight:700;">BET ${h.betSide}</span>`;
+      html += `<span>${(h.signals||[]).map(s=>s.toUpperCase()).join('+')}</span><span style="color:var(--text-muted);">${h.date}</span></div>`;
+    });
+  }
+  el.innerHTML = html;
 }
 
 function toggleDarkMode() {
@@ -5737,12 +5810,12 @@ try {
 </script>
 <div id="content-history" class="tab-content">
   <div class="card">
-    <div class="card-header"><span>Signal History Dashboard</span>
-      <button class="btn btn-sm" onclick="document.getElementById('historyContent').innerHTML=renderSignalHistory()">Refresh</button>
-      <button class="btn btn-sm btn-red" onclick="if(confirm('Clear all signal history?')){state.signalHistory=[];localStorage.removeItem('signalHistory');document.getElementById('historyContent').innerHTML=renderSignalHistory();}">Clear</button>
+    <div class="card-header"><span>Signal History</span>
+      <button class="btn btn-sm btn-green" onclick="renderSignalHistoryFull()">Refresh</button>
+      <button class="btn btn-sm btn-red" onclick="if(confirm('Clear all history?')){state.signalTracker=[];state.signalHistory=[];localStorage.removeItem('signalTracker');localStorage.removeItem('signalHistory');renderSignalHistoryFull();}">Clear</button>
     </div>
     <div class="card-body" id="historyContent">
-      <div style="text-align:center;padding:20px;color:var(--text-muted);">Click Refresh to load signal history.</div>
+      <div style="text-align:center;padding:20px;color:var(--text-muted);">Auto-logs every signal. Open during live games to start tracking.</div>
     </div>
   </div>
 </div>
