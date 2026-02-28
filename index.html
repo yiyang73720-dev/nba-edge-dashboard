@@ -1889,34 +1889,24 @@ if (window.Notification) { window.Notification = function(){}; window.Notificati
 // In-app toast notification system
 let notifiedSignals = new Set(JSON.parse(localStorage.getItem('notifiedSignals') || '[]'));
 
-// ==================== ALERT SETTINGS ====================
-// Email alerts via EmailJS (free, client-side). Set these in Settings tab or localStorage:
-//   localStorage.setItem('emailjs_public_key', 'your_public_key');
-//   localStorage.setItem('emailjs_service_id', 'your_service_id');
-//   localStorage.setItem('emailjs_template_id', 'your_template_id');
-const EMAILJS_PUBLIC_KEY = localStorage.getItem('emailjs_public_key') || '';
-const EMAILJS_SERVICE_ID = localStorage.getItem('emailjs_service_id') || '';
-const EMAILJS_TEMPLATE_ID = localStorage.getItem('emailjs_template_id') || '';
-let emailjsLoaded = false;
+// ==================== EMAIL ALERTS VIA RESEND ====================
+const RESEND_KEY = 're_KAosMqh1_N7gTPsBCaYbx3exTp8y77jjP';
+const ALERT_EMAIL = 'yiyang73720@gmail.com';
 
-function loadEmailJS() {
-  if (emailjsLoaded || !EMAILJS_PUBLIC_KEY) return Promise.resolve(false);
-  return new Promise((resolve) => {
-    const s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
-    s.onload = () => { emailjs.init(EMAILJS_PUBLIC_KEY); emailjsLoaded = true; resolve(true); };
-    s.onerror = () => resolve(false);
-    document.head.appendChild(s);
-  });
-}
-
-// Request browser notification permission on first visit
-if ('Notification' in window && Notification.permission === 'default') {
-  // Delay permission request until user interacts
-  document.addEventListener('click', function reqPerm() {
-    Notification.requestPermission();
-    document.removeEventListener('click', reqPerm);
-  }, { once: true });
+function sendAlertEmail(subject, htmlBody) {
+  fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + RESEND_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      from: 'Alpha Hunter <onboarding@resend.dev>',
+      to: ALERT_EMAIL,
+      subject: subject,
+      html: htmlBody,
+    })
+  }).then(r => {
+    if (!r.ok) r.text().then(t => console.log('Email error:', t));
+    else console.log('Alert email sent:', subject);
+  }).catch(e => console.log('Email fetch error:', e));
 }
 
 function sendSignalNotification(title, body, gameId, signalType) {
@@ -1926,38 +1916,25 @@ function sendSignalNotification(title, body, gameId, signalType) {
   if (notifiedSignals.size > 200) notifiedSignals = new Set([...notifiedSignals].slice(-100));
   localStorage.setItem('notifiedSignals', JSON.stringify([...notifiedSignals]));
 
-  // Determine signal tier for sound + alert priority
   const isFav = signalType.startsWith('fav_');
   const isDog = signalType.startsWith('dog_');
-  const isStar = signalType.startsWith('star_');
 
-  // Play alert sound
+  // Play alert sound for actionable signals
   if (isFav || isDog) playAlertSound('coil');
-  else if (isStar) playAlertSound('coil');
 
-  // Browser push notification (works immediately, no setup needed)
-  if ('Notification' in window && Notification.permission === 'granted') {
-    try {
-      const icon = isFav ? '✅' : isDog ? '🐕' : '🌀';
-      new Notification(`${icon} ${title}`, {
-        body: body,
-        icon: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><circle cx="20" cy="20" r="14" fill="none" stroke="#00d4aa" stroke-width="2.5"/><circle cx="20" cy="20" r="3" fill="#00d4aa"/></svg>'),
-        tag: key,
-        requireInteraction: true,
-      });
-    } catch(e) { console.log('Notification error:', e); }
-  }
-
-  // Email alert via EmailJS (if configured)
-  if (EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && (isFav || isDog)) {
-    const sendEmail = () => {
-      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-        subject: title,
-        message: body + '\n\nOpen: https://alphahunter.one',
-      }).catch(e => console.log('Email error:', e));
-    };
-    if (emailjsLoaded) sendEmail();
-    else loadEmailJS().then(ok => { if (ok) sendEmail(); });
+  // Send email for FAV and DOG signals only
+  if (isFav || isDog) {
+    const color = isFav ? '#10b981' : '#7c3aed';
+    const label = isFav ? 'FAV SIGNAL' : 'DOG SIGNAL';
+    const html = '<div style="font-family:sans-serif;max-width:480px;margin:0 auto;">'
+      + '<div style="background:' + color + ';color:white;padding:16px 20px;border-radius:12px 12px 0 0;">'
+      + '<div style="font-size:11px;font-weight:700;letter-spacing:1px;opacity:0.8;">' + label + '</div>'
+      + '<div style="font-size:20px;font-weight:800;margin-top:4px;">' + title + '</div></div>'
+      + '<div style="background:#f8f9fa;padding:20px;border:1px solid #e8e8e8;border-top:none;border-radius:0 0 12px 12px;">'
+      + '<div style="font-size:14px;color:#333;line-height:1.6;">' + body + '</div>'
+      + '<div style="margin-top:16px;text-align:center;"><a href="https://alphahunter.one" style="display:inline-block;background:' + color + ';color:white;padding:10px 24px;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px;">Open Alpha Hunter</a></div>'
+      + '<div style="margin-top:12px;font-size:10px;color:#999;text-align:center;">Alpha Hunter Alert</div></div></div>';
+    sendAlertEmail(label + ': ' + title, html);
   }
 }
 
