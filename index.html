@@ -1888,16 +1888,77 @@ if (window.Notification) { window.Notification = function(){}; window.Notificati
 
 // In-app toast notification system
 let notifiedSignals = new Set(JSON.parse(localStorage.getItem('notifiedSignals') || '[]'));
+
+// ==================== ALERT SETTINGS ====================
+// Email alerts via EmailJS (free, client-side). Set these in Settings tab or localStorage:
+//   localStorage.setItem('emailjs_public_key', 'your_public_key');
+//   localStorage.setItem('emailjs_service_id', 'your_service_id');
+//   localStorage.setItem('emailjs_template_id', 'your_template_id');
+const EMAILJS_PUBLIC_KEY = localStorage.getItem('emailjs_public_key') || '';
+const EMAILJS_SERVICE_ID = localStorage.getItem('emailjs_service_id') || '';
+const EMAILJS_TEMPLATE_ID = localStorage.getItem('emailjs_template_id') || '';
+let emailjsLoaded = false;
+
+function loadEmailJS() {
+  if (emailjsLoaded || !EMAILJS_PUBLIC_KEY) return Promise.resolve(false);
+  return new Promise((resolve) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+    s.onload = () => { emailjs.init(EMAILJS_PUBLIC_KEY); emailjsLoaded = true; resolve(true); };
+    s.onerror = () => resolve(false);
+    document.head.appendChild(s);
+  });
+}
+
+// Request browser notification permission on first visit
+if ('Notification' in window && Notification.permission === 'default') {
+  // Delay permission request until user interacts
+  document.addEventListener('click', function reqPerm() {
+    Notification.requestPermission();
+    document.removeEventListener('click', reqPerm);
+  }, { once: true });
+}
+
 function sendSignalNotification(title, body, gameId, signalType) {
-  // No popups — signals show on chips and game cards only
   const key = gameId + '_' + signalType + '_' + new Date().getHours();
   if (notifiedSignals.has(key)) return;
   notifiedSignals.add(key);
   if (notifiedSignals.size > 200) notifiedSignals = new Set([...notifiedSignals].slice(-100));
   localStorage.setItem('notifiedSignals', JSON.stringify([...notifiedSignals]));
-  // Play pleasant chime for new signals
-  if (signalType.startsWith('star_')) playAlertSound('coil');
-  else if (signalType.startsWith('3ptfragile')) playAlertSound('hot3pt');
+
+  // Determine signal tier for sound + alert priority
+  const isFav = signalType.startsWith('fav_');
+  const isDog = signalType.startsWith('dog_');
+  const isStar = signalType.startsWith('star_');
+
+  // Play alert sound
+  if (isFav || isDog) playAlertSound('coil');
+  else if (isStar) playAlertSound('coil');
+
+  // Browser push notification (works immediately, no setup needed)
+  if ('Notification' in window && Notification.permission === 'granted') {
+    try {
+      const icon = isFav ? '✅' : isDog ? '🐕' : '🌀';
+      new Notification(`${icon} ${title}`, {
+        body: body,
+        icon: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><circle cx="20" cy="20" r="14" fill="none" stroke="#00d4aa" stroke-width="2.5"/><circle cx="20" cy="20" r="3" fill="#00d4aa"/></svg>'),
+        tag: key,
+        requireInteraction: true,
+      });
+    } catch(e) { console.log('Notification error:', e); }
+  }
+
+  // Email alert via EmailJS (if configured)
+  if (EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && (isFav || isDog)) {
+    const sendEmail = () => {
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        subject: title,
+        message: body + '\n\nOpen: https://alphahunter.one',
+      }).catch(e => console.log('Email error:', e));
+    };
+    if (emailjsLoaded) sendEmail();
+    else loadEmailJS().then(ok => { if (ok) sendEmail(); });
+  }
 }
 
 // ==================== TABS ====================
