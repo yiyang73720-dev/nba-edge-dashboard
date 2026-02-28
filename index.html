@@ -1966,7 +1966,7 @@ function sendAlertEmail(subject, htmlBody) {
     method: 'POST',
     headers: { 'Authorization': 'Bearer ' + RESEND_KEY, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from: 'Alpha Hunter <onboarding@resend.dev>',
+      from: 'Alpha Hunter <alerts@alphahunter.one>',
       to: ALERT_EMAIL,
       subject: subject,
       html: htmlBody,
@@ -1977,7 +1977,7 @@ function sendAlertEmail(subject, htmlBody) {
   }).catch(e => console.log('Email fetch error:', e));
 }
 
-function sendSignalNotification(title, body, gameId, signalType) {
+function sendSignalNotification(title, body, gameId, signalType, kellyInfo) {
   const key = gameId + '_' + signalType + '_' + new Date().getHours();
   if (notifiedSignals.has(key)) return;
   notifiedSignals.add(key);
@@ -1990,18 +1990,32 @@ function sendSignalNotification(title, body, gameId, signalType) {
   // Play alert sound for actionable signals
   if (isFav || isDog) playAlertSound('coil');
 
-  // Send email for FAV and DOG signals only
+  // Send email for FAV and DOG signals only — include Kelly sizing
   if (isFav || isDog) {
     const color = isFav ? '#10b981' : '#7c3aed';
     const label = isFav ? 'FAV SIGNAL' : 'DOG SIGNAL';
-    const html = '<div style="font-family:sans-serif;max-width:480px;margin:0 auto;">'
+    // Build Kelly section for email
+    let kellyHTML = '';
+    if (kellyInfo && kellyInfo.bet > 0) {
+      kellyHTML = '<div style="margin-top:16px;padding:16px;background:#fff;border:2px solid ' + color + ';border-radius:10px;">'
+        + '<div style="font-size:10px;font-weight:700;letter-spacing:1px;color:#888;text-transform:uppercase;">HALF KELLY SIZING</div>'
+        + '<div style="font-size:32px;font-weight:900;color:' + color + ';margin:6px 0;letter-spacing:-1px;">$' + kellyInfo.bet + '</div>'
+        + '<div style="font-size:12px;color:#555;line-height:1.8;">'
+        + '<span style="font-weight:700;">' + kellyInfo.pct.toFixed(1) + '%</span> of bankroll'
+        + ' &nbsp;·&nbsp; Edge: <span style="font-weight:700;">' + kellyInfo.edge.toFixed(1) + '%</span>'
+        + (kellyInfo.odds ? ' &nbsp;·&nbsp; Odds: <span style="font-weight:700;">' + (kellyInfo.odds > 0 ? '+' : '') + kellyInfo.odds + '</span>' : '')
+        + '</div></div>';
+    }
+    const timeStr = new Date().toLocaleString('en-US', { timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit', hour12: true }) + ' ET';
+    const html = '<div style="font-family:-apple-system,system-ui,sans-serif;max-width:480px;margin:0 auto;">'
       + '<div style="background:' + color + ';color:white;padding:16px 20px;border-radius:12px 12px 0 0;">'
       + '<div style="font-size:11px;font-weight:700;letter-spacing:1px;opacity:0.8;">' + label + '</div>'
       + '<div style="font-size:20px;font-weight:800;margin-top:4px;">' + title + '</div></div>'
       + '<div style="background:#f8f9fa;padding:20px;border:1px solid #e8e8e8;border-top:none;border-radius:0 0 12px 12px;">'
       + '<div style="font-size:14px;color:#333;line-height:1.6;">' + body + '</div>'
+      + kellyHTML
       + '<div style="margin-top:16px;text-align:center;"><a href="https://alphahunter.one" style="display:inline-block;background:' + color + ';color:white;padding:10px 24px;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px;">Open Alpha Hunter</a></div>'
-      + '<div style="margin-top:12px;font-size:10px;color:#999;text-align:center;">Alpha Hunter Alert</div></div></div>';
+      + '<div style="margin-top:12px;font-size:10px;color:#999;text-align:center;">Alpha Hunter Alert · ' + timeStr + '</div></div></div>';
     sendAlertEmail(label + ': ' + title, html);
   }
 }
@@ -3599,7 +3613,19 @@ async function fetchESPNScoreboard() {
           }
           signals.push({type:'fav', text:`FAV ${favTier}: ${favAbbr} leads ${favLeadAmt}pts at ${_elapsed.toFixed(0)}min — ${favPct}`, level:2});
           sigFav++; activeSignals++;
-          sendSignalNotification('FAV ' + favTier + ': ' + favAbbr, `Leads ${favLeadAmt}pts — ${favPct}`, gid, 'fav_' + favAbbr);
+          // Compute Kelly for email — use pre-game spread implied prob as baseline
+          const _favKelly = (function() {
+            try {
+              const _fOdds = matchOdds(aA, hA, aFull, hFull);
+              if (!_fOdds) return null;
+              const _fML = favAbbr === aA ? _fOdds.awayML : _fOdds.homeML;
+              if (!_fML) return null;
+              const _fImplP = _fML < 0 ? Math.abs(_fML)/(Math.abs(_fML)+100) : 100/(_fML+100);
+              const _fK = kellySize(_fImplP, _fML, null, 1, 1);
+              return _fK.bet > 0 ? { bet: _fK.bet, pct: _fK.fStar, edge: _fK.edge, odds: _fML } : null;
+            } catch(e) { return null; }
+          })();
+          sendSignalNotification('FAV ' + favTier + ': ' + favAbbr, `Leads ${favLeadAmt}pts — ${favPct}`, gid, 'fav_' + favAbbr, _favKelly);
           if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
           thesis.criteria['fav'] = {met:true, strong:favTier !== 'SIMPLE', label:`FAV ${favTier}: ${favAbbr}`, detail:`<strong>Favorite:</strong> ${favAbbr} (spread: ${pregameSpread || 'N/A'})<br><strong>Lead:</strong> ${favLeadAmt}pts at ${_elapsed.toFixed(0)}min<br><strong>Lead Safety:</strong> ${_leadSafety.toFixed(2)}<br><strong>Spread Rel:</strong> ${_spreadRel !== null ? _spreadRel.toFixed(1) : 'N/A'}`, value:`${favTier} | Lead ${favLeadAmt}`};
         }
@@ -3625,7 +3651,19 @@ async function fetchESPNScoreboard() {
           const betTypeLabel = betType === 'ML' ? `BET ML (${dogML > 0 ? '+' : ''}${dogML})` : `BET SPREAD`;
           signals.push({type:'dog', text:`DOG ${dogTier}: ${dogAbbr} leads ${dogLeadAmt}pt | ${dogPct} cover. ${dogExtras.join(' | ')} → <span style="color:${betColor};font-weight:800;">${betTypeLabel}</span>`, level:2, betType, betColor, dogML});
           sigDog++; activeSignals++;
-          sendSignalNotification('DOG ' + dogTier + ': ' + dogAbbr, `Leads ${dogLeadAmt}pts → ${betTypeLabel}`, gid, 'dog_' + dogAbbr);
+          // Compute Kelly for email
+          const _dogKelly = (function() {
+            try {
+              const _dOdds = matchOdds(aA, hA, aFull, hFull);
+              if (!_dOdds) return null;
+              const _dML = dogAbbr === aA ? _dOdds.awayML : _dOdds.homeML;
+              if (!_dML) return null;
+              const _dImplP = _dML < 0 ? Math.abs(_dML)/(Math.abs(_dML)+100) : 100/(_dML+100);
+              const _dK = kellySize(_dImplP, _dML, null, 1, 1);
+              return _dK.bet > 0 ? { bet: _dK.bet, pct: _dK.fStar, edge: _dK.edge, odds: _dML } : null;
+            } catch(e) { return null; }
+          })();
+          sendSignalNotification('DOG ' + dogTier + ': ' + dogAbbr, `Leads ${dogLeadAmt}pts → ${betTypeLabel}`, gid, 'dog_' + dogAbbr, _dogKelly);
           if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
           thesis.criteria['dog'] = {met:true, strong:dogTier !== 'LEADING', label:`DOG ${dogTier}: ${dogAbbr}`, detail:`<strong>Underdog:</strong> ${dogAbbr} (pre-game spread: ${pregameSpread ? (pregameSpread > 0 ? '+' : '') + pregameSpread : 'N/A'})<br><strong>Current:</strong> ${dogAbbr} leads ${dogLeadAmt}pts at ${_elapsed.toFixed(0)}min<br><strong>REB:</strong> ${dogAbbr} ${dogReb} vs ${favAbbr} ${favReb} ${dogWinsReb ? '✅' : ''}<br><strong>FTA:</strong> ${dogAbbr} ${dogFtaV} vs ${favAbbr} ${favFtaV} ${dogWinsFta ? '✅' : ''}<br><strong>Bet:</strong> <span style="color:${betColor};font-weight:800;">${betTypeLabel}</span>`, value:`${dogTier} | ${betTypeLabel}`};
         }
@@ -3943,6 +3981,17 @@ async function fetchESPNScoreboard() {
               <div style="font-size:10px;font-weight:800;color:${titleColor};margin-bottom:4px;letter-spacing:0.5px;">${titleText}</div>
               ${signals.map(s=>`<div style="font-size:11px;color:var(--text-secondary);line-height:1.5;">${s.level===2?'&#x1F525;':'&#x26A0;&#xFE0F;'} ${s.text}</div>`).join('')}
               ${recDetail}
+              ${(()=>{
+                // Show Half-Kelly bet sizing inline on signal cards
+                if (!thesis.kellyBet || thesis.kellyBet <= 0) return '';
+                const _oddsLabel = thesis.marketOdds ? ((thesis.marketOdds > 0 ? '+' : '') + thesis.marketOdds) : '';
+                return '<div style="margin-top:8px;display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--white);border:1.5px solid var(--accent);border-radius:8px;">'
+                  + '<div style="font-size:24px;font-weight:900;color:var(--accent);letter-spacing:-1px;">$' + thesis.kellyBet + '</div>'
+                  + '<div style="font-size:10px;color:var(--text-secondary);line-height:1.5;">'
+                  + '<span style="font-weight:700;">Half Kelly</span> · ' + thesis.kellyPct.toFixed(1) + '% of bankroll<br>'
+                  + 'Edge: ' + (thesis.kellyEdge||'-') + '%' + (_oddsLabel ? ' · Odds: ' + _oddsLabel : '')
+                  + '</div></div>';
+              })()}
               ${betBtn}
               ${state.signalFirstSeen[gid]?`<div style="font-size:9px;color:var(--text-muted);margin-top:4px;">\u23F1 ${Math.floor((Date.now()-state.signalFirstSeen[gid])/60000)}m ago</div>`:''}
             </div>`;
@@ -3983,14 +4032,15 @@ async function fetchESPNScoreboard() {
         const _urg = t.urgency || { level: 'PRIME', icon: '●', color: 'var(--green)' };
         sigs += ' <span class="signal-badge" style="background:' + _urg.color + ';color:#fff;font-size:9px;">' + _urg.icon + ' ' + _urg.level.replace('_', ' ') + '</span>';
         const oddsStr = t.marketOdds ? ' @ ' + (t.marketOdds > 0 ? '+' : '') + t.marketOdds : '';
-        const kellyStr = t.kellyPct ? ' (Kelly: ' + t.kellyPct.toFixed(1) + '%)' : '';
         const elapsed = state.signalFirstSeen[t.eventId] ? Math.floor((Date.now() - state.signalFirstSeen[t.eventId]) / 60000) : 0;
         const elapsedStr = elapsed > 0 ? ' \u2022 Signal active ' + elapsed + 'm' : ' \u2022 NEW';
+        const kellyBadge = t.kellyBet > 0 ? '<div style="margin-top:6px;display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:var(--accent);color:#fff;border-radius:6px;font-size:12px;font-weight:800;letter-spacing:-0.3px;">BET $' + t.kellyBet + ' <span style="font-weight:500;opacity:0.85;font-size:10px;">(' + t.kellyPct.toFixed(1) + '% · Half Kelly)</span></div>' : '';
         return '<div style="background:var(--card-bg);border:1px solid var(--accent);border-radius:var(--radius);padding:14px 18px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow-sm);animation:slideUp 0.3s ease;border-left:4px solid ' + _urg.color + ';">' +
           '<div><div style="font-size:14px;font-weight:800;color:var(--accent);letter-spacing:-0.3px;display:flex;align-items:center;gap:5px;">' + teamLogoImg(t.betSide === t.aTeam ? t.aLogo : t.hLogo, 20) + 'BET ' + t.betSide + ' ML' + oddsStr + '</div>' +
-          '<div style="font-size:11px;color:var(--text-secondary);margin-top:3px;">' + t.game + ' \u2022 ' + (isNCAA() ? ((t.per||0)<=2 ? 'H'+(t.per||'?') : 'OT') : 'Q'+(t.per||'?')) + ' ' + (t.clk||'') + kellyStr + elapsedStr + '</div>' +
-          '<div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap;">' + sigs + '</div></div>' +
-          '<div style="text-align:right;padding-left:16px;"><div style="font-size:24px;font-weight:900;color:var(--accent);letter-spacing:-1px;line-height:1;">' + (t.strongCount||0) + '</div><div style="font-size:9px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;">SIGNALS</div></div></div>';
+          '<div style="font-size:11px;color:var(--text-secondary);margin-top:3px;">' + t.game + ' \u2022 ' + (isNCAA() ? ((t.per||0)<=2 ? 'H'+(t.per||'?') : 'OT') : 'Q'+(t.per||'?')) + ' ' + (t.clk||'') + ' \u2022 Edge: ' + (t.kellyEdge||'-') + '%' + elapsedStr + '</div>' +
+          '<div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap;">' + sigs + '</div>' +
+          kellyBadge + '</div>' +
+          '<div style="text-align:right;padding-left:16px;"><div style="font-size:24px;font-weight:900;color:var(--accent);letter-spacing:-1px;line-height:1;">' + (t.kellyBet > 0 ? '$' + t.kellyBet : (t.strongCount||0)) + '</div><div style="font-size:9px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;">' + (t.kellyBet > 0 ? 'HALF KELLY' : 'SIGNALS') + '</div></div></div>';
       }).join('');
     } else {
       qbPanel.style.display = 'none';
