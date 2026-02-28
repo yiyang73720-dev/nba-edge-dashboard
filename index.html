@@ -5879,57 +5879,39 @@ try {
 </div>
 </div>
 <div class="guide-grid">
-<div class="guide-card"><h3><span class="signal-badge badge-star">STAR</span> Star Coil</h3><p class="edge-label">Star is cold + game is close + supporting cast is holding = maximum edge</p><p>When a 21+ PPG star is at &lt;65% of expected pace AND the game is within 15 points during Q2-Q3. <strong>Verified profitable: 58.6% win rate on 2,181 signals (+$25,883 P&amp;L on flat $100 bets).</strong></p><p><strong>Supporting Cast Analysis:</strong> The system compares the cast's output (team score minus star's points) directly to the opponent's total score — no season averages, pure live data. If the cast is within 8pts of the opponent, the team is competitive WITHOUT the star. When the star regresses upward, it's regression on top of an already-strong team.</p><p><strong>4 tiers:</strong> Cast Leading (cast ahead of opponent), Cast Close (within 8), Cast Behind (8-15), Cast Broken (&gt;15 behind). Also Damage Locked if deficit is stable over 3+ min.</p><div class="threshold">Trigger: Star &lt;65% pace + margin &le;15 + Q2-Q3.<br>Tiers: Elite (cast gap ≥-8), Standard (-8 to -15), Weak (&lt;-15), Locked (deficit stable 3+min).<br>Q3 subset is elite: 68.8% win rate (148W-67L).</div></div>
+<div class="guide-card" style="border-left:3px solid #10b981;"><h3><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#10b981;padding:3px 8px;border-radius:4px;">FAV</span> Favorite Signal</h3><p class="edge-label">Pre-game favorite dominating — validated 72-83% cover rate</p><p><strong>FAV SIMPLE:</strong> Fav leads by 11+ points, 14+ min elapsed (Q2+). <strong>72.2% cover, +37.8% ROI, N=1,336, Z=16.20.</strong></p><p><strong>FAV TIER 1:</strong> Lead Safety &ge; 3 AND Spread Relative &ge; 10. <strong>82.9% cover, +58.3% ROI, N=544, Z=15.35.</strong></p><p><strong>Why it works:</strong> Books adjust live spreads only ~1 point per 10 points of in-game lead. This is massively insufficient. 5/5 seasons profitable, 100% of rolling 200-game windows profitable.</p><div class="threshold">Trigger: Fav leads 11+ at 14+ min elapsed.<br>TIER 1: lead_safety &ge; 3 AND spread_rel &ge; 10.<br>Bet: Favorite's live spread.</div></div>
 
-<div class="guide-card"><h3><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:var(--accent);padding:3px 8px;border-radius:4px;">STAR COIL+</span> Star Coil Plus</h3><p class="edge-label">Star cold + opponent shooting cold = double regression edge</p><p>When Star Coil fires AND the opponent (leading team) has poor shooting efficiency: FG% &lt; 43% or 2PT% &lt; 47%. <strong>Verified: 57.2% win rate on 208+ signals.</strong></p><p><strong>Why it works:</strong> The opponent's lead is built on two unsustainable factors: (1) the star being cold (will regress up), and (2) the opponent shooting unsustainably well from inside (will regress down). When both regress, the swing is dramatic.</p><div class="threshold">Trigger: Star Coil fires + opponent FG% &lt; 43% OR opponent 2PT% &lt; 47%.<br>This is the highest-conviction moneyline signal. Fires ~1x per night on average.</div></div>
+<div class="guide-card" style="border-left:3px solid #7c3aed;"><h3><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#7c3aed;padding:3px 8px;border-radius:4px;">DOG</span> Dog Signal</h3><p class="edge-label">Pre-game underdog leading — 63-71% cover rate with hybrid ML/spread</p><p><strong>DOG LEADING:</strong> Pre-game dog ahead at 14+ min. <strong>63.4% cover, N=1,955.</strong></p><p><strong>DOG PHYSICAL:</strong> + dog wins rebound battle. <strong>65.5% cover.</strong></p><p><strong>DOG STRONG:</strong> + dog leads 5+ AND wins REB AND wins FTA. <strong>70.6% cover.</strong></p><p><strong>Hybrid ML/SPREAD:</strong> If dog ML &ge; -100 → <span style="color:#f0b90b;font-weight:800;">BET ML</span> (+30.7% ROI). If dog ML &lt; -100 → <span style="color:#3861fb;font-weight:800;">BET SPREAD</span>.</p><div class="threshold">Trigger: Pre-game dog leading at 14+ min elapsed.<br>Tiers upgrade with REB/FTA dominance.<br>Hybrid: ML when plus-money, spread when minus.</div></div>
 
 </div></div>
 <div id="theory-panel" class="theory-panel">
   <h4>How This Dashboard Works</h4>
-  <p>Every signal in this dashboard shares one thesis: <strong>the current score was built on something unsustainable, so the live moneyline is mispriced.</strong> Live odds react to the scoreboard, but they fail to distinguish between sustainable and unsustainable scoring patterns. Star Coil (and the enhanced Star Coil+) identifies when stars are cold and regression is imminent — that is the edge.</p>
+  <p>Two validated edges: (1) <strong>FAV</strong> — when the pre-game favorite builds a big lead, the live spread doesn't adjust enough. (2) <strong>DOG</strong> — when the pre-game underdog is winning, the book still prices them to lose. Both are validated against REAL live odds across 3,550 games and 7 seasons.</p>
   <hr class="signal-divider">
-  <h4>1. Star Coil (Verified Profitable: 58.6% Win Rate)</h4>
-  <p><strong>What it detects:</strong> A franchise-caliber player performing well below their expected scoring pace (&lt;65%) during Q2-Q3 AND the game is competitive (within 15 points).</p>
-  <p><strong>Supporting Cast Analysis:</strong> The core edge strengthener. The system uses <strong>pure live data</strong>: it takes the team's score, subtracts the star's points, and compares that directly to the opponent's total score. This "cast gap" tells you how well the teammates are doing against THIS specific opponent in THIS game.</p>
-  <ul style="margin:8px 0;padding-left:20px;line-height:1.5;">
-    <li><strong>Cast Leading</strong> (gap ≥ 0): Teammates are matching/beating the opponent without the star. Strongest edge.</li>
-    <li><strong>Cast Close</strong> (gap -1 to -8): Cast is within striking distance. Star regression makes it a real fight.</li>
-    <li><strong>Cast Behind</strong> (gap -8 to -15): Cast is behind but game is in range. Standard edge.</li>
-    <li><strong>Cast Broken</strong> (gap &lt; -15): Whole team is struggling. Star alone won't fix it. Signal weakened.</li>
-  </ul>
-  <p><strong>Regression Flips Check:</strong> If the star's "missing points" exceed the cast gap, regression alone flips the lead — highest-confidence scenario.</p>
-  <p><strong>Damage Locked:</strong> Tracks score over 3+ minutes. If the deficit is stable/growing, the damage is baked in. Bet direction flips.</p>
+  <h4>1. FAV Signal (72-83% Cover Rate)</h4>
+  <p><strong>The edge:</strong> Books adjust live spreads only ~1 point per 10 points of in-game lead. When the favorite leads by 11+, the spread hasn't caught up — they cover 72% of the time at minimum.</p>
+  <p><strong>Lead Safety</strong> = lead / sqrt(time remaining). Higher = more secure lead.</p>
+  <p><strong>Spread Relative</strong> = current lead - |pre-game spread|. How far beyond expectations.</p>
   <div class="edge-box green">
-    <p><strong>Trigger:</strong> Star &lt;65% pace + Q2/Q3 + margin &le;15pts.</p>
-    <p style="margin-top:6px"><strong>Tiers:</strong> Elite (cast gap ≥-8, 1.5x weight), Standard (-8 to -15, 1x weight), Weak (&lt;-15, 0 weight), Locked (deficit baked in, reverse bet).</p>
-    <p style="margin-top:6px"><strong>Backtest:</strong> 2,181 signals | 58.6% win rate | +$25,883 P&amp;L (flat $100) | Q3 subset: 68.8%</p>
+    <p><strong>FAV SIMPLE:</strong> 72.2% cover | +37.8% ROI | 1,336 bets | Z=16.20 | Max loss streak: 6</p>
+    <p style="margin-top:6px"><strong>FAV TIER 1:</strong> 82.9% cover | +58.3% ROI | 544 bets | Z=15.35 | 5/5 seasons profitable</p>
   </div>
   <hr class="signal-divider">
-  <h4>2. Star Coil Plus (Verified: 57.2% Win Rate, Highest Conviction)</h4>
-  <p><strong>What it detects:</strong> Star Coil fires AND the opponent (leading team) has cold shooting: FG% &lt; 43% or 2PT% &lt; 47%.</p>
-  <p><strong>Why it works:</strong> The opponent's lead is built on two unsustainable factors simultaneously: (1) the star being cold (will regress up), and (2) the opponent's inside/overall game shooting unsustainably well (will regress down). This is a double-regression edge.</p>
-  <div class="edge-box" style="border-left: 3px solid var(--accent);">
-    <p><strong>Trigger:</strong> Star Coil active + opponent FG% &lt; 43% OR opponent 2PT% &lt; 47%.</p>
-    <p style="margin-top:6px"><strong>Backtest:</strong> 208 signals at 57.2% (2PT threshold) | 234 signals at 56.0% (FG threshold) | Fires ~1x/night.</p>
+  <h4>2. DOG Signal (63-71% Cover Rate)</h4>
+  <p><strong>The edge:</strong> When the pre-game underdog is winning after Q1, the book still prices them to lose. The dog's lead is real — especially when backed by rebounding and free throw dominance (physicality &gt; shooting).</p>
+  <div class="edge-box" style="border-left: 3px solid #7c3aed;">
+    <p><strong>DOG LEADING:</strong> 63.4% cover | N=1,955</p>
+    <p style="margin-top:6px"><strong>DOG PHYSICAL:</strong> 65.5% cover | Dog wins rebound battle</p>
+    <p style="margin-top:6px"><strong>DOG STRONG:</strong> 70.6% cover | Lead 5+ AND REB AND FTA dominance</p>
+    <p style="margin-top:6px"><strong>Hybrid:</strong> ML when dog ML &ge; -100 (+30.7% ROI) | Spread when &lt; -100</p>
   </div>
   <hr class="signal-divider">
-  <h4>3PT Fragile (Retired from ML Bets)</h4>
-  <p style="color:var(--text-muted);">3PT Fragile was our original signal — detecting teams with hot 3PT shooting and fragile lead composition. <strong>However, backtesting on 1,093 signals revealed a 31.3% win rate on moneyline bets — worse than the 35.1% baseline.</strong> The thesis is correct (3PT shooting regresses), but the market already prices this in. 3PT data is still shown for informational purposes but no longer generates actionable ML signals. It may still have value for spread bets (not yet tested).</p>
+  <h4>Star Coil (Supplemental)</h4>
+  <p style="color:var(--text-muted);">Star Coil detects when a star player is cold (&lt;65% pace) in a competitive game. It's kept as a <strong>supplemental signal</strong> that confirms FAV/DOG when it aligns — not a standalone bet trigger.</p>
   <hr class="signal-divider">
-  <h4>Bet Side Logic</h4>
-  <p>The system scores each side's "regression potential" based on Star Coil tier:</p>
-  <ul style="margin:8px 0;padding-left:20px;line-height:1.6;">
-    <li><strong>Star Coil Elite:</strong> 1.5x fade weight on the opponent</li>
-    <li><strong>Star Coil Standard:</strong> 1.0x fade weight on the opponent</li>
-    <li><strong>Star Coil+:</strong> Additional +0.5 weight (opponent shooting cold)</li>
-    <li><strong>Damage Locked:</strong> Bet flips — fade the star's team instead</li>
-  </ul>
-  <p>The side with more fade reasons gets faded; the system recommends the opposite side.</p>
-  <hr class="signal-divider">
-  <h4>Data Sources &amp; Limitations</h4>
-  <p>All data comes from ESPN's live scoreboard API (scores, period/clock, team stats, leader boards) and ESPN's summary endpoint (FTA, box score details). Refreshes on configurable interval (default 30s).</p>
-  <p><strong>Not captured:</strong> Individual player foul counts, play-by-play data, lineup changes, injury updates, referee tendencies, pace-of-play, and real-time odds.</p>
-  <p><strong>Important:</strong> No signal guarantees an outcome. These are probabilistic edges based on mean reversion and market inefficiency. Responsible bankroll management is essential.</p>
+  <h4>Data Sources</h4>
+  <p>Scores from ESPN live API. Odds from The Odds API (DraftKings, FanDuel, BetMGM). Pre-game spreads identify favorites. All signals validated against real historical live odds.</p>
+  <p><strong>Important:</strong> No signal guarantees an outcome. These are probabilistic edges. Use flat 3% bankroll sizing.</p>
 </div>
 
 </body>
