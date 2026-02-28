@@ -861,7 +861,6 @@
   <div class="tab" onclick="switchTab('bankroll')" id="tab-bankroll">Bankroll</div>
   <div class="tab" onclick="switchTab('history')" id="tab-history">History</div>
   <div class="tab" onclick="switchTab('tracker')" id="tab-tracker">Backtest</div>
-  <div class="tab" onclick="switchTab('edge')" id="tab-edge">Quality Edge <span class="badge badge-green" id="edge-badge" style="display:none;">0</span></div>
   <div class="tab" onclick="switchTab('guide')" id="tab-guide">Signal Guide</div>
 </div>
 
@@ -1096,7 +1095,7 @@
     <div class="form-grid">
       <div class="form-group"><label>Game</label><input type="text" id="modal-game" /></div>
       <div class="form-group"><label>Side</label><input type="text" id="modal-side" /></div>
-      <div class="form-group"><label>Strategy</label><select id="modal-strategy"><option>Mean Reversion</option><option>Star Coil</option><option>Star Coil+</option><option>Quality Edge</option></select></div>
+      <div class="form-group"><label>Strategy</label><select id="modal-strategy"><option>FAV Signal</option><option>DOG Signal</option><option>Star Coil</option></select></div>
       <div class="form-group"><label>Line / Price</label><input type="text" id="modal-price" /></div>
       <div class="form-group"><label>Units</label><input type="number" id="modal-units" value="1" step="0.5" min="0.5" max="2" /></div>
       <div class="form-group"><label>Notes</label><input type="text" id="modal-notes" /></div>
@@ -4674,95 +4673,8 @@ function getSignalTrackerStats(modeFilter) {
   };
 }
 
-// ==================== QUALITY EDGE RENDERING ====================
-function renderQualityEdge() {
-  // Read engine signals from the already-loaded state
-  let engineSignals = [];
-  try {
-    fetch('engine-signals.json?t=' + Date.now()).then(r => r.ok ? r.json() : []).then(data => {
-      if (!Array.isArray(data)) return;
-      const qeSignals = data.filter(s => s.type === 'quality_edge');
-      const active = qeSignals.filter(s => !s.gameCompleted);
-      const completed = qeSignals.filter(s => s.gameCompleted).sort((a,b) => b.timestamp - a.timestamp).slice(0, 20);
-
-      // Update badge + chip
-      const badge = document.getElementById('edge-badge');
-      const chip = document.getElementById('qe-count');
-      const activeCountEl = document.getElementById('qe-active-count');
-      if (badge) {
-        if (active.length > 0) { badge.style.display = 'inline'; badge.textContent = active.length; }
-        else { badge.style.display = 'none'; }
-      }
-      if (chip) chip.textContent = active.length || '\u2014';
-      if (activeCountEl) activeCountEl.textContent = active.length;
-
-      // Render active signals
-      const activeEl = document.getElementById('qe-active-signals');
-      if (activeEl) {
-        if (active.length === 0) {
-          activeEl.innerHTML = '<div style="text-align:center;padding:30px 20px;color:var(--text-muted);font-size:13px;background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);">No active Quality Edge signals right now. Signals fire during live NBA games (Q1-Q2) when a strong team (15%+ gap) is trailing 1-10 pts and the live spread still has them favored.</div>';
-        } else {
-          activeEl.innerHTML = active.map(s => {
-            const gapPct = s.qualityGap || 0;
-            const strongPct = s.strongerWinPct || 50;
-            const weakPct = s.weakerWinPct || 50;
-            return `<div style="background:var(--card-bg);border:2px solid var(--green);border-radius:var(--radius);padding:16px;margin-bottom:10px;">
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-                <div style="font-size:15px;font-weight:800;">${s.game || ''}</div>
-                <span style="background:var(--green);color:white;font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;">${s.periodLabel || ''} ${s.clock || ''}</span>
-              </div>
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-                <div style="font-size:22px;font-weight:800;">${s.awayScore || 0} - ${s.homeScore || 0}</div>
-                <div style="background:var(--green-light);padding:4px 12px;border-radius:8px;font-size:12px;font-weight:700;color:var(--green);">${s.betTeam} ${s.bookSpread}${s.estLiveSpread != null ? ` (live ~${s.estLiveSpread})` : ''}</div>
-              </div>
-              <div style="display:flex;gap:8px;margin-bottom:10px;">
-                <div style="flex:1;background:var(--bg);border-radius:var(--radius-sm);padding:8px;text-align:center;">
-                  <div style="font-size:10px;color:var(--text-muted);font-weight:600;">${s.betTeam || ''}</div>
-                  <div style="font-size:16px;font-weight:800;color:var(--green);">.${(strongPct * 10 | 0)}</div>
-                  <div style="height:4px;background:var(--border);border-radius:2px;margin-top:4px;"><div style="height:100%;background:var(--green);border-radius:2px;width:${strongPct}%;"></div></div>
-                </div>
-                <div style="flex:1;background:var(--bg);border-radius:var(--radius-sm);padding:8px;text-align:center;">
-                  <div style="font-size:10px;color:var(--text-muted);font-weight:600;">${s.fadeTeam || ''}</div>
-                  <div style="font-size:16px;font-weight:800;color:var(--text-secondary);">.${(weakPct * 10 | 0)}</div>
-                  <div style="height:4px;background:var(--border);border-radius:2px;margin-top:4px;"><div style="height:100%;background:var(--text-muted);border-radius:2px;width:${weakPct}%;"></div></div>
-                </div>
-              </div>
-              <div style="display:flex;gap:8px;align-items:center;">
-                <div style="background:var(--green);color:white;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:800;">BET ${s.betTeam} SPREAD</div>
-                <div style="font-size:11px;color:var(--text-muted);">Trailing by ${s.trailingBy} &bull; Gap: ${gapPct}% &bull; Live spread still negative${s.urgency ? ' &bull; ' + s.urgency : ''}</div>
-              </div>
-            </div>`;
-          }).join('');
-        }
-      }
-
-      // Render recent results
-      const recentEl = document.getElementById('qe-recent-results');
-      if (recentEl) {
-        if (completed.length === 0) {
-          recentEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:12px;background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);">No completed Quality Edge signals yet.</div>';
-        } else {
-          recentEl.innerHTML = '<div style="display:grid;gap:8px;">' + completed.map(s => {
-            const won = s.spreadResult === 'WIN';
-            const color = won ? 'var(--green)' : 'var(--red)';
-            const bg = won ? 'var(--green-light)' : 'var(--red-light)';
-            return `<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;display:flex;justify-content:space-between;align-items:center;">
-              <div>
-                <div style="font-size:13px;font-weight:700;">${s.game || ''}</div>
-                <div style="font-size:11px;color:var(--text-muted);">${s.betTeam} ${s.bookSpread} &bull; Gap ${s.qualityGap}% &bull; Trail ${s.trailingBy}</div>
-              </div>
-              <div style="display:flex;align-items:center;gap:8px;">
-                <span style="font-size:11px;color:var(--text-muted);">${s.finalAwayScore || '?'}-${s.finalHomeScore || '?'}</span>
-                <span style="background:${bg};color:${color};font-size:11px;font-weight:800;padding:3px 10px;border-radius:6px;">${s.spreadResult || 'PENDING'}</span>
-                ${s.spreadPayout ? `<span style="font-size:12px;font-weight:700;color:${color};">${s.spreadPayout > 0 ? '+' : ''}$${Math.round(s.spreadPayout)}</span>` : ''}
-              </div>
-            </div>`;
-          }).join('') + '</div>';
-        }
-      }
-    }).catch(() => {});
-  } catch(e) {}
-}
+// Quality Edge removed — replaced by FAV/DOG signals
+function renderQualityEdge() {}
 
 let _trackerModeFilter = null; // null = all, 'nba', 'ncaab'
 function setTrackerMode(mode) {
@@ -5899,101 +5811,6 @@ try {
   </div>
 </div>
 
-<!-- ==================== QUALITY EDGE TAB ==================== -->
-<div id="content-edge" class="tab-content">
-
-  <!-- Header Card -->
-  <div style="background:linear-gradient(135deg, var(--green-light), var(--card-bg));border:1px solid var(--green);border-radius:var(--radius-lg);padding:24px;margin-bottom:20px;">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-      <span style="background:var(--green);color:white;font-size:10px;font-weight:800;padding:4px 10px;border-radius:20px;letter-spacing:1px;">QUALITY EDGE</span>
-      <span style="font-size:10px;color:var(--text-muted);font-weight:600;">NBA ONLY &bull; SPREAD BET</span>
-    </div>
-    <h2 style="font-size:20px;font-weight:800;margin-bottom:8px;letter-spacing:-0.5px;">When Strong Teams Trail, Books Misprice Spreads</h2>
-    <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;margin-bottom:0;">
-      When a significantly stronger team (15%+ win% gap) is trailing by 1-10 pts in Q1-Q2 and the live spread still has them as favorite, they cover <strong style="color:var(--green);">72.3% of the time</strong> (+38% ROI at -110). The key: only bet when the book <em>still</em> favors them — that's where the mispricing lives.
-    </p>
-  </div>
-
-  <!-- Active Signals -->
-  <div style="margin-bottom:20px;">
-    <div style="font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      ACTIVE SIGNALS
-      <span id="qe-active-count" style="background:var(--green);color:white;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;">0</span>
-    </div>
-    <div id="qe-active-signals">
-      <div style="text-align:center;padding:30px 20px;color:var(--text-muted);font-size:13px;background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);">
-        No active Quality Edge signals right now. Signals fire during live NBA games (Q1-Q2) when a strong team (15%+ gap) is trailing 1-10 pts and the live spread still has them favored.
-      </div>
-    </div>
-  </div>
-
-  <!-- Recent Results -->
-  <div style="margin-bottom:20px;">
-    <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px;">RECENT RESULTS</div>
-    <div id="qe-recent-results">
-      <div style="text-align:center;padding:20px;color:var(--text-muted);font-size:12px;background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);">No completed Quality Edge signals yet.</div>
-    </div>
-  </div>
-
-  <!-- Backtest Results Summary -->
-  <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:20px;">
-    <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:14px;">BACKTEST RESULTS (3,517 NBA GAMES, OCT 2023 - FEB 2027)</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">
-      <div style="background:var(--green-light);border-radius:var(--radius-sm);padding:14px;text-align:center;">
-        <div style="font-size:24px;font-weight:800;color:var(--green);">72.3%</div>
-        <div style="font-size:10px;color:var(--text-muted);font-weight:600;margin-top:2px;">COVER RATE</div>
-        <div style="font-size:10px;color:var(--text-secondary);margin-top:4px;">when live spread < 0</div>
-      </div>
-      <div style="background:var(--green-light);border-radius:var(--radius-sm);padding:14px;text-align:center;">
-        <div style="font-size:24px;font-weight:800;color:var(--green);">+38%</div>
-        <div style="font-size:10px;color:var(--text-muted);font-weight:600;margin-top:2px;">ROI AT -110</div>
-        <div style="font-size:10px;color:var(--text-secondary);margin-top:4px;">+28% even at -120 juice</div>
-      </div>
-      <div style="background:var(--bg);border-radius:var(--radius-sm);padding:14px;text-align:center;">
-        <div style="font-size:24px;font-weight:800;color:var(--text-primary);">Q1-Q2</div>
-        <div style="font-size:10px;color:var(--text-muted);font-weight:600;margin-top:2px;">BEST WINDOW</div>
-        <div style="font-size:10px;color:var(--text-secondary);margin-top:4px;">Q3 drops, Q4 dead</div>
-      </div>
-      <div style="background:var(--bg);border-radius:var(--radius-sm);padding:14px;text-align:center;">
-        <div style="font-size:24px;font-weight:800;color:var(--text-primary);">15%+</div>
-        <div style="font-size:10px;color:var(--text-muted);font-weight:600;margin-top:2px;">WIN% GAP</div>
-        <div style="font-size:10px;color:var(--text-secondary);margin-top:4px;">Trail 1-10, spread < 0</div>
-      </div>
-      <div style="background:var(--bg);border-radius:var(--radius-sm);padding:14px;text-align:center;">
-        <div style="font-size:24px;font-weight:800;color:var(--text-primary);">76.4%</div>
-        <div style="font-size:10px;color:var(--text-muted);font-weight:600;margin-top:2px;">TRAIL 1-3 PTS</div>
-        <div style="font-size:10px;color:var(--text-secondary);margin-top:4px;">Best: bet immediately</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- How It Works -->
-  <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px;">
-    <h3 style="font-size:15px;font-weight:800;margin-bottom:12px;letter-spacing:-0.2px;">How It Works</h3>
-    <div style="font-size:13px;line-height:1.7;color:var(--text-secondary);">
-      <p style="margin-bottom:10px;"><strong>The idea:</strong> When a team with a much better record (e.g., 42-16 vs 25-33) falls behind by a few points, sportsbooks adjust the live spread based on the current score. But they don't fully price in the quality differential. When the book <em>still</em> has the strong team favored (live spread negative), history shows they cover 72.3% of the time.</p>
-      <div style="background:var(--bg);border-radius:var(--radius-sm);padding:14px;margin:12px 0;">
-        <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:8px;">ALL CONDITIONS MUST BE TRUE:</div>
-        <div style="display:grid;gap:6px;">
-          <div style="display:flex;align-items:baseline;gap:8px;"><span style="color:var(--green);font-weight:700;">1.</span> Win% gap &ge; 15% between the two teams</div>
-          <div style="display:flex;align-items:baseline;gap:8px;"><span style="color:var(--green);font-weight:700;">2.</span> Stronger team is currently trailing by 1-10 points</div>
-          <div style="display:flex;align-items:baseline;gap:8px;"><span style="color:var(--green);font-weight:700;">3.</span> Estimated live spread is still negative (book still favors them)</div>
-          <div style="display:flex;align-items:baseline;gap:8px;"><span style="color:var(--green);font-weight:700;">4.</span> Game is in Q1 or Q2 (not Q3/Q4)</div>
-          <div style="display:flex;align-items:baseline;gap:8px;"><span style="color:var(--green);font-weight:700;">5.</span> Not already signaled for this game</div>
-        </div>
-      </div>
-      <div style="background:var(--green-light);border:1px solid var(--green);border-radius:var(--radius-sm);padding:14px;margin:12px 0;">
-        <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:6px;">KEY INSIGHT FROM BACKTEST:</div>
-        <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
-          <strong>Bet immediately when the signal fires.</strong> Don't wait for a "better line." Teams trailing 1-3 pts cover at 76.4% — the smaller the deficit, the stronger the comeback. Waiting for the team to fall further behind means worse outcomes (trailing 7+ drops to 58.6%). The live spread must still be negative — once the book flips the line and gives you points, the edge disappears (48.5% = losing bet).
-        </div>
-      </div>
-      <p><strong>Why Q3/Q4 excluded:</strong> Q1 is the best window (69.3% cover). Q2 is strong (66.2%). By Q3 the edge fades, and Q4 is dead — not enough time for quality to assert itself.</p>
-    </div>
-  </div>
-
-</div>
 
 <div id="content-guide" class="tab-content">
 <div class="guide-section">
