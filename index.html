@@ -900,22 +900,23 @@
         <div class="chip-label">Games</div>
         <div class="chip-desc">Total live games tracked</div>
       </div>
+      <div class="signal-chip signal-chip-clickable" onclick="toggleSignalDetail('fav')" style="border-left:3px solid #10b981;">
+        <div class="chip-value" id="live-fav-signals" style="color:#10b981;">0</div>
+        <div class="chip-label" style="color:#10b981;">FAV</div>
+        <div class="chip-desc">Fav leading big — bet fav spread (72-83% cover)</div>
+        <div class="chip-detail-panel" id="chip-detail-fav"></div>
+      </div>
+      <div class="signal-chip signal-chip-clickable" onclick="toggleSignalDetail('dog')" style="border-left:3px solid #7c3aed;">
+        <div class="chip-value" id="live-dog-signals" style="color:#7c3aed;">0</div>
+        <div class="chip-label" style="color:#7c3aed;">DOG</div>
+        <div class="chip-desc">Pre-game dog leading — bet dog ML/spread (63-71% cover)</div>
+        <div class="chip-detail-panel" id="chip-detail-dog"></div>
+      </div>
       <div class="signal-chip signal-chip-clickable" onclick="toggleSignalDetail('star')">
         <div class="chip-value" id="live-star-signals">0</div>
         <div class="chip-label">Star Coil</div>
-        <div class="chip-desc">Star cold + game close + Q2-Q3 (58.6% verified)</div>
+        <div class="chip-desc">Star cold + game close + Q2-Q3 (supplemental)</div>
         <div class="chip-detail-panel" id="chip-detail-star"></div>
-      </div>
-      <div class="signal-chip signal-chip-clickable" onclick="toggleSignalDetail('starcoilplus')">
-        <div class="chip-value" id="live-starcoilplus-signals">0</div>
-        <div class="chip-label">Star Coil+</div>
-        <div class="chip-desc">Star cold + opponent shooting cold (57% verified)</div>
-        <div class="chip-detail-panel" id="chip-detail-starcoilplus"></div>
-      </div>
-      <div class="signal-chip signal-chip-clickable" onclick="switchTab('edge')">
-        <div class="chip-value green" id="qe-count">&mdash;</div>
-        <div class="chip-label green">QUALITY EDGE</div>
-        <div class="chip-desc">Strong team trailing 1-10, live spread still negative (72% cover)</div>
       </div>
     </div>
 
@@ -3031,10 +3032,10 @@ async function fetchESPNScoreboard() {
     // Section headers
     let sectionHeaders = { live: false, upcoming: false, completed: false };
 
-    let sigStar=0, hotTeams=0, warmTeams=0;
+    let sigStar=0, sigFav=0, sigDog=0, hotTeams=0, warmTeams=0;
     let cards='', tpCards='', gameTheses=[];
     // Per-signal game tracking for chip click-to-expand
-    let signalGames = { 'star': [], 'starcoilplus': [] };
+    let signalGames = { 'fav': [], 'dog': [], 'star': [] };
 
     for (const event of allDisplayEvents) {
       const comp = event.competitions?.[0]; if (!comp) continue;
@@ -3461,7 +3462,71 @@ async function fetchESPNScoreboard() {
           });
         }
 
+        // ===== FAV SIGNAL =====
+        // Pre-game favorite leading by 11+ in Q2+ → bet fav spread (72-83% cover)
+        const _oddsData = matchOdds(aA, hA, aFull, hFull);
+        let favSide = null, favAbbr = '', dogAbbr = '', dogSide = null;
+        let pregameSpread = null;
+        if (_oddsData) {
+          // Identify pre-game favorite by ML (lower ML = favorite)
+          if (_oddsData.homeML !== null && _oddsData.awayML !== null) {
+            if (_oddsData.homeML < _oddsData.awayML) { favSide = 'home'; favAbbr = hA; dogAbbr = aA; dogSide = 'away'; }
+            else if (_oddsData.awayML < _oddsData.homeML) { favSide = 'away'; favAbbr = aA; dogAbbr = hA; dogSide = 'home'; }
+          }
+          pregameSpread = favSide === 'home' ? _oddsData.homeSpread : _oddsData.awaySpread;
+        }
+        const cMins = parseFloat(clk?.split(':')[0]||12);
+        const _elapsed = (per - 1) * 12 + (12 - cMins);
+        const favScore = favSide === 'home' ? hS : aS;
+        const dogScore = favSide === 'home' ? aS : hS;
+        const favLeadAmt = favScore - dogScore;
+        const dogLeadAmt = dogScore - favScore;
+        const dogLeading = dogLeadAmt > 0;
+
+        if (favSide && _elapsed >= 14 && favLeadAmt >= 11) {
+          const _leadSafety = favLeadAmt / Math.sqrt(Math.max(48 - _elapsed, 1));
+          const _spreadRel = pregameSpread !== null ? favLeadAmt - Math.abs(pregameSpread) : null;
+          let favTier = 'SIMPLE';
+          let favPct = '72.2% cover, +37.8% ROI';
+          if (_leadSafety >= 3 && _spreadRel !== null && _spreadRel >= 10) {
+            favTier = 'TIER 1'; favPct = '82.9% cover, +58.3% ROI';
+          }
+          signals.push({type:'fav', text:`FAV ${favTier}: ${favAbbr} leads ${favLeadAmt}pts at ${_elapsed.toFixed(0)}min — ${favPct}`, level:2});
+          sigFav++; activeSignals++;
+          sendSignalNotification('FAV ' + favTier + ': ' + favAbbr, `Leads ${favLeadAmt}pts — ${favPct}`, gid, 'fav_' + favAbbr);
+          if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
+          thesis.criteria['fav'] = {met:true, strong:favTier !== 'SIMPLE', label:`FAV ${favTier}: ${favAbbr}`, detail:`<strong>Favorite:</strong> ${favAbbr} (spread: ${pregameSpread || 'N/A'})<br><strong>Lead:</strong> ${favLeadAmt}pts at ${_elapsed.toFixed(0)}min<br><strong>Lead Safety:</strong> ${_leadSafety.toFixed(2)}<br><strong>Spread Rel:</strong> ${_spreadRel !== null ? _spreadRel.toFixed(1) : 'N/A'}`, value:`${favTier} | Lead ${favLeadAmt}`};
+        }
+
+        // ===== DOG SIGNAL =====
+        // Pre-game dog leading at 14+ min → bet dog ML or spread (63-71% cover)
+        if (favSide && _elapsed >= 14 && dogLeading) {
+          let dogTier = 'LEADING'; let dogPct = '63.4%'; let dogExtras = [];
+          const dogStats2 = dogSide === 'home' ? hStats : aStats;
+          const favStats2 = dogSide === 'home' ? aStats : hStats;
+          const dogReb = parseInt(dogStats2.totalRebounds || dogStats2.rebounds || '0');
+          const favReb = parseInt(favStats2.totalRebounds || favStats2.rebounds || '0');
+          const dogFtaV = dogSide === 'home' ? hFTA : aFTA;
+          const favFtaV = dogSide === 'home' ? aFTA : hFTA;
+          const dogWinsReb = dogReb > favReb;
+          const dogWinsFta = dogFtaV > favFtaV;
+          if (dogWinsReb) { dogTier = 'PHYSICAL'; dogPct = '65.5%'; dogExtras.push(`REB: ${dogAbbr} ${dogReb} vs ${favAbbr} ${favReb}`); }
+          if (dogLeadAmt >= 5 && dogWinsReb && dogWinsFta) { dogTier = 'STRONG'; dogPct = '70.6%'; dogExtras.push(`FTA: ${dogAbbr} ${dogFtaV} vs ${favAbbr} ${favFtaV}`); }
+          // HYBRID ML/SPREAD: if dog ML >= -100, bet ML (gold); else bet spread (blue)
+          const dogML = dogSide === 'home' ? (_oddsData?.homeML || null) : (_oddsData?.awayML || null);
+          let betType = 'SPREAD', betColor = '#3861fb';
+          if (dogML !== null && dogML >= -100) { betType = 'ML'; betColor = '#f0b90b'; }
+          const betTypeLabel = betType === 'ML' ? `BET ML (${dogML > 0 ? '+' : ''}${dogML})` : `BET SPREAD`;
+          signals.push({type:'dog', text:`DOG ${dogTier}: ${dogAbbr} leads ${dogLeadAmt}pt | ${dogPct} cover. ${dogExtras.join(' | ')} → <span style="color:${betColor};font-weight:800;">${betTypeLabel}</span>`, level:2, betType, betColor, dogML});
+          sigDog++; activeSignals++;
+          sendSignalNotification('DOG ' + dogTier + ': ' + dogAbbr, `Leads ${dogLeadAmt}pts → ${betTypeLabel}`, gid, 'dog_' + dogAbbr);
+          if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
+          thesis.criteria['dog'] = {met:true, strong:dogTier !== 'LEADING', label:`DOG ${dogTier}: ${dogAbbr}`, detail:`<strong>Underdog:</strong> ${dogAbbr} (pre-game spread: ${pregameSpread ? (pregameSpread > 0 ? '+' : '') + pregameSpread : 'N/A'})<br><strong>Current:</strong> ${dogAbbr} leads ${dogLeadAmt}pts at ${_elapsed.toFixed(0)}min<br><strong>REB:</strong> ${dogAbbr} ${dogReb} vs ${favAbbr} ${favReb} ${dogWinsReb ? '✅' : ''}<br><strong>FTA:</strong> ${dogAbbr} ${dogFtaV} vs ${favAbbr} ${favFtaV} ${dogWinsFta ? '✅' : ''}<br><strong>Bet:</strong> <span style="color:${betColor};font-weight:800;">${betTypeLabel}</span>`, value:`${dogTier} | ${betTypeLabel}`};
+        }
+
         // Any strict L2 signal (solo or combined) should be actionable and recorded
+        const hasFav = signals.some(s=>s.type==='fav'&&s.level===2);
+        const hasDog = signals.some(s=>s.type==='dog'&&s.level===2);
         const hasAnyStrictL2 = signals.some(s => s.level === 2);
         if (activeSignals >= 2) { signalLevel = 2; }
         else if (hasAnyStrictL2) { signalLevel = 2; }
@@ -3469,18 +3534,20 @@ async function fetchESPNScoreboard() {
 
         // Track which games have which signals for chip click-to-expand
         const _gameInfo = { game: gLabel, gameFull: gLabelFull, aScore: aS, hScore: hS, per, clk, detail, eventId: gid };
+        if (hasFav) signalGames['fav'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='fav'&&s.level===2).map(s=>s.text).join('; ') });
+        if (hasDog) signalGames['dog'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='dog'&&s.level===2).map(s=>s.text).join('; ') });
         if (hasStar) signalGames['star'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='star'&&s.level===2).map(s=>s.text).join('; ') });
-        if (sigStarPlus > 0) {
-          if (!signalGames['starcoilplus']) signalGames['starcoilplus'] = [];
-          signalGames['starcoilplus'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='starCoilPlus'&&s.level===2).map(s=>s.text).join('; ') });
-        }
 
         // Determine bet side and build thesis logic
         if (signalLevel >= 2) {
           let betTeam = '', fadeTeam = '', reasons = [];
 
-          // Star Coil fade weights (only signal system now)
+          // FAV/DOG signals override Star Coil for bet direction
+          const _favCrit = thesis.criteria['fav'];
+          const _dogCrit = thesis.criteria['dog'];
           let awayFade=0, homeFade=0;
+
+          // Star Coil fade weights (supplemental — lower priority than FAV/DOG)
           const aStarCoil = starCoilTeams[aA];
           const hStarCoil = starCoilTeams[hA];
           if (aStarCoil?.coilTier === 'elite') { homeFade += 1.5; }
@@ -3490,19 +3557,6 @@ async function fetchESPNScoreboard() {
           else if (hStarCoil?.coilTier === 'standard') { awayFade += 1; }
           else if (hStarCoil?.coilTier === 'locked') { homeFade += 1; }
 
-          // Star Coil Plus adds extra weight in same direction
-          if (sigStarPlus > 0) {
-            if (aStarCoil) homeFade += 0.5;
-            if (hStarCoil) awayFade += 0.5;
-          }
-
-          // No conflict detection needed — only Star Coil drives direction now
-          const _conflicting = false;
-          if (_conflicting) {
-            console.log(`[Conflict] ${gLabel}: awayFade=${awayFade.toFixed(1)}, homeFade=${homeFade.toFixed(1)} — downgraded from COMBINED`);
-          }
-
-          // Double Regression caveat removed — 3PT Fragile no longer fires as actionable signal
           let doubleRegression = false;
 
           // ===== HOME COURT FACTOR (NCAA ONLY — BIDIRECTIONAL BOOSTER) =====
@@ -3531,21 +3585,23 @@ async function fetchESPNScoreboard() {
             }
           }
 
-          if (awayFade > homeFade) { betTeam = hA; fadeTeam = aA; }
+          // FAV/DOG signals take priority for bet team
+          if (_favCrit?.met && favAbbr) {
+            betTeam = favAbbr; fadeTeam = dogAbbr || (favAbbr === aA ? hA : aA);
+          } else if (_dogCrit?.met && dogAbbr) {
+            betTeam = dogAbbr; fadeTeam = favAbbr || (dogAbbr === aA ? hA : aA);
+          } else if (awayFade > homeFade) { betTeam = hA; fadeTeam = aA; }
           else if (homeFade > awayFade) { betTeam = aA; fadeTeam = hA; }
           else if (awayFade > 0) { betTeam = hA; fadeTeam = aA; }
           else { betTeam = aS < hS ? aA : hA; fadeTeam = aS < hS ? hA : aA; }
 
           // Build the narrative
-          if (aStarCoil?.coilTier === 'elite') reasons.push(`💪 ${aStarCoil.name} (${_aD}) is coiled. Cast: ${aStarCoil.cast.castScore}pts vs opp (gap: ${aStarCoil.cast.castGap > 0 ? '+' : ''}${aStarCoil.cast.castGap}).${aStarCoil.cast.regressionFlips ? ' Star regression alone flips the lead.' : ' Cast is holding — star regression = surge.'} Strongest edge.`);
-          else if (aStarCoil?.coilTier === 'standard') reasons.push(`🌀 ${aStarCoil.name} (${_aD}) is coiled. Cast gap: ${aStarCoil.cast.castGap}. Standard edge.`);
-          else if (aStarCoil?.coilTier === 'locked') reasons.push(`🔒 ${aStarCoil.name} (${_aD}) is coiled BUT damage locked — deficit baked in. Fade ${_aD}.`);
-          else if (aStarCoil?.coilTier === 'weak') reasons.push(`⚠️ ${aStarCoil.name} (${_aD}) is coiled but cast gap is ${aStarCoil.cast.castGap} — whole team broken. No directional weight.`);
-          if (hStarCoil?.coilTier === 'elite') reasons.push(`💪 ${hStarCoil.name} (${_hD}) is coiled. Cast: ${hStarCoil.cast.castScore}pts vs opp (gap: ${hStarCoil.cast.castGap > 0 ? '+' : ''}${hStarCoil.cast.castGap}).${hStarCoil.cast.regressionFlips ? ' Star regression alone flips the lead.' : ' Cast is holding — star regression = surge.'} Strongest edge.`);
-          else if (hStarCoil?.coilTier === 'standard') reasons.push(`🌀 ${hStarCoil.name} (${_hD}) is coiled. Cast gap: ${hStarCoil.cast.castGap}. Standard edge.`);
-          else if (hStarCoil?.coilTier === 'locked') reasons.push(`🔒 ${hStarCoil.name} (${_hD}) is coiled BUT damage locked — deficit baked in. Fade ${_hD}.`);
-          else if (hStarCoil?.coilTier === 'weak') reasons.push(`⚠️ ${hStarCoil.name} (${_hD}) is coiled but cast gap is ${hStarCoil.cast.castGap} — whole team broken. No directional weight.`);
-          if (sigStarPlus > 0) reasons.push(`STAR COIL+: Opponent shooting cold. Star cold + opponent cold = double regression. Backtest: 57% win rate.`);
+          if (_favCrit?.met) reasons.push(`FAV signal: ${favAbbr} leads ${favLeadAmt}pts — validated ${_favCrit.value}.`);
+          if (_dogCrit?.met) reasons.push(`DOG signal: ${dogAbbr} (pre-game dog) is winning — validated ${_dogCrit.value}.`);
+          if (aStarCoil?.coilTier === 'elite') reasons.push(`${aStarCoil.name} (${_aD}) is coiled (supplemental). Cast gap: ${aStarCoil.cast.castGap}.`);
+          else if (aStarCoil?.coilTier === 'standard') reasons.push(`${aStarCoil.name} (${_aD}) is coiled (supplemental). Cast gap: ${aStarCoil.cast.castGap}.`);
+          if (hStarCoil?.coilTier === 'elite') reasons.push(`${hStarCoil.name} (${_hD}) is coiled (supplemental). Cast gap: ${hStarCoil.cast.castGap}.`);
+          else if (hStarCoil?.coilTier === 'standard') reasons.push(`${hStarCoil.name} (${_hD}) is coiled (supplemental). Cast gap: ${hStarCoil.cast.castGap}.`);
 
           // Effective signal count: compute early so NCAA home court detail can reference it
           const effectiveSignals = activeSignals + (homeCourtBoost > 0 && betTeam === hA ? homeCourtBoost : 0);
@@ -3862,15 +3918,15 @@ async function fetchESPNScoreboard() {
 
 
     // Update counts
+    const favEl = document.getElementById('live-fav-signals');
+    if (favEl) favEl.textContent = sigFav;
+    const dogEl = document.getElementById('live-dog-signals');
+    if (dogEl) dogEl.textContent = sigDog;
     document.getElementById('live-star-signals').textContent = sigStar;
-    // Star Coil Plus count — aggregate from all games
-    const totalStarPlus = gameTheses.reduce((sum, t) => sum + (t.sigStarPlus || 0), 0);
-    const scpEl = document.getElementById('live-starcoilplus-signals');
-    if (scpEl) scpEl.textContent = totalStarPlus;
     document.getElementById('threept-hot-count').textContent = hotTeams;
     document.getElementById('threept-warm-count').textContent = warmTeams;
 
-    const totalSigs = sigStar;
+    const totalSigs = sigFav + sigDog + sigStar;
     if (totalSigs>0) { document.getElementById('live-badge').style.display='inline'; document.getElementById('live-badge').textContent=totalSigs; }
     else document.getElementById('live-badge').style.display='none';
     if (hotTeams>0) { document.getElementById('threept-badge').style.display='inline'; document.getElementById('threept-badge').textContent=hotTeams; }
@@ -5909,7 +5965,7 @@ try {
 <div style="background:var(--accent-light);border:1px solid var(--accent);border-radius:var(--radius);padding:24px;margin:16px 0 24px;">
 <h3 style="font-size:16px;font-weight:800;margin-bottom:12px;letter-spacing:-0.2px;">How This Works (Quick Start)</h3>
 <div style="font-size:13px;line-height:1.7;color:var(--text-primary);">
-<p style="margin-bottom:10px;"><strong>The idea is simple:</strong> Sometimes a team is winning because of things that won't last — like making every 3-pointer, or getting way more free throws than normal. When that happens, the live betting odds are wrong because they think the score is "real." We catch that.</p>
+<p style="margin-bottom:10px;"><strong>The idea is simple:</strong> Sportsbooks under-adjust live spreads when a team builds a big lead. When the pre-game favorite leads by 11+, they cover the live spread 72-83% of the time. When the pre-game underdog is winning, the book still thinks they'll lose — and they don't. We catch both.</p>
 <p style="margin-bottom:14px;"><strong>How to use it:</strong></p>
 <div style="display:grid;grid-template-columns:1fr;gap:10px;">
 <div style="background:var(--card-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--accent);">
@@ -5919,7 +5975,7 @@ try {
 <strong style="font-size:12px;">Step 2:</strong> <span style="font-size:13px;">When a signal fires, the chip turns on and shows a number. <strong>Click it</strong> to see which game, then <strong>click the game</strong> to jump to it.</span>
 </div>
 <div style="background:var(--card-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--green);">
-<strong style="font-size:12px;">Step 3:</strong> <span style="font-size:13px;">The game card tells you <strong>who to bet on</strong> and <strong>why</strong>. Green = bet this team's moneyline. Purple = bet Over or Under.</span>
+<strong style="font-size:12px;">Step 3:</strong> <span style="font-size:13px;">The game card tells you <strong>who to bet on</strong> and <strong>why</strong>. Green FAV = bet fav spread. Purple DOG = bet dog ML (gold) or spread (blue).</span>
 </div>
 </div>
 </div>
@@ -5936,33 +5992,35 @@ try {
 </tr></thead>
 <tbody>
 <tr style="border-bottom:1px solid var(--border-light);">
+<td style="padding:10px 6px;"><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#10b981;padding:3px 8px;border-radius:4px;">FAV</span></td>
+<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">Pre-game <strong>favorite leads by 11+ points</strong> at 14+ min. Books under-adjust: live spreads shift only ~1pt per 10pts of lead. <strong>72-83% cover rate.</strong><br><em>FAV SIMPLE:</em> 72.2% cover, +37.8% ROI, N=1,336.<br><em>FAV TIER 1:</em> Lead Safety &ge;3 + Spread Rel &ge;10 → 82.9% cover, +58.3% ROI, N=544.</td>
+<td style="padding:10px 6px;font-weight:700;color:#10b981;">Bet the <strong>favorite's live spread</strong>. The lead is real and the book hasn't adjusted enough.</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-light);">
+<td style="padding:10px 6px;"><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#7c3aed;padding:3px 8px;border-radius:4px;">DOG</span></td>
+<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">Pre-game <strong>underdog is winning</strong> at 14+ min. The market had them losing — they're proving it wrong. <strong>63-71% cover rate.</strong><br><em>DOG LEADING:</em> 63.4% cover. <em>DOG PHYSICAL:</em> +REB dominance → 65.5%. <em>DOG STRONG:</em> +5pt lead, +REB, +FTA → 70.6%.</td>
+<td style="padding:10px 6px;font-weight:700;color:#7c3aed;">If dog ML &ge; -100: <span style="color:#f0b90b;font-weight:800;">BET ML</span>. If dog ML &lt; -100: <span style="color:#3861fb;font-weight:800;">BET SPREAD</span>.</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-light);">
 <td style="padding:10px 6px;"><span class="signal-badge badge-star" style="font-size:10px;">STAR COIL</span></td>
-<td id="guide-star-desc" style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">A star player (21+ PPG) is cold (&lt;65% pace) AND the game is close (within 15pts) in Q2-Q3. <strong>Compressed spring</strong> — breakout incoming. <strong>Backtest verified: 58.6% win rate on 2,181 signals.</strong></td>
-<td style="padding:10px 6px;font-weight:700;color:var(--green);">Bet the <strong>star's team moneyline</strong>. Star is cold, game is close, timing is right — the market hasn't priced in the breakout.</td>
-</tr>
-
-<tr style="border-bottom:1px solid var(--border-light);">
-<td style="padding:10px 6px;"><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:var(--accent);padding:3px 8px;border-radius:4px;">STAR COIL+</span></td>
-<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;"><strong>Star Coil fires AND the opponent's shooting is cold</strong> (FG% < 43% or 2PT% < 47%). Double regression — star will heat up AND opponent's shooting will cool down further. <strong>Backtest verified: 57.2% win rate on 208+ signals.</strong></td>
-<td style="padding:10px 6px;font-weight:700;color:var(--green);">Bet the <strong>star's team moneyline</strong>. Highest confidence moneyline signal — both star regression and opponent shooting regression working in your favor.</td>
-</tr>
-<tr style="border-bottom:1px solid var(--border-light);">
-<td style="padding:10px 6px;"><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:var(--green);padding:3px 8px;border-radius:4px;">QUALITY EDGE</span></td>
-<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">A team with a significantly better record (15%+ win% gap) is trailing by 1-10 pts in Q1-Q2, and the live spread still has them favored (negative). <strong>Backtest: 72.3% cover rate, +38% ROI.</strong> Bet immediately — trailing 1-3 is the sweet spot (76.4%).</td>
-<td style="padding:10px 6px;font-weight:700;color:var(--green);">Bet the <strong>stronger team to cover the spread</strong>. NBA only, Q1-Q2. Bet right when signal fires — don't wait for a better line.</td>
+<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">A star player (21+ PPG) is cold (&lt;65% pace) AND the game is close (within 15pts) in Q2-Q3. <strong>Supplemental signal</strong> — confirms FAV/DOG when it aligns.</td>
+<td style="padding:10px 6px;font-weight:700;color:var(--text-muted);">Supplemental only. Use to <strong>confirm</strong> FAV/DOG signals, not as standalone bet trigger.</td>
 </tr>
 </tbody>
 </table>
 </div>
 
 <div id="nba-guide">
-<p class="guide-intro" style="margin-bottom:12px;"><strong>Core thesis:</strong> The current score was built on something unsustainable, so the live odds are mispriced. We bet on regression.</p>
+<p class="guide-intro" style="margin-bottom:12px;"><strong>Core thesis:</strong> Books under-adjust live spreads for in-game leads. When a team leads by 10+, they cover the live spread ~70% of the time. We exploit this systematically.</p>
 <div style="background:var(--accent-light);border:1px solid var(--accent);border-radius:var(--radius);padding:16px;margin-bottom:16px;">
-<strong style="font-size:13px;">Backtest Validated (3,517 games, Oct 2023 - Feb 2027):</strong>
-<div style="display:flex;gap:20px;margin-top:8px;font-size:12px;">
-<div><strong>Star Coil:</strong> 58.6% win rate, 2,181 signals, +11.9% ROI</div>
-<div><strong>Star Coil+:</strong> 57.2% win rate, 208 signals (highest conviction)</div>
-<div><s>3PT Fragile:</s> 31.3% win rate — removed (below baseline)</div>
+<strong style="font-size:13px;">Backtest Validated — Real Live Odds (3,550 games, 7 seasons):</strong>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:10px;font-size:12px;">
+<div style="background:var(--card-bg);padding:10px;border-radius:var(--radius-sm);"><strong style="color:#10b981;">FAV SIMPLE:</strong> 72.2% cover, +37.8% ROI, N=1,336, Z=16.20</div>
+<div style="background:var(--card-bg);padding:10px;border-radius:var(--radius-sm);"><strong style="color:#10b981;">FAV TIER 1:</strong> 82.9% cover, +58.3% ROI, N=544, Z=15.35</div>
+<div style="background:var(--card-bg);padding:10px;border-radius:var(--radius-sm);"><strong style="color:#7c3aed;">DOG LEADING:</strong> 63.4% cover, N=1,955</div>
+<div style="background:var(--card-bg);padding:10px;border-radius:var(--radius-sm);"><strong style="color:#7c3aed;">DOG PHYSICAL:</strong> 65.5% cover (+REB)</div>
+<div style="background:var(--card-bg);padding:10px;border-radius:var(--radius-sm);"><strong style="color:#7c3aed;">DOG STRONG:</strong> 70.6% cover (+5pt, +REB, +FTA)</div>
+<div style="background:var(--card-bg);padding:10px;border-radius:var(--radius-sm);"><strong style="color:#f0b90b;">Hybrid ML/SPR:</strong> +30.7% ROI (ML when &ge;-100)</div>
 </div>
 </div>
 <div class="guide-grid">
