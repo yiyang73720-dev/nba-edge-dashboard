@@ -30,16 +30,19 @@ function sendNotification(title, body) {
   if (NOTIFY_IMESSAGE) {
     try {
       const msg = `${title}\n${body}`;
-      const escaped = msg.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/'/g, "'\\''");
-      execSync(`osascript -e 'tell application "Messages" to send "${escaped}" to buddy "${NOTIFY_IMESSAGE}"'`);
+      // Use -e with properly escaped AppleScript string — avoid shell interpolation
+      const safeMsg = msg.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
+      const safeBuddy = NOTIFY_IMESSAGE.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+      execSync(`osascript -e 'tell application "Messages" to send "${safeMsg}" to buddy "${safeBuddy}"'`, { timeout: 10000 });
       log('[NOTIFY] iMessage sent');
     } catch (e) { log('[NOTIFY] iMessage failed: ' + e.message); }
   }
   if (NOTIFY_EMAIL) {
     try {
-      const escaped = body.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\$/g, '\\$').replace(/`/g, '\\`');
-      const titleEscaped = title.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\$/g, '\\$').replace(/`/g, '\\`');
-      execSync(`echo "${escaped}" | mail -s "${titleEscaped}" "${NOTIFY_EMAIL}"`);
+      // Use stdin pipe via execSync input option to avoid shell injection
+      const safeTitle = title.replace(/'/g, "'\\''");
+      const safeEmail = NOTIFY_EMAIL.replace(/'/g, "'\\''");
+      execSync(`mail -s '${safeTitle}' '${safeEmail}'`, { input: body, timeout: 10000 });
       log('[NOTIFY] Email sent');
     } catch (e) { log('[NOTIFY] Email failed: ' + e.message); }
   }
@@ -50,7 +53,7 @@ const ARG_MODE = (process.argv[2] || 'both').toLowerCase();
 const MODES_TO_RUN = ARG_MODE === 'both' ? ['nba', 'ncaab'] : [ARG_MODE];
 const REFRESH_INTERVAL = 30000; // 30 seconds
 const HTTP_PORT = 3000;
-const ODDS_API_KEY = '4ca2c6a2ed9e162809eb03722e2dc734';
+const ODDS_API_KEY = '62f4929bae56381c5961625f82335e39';
 
 const DATA_DIR = path.dirname(process.argv[1] || __filename);
 const SIGNALS_FILE = path.join(DATA_DIR, 'engine-signals.json');
@@ -1007,12 +1010,17 @@ function startHTTPServer() {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Cache-Control', 'no-cache');
 
-    let urlPath = req.url.split('?')[0];
+    let urlPath = decodeURIComponent(req.url.split('?')[0]);
     if (urlPath === '/') urlPath = '/index.html';
 
-    const filePath = path.join(DATA_DIR, urlPath);
-    // Prevent directory traversal
-    if (!filePath.startsWith(DATA_DIR)) {
+    // Prevent null bytes in path
+    if (urlPath.indexOf('\0') !== -1) {
+      res.writeHead(400); res.end('Bad request'); return;
+    }
+
+    const filePath = path.resolve(DATA_DIR, '.' + urlPath);
+    // Prevent directory traversal — resolved path must be within DATA_DIR
+    if (!filePath.startsWith(DATA_DIR + path.sep) && filePath !== DATA_DIR) {
       res.writeHead(403); res.end('Forbidden'); return;
     }
 
@@ -1053,10 +1061,17 @@ function log(msg) {
 }
 
 // === SCAN ONE MODE ===
+const _scanLock = {};
 async function scanMode(mode) {
-  const cfg = getCFG(mode);
-  await fetchOdds(cfg);
-  await detectSignals(cfg);
+  if (_scanLock[mode]) return; // skip if previous scan still running
+  _scanLock[mode] = true;
+  try {
+    const cfg = getCFG(mode);
+    await fetchOdds(cfg);
+    await detectSignals(cfg);
+  } finally {
+    _scanLock[mode] = false;
+  }
 }
 
 // === MAIN ===
