@@ -3761,10 +3761,10 @@ async function fetchESPNScoreboard() {
 
         // Track which games have which signals for chip click-to-expand
         const _gameInfo = { game: gLabel, gameFull: gLabelFull, aScore: aS, hScore: hS, per, clk, detail, eventId: gid };
-        if (hasFav) signalGames['fav'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='fav'&&s.level===2).map(s=>s.text).join('; ') });
-        if (hasDog) signalGames['dog'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='dog'&&s.level===2).map(s=>s.text).join('; ') });
-        if (hasStar) signalGames['star'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='star'&&s.level===2).map(s=>s.text).join('; ') });
-        if (signals.some(s=>s.type==='quality')) signalGames['quality'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='quality').map(s=>s.text).join('; ') });
+        if (hasFav) signalGames['fav'].push({ ..._gameInfo, sigType: 'FAV', sigDetail: signals.filter(s=>s.type==='fav'&&s.level===2).map(s=>s.text).join('; ') });
+        if (hasDog) signalGames['dog'].push({ ..._gameInfo, sigType: 'DOG', sigDetail: signals.filter(s=>s.type==='dog'&&s.level===2).map(s=>s.text).join('; ') });
+        if (hasStar) signalGames['star'].push({ ..._gameInfo, sigType: 'STAR COIL', sigDetail: signals.filter(s=>s.type==='star'&&s.level===2).map(s=>s.text).join('; ') });
+        if (signals.some(s=>s.type==='quality')) signalGames['quality'].push({ ..._gameInfo, sigType: 'QUALITY', sigDetail: signals.filter(s=>s.type==='quality').map(s=>s.text).join('; ') });
 
         // Determine bet side and build thesis logic
         if (signalLevel >= 2) {
