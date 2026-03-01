@@ -3606,12 +3606,13 @@ async function fetchESPNScoreboard() {
           if (dogLeadAmt >= 5 && dogWinsReb && dogWinsFta) {
             dogTier = 'STRONG'; dogPct = '72.5%'; dogROI = '38.4%'; sigCount = 3;
             dogExtras.push(`REB: ${dogAbbr} ${dogReb} vs ${favAbbr} ${favReb}`, `FTA: ${dogAbbr} ${dogFtaV} vs ${favAbbr} ${favFtaV}`);
-          } else if (dogWinsReb) {
-            dogTier = 'PHYSICAL'; dogPct = '67.2%'; dogROI = '28.3%'; sigCount = 2;
-            dogExtras.push(`REB: ${dogAbbr} ${dogReb} vs ${favAbbr} ${favReb}`);
           } else if (absSpread >= 3.5 && absSpread <= 7) {
             dogTier = 'MEDIUM FAV'; dogPct = '70.0%'; dogROI = '33.6%'; sigCount = 2;
             dogExtras.push(`Spread: ${absSpread}`);
+            if (dogWinsReb) { dogExtras.push(`REB: ${dogAbbr} ${dogReb} vs ${favAbbr} ${favReb}`); }
+          } else if (dogWinsReb) {
+            dogTier = 'PHYSICAL'; dogPct = '67.2%'; dogROI = '28.3%'; sigCount = 2;
+            dogExtras.push(`REB: ${dogAbbr} ${dogReb} vs ${favAbbr} ${favReb}`);
           }
           // HYBRID ML/SPREAD: if dog ML >= -100, bet ML; else bet spread
           const dogML = dogSide === 'home' ? (_oddsData?.homeML || null) : (_oddsData?.awayML || null);
@@ -3668,13 +3669,30 @@ async function fetchESPNScoreboard() {
               const estLive = _bookSp + trailBy * timeFactor;
               if (estLive < 0) {
                 const _qML = strongIsHome ? (_oddsData.homeML||0) : (_oddsData.awayML||0);
-                const _qImplP = _qML < 0 ? Math.abs(_qML)/(Math.abs(_qML)+100)*100 : 100/(_qML+100)*100;
+                const _qImplP = _qML < 0 ? Math.abs(_qML)/(Math.abs(_qML)+100) : 100/(_qML+100);
                 const _qRecType = trailBy <= 5 ? 'ML' : 'SPREAD';
                 const _qColor = _qRecType === 'ML' ? '#f0b90b' : '#16c784';
                 signals.push({type:'quality', text:`QUALITY EDGE: ${strongAbbr} (${(strongIsHome?_hWP:_aWP).toFixed(0)}% WP) trails by ${trailBy} in Q${per}. Gap: ${_qualGap.toFixed(0)}% → <span style="color:${_qColor};font-weight:800;">BET ${_qRecType}</span>`, level:2, betType:_qRecType, betColor:_qColor});
                 signalLevel = 2; activeSignals++;
                 if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
-                sendSignalNotification('QUALITY EDGE: ' + strongAbbr, `Trails by ${trailBy} in Q${per}, WP gap ${_qualGap.toFixed(0)}%`, gid, 'quality_' + strongAbbr);
+                // Kelly sizing for QUALITY_EDGE
+                const _qKelly = (function() {
+                  try {
+                    const baseEdge = 0.035; // single signal base edge
+                    const p = Math.min(0.90, _qImplP + baseEdge);
+                    const q = 1 - p;
+                    const b = _qML > 0 ? _qML/100 : 100/Math.abs(_qML);
+                    let fStar = (b*p - q) / b / 2; // Half-Kelly
+                    if (fStar < 0 || baseEdge < 0.03) fStar = 0;
+                    const _gamePct = _elapsed / 48;
+                    const urgMult = _gamePct < 0.30 ? 0.70 : _gamePct < 0.60 ? 1.00 : _gamePct < 0.85 ? 0.85 : 0.50;
+                    fStar = Math.min(fStar * urgMult, 0.05);
+                    const _br = parseFloat((document.getElementById('bankroll-input')||{}).value) || 1000;
+                    const bet = Math.round(fStar * _br);
+                    return bet > 0 ? { bet, pct: fStar, edge: baseEdge, odds: _qML } : null;
+                  } catch(e) { return null; }
+                })();
+                sendSignalNotification('QUALITY EDGE: ' + strongAbbr, `Trails by ${trailBy} in Q${per}, WP gap ${_qualGap.toFixed(0)}%`, gid, 'quality_' + strongAbbr, _qKelly);
                 thesis.criteria['quality'] = {met:true, strong:true, label:`QUALITY EDGE: ${strongAbbr}`, detail:`<strong>Quality Edge:</strong> ${strongAbbr} (${(strongIsHome?_hWP:_aWP).toFixed(0)}% win pct) trails ${weakAbbr} by ${trailBy}pts in Q${per}<br><strong>WP Gap:</strong> ${_qualGap.toFixed(0)}%<br><strong>Book Spread:</strong> ${_bookSp}<br><strong>Est Live Spread:</strong> ${estLive.toFixed(1)}<br><strong>Bet:</strong> ${_qRecType}`, value:`Trail ${trailBy} | Gap ${_qualGap.toFixed(0)}%`};
               }
             }
@@ -4359,7 +4377,7 @@ function kellySize(impliedP, odds, fraction, signalCount, urgencyMult) {
   fStar = fStar * fraction;
   // Apply urgency multiplier (PRIME=1.0, ACT_NOW=0.85, DEVELOPING=0.7, CLOSING=0.5)
   if (urgencyMult !== undefined) fStar *= urgencyMult;
-  if (fStar > 0.10) fStar = 0.10;
+  if (fStar > 0.05) fStar = 0.05;
   // Minimum edge threshold: if edge < 2%, don't bet
   if (edge < 0.02) { fStar = 0; }
   const bet = Math.max(0, Math.round(bankroll * fStar));
