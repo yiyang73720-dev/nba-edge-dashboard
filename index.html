@@ -3199,6 +3199,135 @@ async function fetchESPNScoreboard() {
       });
     }
 
+    // ====== NBA CDN BOX SCORES — Full team stats for Game Insight panel ======
+    const _cdnBoxMap = {}; // ESPN eventId → { home: {stats, players}, away: {stats, players} }
+    if (liveEvents.length > 0 && !isNCAA()) {
+      try {
+        // 1. Fetch NBA CDN scoreboard to get real NBA game IDs
+        const sbRes = await fetch('https://cdn.nba.com/static/json/liveData/scoreboard/todaysScoreboard_00.json', { signal: AbortSignal.timeout(5000) });
+        if (sbRes.ok) {
+          const sbData = await sbRes.json();
+          const nbaGames = sbData?.scoreboard?.games || [];
+          // Map: team tricode → NBA gameId for live games
+          const triToNbaId = {};
+          for (const ng of nbaGames) {
+            if (ng.gameStatus === 2) { // live only
+              triToNbaId[ng.homeTeam.teamTricode] = ng.gameId;
+              triToNbaId[ng.awayTeam.teamTricode] = ng.gameId;
+            }
+          }
+          // 2. Match ESPN events to NBA CDN game IDs by team abbreviation
+          const parseMinsCDN = (raw) => { if (!raw) return 0; const iso = raw.match(/PT(\d+)M([\d.]+)S/); if (iso) return parseInt(iso[1]) + parseFloat(iso[2])/60; const p = raw.split(':'); if (p.length===2) return parseInt(p[0])+parseInt(p[1])/60; const n=parseFloat(raw); return isNaN(n)?0:n; };
+          const parseTeamStats = (team) => { const s = team?.statistics; if (!s) return null; return { fgm:s.fieldGoalsMade||0, fga:s.fieldGoalsAttempted||0, fg3m:s.threePointersMade||0, fg3a:s.threePointersAttempted||0, ftm:s.freeThrowsMade||0, fta:s.freeThrowsAttempted||0, assists:s.assists||0, steals:s.steals||0, blocks:s.blocks||0, turnovers:s.turnovers||0, rebOff:s.reboundsOffensive||0, pts:s.points||0 }; };
+          const parsePlayers = (team, abbr) => (team?.players||[]).map(p => ({ name:`${p.firstName} ${p.familyName}`, points:p.statistics?.points||0, minutes:parseMinsCDN(p.statistics?.minutes||'0'), teamAbbr:abbr }));
+
+          const cdnFetches = liveEvents.map(e => {
+            const comp = e.competitions?.[0];
+            const hA = comp?.competitors?.find(c=>c.homeAway==='home')?.team?.abbreviation||'';
+            const aA = comp?.competitors?.find(c=>c.homeAway==='away')?.team?.abbreviation||'';
+            const nbaId = triToNbaId[hA] || triToNbaId[aA];
+            if (!nbaId) return Promise.resolve(null);
+            return fetch(`https://cdn.nba.com/static/json/liveData/boxscore/boxscore_${nbaId}.json`, { signal: AbortSignal.timeout(5000) })
+              .then(r => r.ok ? r.json() : null).catch(() => null)
+              .then(data => ({ espnId: e.id, data, hA, aA }));
+          });
+          const cdnResults = await Promise.all(cdnFetches);
+          for (const result of cdnResults) {
+            if (!result || !result.data?.game) continue;
+            const { espnId, data, hA, aA } = result;
+            const g = data.game;
+            _cdnBoxMap[espnId] = {
+              home: { stats: parseTeamStats(g.homeTeam), players: parsePlayers(g.homeTeam, hA) },
+              away: { stats: parseTeamStats(g.awayTeam), players: parsePlayers(g.awayTeam, aA) }
+            };
+          }
+        }
+      } catch(e) { /* CDN fetch optional */ }
+    }
+
+    // ====== Game Insight computation helper ======
+    const NBA_STARS_MAP = {"LeBron James":25.7,"Stephen Curry":22.8,"Kevin Durant":27.1,"Giannis Antetokounmpo":31.5,"Luka Doncic":28.1,"Nikola Jokic":26.4,"Joel Embiid":27.9,"Jayson Tatum":26.9,"Shai Gilgeous-Alexander":31.3,"Anthony Edwards":25.9,"Donovan Mitchell":23.5,"Devin Booker":25.5,"Ja Morant":21.2,"Trae Young":22.1,"Damian Lillard":25.0,"Anthony Davis":24.7,"Jimmy Butler":20.5,"Kawhi Leonard":23.7,"De'Aaron Fox":25.2,"Kyrie Irving":24.2,"Jalen Brunson":26.4,"Karl-Anthony Towns":24.9,"Paolo Banchero":22.6};
+
+    function computeGameInsight(stats, score, elapsedMins) {
+      if (!stats || !elapsedMins || elapsedMins < 2) return null;
+      const fga=stats.fga||0, fgm=stats.fgm||0, fg3a=stats.fg3a||0, fg3m=stats.fg3m||0, fta=stats.fta||0, ftm=stats.ftm||0;
+      const pts = score > 0 ? score : stats.pts||0;
+      if (pts <= 0) return null;
+      // Scoring source
+      const paintPts = (fgm - fg3m) * 2;
+      const threePts = fg3m * 3;
+      const paintPct = pts > 0 ? paintPts / pts : 0;
+      const threePct = pts > 0 ? threePts / pts : 0;
+      const ftPct = pts > 0 ? ftm / pts : 0;
+      // Process score (0-10)
+      const mins = Math.max(elapsedMins, 1);
+      const astRate = fgm > 0 ? stats.assists / fgm : 0;
+      const possessions = fga + 0.44 * fta + stats.turnovers;
+      const tovRate = possessions > 0 ? stats.turnovers / possessions : 0;
+      const orebRate = stats.rebOff / mins;
+      const hustleRate = (stats.steals + stats.blocks) / mins;
+      const clamp = (v,lo,hi) => Math.max(lo, Math.min(hi, v));
+      const astScore = clamp(astRate / 0.70, 0, 1) * 3;
+      const tovScore = clamp(1 - (tovRate - 0.08) / 0.12, 0, 1) * 3;
+      const orebScore = clamp(orebRate / 0.30, 0, 1) * 2;
+      const hustleScore = clamp(hustleRate / 0.20, 0, 1) * 2;
+      const processScore = clamp(astScore + tovScore + orebScore + hustleScore, 0, 10);
+      // 3PT stats
+      const fg3Pct = fg3a > 0 ? fg3m / fg3a : 0;
+      return { processScore: Math.round(processScore*10)/10, paintPct, threePct, ftPct, fg3Pct, fg3m, fg3a };
+    }
+
+    function renderGameInsight(gid, aA, hA, aScore, hScore, per, clk) {
+      const box = _cdnBoxMap[gid]; if (!box) return '';
+      const elapsed = getElapsedMinutes(per, clk);
+      if (elapsed < 3) return '';
+      const aI = computeGameInsight(box.away.stats, aScore, elapsed);
+      const hI = computeGameInsight(box.home.stats, hScore, elapsed);
+      if (!aI && !hI) return '';
+      const pBar = (abbr, d) => {
+        if (!d) return '';
+        const w = (d.processScore / 10) * 100;
+        const col = d.processScore >= 6 ? 'var(--green)' : d.processScore >= 4 ? 'var(--orange)' : 'var(--red)';
+        const tpCol = d.fg3Pct > 0.40 ? 'var(--green)' : d.fg3Pct >= 0.33 ? 'var(--orange)' : 'var(--red)';
+        return `<div style="margin-bottom:6px;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+            <span style="font-weight:700;font-size:11px;min-width:32px;">${abbr}</span>
+            <div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+              <div style="height:100%;width:${w}%;background:${col};border-radius:3px;transition:width 0.3s;"></div>
+            </div>
+            <span style="font-size:11px;font-weight:700;color:${col};min-width:24px;text-align:right;">${d.processScore.toFixed(1)}</span>
+          </div>
+          <div style="display:flex;gap:8px;font-size:10px;color:var(--text-secondary);padding-left:38px;">
+            <span>Paint ${Math.round(d.paintPct*100)}%</span>
+            <span style="${d.threePct>0.45?'color:var(--red);':''}">3PT ${Math.round(d.threePct*100)}%</span>
+            <span>FT ${Math.round(d.ftPct*100)}%</span>
+            <span style="color:${tpCol};font-weight:600;">${d.fg3m}/${d.fg3a} (${(d.fg3Pct*100).toFixed(0)}%)</span>
+          </div>
+        </div>`;
+      };
+      // Star cold
+      let starHTML = '';
+      const allPlayers = [...(box.away.players||[]), ...(box.home.players||[])];
+      const coldStars = [];
+      for (const [name, ppg] of Object.entries(NBA_STARS_MAP)) {
+        const p = allPlayers.find(pl => pl.name === name);
+        if (!p || p.minutes < 8) continue;
+        const paced = (p.points / p.minutes) * 36;
+        const coldPct = (paced - ppg) / ppg;
+        if (coldPct < -0.20) coldStars.push({ name, pts: p.points, mins: Math.round(p.minutes*10)/10, paced: Math.round(paced*10)/10, ppg, pct: Math.round(coldPct*100) });
+      }
+      if (coldStars.length > 0) {
+        starHTML = `<div style="margin-top:4px;padding:4px 6px;background:var(--orange-light);border-radius:4px;font-size:10px;">
+          <span style="font-weight:700;color:var(--orange);">Star Watch</span>
+          ${coldStars.map(s => `<div style="color:var(--text-secondary);margin-top:1px;">${s.name.split(' ').pop()} — ${s.pts}pts in ${s.mins}min (${s.pct}% off pace)</div>`).join('')}
+        </div>`;
+      }
+      return `<div style="margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--bg);border:1px solid var(--border);">
+        <div style="font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Game Insight</div>
+        ${pBar(aA, aI)}${pBar(hA, hI)}${starHTML}
+      </div>`;
+    }
+
     // Section headers
     let sectionHeaders = { live: false, upcoming: false, completed: false };
 
@@ -3872,6 +4001,7 @@ async function fetchESPNScoreboard() {
             ${foulHTML}
           </div>
           ${durabilityHTML}
+          ${renderGameInsight(gid, aA, hA, aS, hS, per, clk)}
           ${(()=>{
             const bx = _boxscoreMap[gid];
             const getTeamTop3 = (side, teamAbbr) => {
