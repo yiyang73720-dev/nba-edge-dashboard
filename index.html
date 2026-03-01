@@ -1209,7 +1209,7 @@
     <div class="tab active" onclick="switchTab('live')" id="tab-live">Live Games <span class="badge" id="live-badge" style="display:none;">0</span></div>
     <div class="tab" onclick="switchTab('log')" id="tab-log">Bet Log</div>
     <div class="tab" onclick="switchTab('history');renderSignalHistoryFull();" id="tab-history">History</div>
-    <div class="tab" onclick="switchTab('guide')" id="tab-guide">Signal Guide</div>
+    <div class="tab" onclick="switchTab('guide')" id="tab-guide">Sustainability Guide</div>
   </div>
 </div>
 
@@ -1253,12 +1253,6 @@
         <div class="chip-label orange">Warnings</div>
         <div class="chip-desc">Games where the leading team has unsustainable or mixed scoring</div>
       </div>
-      <div class="signal-chip signal-chip-clickable" onclick="toggleSignalDetail('all')" style="border-left:3px solid var(--accent);">
-        <div class="chip-value" id="live-total-signals" style="color:var(--accent);">0</div>
-        <div class="chip-label" style="color:var(--accent);">Signals</div>
-        <div class="chip-desc">Active edge signals across all games</div>
-        <div class="chip-detail-panel" id="chip-detail-all"></div>
-      </div>
     </div>
     <!-- Hidden elements for backward compat with signal counting code -->
     <div style="display:none;">
@@ -1266,16 +1260,10 @@
       <span id="live-dog-signals">0</span>
       <span id="live-quality-signals">0</span>
       <span id="live-star-signals">0</span>
+      <span id="live-total-signals">0</span>
+      <div id="chip-detail-all"></div>
+      <div id="quick-bet-panel"><div id="quick-bet-cards"></div></div>
     </div>
-
-<!-- QUICK BET ACTION CARDS -->
-<div id="quick-bet-panel" style="display:none; margin-bottom: 16px;">
-  <div style="font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; display:flex; align-items:center; gap:8px;">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-    ACTION REQUIRED
-  </div>
-  <div id="quick-bet-cards"></div>
-</div>
 
     <div class="card">
       <div class="card-header"><span>Live Game Monitor</span>
@@ -1691,7 +1679,7 @@ function switchMode(mode) {
     state.stars = state._nbaStars || DEFAULT_STARS;
   }
   renderStarDB();
-  // Update Signal Guide for current mode
+  // Update guide for current mode
   updateSignalGuide(mode);
   // Reset caches for fresh data
   teamScorerCache = {}; teamScorerLastFetch = 0;
@@ -4312,8 +4300,8 @@ async function fetchESPNScoreboard() {
         const leadSustCls = xray.leadingTeam === aA ? xray.away.sustainability.cls : xray.home.sustainability.cls;
         xrayCardClass = leadSustCls === 'unsustainable' ? 'xray-danger' : 'xray-warning';
       }
-      // Signal-level class still applies (priority over xray)
-      const cc = signalLevel===2?'signal-fire':signalLevel===1?'signal-warn':xrayCardClass;
+      // X-Ray sustainability class for card border glow (old signal classes removed)
+      const cc = xrayCardClass;
       const hc = isLive?'game-card-header live-pulse':'game-card-header';
 
       // Track xray warnings for signal strip
@@ -4406,6 +4394,19 @@ async function fetchESPNScoreboard() {
           </div>
         </div>`;
 
+        // Section 3b: 3PT Shooting Percentage
+        const _a3Mn = parseInt(a3M)||0, _a3An = parseInt(a3A)||0, _h3Mn = parseInt(h3M)||0, _h3An = parseInt(h3A)||0;
+        const _a3Pct = _a3An > 0 ? (_a3Mn/_a3An*100).toFixed(1) : '0.0';
+        const _h3Pct = _h3An > 0 ? (_h3Mn/_h3An*100).toFixed(1) : '0.0';
+        const _3ptColor = (pct) => parseFloat(pct) >= 45 ? '#ef4444' : parseFloat(pct) >= 36 ? '#f59e0b' : '#10b981';
+        html += `<div class="xray-section">
+          <div class="xray-section-label">3PT Shooting</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;padding:4px 0;">
+            <span style="font-weight:700;color:var(--text-primary);">${aA} <span style="color:${_3ptColor(_a3Pct)};font-weight:800;">${_a3Mn}/${_a3An} (${_a3Pct}%)</span></span>
+            <span style="font-weight:700;color:var(--text-primary);">${hA} <span style="color:${_3ptColor(_h3Pct)};font-weight:800;">${_h3Mn}/${_h3An} (${_h3Pct}%)</span></span>
+          </div>
+        </div>`;
+
         // Section 4: Process Factors comparison
         html += `<div class="xray-section">
           <div class="xray-section-label">Process Factors</div>
@@ -4433,7 +4434,6 @@ async function fetchESPNScoreboard() {
         <div class="${hc}">
           <span>${isLive ? '<span style="color:var(--red);font-weight:700;">LIVE</span> ' + periodLabel + ' ' + clk : 'UPCOMING'}${gid ? ' <span style="font-size:9px;color:var(--text-muted);opacity:0.6;">#' + gid + '</span>' : ''}</span>
           <span style="display:flex;align-items:center;gap:6px;">
-            ${sigSummary.length ? '<span style="font-size:9px;font-weight:700;color:var(--accent);background:var(--accent-light);padding:1px 6px;border-radius:3px;">' + sigSummary.join(' + ') + '</span>' : ''}
             <span class="fav-star" onclick="toggleFavorite('${gid}')" style="cursor:pointer;font-size:14px;">${isFav?'\u2605':'\u2606'}</span>
           </span>
         </div>
@@ -4457,45 +4457,7 @@ async function fetchESPNScoreboard() {
           </div>`}
           ${gameLinksHTML(espnLink, leaguePassLink)}
           ${_oddsHTML}
-          <!-- SIGNALS -->
-          ${signals.length?(()=>{
-            const rec=getRecommendation(aS,hS,aA,hA,per,clk,signalLevel);
-            let titleText,recDetail='',betBtn='';
-            if(signalLevel<2){
-              titleText='DEVELOPING';
-            } else if(rec.type==='ML'){
-              titleText=`EDGE \u2014 ML PLAY: ${rec.side} ML`;
-              recDetail=`<div style="font-size:11px;margin-top:4px;font-weight:700;color:var(--green);">&#x1F4B0; ${rec.reasoning}</div>`;
-              betBtn=`<div style="margin-top:6px;"><button class="btn btn-orange btn-sm" onclick="openLogModal('${aA} @ ${hA}','${rec.side} ML','Mean Reversion - ML')">Log ML Bet (${rec.units}u)</button></div>`;
-            } else if(rec.type==='SPREAD'){
-              titleText=`EDGE \u2014 SPREAD: ${rec.side} ${rec.spreadLine}`;
-              recDetail=`<div style="font-size:11px;margin-top:4px;font-weight:700;color:var(--purple);">&#x1F3AF; ${rec.reasoning}</div>`;
-              betBtn=`<div style="margin-top:6px;"><button class="btn btn-purple btn-sm" onclick="openLogModal('${aA} @ ${hA}','${rec.side} ${rec.spreadLine}','Mean Reversion - Spread')">Log Spread Bet (${rec.units}u)</button></div>`;
-            } else {
-              titleText='EDGE \u2014 WATCH';
-              recDetail=`<div style="font-size:11px;margin-top:4px;font-weight:700;color:var(--text-muted);">&#x1F440; ${rec.reasoning}</div>`;
-            }
-            const bgColor=signalLevel===2?(rec.type==='WATCH'?'var(--accent-light)':'var(--accent-light)'):'var(--orange-light)';
-            const borderColor=signalLevel===2?'var(--accent)':'var(--orange)';
-            const titleColor=signalLevel===2?'var(--accent)':'var(--orange)';
-            return `<div style="margin-top:8px;padding:8px 10px;border-radius:6px;background:${bgColor};border-left:3px solid ${borderColor};">
-              <div style="font-size:10px;font-weight:800;color:${titleColor};margin-bottom:4px;letter-spacing:0.5px;">${titleText}</div>
-              ${signals.map(s=>`<div style="font-size:11px;color:var(--text-secondary);line-height:1.5;">${s.level===2?'&#x1F525;':'&#x26A0;&#xFE0F;'} ${s.text}</div>`).join('')}
-              ${recDetail}
-              ${(()=>{
-                if (!thesis.kellyBet || thesis.kellyBet <= 0) return '';
-                const _oddsLabel = thesis.marketOdds ? ((thesis.marketOdds > 0 ? '+' : '') + thesis.marketOdds) : '';
-                return '<div style="margin-top:8px;display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--white);border:1.5px solid var(--accent);border-radius:8px;">'
-                  + '<div style="font-size:24px;font-weight:900;color:var(--accent);letter-spacing:-1px;">$' + thesis.kellyBet + '</div>'
-                  + '<div style="font-size:10px;color:var(--text-secondary);line-height:1.5;">'
-                  + '<span style="font-weight:700;">Half Kelly</span> · ' + thesis.kellyPct.toFixed(1) + '% of bankroll<br>'
-                  + 'Edge: ' + (thesis.kellyEdge||'-') + '%' + (_oddsLabel ? ' · Odds: ' + _oddsLabel : '')
-                  + '</div></div>';
-              })()}
-              ${betBtn}
-              ${state.signalFirstSeen[gid]?`<div style="font-size:9px;color:var(--text-muted);margin-top:4px;">\u23F1 ${Math.floor((Date.now()-state.signalFirstSeen[gid])/60000)}m ago</div>`:''}
-            </div>`;
-          })():''}
+          <!-- Old signal recommendation panel removed - X-Ray sustainability is the new system -->
         </div>
       </div>`;
 
@@ -6535,111 +6497,95 @@ try {
 
 <div id="content-guide" class="tab-content">
 <div class="guide-section">
-<h2 style="font-size:22px;font-weight:800;margin-bottom:4px;letter-spacing:-0.5px;">Signal Guide</h2>
+<h2 style="font-size:22px;font-weight:800;margin-bottom:4px;letter-spacing:-0.5px;">Sustainability Guide</h2>
 
-<!-- ===== QUICK START - HOW TO USE ===== -->
+<!-- QUICK START -->
 <div style="background:var(--accent-light);border:1px solid var(--accent);border-radius:var(--radius);padding:24px;margin:16px 0 24px;">
-<h3 style="font-size:16px;font-weight:800;margin-bottom:12px;letter-spacing:-0.2px;">How This Works (Quick Start)</h3>
+<h3 style="font-size:16px;font-weight:800;margin-bottom:12px;letter-spacing:-0.2px;">How This Works</h3>
 <div style="font-size:13px;line-height:1.7;color:var(--text-primary);">
-<p style="margin-bottom:10px;"><strong>The idea is simple:</strong> Sportsbooks under-adjust live spreads when a team builds a big lead. When the pre-game favorite leads by 11+, they cover the live spread 72-83% of the time. When the pre-game underdog is winning, the book still thinks they'll lose — and they don't. We catch both.</p>
+<p style="margin-bottom:10px;"><strong>The idea:</strong> Not all points are created equal. A team up 12 on 8/10 threes is very different from a team up 12 with +8 rebounds and 20 paint points. This dashboard tells you whether each team's scoring is built on <strong>sustainable process</strong> or <strong>hot shooting that will regress</strong>.</p>
 <p style="margin-bottom:14px;"><strong>How to use it:</strong></p>
 <div style="display:grid;grid-template-columns:1fr;gap:10px;">
 <div style="background:var(--card-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--accent);">
-<strong style="font-size:12px;">Step 1:</strong> <span style="font-size:13px;">Hit <strong>Start</strong> to auto-refresh. The dashboard watches every live game.</span>
-</div>
-<div style="background:var(--card-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--orange);">
-<strong style="font-size:12px;">Step 2:</strong> <span style="font-size:13px;">When a signal fires, the chip turns on and shows a number. <strong>Click it</strong> to see which game, then <strong>click the game</strong> to jump to it.</span>
+<strong style="font-size:12px;">Step 1:</strong> <span style="font-size:13px;">Hit <strong>Start</strong> to auto-refresh. The dashboard monitors every live game's box score.</span>
 </div>
 <div style="background:var(--card-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--green);">
-<strong style="font-size:12px;">Step 3:</strong> <span style="font-size:13px;">The game card tells you <strong>who to bet on</strong> and <strong>why</strong>. Green FAV = bet fav spread. Purple DOG = bet dog ML (gold) or spread (blue). Blue QUALITY = strong team trailing early.</span>
+<strong style="font-size:12px;">Step 2:</strong> <span style="font-size:13px;">Check the <strong>sustainability badge</strong> on each team — green means their scoring is repeatable, red means it's fragile.</span>
+</div>
+<div style="background:var(--card-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--orange);">
+<strong style="font-size:12px;">Step 3:</strong> <span style="font-size:13px;">Look at <strong>Scoring Source</strong> — paint-heavy scoring (green) is sustainable, 3PT-heavy scoring (orange/red) tends to regress.</span>
+</div>
+<div style="background:var(--card-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--purple);">
+<strong style="font-size:12px;">Step 4:</strong> <span style="font-size:13px;">Use the <strong>Process Factors</strong> to confirm what you're watching — rebounds, hustle, ball movement, aggressiveness, defense.</span>
 </div>
 </div>
 </div>
 </div>
 
-<!-- ===== WHAT EACH SIGNAL MEANS (PLAIN ENGLISH) ===== -->
+<!-- WHAT EACH ELEMENT MEANS -->
 <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:24px;">
-<h3 style="font-size:15px;font-weight:800;margin-bottom:14px;letter-spacing:-0.2px;">What Each Signal Means</h3>
+<h3 style="font-size:15px;font-weight:800;margin-bottom:14px;letter-spacing:-0.2px;">What Each Element Means</h3>
 <table style="width:100%;font-size:12px;border-collapse:collapse;">
 <thead><tr style="border-bottom:2px solid var(--border);text-align:left;">
-<th style="padding:8px 6px;font-weight:700;color:var(--text-muted);font-size:10px;text-transform:uppercase;">Signal</th>
-<th style="padding:8px 6px;font-weight:700;color:var(--text-muted);font-size:10px;text-transform:uppercase;">In Plain English</th>
-<th style="padding:8px 6px;font-weight:700;color:var(--text-muted);font-size:10px;text-transform:uppercase;">What to Bet</th>
+<th style="padding:8px 6px;font-weight:700;color:var(--text-muted);font-size:10px;text-transform:uppercase;">Element</th>
+<th style="padding:8px 6px;font-weight:700;color:var(--text-muted);font-size:10px;text-transform:uppercase;">What It Shows</th>
+<th style="padding:8px 6px;font-weight:700;color:var(--text-muted);font-size:10px;text-transform:uppercase;">How to Read It</th>
 </tr></thead>
 <tbody>
 <tr style="border-bottom:1px solid var(--border-light);">
-<td style="padding:10px 6px;"><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#10b981;padding:3px 8px;border-radius:4px;">FAV</span></td>
-<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">Pre-game <strong>favorite leads by 11+ points</strong> at 14+ min. Books under-adjust: live spreads shift only ~1pt per 10pts of lead. <strong>72-83% cover rate.</strong><br><em>FAV SIMPLE:</em> 72.2% cover, +37.8% ROI, N=1,336.<br><em>FAV TIER 1:</em> Lead Safety &ge;3 + Spread Rel &ge;10 → 82.9% cover, +58.3% ROI, N=544.</td>
-<td style="padding:10px 6px;font-weight:700;color:#10b981;">Bet the <strong>favorite's live spread</strong>. The lead is real and the book hasn't adjusted enough.</td>
+<td style="padding:10px 6px;"><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#10b981;padding:3px 8px;border-radius:4px;">SUSTAINABLE</span></td>
+<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">Team's scoring is built on <strong>repeatable process</strong> — paint scoring, free throws, board control, good ball movement. Process score 6+ with paint-heavy scoring.</td>
+<td style="padding:10px 6px;font-weight:600;color:#10b981;">This team's lead/scoring is real. Their process supports continued production.</td>
 </tr>
 <tr style="border-bottom:1px solid var(--border-light);">
-<td style="padding:10px 6px;"><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#7c3aed;padding:3px 8px;border-radius:4px;">DOG</span></td>
-<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">Pre-game <strong>underdog is winning</strong> at 14+ min. The market had them losing — they're proving it wrong. <strong>63-72% cover rate.</strong><br>Tier hierarchy: <strong>STRONG</strong> (72.5% cover, 38.4% ROI) &gt; <strong>MEDIUM FAV</strong> (70.0%, 33.6% — pre-game spread 3.5-7 pts) &gt; <strong>PHYSICAL</strong> (67.2%, 28.3%) &gt; <strong>LEADING</strong> (66.6%, 27.2%).</td>
-<td style="padding:10px 6px;font-weight:700;color:#7c3aed;">If dog ML &ge; -100: <span style="color:#f0b90b;font-weight:800;">BET ML</span>. If dog ML &lt; -100: <span style="color:#3861fb;font-weight:800;">BET SPREAD</span>.</td>
+<td style="padding:10px 6px;"><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#f59e0b;padding:3px 8px;border-radius:4px;">MIXED</span></td>
+<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">Some sustainable elements, some volatile. A mix of paint scoring and 3PT shooting, or decent process but reliance on outside shots.</td>
+<td style="padding:10px 6px;font-weight:600;color:#f59e0b;">Proceed with caution. Check which factors are strong and which are weak.</td>
 </tr>
 <tr style="border-bottom:1px solid var(--border-light);">
-<td style="padding:10px 6px;"><span class="signal-badge badge-star" style="font-size:10px;">STAR COIL</span></td>
-<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">A star player (21+ PPG) is cold (&lt;65% pace) AND the game is close (within 15pts) in Q2-Q3. <strong>Supplemental signal</strong> — confirms FAV/DOG when it aligns.</td>
-<td style="padding:10px 6px;font-weight:700;color:var(--text-muted);">Supplemental only. Use to <strong>confirm</strong> FAV/DOG signals, not as standalone bet trigger.</td>
-</tr>
-<tr style="border-bottom:1px solid var(--border-light);">
-<td style="padding:10px 6px;"><span class="signal-badge badge-quality" style="font-size:10px;">QUALITY</span></td>
-<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">Stronger team (by season win%) <strong>trailing 1-10 pts in Q1-Q2</strong>. Win% gap must be &ge; 15%. <strong>Est. 3.5% edge.</strong><br>Market overreacts to early deficits against superior teams. Quality gap + early game = regression opportunity.</td>
-<td style="padding:10px 6px;font-weight:700;color:#0ea5e9;">If trailing &le; 5pts: <strong>BET ML</strong>. If trailing 6-10pts: <strong>BET SPREAD</strong>.</td>
+<td style="padding:10px 6px;"><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#ef4444;padding:3px 8px;border-radius:4px;">UNSUSTAINABLE</span></td>
+<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">Scoring heavily dependent on <strong>3PT shooting</strong> (45%+ of points from threes), weak process score (3 or below), or very low paint percentage.</td>
+<td style="padding:10px 6px;font-weight:600;color:#ef4444;">This team's scoring is fragile. Hot shooting will cool — expect regression.</td>
 </tr>
 </tbody>
 </table>
 </div>
 
-<div id="nba-guide">
-<p class="guide-intro" style="margin-bottom:12px;"><strong>Core thesis:</strong> Books under-adjust live spreads for in-game leads. When a team leads by 10+, they cover the live spread ~70% of the time. We exploit this systematically.</p>
-<div style="background:var(--accent-light);border:1px solid var(--accent);border-radius:var(--radius);padding:16px;margin-bottom:16px;">
-<strong style="font-size:13px;">Backtest Validated — Real Live Odds (3,550 games, 7 seasons):</strong>
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:10px;font-size:12px;">
-<div style="background:var(--card-bg);padding:10px;border-radius:var(--radius-sm);"><strong style="color:#10b981;">FAV SIMPLE:</strong> 72.2% cover, +37.8% ROI, N=1,336, Z=16.20</div>
-<div style="background:var(--card-bg);padding:10px;border-radius:var(--radius-sm);"><strong style="color:#10b981;">FAV TIER 1:</strong> 82.9% cover, +58.3% ROI, N=544, Z=15.35</div>
-<div style="background:var(--card-bg);padding:10px;border-radius:var(--radius-sm);"><strong style="color:#7c3aed;">DOG LEADING:</strong> 63.4% cover, N=1,955</div>
-<div style="background:var(--card-bg);padding:10px;border-radius:var(--radius-sm);"><strong style="color:#7c3aed;">DOG PHYSICAL:</strong> 65.5% cover (+REB)</div>
-<div style="background:var(--card-bg);padding:10px;border-radius:var(--radius-sm);"><strong style="color:#7c3aed;">DOG STRONG:</strong> 70.6% cover (+5pt, +REB, +FTA)</div>
-<div style="background:var(--card-bg);padding:10px;border-radius:var(--radius-sm);"><strong style="color:#f0b90b;">Hybrid ML/SPR:</strong> +30.7% ROI (ML when &ge;-100)</div>
-</div>
-</div>
+<!-- 5 PROCESS FACTORS -->
 <div class="guide-grid">
-<div class="guide-card" style="border-left:3px solid #10b981;"><h3><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#10b981;padding:3px 8px;border-radius:4px;">FAV</span> Favorite Signal</h3><p class="edge-label">Pre-game favorite dominating — validated 72-83% cover rate</p><p><strong>FAV SIMPLE:</strong> Fav leads by 11+ points, 14+ min elapsed (Q2+). <strong>72.2% cover, +37.8% ROI, N=1,336, Z=16.20.</strong></p><p><strong>FAV TIER 1:</strong> Lead Safety &ge; 3 AND Spread Relative &ge; 10. <strong>82.9% cover, +58.3% ROI, N=544, Z=15.35.</strong></p><p><strong>Why it works:</strong> Books adjust live spreads only ~1 point per 10 points of in-game lead. This is massively insufficient. 5/5 seasons profitable, 100% of rolling 200-game windows profitable.</p><div class="threshold">Trigger: Fav leads 11+ at 14+ min elapsed.<br>TIER 1: lead_safety &ge; 3 AND spread_rel &ge; 10.<br>Bet: Favorite's live spread.</div></div>
+<div class="guide-card" style="border-left:3px solid #10b981;"><h3>Rebounding</h3><p class="edge-label">Board control = possession control</p><p>Measures total rebound differential per 48 minutes. The team winning the rebound battle controls more possessions and gets more shot opportunities. This is one of the most sustainable advantages in basketball.</p><div class="threshold">Positive = your team is out-rebounding opponent.<br>+4 or higher = strong board dominance.</div></div>
 
-<div class="guide-card" style="border-left:3px solid #7c3aed;"><h3><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#7c3aed;padding:3px 8px;border-radius:4px;">DOG</span> Dog Signal</h3><p class="edge-label">Pre-game underdog leading — 63-72% cover rate with hybrid ML/spread</p><p><strong>DOG LEADING:</strong> Pre-game dog ahead at 14+ min. <strong>66.6% cover, 27.2% ROI.</strong></p><p><strong>DOG MEDIUM FAV:</strong> Pre-game spread 3.5-7 pts. <strong>70.0% cover, 33.6% ROI.</strong></p><p><strong>DOG PHYSICAL:</strong> + dog wins rebound battle. <strong>67.2% cover, 28.3% ROI.</strong></p><p><strong>DOG STRONG:</strong> + dog leads 5+ AND wins REB AND wins FTA. <strong>72.5% cover, 38.4% ROI.</strong></p><p><strong>Hybrid ML/SPREAD:</strong> If dog ML &ge; -100 → <span style="color:#f0b90b;font-weight:800;">BET ML</span> (+30.7% ROI). If dog ML &lt; -100 → <span style="color:#3861fb;font-weight:800;">BET SPREAD</span>.</p><div class="threshold">Trigger: Pre-game dog leading at 14+ min elapsed.<br>Tiers: STRONG &gt; MEDIUM FAV &gt; PHYSICAL &gt; LEADING.<br>Hybrid: ML when plus-money, spread when minus.</div></div>
+<div class="guide-card" style="border-left:3px solid #10b981;"><h3>Hustle (OREB)</h3><p class="edge-label">Second chances through effort</p><p>Offensive rebound differential per 48 minutes. OREB represent extra possessions earned through effort and positioning. Unlike shooting, hustle doesn't regress — it's a function of effort and size.</p><div class="threshold">Positive = your team gets more second chances.<br>+2 or higher = significant hustle advantage.</div></div>
 
-<div class="guide-card" style="border-left:3px solid #0ea5e9;"><h3><span class="signal-badge badge-quality" style="font-size:10px;">QUALITY</span> Quality Edge Signal</h3><p class="edge-label">Strong team trailing early — market overreacts to early deficits</p><p>When a team with significantly higher win% (15%+ gap) falls behind early, the market overvalues the deficit. Superior teams regress toward their true strength as the game progresses.</p><p><strong>Key conditions:</strong> Q1-Q2 only, trailing by 1-10 points, season win% gap &ge; 15%, estimated live spread still favors the stronger team.</p><p><strong>Bet sizing:</strong> Half-Kelly with urgency multiplier. ML if trailing &le; 5pts, SPREAD if trailing 6-10pts.</p><p><strong>Estimated edge:</strong> ~3.5% over market.</p><div class="threshold">Trigger: Strong team (win% gap &ge;15%) trailing 1-10 pts in Q1-Q2.<br>ML if trailing &le;5pts, SPREAD if trailing 6-10pts.<br>Half-Kelly sizing with urgency multiplier.</div></div>
+<div class="guide-card" style="border-left:3px solid #0ea5e9;"><h3>Ball Movement</h3><p class="edge-label">AST/TOV ratio = offense quality</p><p>Assist-to-turnover ratio differential. High assists with low turnovers indicates a team running their offense well — finding open shots through passing rather than forced isolation. Good ball movement leads to higher-quality shots.</p><div class="threshold">Positive = better offensive flow.<br>+0.5 or higher = clear ball movement edge.</div></div>
 
-</div></div>
+<div class="guide-card" style="border-left:3px solid #f59e0b;"><h3>Aggressiveness</h3><p class="edge-label">Free throw attempts = attacking the rim</p><p>Free throw attempt differential per 48 minutes. Teams that draw more fouls are attacking the basket, getting to the line, and generating the most efficient shots in basketball (free throws). This also puts the opponent in foul trouble.</p><div class="threshold">Positive = more free throw attempts than opponent.<br>+4 or higher = significant aggressiveness edge.</div></div>
+
+<div class="guide-card" style="border-left:3px solid #7c3aed;"><h3>Defense</h3><p class="edge-label">Steals + Blocks = disruption</p><p>Combined steals and blocks differential per 48 minutes. Measures how much a team is disrupting the opponent's offense. Steals create fast breaks, blocks deter paint attacks. Active defense forces lower-quality shots.</p><div class="threshold">Positive = more disruption than opponent.<br>+2 or higher = strong defensive activity.</div></div>
+</div>
+
+<!-- SCORING SOURCE GUIDE -->
 <div id="theory-panel" class="theory-panel">
-  <h4>How This Dashboard Works</h4>
-  <p>Two validated edges: (1) <strong>FAV</strong> — when the pre-game favorite builds a big lead, the live spread doesn't adjust enough. (2) <strong>DOG</strong> — when the pre-game underdog is winning, the book still prices them to lose. Both are validated against REAL live odds across 3,550 games and 7 seasons.</p>
+  <h4>Scoring Source Breakdown</h4>
+  <p>Every team's points come from three sources. The mix tells you how sustainable their scoring is:</p>
   <hr class="signal-divider">
-  <h4>1. FAV Signal (72-83% Cover Rate)</h4>
-  <p><strong>The edge:</strong> Books adjust live spreads only ~1 point per 10 points of in-game lead. When the favorite leads by 11+, the spread hasn't caught up — they cover 72% of the time at minimum.</p>
-  <p><strong>Lead Safety</strong> = lead / sqrt(time remaining). Higher = more secure lead.</p>
-  <p><strong>Spread Relative</strong> = current lead - |pre-game spread|. How far beyond expectations.</p>
-  <div class="edge-box green">
-    <p><strong>FAV SIMPLE:</strong> 72.2% cover | +37.8% ROI | 1,336 bets | Z=16.20 | Max loss streak: 6</p>
-    <p style="margin-top:6px"><strong>FAV TIER 1:</strong> 82.9% cover | +58.3% ROI | 544 bets | Z=15.35 | 5/5 seasons profitable</p>
-  </div>
+  <h4 style="color:#10b981;">Paint Points (Green) — Most Sustainable</h4>
+  <p>Two-point field goals + free throws. Points generated by attacking the basket, posting up, cutting, and drawing fouls. These are high-percentage, repeatable scoring actions. <strong>40%+ paint scoring = sustainable.</strong></p>
   <hr class="signal-divider">
-  <h4>2. DOG Signal (63-71% Cover Rate)</h4>
-  <p><strong>The edge:</strong> When the pre-game underdog is winning after Q1, the book still prices them to lose. The dog's lead is real — especially when backed by rebounding and free throw dominance (physicality &gt; shooting).</p>
-  <div class="edge-box" style="border-left: 3px solid #7c3aed;">
-    <p><strong>DOG LEADING:</strong> 63.4% cover | N=1,955</p>
-    <p style="margin-top:6px"><strong>DOG PHYSICAL:</strong> 65.5% cover | Dog wins rebound battle</p>
-    <p style="margin-top:6px"><strong>DOG STRONG:</strong> 70.6% cover | Lead 5+ AND REB AND FTA dominance</p>
-    <p style="margin-top:6px"><strong>Hybrid:</strong> ML when dog ML &ge; -100 (+30.7% ROI) | Spread when &lt; -100</p>
-  </div>
+  <h4 style="color:#f59e0b;">3PT Points (Orange/Red) — Volatile</h4>
+  <p>Points from three-point shots. Even the best shooters have hot/cold streaks. <strong>35%+ of points from 3PT = risky. 45%+ = unsustainable.</strong> When shown in red, the team is heavily dependent on outside shooting.</p>
   <hr class="signal-divider">
-  <h4>Star Coil (Supplemental)</h4>
-  <p style="color:var(--text-muted);">Star Coil detects when a star player is cold (&lt;65% pace) in a competitive game. It's kept as a <strong>supplemental signal</strong> that confirms FAV/DOG when it aligns — not a standalone bet trigger.</p>
+  <h4 style="color:#9ca3af;">Free Throws (Gray) — Neutral/Good</h4>
+  <p>Points from the free throw line. Generally sustainable — teams that draw fouls consistently keep drawing them. A high FT% in scoring source usually indicates aggressiveness.</p>
+  <hr class="signal-divider">
+  <h4>3PT Shooting Percentage</h4>
+  <p>The actual three-point field goal percentage (made/attempted). League average is ~36%. Teams shooting well above this will likely regress. Teams shooting well below may improve. Use this alongside the scoring source to assess sustainability.</p>
   <hr class="signal-divider">
   <h4>Data Sources</h4>
-  <p>Scores from ESPN live API. Odds from The Odds API (DraftKings, FanDuel, BetMGM). Pre-game spreads identify favorites. All signals validated against real historical live odds.</p>
-  <p><strong>Important:</strong> No signal guarantees an outcome. These are probabilistic edges. Use flat 3% bankroll sizing.</p>
+  <p>Box scores from ESPN live API. Stats update every 30 seconds. Process factors are computed from real-time team totals (rebounds, assists, turnovers, steals, blocks, FTA, FGA, FGM, 3PA, 3PM). All metrics are normalized per 48 minutes to account for game time elapsed.</p>
+</div>
+
+</div>
 </div>
 
 </body>
