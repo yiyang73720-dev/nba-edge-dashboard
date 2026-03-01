@@ -6057,7 +6057,7 @@ async function scanKalshiMarkets() {
   try {
     for (const prefix of KALSHI_TICKERS) {
       try {
-        const resp = await fetch(KALSHI_API + '/markets?limit=100&status=open&ticker=' + prefix);
+        const resp = await fetch(KALSHI_API + '/markets?limit=100&status=open&series_ticker=' + prefix);
         if (resp.ok) {
           const data = await resp.json();
           const markets = data.markets || [];
