@@ -3668,8 +3668,8 @@ async function fetchESPNScoreboard() {
               const timeFactor = per === 1 ? 0.75 : 0.55;
               const estLive = _bookSp + trailBy * timeFactor;
               if (estLive < 0) {
-                const _qML = strongIsHome ? (_oddsData.homeML||0) : (_oddsData.awayML||0);
-                const _qImplP = _qML < 0 ? Math.abs(_qML)/(Math.abs(_qML)+100) : 100/(_qML+100);
+                const _qML = strongIsHome ? (_oddsData.homeML||null) : (_oddsData.awayML||null);
+                const _qImplP = _qML ? (_qML < 0 ? Math.abs(_qML)/(Math.abs(_qML)+100) : 100/(_qML+100)) : 0.50;
                 const _qRecType = trailBy <= 5 ? 'ML' : 'SPREAD';
                 const _qColor = _qRecType === 'ML' ? '#f0b90b' : '#16c784';
                 signals.push({type:'quality', text:`QUALITY EDGE: ${strongAbbr} (${(strongIsHome?_hWP:_aWP).toFixed(0)}% WP) trails by ${trailBy} in Q${per}. Gap: ${_qualGap.toFixed(0)}% → <span style="color:${_qColor};font-weight:800;">BET ${_qRecType}</span>`, level:2, betType:_qRecType, betColor:_qColor});
@@ -3678,12 +3678,13 @@ async function fetchESPNScoreboard() {
                 // Kelly sizing for QUALITY_EDGE
                 const _qKelly = (function() {
                   try {
+                    if (!_qML) return null;
                     const baseEdge = 0.035; // single signal base edge
                     const p = Math.min(0.90, _qImplP + baseEdge);
                     const q = 1 - p;
                     const b = _qML > 0 ? _qML/100 : 100/Math.abs(_qML);
                     let fStar = (b*p - q) / b / 2; // Half-Kelly
-                    if (fStar < 0 || baseEdge < 0.03) fStar = 0;
+                    if (fStar < 0) fStar = 0;
                     const _gamePct = _elapsed / 48;
                     const urgMult = _gamePct < 0.30 ? 0.70 : _gamePct < 0.60 ? 1.00 : _gamePct < 0.85 ? 0.85 : 0.50;
                     fStar = Math.min(fStar * urgMult, 0.05);
