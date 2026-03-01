@@ -3562,13 +3562,50 @@ async function fetchESPNScoreboard() {
         _boxscoreMap[gid] = map;
         // Extract team-level stats from boxscore (turnovers, steals, blocks, OREB)
         // bx.boxscore.teams[] has team stats that scoreboard doesn't include
+        // ESPN summary format: statistics[] is array of categories, each with labels[] and totals[]
         if (bx.boxscore?.teams) {
           if (!_boxscoreMap._teamStats) _boxscoreMap._teamStats = {};
+          // ESPN label → frontend stat name mapping
+          const labelMap = {
+            'OREB': 'offensiveRebounds', 'DREB': 'defensiveRebounds', 'REB': 'totalRebounds',
+            'AST': 'assists', 'STL': 'steals', 'BLK': 'blocks', 'TO': 'turnovers',
+            'PF': 'fouls', 'PTS': 'points',
+          };
+          const fracMap = {
+            'FG': ['fieldGoalsMade', 'fieldGoalsAttempted'],
+            '3PT': ['threePointFieldGoalsMade', 'threePointFieldGoalsAttempted'],
+            'FT': ['freeThrowsMade', 'freeThrowsAttempted'],
+          };
           bx.boxscore.teams.forEach(team => {
             const abbr = team.team?.abbreviation || '';
             const side = abbr === awayAbbr ? 'away' : 'home';
             const ts = {};
-            (team.statistics || []).forEach(s => { ts[s.name || s.label] = s.displayValue; });
+            // Parse labels/totals category format (ESPN summary endpoint)
+            (team.statistics || []).forEach(cat => {
+              const labels = cat.labels || [];
+              const totals = cat.totals || [];
+              for (let li = 0; li < labels.length; li++) {
+                const label = labels[li];
+                const val = totals[li];
+                if (val === undefined) continue;
+                // Map fractional stats (e.g., "35-78" for FG)
+                if (fracMap[label]) {
+                  const parts = String(val).split('-');
+                  if (parts.length === 2) {
+                    ts[fracMap[label][0]] = parts[0];
+                    ts[fracMap[label][1]] = parts[1];
+                  }
+                }
+                // Map simple numeric stats
+                if (labelMap[label]) {
+                  ts[labelMap[label]] = val;
+                }
+              }
+              // Fallback: if cat has name/displayValue directly (some ESPN formats)
+              if (!labels.length && cat.name && cat.displayValue !== undefined) {
+                ts[cat.name] = cat.displayValue;
+              }
+            });
             if (!_boxscoreMap._teamStats[gid]) _boxscoreMap._teamStats[gid] = {};
             _boxscoreMap._teamStats[gid][side] = ts;
           });

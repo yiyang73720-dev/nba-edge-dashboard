@@ -532,14 +532,18 @@ function computeSustainability(homeStats, awayStats, minutes) {
   const awayProcessScore = 10 - homeProcessScore;
 
   // Scoring source per team
+  // paintPts = 2PT field goals only (NOT including FTM — FTM is its own category)
+  // Sum of paintPct + threePtPct + ftPct = 1.0
   function scoringSource(stats) {
-    const pts = Math.max(stats.PTS, 1);
-    const paintPct = ((stats.FGM - stats.FG3M) * 2 + stats.FTM) / pts;
-    const threePct = (stats.FG3M * 3) / pts;
-    const ftPct = stats.FTM / pts;
+    const paintPts = (stats.FGM - stats.FG3M) * 2;
+    const threePts = stats.FG3M * 3;
+    const total = Math.max(paintPts + threePts + stats.FTM, 1);
+    const paintPct = paintPts / total;
+    const threePtPct = threePts / total;
+    const ftPct = stats.FTM / total;
     return {
       paintPct: Math.round(paintPct * 1000) / 1000,
-      threePct: Math.round(threePct * 1000) / 1000,
+      threePtPct: Math.round(threePtPct * 1000) / 1000,
       ftPct: Math.round(ftPct * 1000) / 1000,
     };
   }
@@ -548,8 +552,8 @@ function computeSustainability(homeStats, awayStats, minutes) {
 
   // Sustainability verdict per team
   function verdict(processScore, scoring) {
-    if (processScore >= 6 && scoring.paintPct >= 0.40 && scoring.threePct < 0.35) return 'sustainable';
-    if (processScore <= 3 || scoring.threePct >= 0.45 || scoring.paintPct < 0.25) return 'unsustainable';
+    if (processScore >= 6 && scoring.paintPct >= 0.40 && scoring.threePtPct < 0.35) return 'sustainable';
+    if (processScore <= 3 || scoring.threePtPct >= 0.45 || scoring.paintPct < 0.25) return 'unsustainable';
     return 'mixed';
   }
   const homeVerdict = verdict(homeProcessScore, homeScoring);
@@ -579,8 +583,8 @@ function computeSustainability(homeStats, awayStats, minutes) {
   }
 
   // Warnings
-  if (homeScoring.threePct >= 0.45) narrative += 'Home 3PT-dependent (>45% from 3). ';
-  if (awayScoring.threePct >= 0.45) narrative += 'Away 3PT-dependent (>45% from 3). ';
+  if (homeScoring.threePtPct >= 0.45) narrative += 'Home 3PT-dependent (>45% from 3). ';
+  if (awayScoring.threePtPct >= 0.45) narrative += 'Away 3PT-dependent (>45% from 3). ';
 
   return {
     home: {
