@@ -2478,6 +2478,42 @@ function analyzeScoringDurability(teamAbbr, score, fg3Made, opponentScore) {
 }
 
 
+// ==================== PROCESS SCORE & SCORING SOURCE ====================
+function computeProcessScore(stats, elapsedMins) {
+  const fgm = parseInt(stats.fieldGoalsMade||0);
+  const fga = parseInt(stats.fieldGoalsAttempted||0);
+  const fg3m = parseInt(stats.threePointFieldGoalsMade||0);
+  const fta = parseInt(stats.freeThrowsAttempted||0);
+  const ast = parseInt(stats.assists||0);
+  const tov = parseInt(stats.turnovers||0);
+  const oreb = parseInt(stats.offensiveRebounds||0);
+  const stl = parseInt(stats.steals||0);
+  const blk = parseInt(stats.blocks||0);
+  const mins = Math.max(elapsedMins, 1);
+  const _clamp = (v,lo,hi) => Math.max(lo, Math.min(hi, v));
+  const astRate = fgm > 0 ? ast / fgm : 0;
+  const poss = fga + 0.44 * fta + tov;
+  const tovRate = poss > 0 ? tov / poss : 0;
+  const orebRate = oreb / mins;
+  const hustleRate = (stl + blk) / mins;
+  const astScore = _clamp(astRate / 0.70, 0, 1) * 3;
+  const tovScore = _clamp(1 - (tovRate - 0.08) / 0.12, 0, 1) * 3;
+  const orebScore = _clamp(orebRate / 0.30, 0, 1) * 2;
+  const hustleScore = _clamp(hustleRate / 0.20, 0, 1) * 2;
+  const score = _clamp(astScore + tovScore + orebScore + hustleScore, 0, 10);
+  return { score: Math.round(score * 10) / 10, astRate, tovRate, orebRate, hustleRate };
+}
+function computeScoringSource(stats) {
+  const fgm = parseInt(stats.fieldGoalsMade||0);
+  const fg3m = parseInt(stats.threePointFieldGoalsMade||0);
+  const ftm = parseInt(stats.freeThrowsMade||0);
+  const paintPts = (fgm - fg3m) * 2;
+  const threePts = fg3m * 3;
+  const total = paintPts + threePts + ftm;
+  if (total <= 0) return { paintPct: 0, threePtPct: 0, ftPct: 0 };
+  return { paintPct: paintPts / total, threePtPct: threePts / total, ftPct: ftm / total };
+}
+
 // ==================== HISTORICAL BACKTESTING SYSTEM ====================
 // Pure signal detection + game state reconstruction + orchestration runner
 // Separate from live tracker — results stored in localStorage['historicalBacktest']
@@ -3389,6 +3425,7 @@ async function fetchESPNScoreboard() {
         const gMins = getElapsedMinutes(per, clk), gPct = getGamePct(per, clk);
         const scoreMargin = Math.abs(aS - hS);
         let starCoilTeams = {};
+        const _starColdList = []; // collect ALL star pace data for card display
         [...aLeaders,...hLeaders].forEach(leader => {
           // NCAA: match against pre-game star database (16+ PPG, built from ESPN team leaders API)
           // NBA: match against the curated star database (23+ PPG)
@@ -3407,6 +3444,8 @@ async function fetchESPNScoreboard() {
             const pr = exp>0 ? leader.pts/exp : 1;
             const side = leader.team===aA?'away':'home';
             const oppSide = side==='away'?'home':'away';
+            // Store star pace data for card display (regardless of signal)
+            if (pr < 0.80) _starColdList.push({ name: leader.name, team: leader.team, pts: leader.pts, exp: exp.toFixed(0), pace: Math.round(pr * 100) });
             // Star Coil: <65% pace + prime window + game within 15 pts (competitive)
             // NBA: Q2-Q3 (per 2-3). NCAA: 8-35 min elapsed (halves, not quarters)
             const _coilMaxMargin = isNCAA() ? 12 : 15;
@@ -3996,6 +4035,62 @@ async function fetchESPNScoreboard() {
               return `<div style="flex:1;padding:5px 8px;background:var(--bg);border-radius:6px;"><div style="font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;">${abbr}</div>${players.map(renderPlayer).join('')}</div>`;
             };
             return `<div style="display:flex;gap:8px;margin-top:6px;font-size:11px;">${renderTeam(aA, aTop3)}${renderTeam(hA, hTop3)}</div>`;
+          })()}
+          ${(()=>{
+            // GAME INSIGHT PANEL: Process Score + Scoring Source + 3PT + Star Cold
+            const aProc = computeProcessScore(aStats, gMins);
+            const hProc = computeProcessScore(hStats, gMins);
+            const aSrc = computeScoringSource(aStats);
+            const hSrc = computeScoringSource(hStats);
+            const procColor = (s) => s >= 7 ? '#10b981' : s >= 4 ? '#f59e0b' : '#ef4444';
+            const srcBar = (src) => {
+              if (src.paintPct + src.threePtPct + src.ftPct <= 0) return '<div style="height:6px;background:var(--border);border-radius:3px;"></div>';
+              return '<div style="display:flex;height:6px;border-radius:3px;overflow:hidden;gap:1px;">'
+                + '<div style="flex:' + src.paintPct.toFixed(2) + ';background:#10b981;" title="Paint ' + (src.paintPct*100).toFixed(0) + '%"></div>'
+                + '<div style="flex:' + src.threePtPct.toFixed(2) + ';background:#3b82f6;" title="3PT ' + (src.threePtPct*100).toFixed(0) + '%"></div>'
+                + '<div style="flex:' + src.ftPct.toFixed(2) + ';background:#f59e0b;" title="FT ' + (src.ftPct*100).toFixed(0) + '%"></div>'
+                + '</div>';
+            };
+            const coldStars = _starColdList.filter(s => s.pace < 65);
+            const coldHTML = coldStars.length > 0
+              ? '<div style="margin-top:5px;font-size:10px;color:#ef4444;font-weight:600;">'
+                + coldStars.map(s => s.name.split(' ').pop() + ' ' + s.pace + '%').join(' · ')
+                + ' <span style="color:var(--text-muted);font-weight:400;">pace</span></div>'
+              : '';
+            return '<div style="margin-top:8px;padding:8px 10px;background:var(--bg);border-radius:8px;border:1px solid var(--border-light);font-size:11px;">'
+              + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+              // Away team
+              + '<div>'
+              + '<div style="font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">' + aA + '</div>'
+              + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">'
+              + '<span style="font-weight:700;">Process</span> <span style="font-weight:800;color:' + procColor(aProc.score) + ';">' + aProc.score.toFixed(1) + '</span>'
+              + '<span style="color:var(--text-muted);">·</span>'
+              + '<span style="font-weight:700;">3PT</span> <span style="font-weight:600;">' + a3P + '% <span style="color:var(--text-muted);">(' + a3M + '/' + a3A + ')</span></span>'
+              + '</div>'
+              + '<div style="display:flex;align-items:center;gap:4px;">'
+              + '<span style="font-size:9px;color:var(--text-muted);">Source</span>'
+              + '<div style="flex:1;">' + srcBar(aSrc) + '</div>'
+              + '<span style="font-size:9px;color:var(--text-muted);">' + (aSrc.paintPct*100).toFixed(0) + '/' + (aSrc.threePtPct*100).toFixed(0) + '/' + (aSrc.ftPct*100).toFixed(0) + '</span>'
+              + '</div>'
+              + '</div>'
+              // Home team
+              + '<div>'
+              + '<div style="font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">' + hA + '</div>'
+              + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">'
+              + '<span style="font-weight:700;">Process</span> <span style="font-weight:800;color:' + procColor(hProc.score) + ';">' + hProc.score.toFixed(1) + '</span>'
+              + '<span style="color:var(--text-muted);">·</span>'
+              + '<span style="font-weight:700;">3PT</span> <span style="font-weight:600;">' + h3P + '% <span style="color:var(--text-muted);">(' + h3M + '/' + h3A + ')</span></span>'
+              + '</div>'
+              + '<div style="display:flex;align-items:center;gap:4px;">'
+              + '<span style="font-size:9px;color:var(--text-muted);">Source</span>'
+              + '<div style="flex:1;">' + srcBar(hSrc) + '</div>'
+              + '<span style="font-size:9px;color:var(--text-muted);">' + (hSrc.paintPct*100).toFixed(0) + '/' + (hSrc.threePtPct*100).toFixed(0) + '/' + (hSrc.ftPct*100).toFixed(0) + '</span>'
+              + '</div>'
+              + '</div>'
+              + '</div>'
+              + coldHTML
+
+              + '</div>';
           })()}`:''}
           <!-- SIGNALS -->
           ${signals.length?(()=>{
