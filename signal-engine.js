@@ -114,6 +114,15 @@ let signalLog = [];
 let starDBs = { nba: [], ncaab: [] };
 let ncaaTeam3pt = {}; // { abbr: 3pt% }
 
+// === BOX SCORE CACHE ===
+// Keyed by eventId, stores parsed team stats + timestamp
+const boxScoreCache = {}; // { eventId: { home: {...}, away: {...}, ts: Date.now() } }
+const BOX_SCORE_TTL = 45000; // 45 seconds — slightly longer than poll interval to avoid stale reads
+
+// === LIVE GAMES STATE (served to frontend via API) ===
+// Keyed by eventId, updated each poll cycle with sustainability + game info
+const liveGamesState = {}; // { eventId: { ...gameInfo, sustainability: {...} } }
+
 function loadState() {
   try {
     const raw = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8'));
@@ -398,6 +407,204 @@ function matchOdds(modeState, aAbbr, hAbbr, aFull, hFull) {
   return null;
 }
 
+// === BOX SCORE FETCHING ===
+async function fetchBoxScore(eventId, sport) {
+  const now = Date.now();
+  const cached = boxScoreCache[eventId];
+  if (cached && (now - cached.ts) < BOX_SCORE_TTL) return cached;
+
+  const league = sport === 'ncaab' ? 'mens-college-basketball' : 'nba';
+  const url = `https://site.api.espn.com/apis/site/v2/sports/basketball/${league}/summary?event=${eventId}`;
+  try {
+    const resp = await fetch(url);
+    if (!resp.ok) return cached || null;
+    const data = await resp.json();
+
+    const teams = data.boxscore?.teams || [];
+    if (teams.length < 2) return cached || null;
+
+    function parseTeamStats(teamData) {
+      const stats = {};
+      // ESPN format: teamData.statistics[] is an array of stat categories
+      // Each has labels[] and athletes[], plus team totals in displayValue or totals
+      const statArr = teamData.statistics || [];
+      for (const cat of statArr) {
+        const labels = cat.labels || [];
+        const totals = cat.totals || [];
+        for (let i = 0; i < labels.length; i++) {
+          const label = labels[i];
+          const val = totals[i];
+          if (val !== undefined) stats[label] = val;
+        }
+      }
+
+      // Map ESPN labels to our stat names
+      const get = (key) => parseInt(stats[key]) || 0;
+      const getFrac = (key) => {
+        // ESPN gives "12-25" format for some stats
+        const v = stats[key];
+        if (typeof v === 'string' && v.includes('-')) {
+          const parts = v.split('-');
+          return { made: parseInt(parts[0]) || 0, att: parseInt(parts[1]) || 0 };
+        }
+        return { made: 0, att: 0 };
+      };
+
+      const fg = getFrac('FG');
+      const fg3 = getFrac('3PT');
+      const ft = getFrac('FT');
+
+      return {
+        PTS: get('PTS'),
+        REB: get('REB'),
+        OREB: get('OREB'),
+        DREB: get('DREB'),
+        AST: get('AST'),
+        TOV: get('TO'),
+        STL: get('STL'),
+        BLK: get('BLK'),
+        PF: get('PF'),
+        FGA: fg.att,
+        FGM: fg.made,
+        FG3A: fg3.att,
+        FG3M: fg3.made,
+        FTA: ft.att,
+        FTM: ft.made,
+      };
+    }
+
+    // ESPN boxscore.teams[0] = away, teams[1] = home (standard ESPN order)
+    // Verify by checking homeAway field if available
+    let homeIdx = 1, awayIdx = 0;
+    if (teams[0]?.team?.homeAway === 'home') { homeIdx = 0; awayIdx = 1; }
+    else if (teams[1]?.team?.homeAway === 'away') { homeIdx = 0; awayIdx = 1; }
+
+    const result = {
+      home: parseTeamStats(teams[homeIdx]),
+      away: parseTeamStats(teams[awayIdx]),
+      homeTeam: teams[homeIdx]?.team?.abbreviation || '',
+      awayTeam: teams[awayIdx]?.team?.abbreviation || '',
+      ts: now,
+    };
+
+    boxScoreCache[eventId] = result;
+    return result;
+  } catch (e) {
+    log(`[BOX] Error fetching box score for ${eventId}: ${e.message}`);
+    return cached || null;
+  }
+}
+
+// === SUSTAINABILITY COMPUTATION ===
+function clampVal(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
+
+function computeSustainability(homeStats, awayStats, minutes) {
+  if (!homeStats || !awayStats || minutes < 4) return null;
+
+  const pace = Math.max(minutes / 48, 0.1);
+
+  // 5 Process Factors (per-48 normalized differentials, home perspective)
+  const rebounding = clampVal((homeStats.REB - awayStats.REB) / pace, -10, 10);
+  const hustle = clampVal((homeStats.OREB - awayStats.OREB) / pace, -6, 6);
+  const ballMovement = clampVal(
+    (homeStats.AST / Math.max(homeStats.TOV, 1)) - (awayStats.AST / Math.max(awayStats.TOV, 1)),
+    -3, 3
+  );
+  const aggressiveness = clampVal((homeStats.FTA - awayStats.FTA) / pace, -10, 10);
+  const defense = clampVal(
+    ((homeStats.STL + homeStats.BLK) - (awayStats.STL + awayStats.BLK)) / pace,
+    -8, 8
+  );
+
+  // Process score: each factor gets 0-2 based on normalized value within its range
+  function factorScore(val, lo, hi) {
+    // Normalize to 0-1 within range, then scale to 0-2
+    return ((val - lo) / (hi - lo)) * 2;
+  }
+  const homeProcessScore =
+    factorScore(rebounding, -10, 10) +
+    factorScore(hustle, -6, 6) +
+    factorScore(ballMovement, -3, 3) +
+    factorScore(aggressiveness, -10, 10) +
+    factorScore(defense, -8, 8);
+
+  // Away process score is the inverse
+  const awayProcessScore = 10 - homeProcessScore;
+
+  // Scoring source per team
+  function scoringSource(stats) {
+    const pts = Math.max(stats.PTS, 1);
+    const paintPct = ((stats.FGM - stats.FG3M) * 2 + stats.FTM) / pts;
+    const threePct = (stats.FG3M * 3) / pts;
+    const ftPct = stats.FTM / pts;
+    return {
+      paintPct: Math.round(paintPct * 1000) / 1000,
+      threePct: Math.round(threePct * 1000) / 1000,
+      ftPct: Math.round(ftPct * 1000) / 1000,
+    };
+  }
+  const homeScoring = scoringSource(homeStats);
+  const awayScoring = scoringSource(awayStats);
+
+  // Sustainability verdict per team
+  function verdict(processScore, scoring) {
+    if (processScore >= 6 && scoring.paintPct >= 0.40 && scoring.threePct < 0.35) return 'sustainable';
+    if (processScore <= 3 || scoring.threePct >= 0.45 || scoring.paintPct < 0.25) return 'unsustainable';
+    return 'mixed';
+  }
+  const homeVerdict = verdict(homeProcessScore, homeScoring);
+  const awayVerdict = verdict(awayProcessScore, awayScoring);
+
+  // Lead analysis narrative
+  const lead = homeStats.PTS - awayStats.PTS;
+  let narrative = '';
+  if (lead > 0) {
+    narrative = `Home leads by ${lead}. `;
+    if (homeVerdict === 'sustainable') narrative += 'Lead is process-backed (sustainable). ';
+    else if (homeVerdict === 'unsustainable') narrative += 'WARNING: Lead built on hot shooting — regression likely. ';
+    else narrative += 'Lead quality is mixed. ';
+  } else if (lead < 0) {
+    narrative = `Away leads by ${Math.abs(lead)}. `;
+    if (awayVerdict === 'sustainable') narrative += 'Lead is process-backed (sustainable). ';
+    else if (awayVerdict === 'unsustainable') narrative += 'WARNING: Lead built on hot shooting — regression likely. ';
+    else narrative += 'Lead quality is mixed. ';
+  } else {
+    narrative = 'Game tied. ';
+  }
+
+  // Process comparison
+  if (Math.abs(homeProcessScore - awayProcessScore) >= 2) {
+    const dominant = homeProcessScore > awayProcessScore ? 'Home' : 'Away';
+    narrative += `${dominant} dominates process factors. `;
+  }
+
+  // Warnings
+  if (homeScoring.threePct >= 0.45) narrative += 'Home 3PT-dependent (>45% from 3). ';
+  if (awayScoring.threePct >= 0.45) narrative += 'Away 3PT-dependent (>45% from 3). ';
+
+  return {
+    home: {
+      processScore: Math.round(homeProcessScore * 10) / 10,
+      verdict: homeVerdict,
+      scoring: homeScoring,
+    },
+    away: {
+      processScore: Math.round(awayProcessScore * 10) / 10,
+      verdict: awayVerdict,
+      scoring: awayScoring,
+    },
+    factors: {
+      rebounding: Math.round(rebounding * 10) / 10,
+      hustle: Math.round(hustle * 10) / 10,
+      ballMovement: Math.round(ballMovement * 10) / 10,
+      aggressiveness: Math.round(aggressiveness * 10) / 10,
+      defense: Math.round(defense * 10) / 10,
+    },
+    narrative,
+    minutes: Math.round(minutes * 10) / 10,
+  };
+}
+
 // === NCAA STAR DATABASE + TEAM 3PT AVERAGES ===
 // Fetches ALL 362 D-I teams (not just today's games), builds star DB + team 3PT cache
 async function buildStarDB(cfg) {
@@ -628,6 +835,27 @@ async function detectSignals(cfg) {
       const gPct = getGamePct(cfg, per, clk);
       const scoreMargin = Math.abs(aS - hS);
 
+      // Fetch box score and compute sustainability
+      let sustainability = null;
+      const boxScore = await fetchBoxScore(gid, cfg.mode);
+      if (boxScore) {
+        sustainability = computeSustainability(boxScore.home, boxScore.away, gMins);
+      }
+
+      // Store live game state for frontend API
+      liveGamesState[gid] = {
+        eventId: gid,
+        mode: cfg.mode,
+        away: { abbr: aA, full: aFull, score: aS },
+        home: { abbr: hA, full: hFull, score: hS },
+        period: per,
+        clock: clk,
+        periodLabel: periodLabel(cfg, per),
+        gameMins: Math.round(gMins * 10) / 10,
+        sustainability,
+        lastUpdated: Date.now(),
+      };
+
       let signals = [];
       let hasStar = false;
       let starCoilTeams = {};
@@ -814,7 +1042,8 @@ async function detectSignals(cfg) {
                   finalHomeScore: null,
                   gameCompleted: false,
                   spreadResult: null,
-                  spreadPayout: null
+                  spreadPayout: null,
+                  sustainability: sustainability || null
                 };
                 signalLog.push(qeEntry);
                 newSignals++;
@@ -919,7 +1148,8 @@ async function detectSignals(cfg) {
         finalHomeScore: null,
         gameCompleted: false,
         mlResult: null,
-        atsPayout: null
+        atsPayout: null,
+        sustainability: sustainability || null
       };
 
       signalLog.push(entry);
@@ -1019,6 +1249,19 @@ function startHTTPServer() {
     } catch (e) {
       res.writeHead(400); res.end('Bad request'); return;
     }
+
+    // === API ENDPOINTS ===
+    if (urlPath === '/api/live-games') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(Object.values(liveGamesState)));
+      return;
+    }
+    if (urlPath === '/api/signals') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(signalLog));
+      return;
+    }
+
     if (urlPath === '/') urlPath = '/index.html';
 
     // Prevent null bytes in path

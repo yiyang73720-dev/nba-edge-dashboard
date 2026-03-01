@@ -883,6 +883,11 @@
       table { font-size: 11px; }
       thead th { padding: 8px 8px; font-size: 8px; }
       tbody td { padding: 8px 8px; }
+      .xray-team-blocks { gap: 6px; }
+      .xray-team-box { padding: 8px 10px; }
+      .xray-team-score { font-size: 24px; }
+      .xray-process-row { gap: 6px; }
+      .xray-factors td { padding: 2px 4px; font-size: 10px; }
     }
     @media (max-width: 480px) {
       .header h1 { font-size: 13px; }
@@ -902,6 +907,220 @@
       .countdown-bar { flex: 0 0 60px; }
     }
 
+
+    /* ===== GAME X-RAY SUSTAINABILITY CARDS ===== */
+    .xray-team-blocks {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .xray-team-box {
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      text-align: center;
+      border: 1px solid var(--border-light);
+      transition: border-color var(--transition-normal);
+    }
+    .xray-team-box:hover { border-color: var(--border); }
+    .xray-team-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      margin-bottom: 4px;
+    }
+    .xray-team-score {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--text-primary);
+      letter-spacing: -1px;
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+      margin-bottom: 6px;
+    }
+    .sustainability-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    .sustainability-badge:hover { transform: scale(1.05); }
+    .sustainability-badge.sustainable {
+      background: rgba(16, 185, 129, 0.12);
+      color: #10b981;
+    }
+    .sustainability-badge.mixed {
+      background: rgba(245, 158, 11, 0.12);
+      color: #f59e0b;
+    }
+    .sustainability-badge.unsustainable {
+      background: rgba(239, 68, 68, 0.12);
+      color: #ef4444;
+    }
+    [data-theme="dark"] .sustainability-badge.sustainable { background: rgba(16, 185, 129, 0.18); }
+    [data-theme="dark"] .sustainability-badge.mixed { background: rgba(245, 158, 11, 0.18); }
+    [data-theme="dark"] .sustainability-badge.unsustainable { background: rgba(239, 68, 68, 0.18); }
+
+    .xray-section {
+      padding: 8px 0;
+      border-top: 1px solid var(--border-light);
+    }
+    .xray-section:first-child { border-top: none; padding-top: 0; }
+    .xray-section-label {
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    .xray-process-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .xray-process-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+    }
+    .xray-process-team {
+      font-weight: 700;
+      color: var(--text-primary);
+      min-width: 32px;
+    }
+    .xray-process-bar {
+      flex: 1;
+      height: 6px;
+      background: var(--border-light);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .xray-process-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .xray-process-val {
+      font-weight: 800;
+      font-size: 12px;
+      min-width: 28px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Scoring source stacked bar */
+    .xray-source-bar {
+      display: flex;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      gap: 1px;
+      margin-bottom: 3px;
+    }
+    .xray-source-seg {
+      transition: flex 0.5s ease;
+    }
+    .xray-source-legend {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      font-size: 9px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .xray-source-legend span::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 2px;
+      margin-right: 3px;
+      vertical-align: middle;
+    }
+    .xray-source-legend .paint::before { background: #10b981; }
+    .xray-source-legend .three::before { background: #f59e0b; }
+    .xray-source-legend .three.hot::before { background: #ef4444; }
+    .xray-source-legend .ft::before { background: #9ca3af; }
+
+    /* Process factors comparison table */
+    .xray-factors {
+      width: 100%;
+      font-size: 11px;
+    }
+    .xray-factors td {
+      padding: 3px 6px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .xray-factors td:first-child {
+      font-weight: 600;
+      color: var(--text-muted);
+      font-size: 10px;
+    }
+    .xray-factors td:nth-child(2),
+    .xray-factors td:nth-child(3) {
+      text-align: right;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    .xray-factors tr:last-child td { border-bottom: none; }
+    .xray-val-pos { color: var(--green); }
+    .xray-val-neg { color: var(--red); }
+
+    /* Confirmation narrative */
+    .xray-confirmation {
+      padding: 8px 12px;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--border);
+      font-size: 11px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .xray-confirmation.warning {
+      border-left-color: var(--orange);
+      background: var(--orange-light);
+    }
+    .xray-confirmation.danger {
+      border-left-color: var(--red);
+      background: var(--red-light);
+    }
+    .xray-confirmation.safe {
+      border-left-color: var(--green);
+      background: var(--green-light);
+    }
+
+    /* Game card sustainability glow */
+    .game-card.xray-warning {
+      border: 1px solid var(--orange);
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.08);
+    }
+    .game-card.xray-warning .game-card-header {
+      background: linear-gradient(135deg, var(--orange-light) 0%, var(--bg) 100%);
+    }
+    .game-card.xray-danger {
+      border: 2px solid var(--red);
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.1);
+    }
+    .game-card.xray-danger .game-card-header {
+      background: linear-gradient(135deg, var(--red-light) 0%, var(--bg) 100%);
+    }
+    [data-theme="dark"] .game-card.xray-warning { border-color: var(--orange); box-shadow: 0 0 16px rgba(245, 158, 11, 0.12); }
+    [data-theme="dark"] .game-card.xray-danger { border-color: var(--red); box-shadow: 0 0 16px rgba(239, 68, 68, 0.12); }
 
     /* ===== QUICK BET PANEL PREMIUM ===== */
     #quick-bet-panel {
@@ -1028,6 +1247,11 @@
         <div class="chip-value" id="live-games-count">-</div>
         <div class="chip-label">Games</div>
         <div class="chip-desc">Total live games tracked</div>
+      </div>
+      <div class="signal-chip" style="border-left:3px solid var(--orange);">
+        <div class="chip-value orange" id="live-xray-warnings">0</div>
+        <div class="chip-label orange">Warnings</div>
+        <div class="chip-desc">Games where the leading team has unsustainable or mixed scoring</div>
       </div>
       <div class="signal-chip signal-chip-clickable" onclick="toggleSignalDetail('all')" style="border-left:3px solid var(--accent);">
         <div class="chip-value" id="live-total-signals" style="color:var(--accent);">0</div>
@@ -2505,6 +2729,146 @@ function computeScoringSource(stats) {
   return { paintPct: paintPts / total, threePtPct: threePts / total, ftPct: ftm / total };
 }
 
+// ==================== GAME X-RAY: SUSTAINABILITY COMPUTATION ====================
+function computeSustainabilityClient(game, aStats, hStats, aA, hA, aS, hS, elapsedMins, boxscoreTeamStats) {
+  // Use backend sustainability data if available
+  if (game && game.sustainability) return game.sustainability;
+
+  const proc = (stats) => computeProcessScore(stats, elapsedMins);
+  const src = (stats) => computeScoringSource(stats);
+
+  const aProc = proc(aStats);
+  const hProc = proc(hStats);
+  const aSrc = src(aStats);
+  const hSrc = src(hStats);
+
+  // Sustainability classification based on scoring source + process
+  const classifySustainability = (srcData, procData, score) => {
+    if (score <= 0) return { label: 'N/A', cls: 'mixed' };
+    const threeHeavy = srcData.threePtPct > 0.40;
+    const veryThreeHeavy = srcData.threePtPct > 0.50;
+    const paintDominant = srcData.paintPct > 0.45;
+    const strongProcess = procData.score >= 7;
+    const weakProcess = procData.score < 4;
+
+    if (veryThreeHeavy || (threeHeavy && weakProcess)) {
+      return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
+    } else if (paintDominant && strongProcess) {
+      return { label: 'SUSTAINABLE', cls: 'sustainable' };
+    } else if (threeHeavy && !weakProcess) {
+      return { label: 'MIXED', cls: 'mixed' };
+    } else if (strongProcess) {
+      return { label: 'SUSTAINABLE', cls: 'sustainable' };
+    } else if (weakProcess) {
+      return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
+    }
+    return { label: 'MIXED', cls: 'mixed' };
+  };
+
+  const aSust = classifySustainability(aSrc, aProc, aS);
+  const hSust = classifySustainability(hSrc, hProc, hS);
+
+  // Process factors from stats
+  const extractFactors = (stats, bxStats) => {
+    const merged = Object.assign({}, stats, bxStats || {});
+    const reb = parseInt(merged.totalRebounds || merged.rebounds || 0);
+    const oreb = parseInt(merged.offensiveRebounds || 0);
+    const ast = parseInt(merged.assists || 0);
+    const fgm = parseInt(merged.fieldGoalsMade || 0);
+    const fta = parseInt(merged.freeThrowsAttempted || 0);
+    const stl = parseInt(merged.steals || 0);
+    const blk = parseInt(merged.blocks || 0);
+    const tov = parseInt(merged.turnovers || 0);
+    const fga = parseInt(merged.fieldGoalsAttempted || 0);
+    const poss = fga + 0.44 * fta + tov;
+    return {
+      rebounding: reb,
+      hustle: oreb,
+      ballMovement: fgm > 0 ? ast / fgm : 0,
+      aggressiveness: fta,
+      defense: stl + blk,
+      turnovers: tov,
+      possessions: poss
+    };
+  };
+
+  const bxAway = (boxscoreTeamStats || {})[`away`] || {};
+  const bxHome = (boxscoreTeamStats || {})[`home`] || {};
+  const aFactors = extractFactors(aStats, bxAway);
+  const hFactors = extractFactors(hStats, bxHome);
+
+  // Compute comparative factor deltas (positive = advantage for that team relative to opponent)
+  const computeDeltas = (myFactors, oppFactors, mins) => {
+    const m = Math.max(mins, 1);
+    return {
+      rebounding: ((myFactors.rebounding - oppFactors.rebounding) / m * 10).toFixed(1),
+      hustle: ((myFactors.hustle - oppFactors.hustle) / m * 10).toFixed(1),
+      ballMovement: ((myFactors.ballMovement - oppFactors.ballMovement) * 10).toFixed(1),
+      aggressiveness: ((myFactors.aggressiveness - oppFactors.aggressiveness) / m * 10).toFixed(1),
+      defense: ((myFactors.defense - oppFactors.defense) / m * 10).toFixed(1)
+    };
+  };
+
+  const aDeltas = computeDeltas(aFactors, hFactors, elapsedMins);
+  const hDeltas = computeDeltas(hFactors, aFactors, elapsedMins);
+
+  // Build confirmation narrative
+  const margin = aS - hS;
+  const absMargin = Math.abs(margin);
+  const leadingTeam = margin > 0 ? aA : margin < 0 ? hA : null;
+  const trailingTeam = margin > 0 ? hA : margin < 0 ? aA : null;
+  const leadSust = margin > 0 ? aSust : margin < 0 ? hSust : null;
+  const trailSust = margin > 0 ? hSust : margin < 0 ? aSust : null;
+  const leadProc = margin > 0 ? aProc : margin < 0 ? hProc : null;
+  const trailProc = margin > 0 ? hProc : margin < 0 ? aProc : null;
+  const leadSrc = margin > 0 ? aSrc : margin < 0 ? hSrc : null;
+
+  let narrative = '';
+  let narrativeClass = '';
+  if (leadingTeam && absMargin > 0) {
+    const lead3Pct = (leadSrc.threePtPct * 100).toFixed(0);
+    if (leadSust.cls === 'unsustainable') {
+      narrative = `${leadingTeam} leads by ${absMargin} but ${lead3Pct}% of scoring from 3PT. ${trailingTeam} has ${trailProc.score >= leadProc.score ? 'stronger' : 'comparable'} process (${trailProc.score.toFixed(1)} vs ${leadProc.score.toFixed(1)}). Lead may narrow if shooting regresses.`;
+      narrativeClass = 'warning';
+    } else if (leadSust.cls === 'mixed') {
+      narrative = `${leadingTeam} leads by ${absMargin} with mixed scoring sustainability. ${trailingTeam} process: ${trailProc.score.toFixed(1)}. Watch for shooting regression.`;
+      narrativeClass = 'warning';
+    } else if (leadSust.cls === 'sustainable' && trailSust && trailSust.cls !== 'sustainable') {
+      narrative = `${leadingTeam} leads by ${absMargin} with sustainable scoring (paint-driven, strong process ${leadProc.score.toFixed(1)}). Lead looks durable.`;
+      narrativeClass = 'safe';
+    } else {
+      narrative = `${leadingTeam} leads by ${absMargin}. Both teams scoring sustainably. Margin likely to hold.`;
+      narrativeClass = 'safe';
+    }
+  } else {
+    narrative = 'Game is tied. Monitor scoring sources for emerging edge.';
+    narrativeClass = '';
+  }
+
+  // Is leading team's scoring a warning?
+  const isWarning = leadingTeam && (leadSust.cls === 'unsustainable' || leadSust.cls === 'mixed');
+
+  return {
+    away: {
+      sustainability: aSust,
+      processScore: aProc,
+      scoringSource: aSrc,
+      deltas: aDeltas
+    },
+    home: {
+      sustainability: hSust,
+      processScore: hProc,
+      scoringSource: hSrc,
+      deltas: hDeltas
+    },
+    narrative,
+    narrativeClass,
+    isWarning,
+    leadingTeam,
+    margin: absMargin
+  };
+}
+
 // ==================== HISTORICAL BACKTESTING SYSTEM ====================
 // Pure signal detection + game state reconstruction + orchestration runner
 // Separate from live tracker — results stored in localStorage['historicalBacktest']
@@ -3254,6 +3618,7 @@ async function fetchESPNScoreboard() {
     let sectionHeaders = { live: false, upcoming: false, completed: false };
 
     let sigStar=0, sigFav=0, sigDog=0, sigQuality=0, hotTeams=0, warmTeams=0;
+    window._xrayWarningCount = 0;
     let cards='', tpCards='', gameTheses=[];
     // Per-signal game tracking for chip click-to-expand
     let signalGames = { 'fav': [], 'dog': [], 'star': [], 'quality': [] };
@@ -3923,39 +4288,39 @@ async function fetchESPNScoreboard() {
         }
       }
 
-      const cc = signalLevel===2?'signal-fire':signalLevel===1?'signal-warn':'';
-      const hc = isLive?'game-card-header live-pulse':'game-card-header';
-
+      // bar3 helper for 3PT tracker card
       const bar3 = (p,m,a,t) => {
         const v=parseFloat(p)||0, bc=v>=50?'hot':v>=getLeague3PtAvg()?'normal':'cold';
         return `<div class="stat-bar-row"><span class="stat-bar-label">${t} 3PT%</span><div class="stat-bar-track"><div class="stat-bar-fill ${bc}" style="width:${Math.min(v,100)}%">${v.toFixed(0)}%</div><div class="stat-bar-avg" style="left:${getLeague3PtAvg()}%" data-label="${getLeague3PtAvg()}%"></div></div><span class="stat-bar-value">${m||'-'}/${a||'-'}</span></div>`;
       };
 
-      // Durability bars
-      let durabilityHTML = '';
-      if (isLive && (aS > 0 || hS > 0)) {
-        const aDur = analyzeScoringDurability(aA, aS, a3M, hS);
-        const hDur = analyzeScoringDurability(hA, hS, h3M, aS);
-        const durBar = (team, dur) => {
-          if (dur.pct3 <= 0) return '';
-          const cls = dur.durability;
-          const w = Math.min(dur.pct3, 100);
-          const col = dur.durable ? 'var(--green)' : 'var(--accent)';
-          return `<div class="durability-bar ${cls}"><span>${team}</span><div class="durability-meter"><div class="durability-meter-fill" style="width:${w}%;background:${col};"></div></div><span>${dur.label}</span></div>`;
-        };
-        durabilityHTML = durBar(aA, aDur) + durBar(hA, hDur);
-      }
-
-      // FT info
-      let foulHTML = '';
-      if (isLive && (aFTA > 0 || hFTA > 0)) {
-        const ftGap = Math.abs(aFTA - hFTA);
-        foulHTML = `<div class="stat-bar-row"><span class="stat-bar-label">FTA</span><span style="flex:1;font-size:11px;">${aA}: ${aFTA} | ${hA}: ${hFTA}</span></div>`;
-      }
-
       const isFav = state.favorites.includes(gid);
       const periodLabel = isNCAA() ? (per <= 2 ? `H${per}` : `OT${per-2}`) : `Q${per}`;
       const _oddsHTML = buildOddsHTML(aA,hA,aFull,hFull,comp.odds?.[0]);
+
+      // ====== GAME X-RAY: SUSTAINABILITY CONFIRMATION ======
+      const _bxTeamXR = (_boxscoreMap._teamStats || {})[gid] || {};
+      const aFullStatsXR = Object.assign({}, aStats, _bxTeamXR.away || {});
+      const hFullStatsXR = Object.assign({}, hStats, _bxTeamXR.home || {});
+      const xray = isLive && (aS > 0 || hS > 0)
+        ? computeSustainabilityClient(null, aFullStatsXR, hFullStatsXR, aA, hA, aS, hS, gMins, _bxTeamXR)
+        : null;
+
+      // X-Ray card class for border glow
+      let xrayCardClass = '';
+      if (xray && xray.isWarning) {
+        const leadSustCls = xray.leadingTeam === aA ? xray.away.sustainability.cls : xray.home.sustainability.cls;
+        xrayCardClass = leadSustCls === 'unsustainable' ? 'xray-danger' : 'xray-warning';
+      }
+      // Signal-level class still applies (priority over xray)
+      const cc = signalLevel===2?'signal-fire':signalLevel===1?'signal-warn':xrayCardClass;
+      const hc = isLive?'game-card-header live-pulse':'game-card-header';
+
+      // Track xray warnings for signal strip
+      if (xray && xray.isWarning) {
+        if (!window._xrayWarningCount) window._xrayWarningCount = 0;
+        window._xrayWarningCount++;
+      }
 
       // Signal summary for card header
       const sigSummary = signals.filter(s=>s.level===2).map(s => {
@@ -3963,21 +4328,122 @@ async function fetchESPNScoreboard() {
         return icons[s.type] || s.type.toUpperCase();
       });
 
+      // Build X-Ray sustainability card body for live games
+      const buildXRayBody = () => {
+        if (!xray || !isLive) return '';
+        const aw = xray.away, hm = xray.home;
+        const procColor = (s) => s >= 7 ? '#10b981' : s >= 4 ? '#f59e0b' : '#ef4444';
+        const procBarW = (s) => Math.min(s / 10 * 100, 100);
+
+        // Scoring Source stacked bars
+        const buildSourceBar = (src, teamAbbr) => {
+          if (src.paintPct + src.threePtPct + src.ftPct <= 0) return '<div class="xray-source-bar"><div style="flex:1;background:var(--border-light);"></div></div>';
+          const threeColor = src.threePtPct > 0.40 ? '#ef4444' : '#f59e0b';
+          let segs = '';
+          if (src.paintPct > 0) segs += `<div class="xray-source-seg" style="flex:${src.paintPct.toFixed(3)};background:#10b981;" title="Paint ${(src.paintPct*100).toFixed(0)}%"></div>`;
+          if (src.threePtPct > 0) segs += `<div class="xray-source-seg" style="flex:${src.threePtPct.toFixed(3)};background:${threeColor};" title="3PT ${(src.threePtPct*100).toFixed(0)}%"></div>`;
+          if (src.ftPct > 0) segs += `<div class="xray-source-seg" style="flex:${src.ftPct.toFixed(3)};background:#9ca3af;" title="FT ${(src.ftPct*100).toFixed(0)}%"></div>`;
+          const threeHotCls = src.threePtPct > 0.40 ? ' hot' : '';
+          return `<div class="xray-source-bar">${segs}</div>`
+            + `<div class="xray-source-legend"><span class="paint">Paint ${(src.paintPct*100).toFixed(0)}%</span><span class="three${threeHotCls}">3PT ${(src.threePtPct*100).toFixed(0)}%</span><span class="ft">FT ${(src.ftPct*100).toFixed(0)}%</span></div>`;
+        };
+
+        // Process factors comparison table
+        const factorRow = (label, aVal, hVal) => {
+          const aNum = parseFloat(aVal), hNum = parseFloat(hVal);
+          const aCls = aNum > 0 ? 'xray-val-pos' : aNum < 0 ? 'xray-val-neg' : '';
+          const hCls = hNum > 0 ? 'xray-val-pos' : hNum < 0 ? 'xray-val-neg' : '';
+          const aSign = aNum > 0 ? '+' : '';
+          const hSign = hNum > 0 ? '+' : '';
+          return `<tr><td>${label}</td><td class="${aCls}">${aSign}${aVal}</td><td class="${hCls}">${hSign}${hVal}</td></tr>`;
+        };
+
+        let html = '';
+
+        // Section 1: Team Score Blocks with Sustainability Badges
+        html += `<div class="xray-team-blocks">
+          <div class="xray-team-box">
+            <div class="xray-team-name">${teamLogoImg(aLogo, 18)}${teamDisplayShort(aA, aFull)}</div>
+            <div class="xray-team-score">${aS}</div>
+            <span class="sustainability-badge ${aw.sustainability.cls}">${aw.sustainability.label}</span>
+          </div>
+          <div class="xray-team-box">
+            <div class="xray-team-name">${teamLogoImg(hLogo, 18)}${teamDisplayShort(hA, hFull)}</div>
+            <div class="xray-team-score">${hS}</div>
+            <span class="sustainability-badge ${hm.sustainability.cls}">${hm.sustainability.label}</span>
+          </div>
+        </div>`;
+
+        // Section 2: Process Score bars
+        html += `<div class="xray-section">
+          <div class="xray-section-label">Process Score</div>
+          <div class="xray-process-row">
+            <div class="xray-process-item">
+              <span class="xray-process-team">${aA}</span>
+              <div class="xray-process-bar"><div class="xray-process-fill" style="width:${procBarW(aw.processScore.score)}%;background:${procColor(aw.processScore.score)};"></div></div>
+              <span class="xray-process-val" style="color:${procColor(aw.processScore.score)};">${aw.processScore.score.toFixed(1)}</span>
+            </div>
+            <div class="xray-process-item">
+              <span class="xray-process-team">${hA}</span>
+              <div class="xray-process-bar"><div class="xray-process-fill" style="width:${procBarW(hm.processScore.score)}%;background:${procColor(hm.processScore.score)};"></div></div>
+              <span class="xray-process-val" style="color:${procColor(hm.processScore.score)};">${hm.processScore.score.toFixed(1)}</span>
+            </div>
+          </div>
+        </div>`;
+
+        // Section 3: Scoring Source bars
+        html += `<div class="xray-section">
+          <div class="xray-section-label">Scoring Source</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div>
+              <div style="font-size:10px;font-weight:700;color:var(--text-muted);margin-bottom:3px;">${aA}</div>
+              ${buildSourceBar(aw.scoringSource, aA)}
+            </div>
+            <div>
+              <div style="font-size:10px;font-weight:700;color:var(--text-muted);margin-bottom:3px;">${hA}</div>
+              ${buildSourceBar(hm.scoringSource, hA)}
+            </div>
+          </div>
+        </div>`;
+
+        // Section 4: Process Factors comparison
+        html += `<div class="xray-section">
+          <div class="xray-section-label">Process Factors</div>
+          <table class="xray-factors">
+            <tr><td style="font-size:9px;font-weight:700;color:var(--text-muted);">Factor</td><td style="text-align:right;font-size:9px;font-weight:700;color:var(--text-muted);">${aA}</td><td style="text-align:right;font-size:9px;font-weight:700;color:var(--text-muted);">${hA}</td></tr>
+            ${factorRow('Rebounding', aw.deltas.rebounding, hm.deltas.rebounding)}
+            ${factorRow('Hustle (OREB)', aw.deltas.hustle, hm.deltas.hustle)}
+            ${factorRow('Ball Movement', aw.deltas.ballMovement, hm.deltas.ballMovement)}
+            ${factorRow('Aggressiveness', aw.deltas.aggressiveness, hm.deltas.aggressiveness)}
+            ${factorRow('Defense', aw.deltas.defense, hm.deltas.defense)}
+          </table>
+        </div>`;
+
+        // Section 5: Confirmation narrative
+        html += `<div class="xray-section">
+          <div class="xray-confirmation ${xray.narrativeClass}">
+            ${xray.narrativeClass === 'warning' || xray.narrativeClass === 'danger' ? '<strong style="color:var(--orange);">WARNING</strong> ' : xray.narrativeClass === 'safe' ? '<strong style="color:var(--green);">CONFIRMED</strong> ' : ''}${xray.narrative}
+          </div>
+        </div>`;
+
+        return html;
+      };
+
       cards += `<div class="game-card ${cc}" data-game-id="${gid}">
         <div class="${hc}">
-          <span>${isLive ? '<span style="color:var(--red);font-weight:700;">LIVE</span> ' + periodLabel + ' ' + clk : 'UPCOMING'}</span>
+          <span>${isLive ? '<span style="color:var(--red);font-weight:700;">LIVE</span> ' + periodLabel + ' ' + clk : 'UPCOMING'}${gid ? ' <span style="font-size:9px;color:var(--text-muted);opacity:0.6;">#' + gid + '</span>' : ''}</span>
           <span style="display:flex;align-items:center;gap:6px;">
             ${sigSummary.length ? '<span style="font-size:9px;font-weight:700;color:var(--accent);background:var(--accent-light);padding:1px 6px;border-radius:3px;">' + sigSummary.join(' + ') + '</span>' : ''}
             <span class="fav-star" onclick="toggleFavorite('${gid}')" style="cursor:pointer;font-size:14px;">${isFav?'\u2605':'\u2606'}</span>
           </span>
         </div>
         <div class="game-card-body">
-          <!-- SCOREBOARD -->
+          ${isLive && xray ? buildXRayBody() : `
+          <!-- CLASSIC SCOREBOARD for non-live or no data -->
           <div class="game-teams">
             <div class="team-block">
               <div class="team-name">${teamLogoImg(aLogo, 20)}${teamDisplayShort(aA, aFull)}</div>
               <div class="team-record">${aRec}</div>
-              ${teamProfileHTML(aA, 'away', aLogo)}
               <div class="team-score">${isLive?aS:'-'}</div>
             </div>
             <div class="vs-block">
@@ -3986,119 +4452,11 @@ async function fetchESPNScoreboard() {
             <div class="team-block">
               <div class="team-name">${teamLogoImg(hLogo, 20)}${teamDisplayShort(hA, hFull)}</div>
               <div class="team-record">${hRec}</div>
-              ${teamProfileHTML(hA, 'home', hLogo)}
               <div class="team-score">${isLive?hS:'-'}</div>
             </div>
-          </div>
+          </div>`}
           ${gameLinksHTML(espnLink, leaguePassLink)}
-          <!-- ODDS -->
           ${_oddsHTML}
-          <!-- LIVE STATS -->
-          ${isLive?`<div class="stat-bars">
-            ${bar3(a3P,a3M,a3A,aA)}
-            ${bar3(h3P,h3M,h3A,hA)}
-            ${foulHTML}
-          </div>
-          ${durabilityHTML}
-          ${(()=>{
-            const bx = _boxscoreMap[gid];
-            const getTeamTop3 = (side, teamAbbr) => {
-              const top3 = teamScorerCache[teamAbbr] || [];
-              const roster = bx?.[side] || [];
-              if (roster.length === 0 && top3.length === 0) return [];
-              // Start with season top scorers who are actually playing
-              const result = [];
-              const usedNames = new Set();
-              top3.forEach(s => {
-                const sLast = s.name.split(' ').pop().toLowerCase();
-                const player = roster.find(p => p.name.toLowerCase().split(' ').pop() === sLast);
-                if (player) {
-                  result.push({ name: s.name, pts: player.pts });
-                  usedNames.add(player.name.toLowerCase());
-                }
-              });
-              // Backfill with top scorers from boxscore if we have <3
-              if (result.length < 3) {
-                roster
-                  .filter(p => p.pts > 0 && !usedNames.has(p.name.toLowerCase()))
-                  .sort((a, b) => b.pts - a.pts)
-                  .slice(0, 3 - result.length)
-                  .forEach(p => result.push({ name: p.name, pts: p.pts }));
-              }
-              return result.slice(0, 3);
-            };
-            const aTop3 = getTeamTop3('away', aA);
-            const hTop3 = getTeamTop3('home', hA);
-            if (aTop3.length === 0 && hTop3.length === 0) return '';
-            const renderPlayer = (p) => {
-              const lastName = p.name.split(' ').pop();
-              return `<div style="display:flex;align-items:center;gap:6px;padding:2px 0;"><strong style="min-width:75px;">${lastName}</strong> <span>${p.pts}pts</span></div>`;
-            };
-            const renderTeam = (abbr, players) => {
-              if (players.length === 0) return '';
-              return `<div style="flex:1;padding:5px 8px;background:var(--bg);border-radius:6px;"><div style="font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;">${abbr}</div>${players.map(renderPlayer).join('')}</div>`;
-            };
-            return `<div style="display:flex;gap:8px;margin-top:6px;font-size:11px;">${renderTeam(aA, aTop3)}${renderTeam(hA, hTop3)}</div>`;
-          })()}
-          ${(()=>{
-            // GAME INSIGHT PANEL: Process Score + Scoring Source + 3PT + Star Cold
-            // Merge boxscore team stats (turnovers, steals, blocks, OREB) into scoreboard stats
-            const _bxTeam = (_boxscoreMap._teamStats || {})[gid] || {};
-            const aFullStats = Object.assign({}, aStats, _bxTeam.away || {});
-            const hFullStats = Object.assign({}, hStats, _bxTeam.home || {});
-            const aProc = computeProcessScore(aFullStats, gMins);
-            const hProc = computeProcessScore(hFullStats, gMins);
-            const aSrc = computeScoringSource(aFullStats);
-            const hSrc = computeScoringSource(hFullStats);
-            const procColor = (s) => s >= 7 ? '#10b981' : s >= 4 ? '#f59e0b' : '#ef4444';
-            const srcBar = (src) => {
-              if (src.paintPct + src.threePtPct + src.ftPct <= 0) return '<div style="height:6px;background:var(--border);border-radius:3px;"></div>';
-              const _segs = [[src.paintPct,'#10b981','Paint'],[src.threePtPct,'#3b82f6','3PT'],[src.ftPct,'#f59e0b','FT']].filter(s => s[0] > 0);
-              return '<div style="display:flex;height:6px;border-radius:3px;overflow:hidden;gap:1px;">'
-                + _segs.map(s => '<div style="flex:' + s[0].toFixed(2) + ';background:' + s[1] + ';" title="' + s[2] + ' ' + (s[0]*100).toFixed(0) + '%"></div>').join('')
-                + '</div>';
-            };
-            const coldStars = _starColdList.filter(s => s.rawPr < 0.65);
-            const coldHTML = coldStars.length > 0
-              ? '<div style="margin-top:5px;font-size:10px;color:#ef4444;font-weight:600;">'
-                + coldStars.map(s => s.name.split(' ').pop() + ' ' + s.pace + '%').join(' · ')
-                + ' <span style="color:var(--text-muted);font-weight:400;">pace</span></div>'
-              : '';
-            return '<div style="margin-top:8px;padding:8px 10px;background:var(--bg);border-radius:8px;border:1px solid var(--border-light);font-size:11px;">'
-              + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
-              // Away team
-              + '<div>'
-              + '<div style="font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">' + aA + '</div>'
-              + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">'
-              + '<span style="font-weight:700;">Process</span> <span style="font-weight:800;color:' + procColor(aProc.score) + ';">' + aProc.score.toFixed(1) + '</span>'
-              + '<span style="color:var(--text-muted);">·</span>'
-              + '<span style="font-weight:700;">3PT</span> <span style="font-weight:600;">' + a3P + '% <span style="color:var(--text-muted);">(' + a3M + '/' + a3A + ')</span></span>'
-              + '</div>'
-              + '<div style="display:flex;align-items:center;gap:4px;">'
-              + '<span style="font-size:9px;color:var(--text-muted);">Source</span>'
-              + '<div style="flex:1;">' + srcBar(aSrc) + '</div>'
-              + '<span style="font-size:9px;color:var(--text-muted);">' + (aSrc.paintPct*100).toFixed(0) + '/' + (aSrc.threePtPct*100).toFixed(0) + '/' + (aSrc.ftPct*100).toFixed(0) + '</span>'
-              + '</div>'
-              + '</div>'
-              // Home team
-              + '<div>'
-              + '<div style="font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">' + hA + '</div>'
-              + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">'
-              + '<span style="font-weight:700;">Process</span> <span style="font-weight:800;color:' + procColor(hProc.score) + ';">' + hProc.score.toFixed(1) + '</span>'
-              + '<span style="color:var(--text-muted);">·</span>'
-              + '<span style="font-weight:700;">3PT</span> <span style="font-weight:600;">' + h3P + '% <span style="color:var(--text-muted);">(' + h3M + '/' + h3A + ')</span></span>'
-              + '</div>'
-              + '<div style="display:flex;align-items:center;gap:4px;">'
-              + '<span style="font-size:9px;color:var(--text-muted);">Source</span>'
-              + '<div style="flex:1;">' + srcBar(hSrc) + '</div>'
-              + '<span style="font-size:9px;color:var(--text-muted);">' + (hSrc.paintPct*100).toFixed(0) + '/' + (hSrc.threePtPct*100).toFixed(0) + '/' + (hSrc.ftPct*100).toFixed(0) + '</span>'
-              + '</div>'
-              + '</div>'
-              + '</div>'
-              + coldHTML
-
-              + '</div>';
-          })()}`:''}
           <!-- SIGNALS -->
           ${signals.length?(()=>{
             const rec=getRecommendation(aS,hS,aA,hA,per,clk,signalLevel);
@@ -4125,7 +4483,6 @@ async function fetchESPNScoreboard() {
               ${signals.map(s=>`<div style="font-size:11px;color:var(--text-secondary);line-height:1.5;">${s.level===2?'&#x1F525;':'&#x26A0;&#xFE0F;'} ${s.text}</div>`).join('')}
               ${recDetail}
               ${(()=>{
-                // Show Half-Kelly bet sizing inline on signal cards
                 if (!thesis.kellyBet || thesis.kellyBet <= 0) return '';
                 const _oddsLabel = thesis.marketOdds ? ((thesis.marketOdds > 0 ? '+' : '') + thesis.marketOdds) : '';
                 return '<div style="margin-top:8px;display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--white);border:1.5px solid var(--accent);border-radius:8px;">'
@@ -4138,7 +4495,7 @@ async function fetchESPNScoreboard() {
               ${betBtn}
               ${state.signalFirstSeen[gid]?`<div style="font-size:9px;color:var(--text-muted);margin-top:4px;">\u23F1 ${Math.floor((Date.now()-state.signalFirstSeen[gid])/60000)}m ago</div>`:''}
             </div>`;
-          })():`<div style="margin-top:8px;padding:6px 10px;border-radius:6px;background:var(--bg);border-left:3px solid var(--border);"><div style="font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:0.5px;">NO SIGNAL — DO NOT BET</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Wait for edge. No signal = no edge = no bet.</div></div>`}
+          })():''}
         </div>
       </div>`;
 
@@ -4224,6 +4581,10 @@ async function fetchESPNScoreboard() {
     if (qualEl) qualEl.textContent = sigQuality;
     document.getElementById('threept-hot-count').textContent = hotTeams;
     document.getElementById('threept-warm-count').textContent = warmTeams;
+
+    // Update X-Ray warnings count in signal strip
+    const xrayWarnEl = document.getElementById('live-xray-warnings');
+    if (xrayWarnEl) xrayWarnEl.textContent = window._xrayWarningCount || 0;
 
     const totalSigs = sigFav + sigDog + sigStar + sigQuality;
     const totalSigEl = document.getElementById('live-total-signals');
