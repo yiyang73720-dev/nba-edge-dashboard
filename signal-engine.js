@@ -31,8 +31,9 @@ function sendNotification(title, body) {
     try {
       const msg = `${title}\n${body}`;
       // Use -e with properly escaped AppleScript string — avoid shell interpolation
-      const safeMsg = msg.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
-      const safeBuddy = NOTIFY_IMESSAGE.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+      // Escape backslash, double quote, and single quote (shell boundary)
+      const safeMsg = msg.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/'/g, "'\\''");
+      const safeBuddy = NOTIFY_IMESSAGE.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/'/g, "'\\''");
       execSync(`osascript -e 'tell application "Messages" to send "${safeMsg}" to buddy "${safeBuddy}"'`, { timeout: 10000 });
       log('[NOTIFY] iMessage sent');
     } catch (e) { log('[NOTIFY] iMessage failed: ' + e.message); }
@@ -119,14 +120,16 @@ function loadState() {
     // Handle migration from old single-mode state
     if (raw.scoreHistory && !raw.nba) {
       // Old format — migrate
-      engineState.ncaab = { scoreHistory: raw.scoreHistory || {}, oddsCache: raw.oddsCache || {}, oddsCacheTime: raw.oddsCacheTime || 0 };
-      engineState.nba = { scoreHistory: {}, oddsCache: {}, oddsCacheTime: 0 };
+      engineState.ncaab = { scoreHistory: raw.scoreHistory || {}, oddsCache: raw.oddsCache || {}, oddsCacheTime: raw.oddsCacheTime || 0, oddsHistory: {} };
+      engineState.nba = { scoreHistory: {}, oddsCache: {}, oddsCacheTime: 0, oddsHistory: {} };
     } else {
       engineState = raw;
     }
-    // Ensure both keys exist
-    if (!engineState.nba) engineState.nba = { scoreHistory: {}, oddsCache: {}, oddsCacheTime: 0 };
-    if (!engineState.ncaab) engineState.ncaab = { scoreHistory: {}, oddsCache: {}, oddsCacheTime: 0 };
+    // Ensure both keys exist with all required fields
+    if (!engineState.nba) engineState.nba = { scoreHistory: {}, oddsCache: {}, oddsCacheTime: 0, oddsHistory: {} };
+    if (!engineState.ncaab) engineState.ncaab = { scoreHistory: {}, oddsCache: {}, oddsCacheTime: 0, oddsHistory: {} };
+    if (!engineState.nba.oddsHistory) engineState.nba.oddsHistory = {};
+    if (!engineState.ncaab.oddsHistory) engineState.ncaab.oddsHistory = {};
   } catch(e) { /* fresh */ }
   try { signalLog = JSON.parse(fs.readFileSync(SIGNALS_FILE, 'utf8')); } catch(e) { signalLog = []; }
   try { ncaaTeam3pt = JSON.parse(fs.readFileSync(TEAM3PT_FILE, 'utf8')); } catch(e) { ncaaTeam3pt = {}; }
@@ -272,7 +275,7 @@ function kellySize(impliedP, odds, signalCount, urgencyMult) {
   // Apply urgency multiplier (PRIME=1.0, ACT_NOW=0.85, DEVELOPING=0.7, CLOSING=0.5)
   if (urgencyMult !== undefined) fStar *= urgencyMult;
   if (fStar > 0.05) fStar = 0.05;
-  // Minimum edge threshold: if edge < 3%, don't bet (noise territory)
+  // Note: edge < 3% is unreachable since baseEdge starts at 3.5%, but kept as safety floor
   if (edge < 0.03) { fStar = 0; }
   const bankroll = 20000;
   const bet = Math.max(0, Math.round(bankroll * fStar));
@@ -1010,7 +1013,12 @@ function startHTTPServer() {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Cache-Control', 'no-cache');
 
-    let urlPath = decodeURIComponent(req.url.split('?')[0]);
+    let urlPath;
+    try {
+      urlPath = decodeURIComponent(req.url.split('?')[0]);
+    } catch (e) {
+      res.writeHead(400); res.end('Bad request'); return;
+    }
     if (urlPath === '/') urlPath = '/index.html';
 
     // Prevent null bytes in path
