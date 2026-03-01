@@ -2826,45 +2826,69 @@ function computeScoringSource(stats) {
 }
 
 // ==================== GAME X-RAY: SUSTAINABILITY COMPUTATION ====================
-function computeSustainabilityClient(game, aStats, hStats, aA, hA, aS, hS, elapsedMins, boxscoreTeamStats) {
+function computeSustainabilityClient(game, aStats, hStats, aA, hA, aS, hS, elapsedMins, boxscoreTeamStats, opts) {
   // Use backend sustainability data if available
   if (game && game.sustainability) return game.sustainability;
 
-  const proc = (stats) => computeProcessScore(stats, elapsedMins);
-  const src = (stats) => computeScoringSource(stats);
+  // opts: { period, playerMap, scorerCache } — for star pace
+  const { period, playerMap, scorerCache } = opts || {};
 
-  const aProc = proc(aStats);
-  const hProc = proc(hStats);
+  const src = (stats) => computeScoringSource(stats);
   const aSrc = src(aStats);
   const hSrc = src(hStats);
 
-  // Sustainability classification based on scoring source + process
-  const classifySustainability = (srcData, procData, score) => {
+  // Compute star pace % for a team (0 = no star data)
+  const getStarPacePct = (side, teamAbbr) => {
+    if (!scorerCache || !playerMap) return 0;
+    const scorers = scorerCache[teamAbbr] || [];
+    const star = scorers[0];
+    if (!star || star.ppg < (typeof isNCAA === 'function' && isNCAA() ? 16 : 21)) return 0;
+    const players = (playerMap || {})[side] || [];
+    const starLast = star.name.split(' ').pop().toLowerCase();
+    const match = players.find(p => p.name.toLowerCase().includes(starLast));
+    if (!match) return 0;
+    const totalMin = (typeof isNCAA === 'function' && isNCAA()) ? 40 : 48;
+    if (elapsedMins <= 0 || star.ppg <= 0) return 0;
+    return Math.round((match.pts * totalMin / elapsedMins) / star.ppg * 100);
+  };
+
+  const aStarPace = getStarPacePct('away', aA);
+  const hStarPace = getStarPacePct('home', hA);
+  // In regression window? (Q1-Q3 NBA, H1-early H2 NCAA)
+  const inWindow = period ? (typeof isNCAA === 'function' && isNCAA() ? period <= 2 : period <= 3) : true;
+
+  // Sustainability classification: scoring source + star pace
+  const classifySustainability = (srcData, score, starPace) => {
     if (score <= 0) return { label: 'N/A', cls: 'mixed' };
     const threeHeavy = srcData.threePtPct > 0.40;
     const veryThreeHeavy = srcData.threePtPct > 0.50;
     const paintDominant = srcData.paintPct > 0.45;
-    const strongProcess = procData.score >= 7;
-    const weakProcess = procData.score < 4;
+    const starCold = inWindow && starPace > 0 && starPace < 60;
+    const starErupting = inWindow && starPace > 150;
 
-    if (veryThreeHeavy || (threeHeavy && weakProcess)) {
-      return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
-    } else if (paintDominant && strongProcess) {
-      return { label: 'SUSTAINABLE', cls: 'sustainable' };
-    } else if (threeHeavy && !weakProcess) {
-      return { label: 'MIXED', cls: 'mixed' };
-    } else if (strongProcess) {
-      return { label: 'SUSTAINABLE', cls: 'sustainable' };
-    } else if (weakProcess) {
-      return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
-    }
+    // Very 3PT heavy + erupting star = clearly unsustainable
+    if (veryThreeHeavy && starErupting) return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
+    // Very 3PT heavy = unsustainable regardless
+    if (veryThreeHeavy) return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
+    // 3PT heavy + erupting star = unsustainable
+    if (threeHeavy && starErupting) return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
+    // Paint dominant + cold star = very sustainable
+    if (paintDominant && starCold) return { label: 'SUSTAINABLE', cls: 'sustainable' };
+    // Paint dominant = sustainable
+    if (paintDominant) return { label: 'SUSTAINABLE', cls: 'sustainable' };
+    // Cold star upgrades mixed → sustainable
+    if (starCold && !threeHeavy) return { label: 'SUSTAINABLE', cls: 'sustainable' };
+    // Erupting star downgrades mixed → unsustainable
+    if (starErupting) return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
+    // 3PT heavy but no extreme star = mixed
+    if (threeHeavy) return { label: 'MIXED', cls: 'mixed' };
     return { label: 'MIXED', cls: 'mixed' };
   };
 
-  const aSust = classifySustainability(aSrc, aProc, aS);
-  const hSust = classifySustainability(hSrc, hProc, hS);
+  const aSust = classifySustainability(aSrc, aS, aStarPace);
+  const hSust = classifySustainability(hSrc, hS, hStarPace);
 
-  // Process factors from stats
+  // Box score raw stats
   const extractFactors = (stats, bxStats) => {
     const merged = Object.assign({}, stats, bxStats || {});
     const reb = parseInt(merged.totalRebounds || merged.rebounds || 0);
@@ -2876,19 +2900,7 @@ function computeSustainabilityClient(game, aStats, hStats, aA, hA, aS, hS, elaps
     const blk = parseInt(merged.blocks || 0);
     const tov = parseInt(merged.turnovers || 0);
     const fga = parseInt(merged.fieldGoalsAttempted || 0);
-    const poss = fga + 0.44 * fta + tov;
-    return {
-      rebounding: reb,
-      hustle: oreb,
-      ballMovement: fgm > 0 ? ast / fgm : 0,
-      assists: ast,
-      aggressiveness: fta,
-      defense: stl + blk,
-      steals: stl,
-      blocks: blk,
-      turnovers: tov,
-      possessions: poss
-    };
+    return { rebounding: reb, hustle: oreb, assists: ast, aggressiveness: fta, steals: stl, blocks: blk, turnovers: tov };
   };
 
   const bxAway = (boxscoreTeamStats || {})[`away`] || {};
@@ -2896,51 +2908,42 @@ function computeSustainabilityClient(game, aStats, hStats, aA, hA, aS, hS, elaps
   const aFactors = extractFactors(aStats, bxAway);
   const hFactors = extractFactors(hStats, bxHome);
 
-  // Compute comparative factor deltas (positive = advantage for that team relative to opponent)
-  const computeDeltas = (myFactors, oppFactors, mins) => {
-    const m = Math.max(mins, 1);
-    return {
-      rebounding: ((myFactors.rebounding - oppFactors.rebounding) / m * 10).toFixed(1),
-      hustle: ((myFactors.hustle - oppFactors.hustle) / m * 10).toFixed(1),
-      ballMovement: ((myFactors.ballMovement - oppFactors.ballMovement) * 10).toFixed(1),
-      aggressiveness: ((myFactors.aggressiveness - oppFactors.aggressiveness) / m * 10).toFixed(1),
-      defense: ((myFactors.defense - oppFactors.defense) / m * 10).toFixed(1)
-    };
-  };
-
-  const aDeltas = computeDeltas(aFactors, hFactors, elapsedMins);
-  const hDeltas = computeDeltas(hFactors, aFactors, elapsedMins);
-
-  // Build confirmation narrative
+  // Build confirmation narrative — based on scoring source + star pace only
   const margin = aS - hS;
   const absMargin = Math.abs(margin);
   const leadingTeam = margin > 0 ? aA : margin < 0 ? hA : null;
   const trailingTeam = margin > 0 ? hA : margin < 0 ? aA : null;
   const leadSust = margin > 0 ? aSust : margin < 0 ? hSust : null;
   const trailSust = margin > 0 ? hSust : margin < 0 ? aSust : null;
-  const leadProc = margin > 0 ? aProc : margin < 0 ? hProc : null;
-  const trailProc = margin > 0 ? hProc : margin < 0 ? aProc : null;
   const leadSrc = margin > 0 ? aSrc : margin < 0 ? hSrc : null;
+  const leadStarPace = margin > 0 ? aStarPace : margin < 0 ? hStarPace : 0;
+  const trailStarPace = margin > 0 ? hStarPace : margin < 0 ? aStarPace : 0;
 
   let narrative = '';
   let narrativeClass = '';
   if (leadingTeam && absMargin > 0) {
     const lead3Pct = (leadSrc.threePtPct * 100).toFixed(0);
+    const leadPaintPct = (leadSrc.paintPct * 100).toFixed(0);
     if (leadSust.cls === 'unsustainable') {
-      narrative = `${leadingTeam} leads by ${absMargin} but ${lead3Pct}% of scoring from 3PT. ${trailingTeam} has ${trailProc.score >= leadProc.score ? 'stronger' : 'comparable'} process (${trailProc.score.toFixed(1)} vs ${leadProc.score.toFixed(1)}). Lead may narrow if shooting regresses.`;
+      let reason = `${lead3Pct}% from 3PT`;
+      if (inWindow && leadStarPace > 150) reason += `, star erupting at ${leadStarPace}% pace`;
+      narrative = `${leadingTeam} leads by ${absMargin} but scoring is fragile (${reason}). Expect regression.`;
       narrativeClass = 'warning';
     } else if (leadSust.cls === 'mixed') {
-      narrative = `${leadingTeam} leads by ${absMargin} with mixed scoring sustainability. ${trailingTeam} process: ${trailProc.score.toFixed(1)}. Watch for shooting regression.`;
+      narrative = `${leadingTeam} leads by ${absMargin} with mixed sustainability (${lead3Pct}% from 3PT). Watch for cooling.`;
       narrativeClass = 'warning';
-    } else if (leadSust.cls === 'sustainable' && trailSust && trailSust.cls !== 'sustainable') {
-      narrative = `${leadingTeam} leads by ${absMargin} with sustainable scoring (paint-driven, strong process ${leadProc.score.toFixed(1)}). Lead looks durable.`;
-      narrativeClass = 'safe';
-    } else {
-      narrative = `${leadingTeam} leads by ${absMargin}. Both teams scoring sustainably. Margin likely to hold.`;
+    } else if (leadSust.cls === 'sustainable') {
+      let reason = `${leadPaintPct}% paint scoring`;
+      if (inWindow && leadStarPace > 0 && leadStarPace < 60) reason += `, star cold (${leadStarPace}% pace) — upside remains`;
+      narrative = `${leadingTeam} leads by ${absMargin} with sustainable scoring (${reason}). Lead looks durable.`;
       narrativeClass = 'safe';
     }
+    // Add trailing team star info
+    if (inWindow && trailStarPace > 0 && trailStarPace < 60) {
+      narrative += ` ${trailingTeam}'s star is cold (${trailStarPace}% pace) — comeback potential.`;
+    }
   } else {
-    narrative = 'Game is tied. Monitor scoring sources for emerging edge.';
+    narrative = 'Game is tied. Monitor scoring sources and star pace for emerging edge.';
     narrativeClass = '';
   }
 
@@ -2950,17 +2953,15 @@ function computeSustainabilityClient(game, aStats, hStats, aA, hA, aS, hS, elaps
   return {
     away: {
       sustainability: aSust,
-      processScore: aProc,
       scoringSource: aSrc,
-      deltas: aDeltas,
-      rawStats: aFactors
+      rawStats: aFactors,
+      starPacePct: aStarPace
     },
     home: {
       sustainability: hSust,
-      processScore: hProc,
       scoringSource: hSrc,
-      deltas: hDeltas,
-      rawStats: hFactors
+      rawStats: hFactors,
+      starPacePct: hStarPace
     },
     narrative,
     narrativeClass,
@@ -4442,7 +4443,7 @@ async function fetchESPNScoreboard() {
       const aFullStatsXR = Object.assign({}, aStats, _bxTeamXR.away || {});
       const hFullStatsXR = Object.assign({}, hStats, _bxTeamXR.home || {});
       const xray = isLive && (aS > 0 || hS > 0)
-        ? computeSustainabilityClient(null, aFullStatsXR, hFullStatsXR, aA, hA, aS, hS, gMins, _bxTeamXR)
+        ? computeSustainabilityClient(null, aFullStatsXR, hFullStatsXR, aA, hA, aS, hS, gMins, _bxTeamXR, { period: per, playerMap: _boxscoreMap[gid], scorerCache: teamScorerCache })
         : null;
 
       // X-Ray card class for border glow
@@ -4471,8 +4472,7 @@ async function fetchESPNScoreboard() {
       const buildXRayBody = () => {
         if (!xray || !isLive) return '';
         const aw = xray.away, hm = xray.home;
-        const procColor = (s) => s >= 7 ? '#10b981' : s >= 4 ? '#f59e0b' : '#ef4444';
-        const procBarW = (s) => Math.min(s / 10 * 100, 100);
+        // procColor/procBarW removed — process score no longer shown
 
         // Scoring Source stacked bars
         const buildSourceBar = (src, teamAbbr) => {
@@ -4612,40 +4612,10 @@ async function fetchESPNScoreboard() {
           </div>`;
         }
 
-        // Section 6: Confirmation narrative (incorporate star factor)
-        // Enhance narrative with star pace info
-        let starNarrative = '';
-        const addStarNote = (side, teamAbbr) => {
-          const scorers = teamScorerCache[teamAbbr] || [];
-          const star = scorers[0];
-          if (!star || star.ppg < 16) return;
-          const players = (_boxscoreMap[gid] || {})[side] || [];
-          const starLast = star.name.split(' ').pop().toLowerCase();
-          const match = players.find(p => p.name.toLowerCase().includes(starLast));
-          if (!match) return;
-          const totalMin = isNCAA() ? 40 : 48;
-          const paceRatio = gMins > 0 && star.ppg > 0 ? (match.pts * totalMin / gMins) / star.ppg : 1;
-          const pacePct = Math.round(paceRatio * 100);
-          if (pacePct < 60 && per <= (isNCAA() ? 2 : 3)) {
-            const leading = aS > hS ? aA : hA;
-            if (teamAbbr === leading) {
-              starNarrative += ` ${star.name.split(' ').pop()} is cold (${pacePct}% pace) — ${teamAbbr}'s lead has upside.`;
-            } else {
-              starNarrative += ` ${star.name.split(' ').pop()} is cold (${pacePct}% pace) — ${teamAbbr} could rally.`;
-            }
-          } else if (pacePct > 150 && per <= (isNCAA() ? 2 : 3)) {
-            const leading = aS > hS ? aA : hA;
-            if (teamAbbr === leading) {
-              starNarrative += ` ${star.name.split(' ').pop()} is erupting (${pacePct}% pace) — ${teamAbbr}'s scoring may not hold.`;
-            }
-          }
-        };
-        addStarNote('away', aA);
-        addStarNote('home', hA);
-
+        // Section 6: Confirmation narrative (star pace now built into xray.narrative)
         html += `<div class="xray-section">
           <div class="xray-confirmation ${xray.narrativeClass}">
-            ${xray.narrativeClass === 'warning' || xray.narrativeClass === 'danger' ? '<strong style="color:var(--orange);">WARNING</strong> ' : xray.narrativeClass === 'safe' ? '<strong style="color:var(--green);">CONFIRMED</strong> ' : ''}${xray.narrative}${starNarrative}
+            ${xray.narrativeClass === 'warning' || xray.narrativeClass === 'danger' ? '<strong style="color:var(--orange);">WARNING</strong> ' : xray.narrativeClass === 'safe' ? '<strong style="color:var(--green);">CONFIRMED</strong> ' : ''}${xray.narrative}
           </div>
         </div>`;
 
@@ -6779,8 +6749,8 @@ try {
 <tbody>
 <tr style="border-bottom:1px solid var(--border-light);">
 <td style="padding:10px 6px;"><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#10b981;padding:3px 8px;border-radius:4px;">SUSTAINABLE</span></td>
-<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">Team's scoring is <strong>paint-dominant</strong> — most points come from 2PT field goals and free throws. Paint scoring is high-percentage and repeatable.</td>
-<td style="padding:10px 6px;font-weight:600;color:#10b981;">This team's scoring is built on high-percentage shots. Lead is durable.</td>
+<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">Team's scoring is <strong>paint-dominant</strong> (45%+ from paint), OR their star is cold (&lt;60% pace) meaning upside remains. Paint scoring is high-percentage and repeatable; a cold star will likely heat up.</td>
+<td style="padding:10px 6px;font-weight:600;color:#10b981;">This team's scoring has room to grow or is built on high-% shots. Lead is durable.</td>
 </tr>
 <tr style="border-bottom:1px solid var(--border-light);">
 <td style="padding:10px 6px;"><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#f59e0b;padding:3px 8px;border-radius:4px;">MIXED</span></td>
@@ -6789,8 +6759,8 @@ try {
 </tr>
 <tr style="border-bottom:1px solid var(--border-light);">
 <td style="padding:10px 6px;"><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#ef4444;padding:3px 8px;border-radius:4px;">UNSUSTAINABLE</span></td>
-<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">Scoring heavily dependent on <strong>3PT shooting</strong> — 50%+ of points from threes. This is the most volatile scoring source in basketball.</td>
-<td style="padding:10px 6px;font-weight:600;color:#ef4444;">This team's scoring is fragile. Hot 3PT shooting always cools — expect regression.</td>
+<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">Scoring heavily dependent on <strong>3PT shooting</strong> (50%+ from threes), OR star is erupting (&gt;150% pace). Hot shooting and career performances both regress hard.</td>
+<td style="padding:10px 6px;font-weight:600;color:#ef4444;">This team's scoring is fragile. Expect regression from shooting and/or star cooling.</td>
 </tr>
 </tbody>
 </table>
