@@ -2866,15 +2866,18 @@ function computeSustainabilityClient(game, aStats, hStats, aA, hA, aS, hS, elaps
   const aPF = extractProcess(aStats, bxAway);
   const hPF = extractProcess(hStats, bxHome);
 
-  // Per-48 differentials for display (positive = advantage for that team)
-  const per48 = (myVal, oppVal) => ((myVal - oppVal) / mins * 48);
+  // Raw differentials for display (positive = advantage for that team)
+  const rawDiff = (my, opp) => my - opp;
   const computeDeltas = (my, opp) => ({
-    oreb:  per48(my.oreb, opp.oreb),
-    fta:   per48(my.fta, opp.fta),
-    tov:   per48(opp.tov, my.tov) // inverted: opponent turnovers = your advantage
+    oreb:  rawDiff(my.oreb, opp.oreb),
+    fta:   rawDiff(my.fta, opp.fta),
+    tov:   rawDiff(opp.tov, my.tov) // inverted: opponent turnovers = your advantage
   });
   const aDeltas = computeDeltas(aPF, hPF);
   const hDeltas = computeDeltas(hPF, aPF);
+
+  // Per-48 helper for internal process score only
+  const per48 = (myVal, oppVal) => ((myVal - oppVal) / mins * 48);
 
   // Process Score (0-10): OREB advantage (0-3.3) + FTA advantage (0-3.3) + TOV advantage (0-3.3)
   const _clamp = (v) => Math.max(0, Math.min(1, v));
@@ -4498,12 +4501,12 @@ async function fetchESPNScoreboard() {
             + `<div class="xray-source-legend"><span class="paint">Paint ${(src.paintPct*100).toFixed(0)}%</span><span class="three${threeHotCls}">3PT ${(src.threePtPct*100).toFixed(0)}%</span><span class="ft">FT ${(src.ftPct*100).toFixed(0)}%</span></div>`;
         };
 
-        // Process factor row — positive=green, negative=red
+        // Process factor row — positive=green, negative=red, raw integers
         const factorRow = (label, aVal, hVal) => {
-          const aF = parseFloat(aVal)||0, hF = parseFloat(hVal)||0;
-          const fmt = (v) => (v > 0 ? '+' : '') + v.toFixed(1);
-          const cls = (v) => v > 0.5 ? 'color:#10b981;font-weight:700;' : v < -0.5 ? 'color:#ef4444;font-weight:700;' : 'color:var(--text-muted);';
-          return `<tr><td style="font-size:10px;color:var(--text-secondary);padding:3px 0;">${label}</td><td style="text-align:right;font-size:11px;padding:3px 0;font-variant-numeric:tabular-nums;${cls(aF)}">${fmt(aF)}</td><td style="text-align:right;font-size:11px;padding:3px 0;font-variant-numeric:tabular-nums;${cls(hF)}">${fmt(hF)}</td></tr>`;
+          const a = parseInt(aVal)||0, h = parseInt(hVal)||0;
+          const fmt = (v) => (v > 0 ? '+' + v : v === 0 ? '0' : '' + v);
+          const cls = (v) => v > 0 ? 'color:#10b981;font-weight:700;' : v < 0 ? 'color:#ef4444;font-weight:700;' : 'color:var(--text-muted);';
+          return `<tr><td style="font-size:10px;color:var(--text-secondary);padding:3px 0;">${label}</td><td style="text-align:right;font-size:11px;padding:3px 0;font-variant-numeric:tabular-nums;${cls(a)}">${fmt(a)}</td><td style="text-align:right;font-size:11px;padding:3px 0;font-variant-numeric:tabular-nums;${cls(h)}">${fmt(h)}</td></tr>`;
         };
 
         let html = '';
