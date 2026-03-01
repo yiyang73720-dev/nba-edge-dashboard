@@ -1208,7 +1208,6 @@
 <div class="tab-bar" id="tabBar">
   <div class="tab-pill-bg">
     <div class="tab active" onclick="switchTab('live')" id="tab-live">Live Games <span class="badge" id="live-badge" style="display:none;">0</span></div>
-    <div class="tab" onclick="switchTab('log')" id="tab-log">Bet Log</div>
     <div class="tab" onclick="switchTab('history');renderSignalHistoryFull();" id="tab-history">History</div>
     <div class="tab" onclick="switchTab('guide')" id="tab-guide">Sustainability Guide</div>
   </div>
@@ -1335,29 +1334,6 @@
     </div>
   </div>
 
-  <!-- ==================== BET LOG TAB ==================== -->
-  <div class="tab-content" id="content-log">
-    <div style="margin-bottom:20px">
-      <h2 style="font-size:18px;font-weight:800;margin-bottom:4px">Bet Tracker</h2>
-      <p style="font-size:12px;color:var(--text-muted)">Auto-logged when signals fire. Results auto-resolved from ESPN final scores.</p>
-    </div>
-    <div id="backtest-panel" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px">
-      <div class="stat-card"><div class="stat-label">TOTAL BETS</div><div class="stat-value" id="bt-total" style="font-size:22px">0</div></div>
-      <div class="stat-card"><div class="stat-label">WIN RATE</div><div class="stat-value" id="bt-winrate" style="font-size:22px;color:var(--green)">-</div></div>
-      <div class="stat-card"><div class="stat-label">ROI</div><div class="stat-value" id="bt-roi" style="font-size:22px">-</div></div>
-      <div class="stat-card"><div class="stat-label">AVG EDGE</div><div class="stat-value" id="bt-edge" style="font-size:22px;color:var(--accent)">-</div></div>
-      <div class="stat-card"><div class="stat-label">UNITS P/L</div><div class="stat-value" id="bt-units" style="font-size:22px">0.00</div></div>
-    </div>
-    <div id="signal-breakdown" style="margin-bottom:20px"></div>
-    <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center">
-      <button style="background:var(--accent);color:white;border:none;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;letter-spacing:0.2px" onclick="exportBetLog()">Export CSV</button>
-      <button style="background:var(--card-bg);color:var(--text-muted);border:1px solid var(--border);padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer" onclick="if(confirm('Clear all bet log data?'))clearBetLog()">Clear Log</button>
-      <span style="margin-left:auto;font-size:10px;color:var(--text-muted)">Bets auto-log when combined signals fire</span>
-    </div>
-    <div class="card" style="padding:0;overflow:hidden">
-      <div id="bet-log-entries" style="overflow-x:auto"></div>
-    </div>
-  </div>
 
   <!-- ==================== BANKROLL TAB ==================== -->
   <div class="tab-content" id="content-bankroll">
@@ -6416,6 +6392,29 @@ try {
 </script>
 
 <div id="content-history" class="tab-content">
+  <!-- ===== BET TRACKER (merged from Bet Log tab) ===== -->
+  <div style="margin-bottom:20px">
+    <h2 style="font-size:18px;font-weight:800;margin-bottom:4px">Bet Tracker</h2>
+    <p style="font-size:12px;color:var(--text-muted)">Auto-logged when signals fire. Results auto-resolved from ESPN final scores.</p>
+  </div>
+  <div id="backtest-panel" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px">
+    <div class="stat-card"><div class="stat-label">TOTAL BETS</div><div class="stat-value" id="bt-total" style="font-size:22px">0</div></div>
+    <div class="stat-card"><div class="stat-label">WIN RATE</div><div class="stat-value" id="bt-winrate" style="font-size:22px;color:var(--green)">-</div></div>
+    <div class="stat-card"><div class="stat-label">ROI</div><div class="stat-value" id="bt-roi" style="font-size:22px">-</div></div>
+    <div class="stat-card"><div class="stat-label">AVG EDGE</div><div class="stat-value" id="bt-edge" style="font-size:22px;color:var(--accent)">-</div></div>
+    <div class="stat-card"><div class="stat-label">UNITS P/L</div><div class="stat-value" id="bt-units" style="font-size:22px">0.00</div></div>
+  </div>
+  <div id="signal-breakdown" style="margin-bottom:20px"></div>
+  <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center">
+    <button style="background:var(--accent);color:white;border:none;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;letter-spacing:0.2px" onclick="exportBetLog()">Export CSV</button>
+    <button style="background:var(--card-bg);color:var(--text-muted);border:1px solid var(--border);padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer" onclick="if(confirm('Clear all bet log data?'))clearBetLog()">Clear Log</button>
+    <span style="margin-left:auto;font-size:10px;color:var(--text-muted)">Bets auto-log when combined signals fire</span>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden;margin-bottom:24px">
+    <div id="bet-log-entries" style="overflow-x:auto"></div>
+  </div>
+
+  <!-- ===== SIGNAL HISTORY (original History tab content) ===== -->
   <div style="margin-bottom:16px">
     <h2 style="font-size:18px;font-weight:800;margin-bottom:4px">Signal History</h2>
     <p style="font-size:12px;color:var(--text-muted)">Auto-logs every signal fired during live games. Results resolved from ESPN final scores.</p>
