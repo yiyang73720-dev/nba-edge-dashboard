@@ -4432,6 +4432,7 @@ async function fetchESPNScoreboard() {
       const _oddsHTML = buildOddsHTML(aA,hA,aFull,hFull,comp.odds?.[0]);
 
       // ====== GAME X-RAY: SUSTAINABILITY CONFIRMATION ======
+      const gMins = getElapsedMinutes(per, clk);
       const _bxTeamXR = (_boxscoreMap._teamStats || {})[gid] || {};
       const aFullStatsXR = Object.assign({}, aStats, _bxTeamXR.away || {});
       const hFullStatsXR = Object.assign({}, hStats, _bxTeamXR.home || {});
