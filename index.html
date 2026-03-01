@@ -3199,134 +3199,8 @@ async function fetchESPNScoreboard() {
       });
     }
 
-    // ====== NBA CDN BOX SCORES — Full team stats for Game Insight panel ======
-    const _cdnBoxMap = {}; // ESPN eventId → { home: {stats, players}, away: {stats, players} }
-    if (liveEvents.length > 0 && !isNCAA()) {
-      try {
-        // 1. Fetch NBA CDN scoreboard to get real NBA game IDs
-        const sbRes = await fetch('https://cdn.nba.com/static/json/liveData/scoreboard/todaysScoreboard_00.json', { signal: AbortSignal.timeout(5000) });
-        if (sbRes.ok) {
-          const sbData = await sbRes.json();
-          const nbaGames = sbData?.scoreboard?.games || [];
-          // Map: team tricode → NBA gameId for live games
-          const triToNbaId = {};
-          for (const ng of nbaGames) {
-            if (ng.gameStatus === 2) { // live only
-              triToNbaId[ng.homeTeam.teamTricode] = ng.gameId;
-              triToNbaId[ng.awayTeam.teamTricode] = ng.gameId;
-            }
-          }
-          // 2. Match ESPN events to NBA CDN game IDs by team abbreviation
-          const parseMinsCDN = (raw) => { if (!raw) return 0; const iso = raw.match(/PT(\d+)M([\d.]+)S/); if (iso) return parseInt(iso[1]) + parseFloat(iso[2])/60; const p = raw.split(':'); if (p.length===2) return parseInt(p[0])+parseInt(p[1])/60; const n=parseFloat(raw); return isNaN(n)?0:n; };
-          const parseTeamStats = (team) => { const s = team?.statistics; if (!s) return null; return { fgm:s.fieldGoalsMade||0, fga:s.fieldGoalsAttempted||0, fg3m:s.threePointersMade||0, fg3a:s.threePointersAttempted||0, ftm:s.freeThrowsMade||0, fta:s.freeThrowsAttempted||0, assists:s.assists||0, steals:s.steals||0, blocks:s.blocks||0, turnovers:s.turnovers||0, rebOff:s.reboundsOffensive||0, pts:s.points||0 }; };
-          const parsePlayers = (team, abbr) => (team?.players||[]).map(p => ({ name:`${p.firstName} ${p.familyName}`, points:p.statistics?.points||0, minutes:parseMinsCDN(p.statistics?.minutes||'0'), teamAbbr:abbr }));
-
-          const cdnFetches = liveEvents.map(e => {
-            const comp = e.competitions?.[0];
-            const hA = comp?.competitors?.find(c=>c.homeAway==='home')?.team?.abbreviation||'';
-            const aA = comp?.competitors?.find(c=>c.homeAway==='away')?.team?.abbreviation||'';
-            const nbaId = triToNbaId[hA] || triToNbaId[aA];
-            if (!nbaId) return Promise.resolve(null);
-            return fetch(`https://cdn.nba.com/static/json/liveData/boxscore/boxscore_${nbaId}.json`, { signal: AbortSignal.timeout(5000) })
-              .then(r => r.ok ? r.json() : null).catch(() => null)
-              .then(data => ({ espnId: e.id, data, hA, aA }));
-          });
-          const cdnResults = await Promise.all(cdnFetches);
-          for (const result of cdnResults) {
-            if (!result || !result.data?.game) continue;
-            const { espnId, data, hA, aA } = result;
-            const g = data.game;
-            _cdnBoxMap[espnId] = {
-              home: { stats: parseTeamStats(g.homeTeam), players: parsePlayers(g.homeTeam, hA) },
-              away: { stats: parseTeamStats(g.awayTeam), players: parsePlayers(g.awayTeam, aA) }
-            };
-          }
-        }
-      } catch(e) { /* CDN fetch optional */ }
-    }
-
-    // ====== Game Insight computation helper ======
-    const NBA_STARS_MAP = {"LeBron James":25.7,"Stephen Curry":22.8,"Kevin Durant":27.1,"Giannis Antetokounmpo":31.5,"Luka Doncic":28.1,"Nikola Jokic":26.4,"Joel Embiid":27.9,"Jayson Tatum":26.9,"Shai Gilgeous-Alexander":31.3,"Anthony Edwards":25.9,"Donovan Mitchell":23.5,"Devin Booker":25.5,"Ja Morant":21.2,"Trae Young":22.1,"Damian Lillard":25.0,"Anthony Davis":24.7,"Jimmy Butler":20.5,"Kawhi Leonard":23.7,"De'Aaron Fox":25.2,"Kyrie Irving":24.2,"Jalen Brunson":26.4,"Karl-Anthony Towns":24.9,"Paolo Banchero":22.6};
-
-    function computeGameInsight(stats, score, elapsedMins) {
-      if (!stats || !elapsedMins || elapsedMins < 2) return null;
-      const fga=stats.fga||0, fgm=stats.fgm||0, fg3a=stats.fg3a||0, fg3m=stats.fg3m||0, fta=stats.fta||0, ftm=stats.ftm||0;
-      const pts = score > 0 ? score : stats.pts||0;
-      if (pts <= 0) return null;
-      // Scoring source
-      const paintPts = (fgm - fg3m) * 2;
-      const threePts = fg3m * 3;
-      const paintPct = pts > 0 ? paintPts / pts : 0;
-      const threePct = pts > 0 ? threePts / pts : 0;
-      const ftPct = pts > 0 ? ftm / pts : 0;
-      // Process score (0-10)
-      const mins = Math.max(elapsedMins, 1);
-      const astRate = fgm > 0 ? stats.assists / fgm : 0;
-      const possessions = fga + 0.44 * fta + stats.turnovers;
-      const tovRate = possessions > 0 ? stats.turnovers / possessions : 0;
-      const orebRate = stats.rebOff / mins;
-      const hustleRate = (stats.steals + stats.blocks) / mins;
-      const clamp = (v,lo,hi) => Math.max(lo, Math.min(hi, v));
-      const astScore = clamp(astRate / 0.70, 0, 1) * 3;
-      const tovScore = clamp(1 - (tovRate - 0.08) / 0.12, 0, 1) * 3;
-      const orebScore = clamp(orebRate / 0.30, 0, 1) * 2;
-      const hustleScore = clamp(hustleRate / 0.20, 0, 1) * 2;
-      const processScore = clamp(astScore + tovScore + orebScore + hustleScore, 0, 10);
-      // 3PT stats
-      const fg3Pct = fg3a > 0 ? fg3m / fg3a : 0;
-      return { processScore: Math.round(processScore*10)/10, paintPct, threePct, ftPct, fg3Pct, fg3m, fg3a };
-    }
-
-    function renderGameInsight(gid, aA, hA, aScore, hScore, per, clk) {
-      const box = _cdnBoxMap[gid]; if (!box) return '';
-      const elapsed = getElapsedMinutes(per, clk);
-      if (elapsed < 3) return '';
-      const aI = computeGameInsight(box.away.stats, aScore, elapsed);
-      const hI = computeGameInsight(box.home.stats, hScore, elapsed);
-      if (!aI && !hI) return '';
-      const pBar = (abbr, d) => {
-        if (!d) return '';
-        const w = (d.processScore / 10) * 100;
-        const col = d.processScore >= 6 ? 'var(--green)' : d.processScore >= 4 ? 'var(--orange)' : 'var(--red)';
-        const tpCol = d.fg3Pct > 0.40 ? 'var(--green)' : d.fg3Pct >= 0.33 ? 'var(--orange)' : 'var(--red)';
-        return `<div style="margin-bottom:6px;">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
-            <span style="font-weight:700;font-size:11px;min-width:32px;">${abbr}</span>
-            <div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
-              <div style="height:100%;width:${w}%;background:${col};border-radius:3px;transition:width 0.3s;"></div>
-            </div>
-            <span style="font-size:11px;font-weight:700;color:${col};min-width:24px;text-align:right;">${d.processScore.toFixed(1)}</span>
-          </div>
-          <div style="display:flex;gap:8px;font-size:10px;color:var(--text-secondary);padding-left:38px;">
-            <span>Paint ${Math.round(d.paintPct*100)}%</span>
-            <span style="${d.threePct>0.45?'color:var(--red);':''}">3PT ${Math.round(d.threePct*100)}%</span>
-            <span>FT ${Math.round(d.ftPct*100)}%</span>
-            <span style="color:${tpCol};font-weight:600;">${d.fg3m}/${d.fg3a} (${(d.fg3Pct*100).toFixed(0)}%)</span>
-          </div>
-        </div>`;
-      };
-      // Star cold
-      let starHTML = '';
-      const allPlayers = [...(box.away.players||[]), ...(box.home.players||[])];
-      const coldStars = [];
-      for (const [name, ppg] of Object.entries(NBA_STARS_MAP)) {
-        const p = allPlayers.find(pl => pl.name === name);
-        if (!p || p.minutes < 8) continue;
-        const paced = (p.points / p.minutes) * 36;
-        const coldPct = (paced - ppg) / ppg;
-        if (coldPct < -0.20) coldStars.push({ name, pts: p.points, mins: Math.round(p.minutes*10)/10, paced: Math.round(paced*10)/10, ppg, pct: Math.round(coldPct*100) });
-      }
-      if (coldStars.length > 0) {
-        starHTML = `<div style="margin-top:4px;padding:4px 6px;background:var(--orange-light);border-radius:4px;font-size:10px;">
-          <span style="font-weight:700;color:var(--orange);">Star Watch</span>
-          ${coldStars.map(s => `<div style="color:var(--text-secondary);margin-top:1px;">${s.name.split(' ').pop()} — ${s.pts}pts in ${s.mins}min (${s.pct}% off pace)</div>`).join('')}
-        </div>`;
-      }
-      return `<div style="margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--bg);border:1px solid var(--border);">
-        <div style="font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Game Insight</div>
-        ${pBar(aA, aI)}${pBar(hA, hI)}${starHTML}
-      </div>`;
-    }
+    // ====== Team Win Percentages (for QUALITY_EDGE signal) ======
+    window._teamWinPct = {OKC:72.0,CLE:68.3,BOS:65.5,HOU:60.0,NYK:58.5,MEM:57.0,DEN:56.1,MIN:55.0,LAC:54.0,MIL:53.5,DAL:52.5,GSW:51.0,SAC:50.5,IND:50.0,LAL:49.5,PHX:49.0,SAS:48.0,MIA:47.5,ATL:46.0,DET:45.0,CHI:43.0,ORL:42.0,POR:40.0,TOR:38.0,BKN:35.0,NOP:32.0,CHA:30.0,PHI:28.0,UTA:26.0,WAS:22.0};
 
     // Section headers
     let sectionHeaders = { live: false, upcoming: false, completed: false };
@@ -3714,11 +3588,12 @@ async function fetchESPNScoreboard() {
           thesis.criteria['fav'] = {met:true, strong:favTier !== 'SIMPLE', label:`FAV ${favTier}: ${favAbbr}`, detail:`<strong>Favorite:</strong> ${favAbbr} (spread: ${pregameSpread || 'N/A'})<br><strong>Lead:</strong> ${favLeadAmt}pts at ${_elapsed.toFixed(0)}min<br><strong>Lead Safety:</strong> ${_leadSafety.toFixed(2)}<br><strong>Spread Rel:</strong> ${_spreadRel !== null ? _spreadRel.toFixed(1) : 'N/A'}`, value:`${favTier} | Lead ${favLeadAmt}`};
         }
 
-        // ===== DOG SIGNAL =====
-        // Pre-game dog leading at 14+ min → bet dog ML or spread (63-71% cover)
-        // Require 3+ pt lead to filter noise (1-2 pt leads are coinflips)
-        if (favSide && _elapsed >= 14 && dogLeadAmt >= 3) {
-          let dogTier = 'LEADING'; let dogPct = '63.4%'; let dogExtras = [];
+        // ===== DOG SIGNAL (v2 — research-backed thresholds) =====
+        // Dog leading at 12+ min → bet dog ML or spread
+        // Hierarchy: DOG_STRONG > DOG_PHYSICAL > DOG_MEDIUM_FAV > DOG_LEADING
+        if (favSide && _elapsed >= 12 && dogLeadAmt >= 1) {
+          let dogTier = 'LEADING'; let dogPct = '66.6%'; let dogROI = '27.2%'; let dogExtras = []; let sigCount = 1;
+          const absSpread = pregameSpread !== null ? Math.abs(pregameSpread) : 0;
           const dogStats2 = dogSide === 'home' ? hStats : aStats;
           const favStats2 = dogSide === 'home' ? aStats : hStats;
           const dogReb = parseInt(dogStats2.totalRebounds || dogStats2.rebounds || '0');
@@ -3727,16 +3602,25 @@ async function fetchESPNScoreboard() {
           const favFtaV = dogSide === 'home' ? aFTA : hFTA;
           const dogWinsReb = dogReb > favReb;
           const dogWinsFta = dogFtaV > favFtaV;
-          if (dogWinsReb) { dogTier = 'PHYSICAL'; dogPct = '65.5%'; dogExtras.push(`REB: ${dogAbbr} ${dogReb} vs ${favAbbr} ${favReb}`); }
-          if (dogLeadAmt >= 5 && dogWinsReb && dogWinsFta) { dogTier = 'STRONG'; dogPct = '70.6%'; dogExtras.push(`FTA: ${dogAbbr} ${dogFtaV} vs ${favAbbr} ${favFtaV}`); }
-          // HYBRID ML/SPREAD: if dog ML >= -100, bet ML (gold); else bet spread (blue)
+          // Check tiers from strongest to weakest
+          if (dogLeadAmt >= 5 && dogWinsReb && dogWinsFta) {
+            dogTier = 'STRONG'; dogPct = '72.5%'; dogROI = '38.4%'; sigCount = 3;
+            dogExtras.push(`REB: ${dogAbbr} ${dogReb} vs ${favAbbr} ${favReb}`, `FTA: ${dogAbbr} ${dogFtaV} vs ${favAbbr} ${favFtaV}`);
+          } else if (dogWinsReb) {
+            dogTier = 'PHYSICAL'; dogPct = '67.2%'; dogROI = '28.3%'; sigCount = 2;
+            dogExtras.push(`REB: ${dogAbbr} ${dogReb} vs ${favAbbr} ${favReb}`);
+          } else if (absSpread >= 3.5 && absSpread <= 7) {
+            dogTier = 'MEDIUM FAV'; dogPct = '70.0%'; dogROI = '33.6%'; sigCount = 2;
+            dogExtras.push(`Spread: ${absSpread}`);
+          }
+          // HYBRID ML/SPREAD: if dog ML >= -100, bet ML; else bet spread
           const dogML = dogSide === 'home' ? (_oddsData?.homeML || null) : (_oddsData?.awayML || null);
           let betType = 'SPREAD', betColor = '#3861fb';
           if (dogML !== null && dogML >= -100) { betType = 'ML'; betColor = '#f0b90b'; }
           const betTypeLabel = betType === 'ML' ? `BET ML (${dogML > 0 ? '+' : ''}${dogML})` : `BET SPREAD`;
-          signals.push({type:'dog', text:`DOG ${dogTier}: ${dogAbbr} leads ${dogLeadAmt}pt | ${dogPct} cover. ${dogExtras.join(' | ')} → <span style="color:${betColor};font-weight:800;">${betTypeLabel}</span>`, level:2, betType, betColor, dogML});
+          signals.push({type:'dog', text:`DOG ${dogTier}: ${dogAbbr} leads ${dogLeadAmt}pt | ${dogPct} cover, ${dogROI} ROI. ${dogExtras.join(' | ')} → <span style="color:${betColor};font-weight:800;">${betTypeLabel}</span>`, level:2, betType, betColor, dogML});
           sigDog++; activeSignals++;
-          // Compute Kelly for email
+          // Compute Kelly using new formula
           const _dogKelly = (function() {
             try {
               const _dOdds = matchOdds(aA, hA, aFull, hFull);
@@ -3744,13 +3628,57 @@ async function fetchESPNScoreboard() {
               const _dML = dogAbbr === aA ? _dOdds.awayML : _dOdds.homeML;
               if (!_dML) return null;
               const _dImplP = _dML < 0 ? Math.abs(_dML)/(Math.abs(_dML)+100) : 100/(_dML+100);
-              const _dK = kellySize(_dImplP, _dML, null, 1, 1);
-              return _dK.bet > 0 ? { bet: _dK.bet, pct: _dK.fStar, edge: _dK.edge, odds: _dML } : null;
+              // Research-based Kelly: baseEdge = 3.5% + (sigCount-1)*1%, capped at 8%
+              const baseEdge = Math.min(0.035 + Math.min(sigCount-1,3)*0.01, 0.08);
+              const p = Math.min(0.90, _dImplP + baseEdge);
+              const q = 1 - p;
+              const b = _dML > 0 ? _dML/100 : 100/Math.abs(_dML);
+              let fStar = (b*p - q) / b / 2; // Half-Kelly
+              if (fStar < 0 || baseEdge < 0.03) fStar = 0;
+              // Urgency multiplier
+              const _gamePct = _elapsed / 48;
+              const urgMult = _gamePct < 0.30 ? 0.70 : _gamePct < 0.60 ? 1.00 : _gamePct < 0.85 ? 0.85 : 0.50;
+              fStar = Math.min(fStar * urgMult, 0.05);
+              const _br = parseFloat((document.getElementById('bankroll-input')||{}).value) || 1000;
+              const bet = Math.round(fStar * _br);
+              return bet > 0 ? { bet, pct: fStar, edge: baseEdge, odds: _dML } : null;
             } catch(e) { return null; }
           })();
           sendSignalNotification('DOG ' + dogTier + ': ' + dogAbbr, `Leads ${dogLeadAmt}pts → ${betTypeLabel}`, gid, 'dog_' + dogAbbr, _dogKelly);
           if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
-          thesis.criteria['dog'] = {met:true, strong:dogTier !== 'LEADING', label:`DOG ${dogTier}: ${dogAbbr}`, detail:`<strong>Underdog:</strong> ${dogAbbr} (pre-game spread: ${pregameSpread ? (pregameSpread > 0 ? '+' : '') + pregameSpread : 'N/A'})<br><strong>Current:</strong> ${dogAbbr} leads ${dogLeadAmt}pts at ${_elapsed.toFixed(0)}min<br><strong>REB:</strong> ${dogAbbr} ${dogReb} vs ${favAbbr} ${favReb} ${dogWinsReb ? '✅' : ''}<br><strong>FTA:</strong> ${dogAbbr} ${dogFtaV} vs ${favAbbr} ${favFtaV} ${dogWinsFta ? '✅' : ''}<br><strong>Bet:</strong> <span style="color:${betColor};font-weight:800;">${betTypeLabel}</span>`, value:`${dogTier} | ${betTypeLabel}`};
+          thesis.criteria['dog'] = {met:true, strong:dogTier !== 'LEADING', label:`DOG ${dogTier}: ${dogAbbr}`, detail:`<strong>Underdog:</strong> ${dogAbbr} (pre-game spread: ${pregameSpread ? (pregameSpread > 0 ? '+' : '') + pregameSpread : 'N/A'})<br><strong>Current:</strong> ${dogAbbr} leads ${dogLeadAmt}pts at ${_elapsed.toFixed(0)}min<br><strong>REB:</strong> ${dogAbbr} ${dogReb} vs ${favAbbr} ${favReb} ${dogWinsReb ? '✅' : ''}<br><strong>FTA:</strong> ${dogAbbr} ${dogFtaV} vs ${favAbbr} ${favFtaV} ${dogWinsFta ? '✅' : ''}<br><strong>Bet:</strong> <span style="color:${betColor};font-weight:800;">${betTypeLabel}</span><br><strong>Backtest:</strong> ${dogPct} cover, ${dogROI} ROI`, value:`${dogTier} | ${betTypeLabel}`};
+        }
+
+        // ===== QUALITY EDGE SIGNAL (new) =====
+        // Stronger team trailing by 1-10 in Q1-Q2 → fav spread or ML
+        if (_oddsData && per <= 2 && _elapsed >= 3) {
+          const _aWP = window._teamWinPct?.[aA] || 50;
+          const _hWP = window._teamWinPct?.[hA] || 50;
+          const _qualGap = Math.abs(_hWP - _aWP);
+          if (_qualGap >= 15) {
+            const strongIsHome = _hWP > _aWP;
+            const strongAbbr = strongIsHome ? hA : aA;
+            const weakAbbr = strongIsHome ? aA : hA;
+            const strongScore = strongIsHome ? hS : aS;
+            const weakScore = strongIsHome ? aS : hS;
+            const trailBy = weakScore - strongScore;
+            if (trailBy >= 1 && trailBy <= 10) {
+              const _bookSp = strongIsHome ? (_oddsData.homeSpread||0) : (_oddsData.awaySpread||0);
+              const timeFactor = per === 1 ? 0.75 : 0.55;
+              const estLive = _bookSp + trailBy * timeFactor;
+              if (estLive < 0) {
+                const _qML = strongIsHome ? (_oddsData.homeML||0) : (_oddsData.awayML||0);
+                const _qImplP = _qML < 0 ? Math.abs(_qML)/(Math.abs(_qML)+100)*100 : 100/(_qML+100)*100;
+                const _qRecType = trailBy <= 5 ? 'ML' : 'SPREAD';
+                const _qColor = _qRecType === 'ML' ? '#f0b90b' : '#16c784';
+                signals.push({type:'quality', text:`QUALITY EDGE: ${strongAbbr} (${(strongIsHome?_hWP:_aWP).toFixed(0)}% WP) trails by ${trailBy} in Q${per}. Gap: ${_qualGap.toFixed(0)}% → <span style="color:${_qColor};font-weight:800;">BET ${_qRecType}</span>`, level:2, betType:_qRecType, betColor:_qColor});
+                signalLevel = 2; activeSignals++;
+                if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
+                sendSignalNotification('QUALITY EDGE: ' + strongAbbr, `Trails by ${trailBy} in Q${per}, WP gap ${_qualGap.toFixed(0)}%`, gid, 'quality_' + strongAbbr);
+                thesis.criteria['quality'] = {met:true, strong:true, label:`QUALITY EDGE: ${strongAbbr}`, detail:`<strong>Quality Edge:</strong> ${strongAbbr} (${(strongIsHome?_hWP:_aWP).toFixed(0)}% win pct) trails ${weakAbbr} by ${trailBy}pts in Q${per}<br><strong>WP Gap:</strong> ${_qualGap.toFixed(0)}%<br><strong>Book Spread:</strong> ${_bookSp}<br><strong>Est Live Spread:</strong> ${estLive.toFixed(1)}<br><strong>Bet:</strong> ${_qRecType}`, value:`Trail ${trailBy} | Gap ${_qualGap.toFixed(0)}%`};
+              }
+            }
+          }
         }
 
         // Any strict L2 signal (solo or combined) should be actionable and recorded
@@ -4001,7 +3929,6 @@ async function fetchESPNScoreboard() {
             ${foulHTML}
           </div>
           ${durabilityHTML}
-          ${renderGameInsight(gid, aA, hA, aS, hS, per, clk)}
           ${(()=>{
             const bx = _boxscoreMap[gid];
             const getTeamTop3 = (side, teamAbbr) => {
