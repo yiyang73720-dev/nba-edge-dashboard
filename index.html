@@ -3240,6 +3240,19 @@ async function fetchESPNScoreboard() {
           });
         });
         _boxscoreMap[gid] = map;
+        // Extract team-level stats from boxscore (turnovers, steals, blocks, OREB)
+        // bx.boxscore.teams[] has team stats that scoreboard doesn't include
+        if (bx.boxscore?.teams) {
+          if (!_boxscoreMap._teamStats) _boxscoreMap._teamStats = {};
+          bx.boxscore.teams.forEach(team => {
+            const abbr = team.team?.abbreviation || '';
+            const side = abbr === awayAbbr ? 'away' : 'home';
+            const ts = {};
+            (team.statistics || []).forEach(s => { ts[s.name || s.label] = s.displayValue; });
+            if (!_boxscoreMap._teamStats[gid]) _boxscoreMap._teamStats[gid] = {};
+            _boxscoreMap._teamStats[gid][side] = ts;
+          });
+        }
       });
     }
 
@@ -3445,7 +3458,7 @@ async function fetchESPNScoreboard() {
             const side = leader.team===aA?'away':'home';
             const oppSide = side==='away'?'home':'away';
             // Store star pace data for card display (regardless of signal)
-            if (pr < 0.80) _starColdList.push({ name: leader.name, team: leader.team, pts: leader.pts, exp: exp.toFixed(0), pace: Math.round(pr * 100) });
+            if (pr < 0.80) _starColdList.push({ name: leader.name, team: leader.team, pts: leader.pts, exp: exp.toFixed(0), pace: Math.round(pr * 100), rawPr: pr });
             // Star Coil: <65% pace + prime window + game within 15 pts (competitive)
             // NBA: Q2-Q3 (per 2-3). NCAA: 8-35 min elapsed (halves, not quarters)
             const _coilMaxMargin = isNCAA() ? 12 : 15;
@@ -4038,20 +4051,23 @@ async function fetchESPNScoreboard() {
           })()}
           ${(()=>{
             // GAME INSIGHT PANEL: Process Score + Scoring Source + 3PT + Star Cold
-            const aProc = computeProcessScore(aStats, gMins);
-            const hProc = computeProcessScore(hStats, gMins);
-            const aSrc = computeScoringSource(aStats);
-            const hSrc = computeScoringSource(hStats);
+            // Merge boxscore team stats (turnovers, steals, blocks, OREB) into scoreboard stats
+            const _bxTeam = (_boxscoreMap._teamStats || {})[gid] || {};
+            const aFullStats = Object.assign({}, aStats, _bxTeam.away || {});
+            const hFullStats = Object.assign({}, hStats, _bxTeam.home || {});
+            const aProc = computeProcessScore(aFullStats, gMins);
+            const hProc = computeProcessScore(hFullStats, gMins);
+            const aSrc = computeScoringSource(aFullStats);
+            const hSrc = computeScoringSource(hFullStats);
             const procColor = (s) => s >= 7 ? '#10b981' : s >= 4 ? '#f59e0b' : '#ef4444';
             const srcBar = (src) => {
               if (src.paintPct + src.threePtPct + src.ftPct <= 0) return '<div style="height:6px;background:var(--border);border-radius:3px;"></div>';
+              const _segs = [[src.paintPct,'#10b981','Paint'],[src.threePtPct,'#3b82f6','3PT'],[src.ftPct,'#f59e0b','FT']].filter(s => s[0] > 0);
               return '<div style="display:flex;height:6px;border-radius:3px;overflow:hidden;gap:1px;">'
-                + '<div style="flex:' + src.paintPct.toFixed(2) + ';background:#10b981;" title="Paint ' + (src.paintPct*100).toFixed(0) + '%"></div>'
-                + '<div style="flex:' + src.threePtPct.toFixed(2) + ';background:#3b82f6;" title="3PT ' + (src.threePtPct*100).toFixed(0) + '%"></div>'
-                + '<div style="flex:' + src.ftPct.toFixed(2) + ';background:#f59e0b;" title="FT ' + (src.ftPct*100).toFixed(0) + '%"></div>'
+                + _segs.map(s => '<div style="flex:' + s[0].toFixed(2) + ';background:' + s[1] + ';" title="' + s[2] + ' ' + (s[0]*100).toFixed(0) + '%"></div>').join('')
                 + '</div>';
             };
-            const coldStars = _starColdList.filter(s => s.pace < 65);
+            const coldStars = _starColdList.filter(s => s.rawPr < 0.65);
             const coldHTML = coldStars.length > 0
               ? '<div style="margin-top:5px;font-size:10px;color:#ef4444;font-weight:600;">'
                 + coldStars.map(s => s.name.split(' ').pop() + ' ' + s.pace + '%').join(' · ')
