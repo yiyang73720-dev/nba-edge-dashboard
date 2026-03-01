@@ -4434,10 +4434,94 @@ async function fetchESPNScoreboard() {
           </table>
         </div>`;
 
-        // Section 5: Confirmation narrative
+        // Section 5: Star Player Pace (sustainability factor)
+        const _bxPlayers = _boxscoreMap[gid] || { away: [], home: [] };
+        const buildStarLine = (side, teamAbbr) => {
+          const scorers = teamScorerCache[teamAbbr] || [];
+          const star = scorers[0]; // Top scorer = star (highest season PPG)
+          if (!star || star.ppg < 16) return ''; // Only show for meaningful scorers
+          // Find this player's current game points
+          const players = _bxPlayers[side] || [];
+          const starLast = star.name.split(' ').pop().toLowerCase();
+          const match = players.find(p => p.name.toLowerCase().includes(starLast));
+          if (!match) return '';
+          const currentPts = match.pts || 0;
+          // Calculate pace: project current scoring rate to full game
+          const totalMin = isNCAA() ? 40 : 48;
+          const paceMultiplier = gMins > 0 ? totalMin / gMins : 1;
+          const projectedPts = currentPts * paceMultiplier;
+          const paceRatio = star.ppg > 0 ? projectedPts / star.ppg : 1;
+          const pacePct = Math.round(paceRatio * 100);
+          // Sustainability interpretation
+          let paceLabel, paceColor, paceMeaning;
+          if (pacePct < 60) {
+            paceLabel = 'COLD'; paceColor = '#10b981';
+            paceMeaning = 'upside — star will likely heat up';
+          } else if (pacePct < 85) {
+            paceLabel = 'BELOW'; paceColor = '#10b981';
+            paceMeaning = 'room to grow';
+          } else if (pacePct <= 115) {
+            paceLabel = 'ON PACE'; paceColor = 'var(--text-muted)';
+            paceMeaning = 'normal output';
+          } else if (pacePct <= 150) {
+            paceLabel = 'HOT'; paceColor = '#f59e0b';
+            paceMeaning = 'may cool down';
+          } else {
+            paceLabel = 'ERUPTING'; paceColor = '#ef4444';
+            paceMeaning = 'unsustainable — expect regression';
+          }
+          // Only show in Q1-Q3 (meaningful regression window)
+          if (per > 3 && !isNCAA()) return '';
+          if (per > 2 && isNCAA()) return '';
+          const firstName = star.name.split(' ').pop();
+          return `<div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;padding:2px 0;">
+            <span style="color:var(--text-secondary);font-weight:500;">${firstName} <span style="color:var(--text-muted);">(${star.ppg.toFixed(1)} ppg)</span></span>
+            <span><span style="font-weight:700;">${currentPts} pts</span> <span style="color:${paceColor};font-weight:700;">${pacePct}% pace</span> <span style="color:${paceColor};font-size:9px;">${paceLabel}</span></span>
+          </div>`;
+        };
+        const awayStarHTML = buildStarLine('away', aA);
+        const homeStarHTML = buildStarLine('home', hA);
+        if (awayStarHTML || homeStarHTML) {
+          html += `<div class="xray-section">
+            <div class="xray-section-label">Star Pace</div>
+            ${awayStarHTML}${homeStarHTML}
+          </div>`;
+        }
+
+        // Section 6: Confirmation narrative (incorporate star factor)
+        // Enhance narrative with star pace info
+        let starNarrative = '';
+        const addStarNote = (side, teamAbbr) => {
+          const scorers = teamScorerCache[teamAbbr] || [];
+          const star = scorers[0];
+          if (!star || star.ppg < 16) return;
+          const players = (_boxscoreMap[gid] || {})[side] || [];
+          const starLast = star.name.split(' ').pop().toLowerCase();
+          const match = players.find(p => p.name.toLowerCase().includes(starLast));
+          if (!match) return;
+          const totalMin = isNCAA() ? 40 : 48;
+          const paceRatio = gMins > 0 && star.ppg > 0 ? (match.pts * totalMin / gMins) / star.ppg : 1;
+          const pacePct = Math.round(paceRatio * 100);
+          if (pacePct < 60 && per <= (isNCAA() ? 2 : 3)) {
+            const leading = aS > hS ? aA : hA;
+            if (teamAbbr === leading) {
+              starNarrative += ` ${star.name.split(' ').pop()} is cold (${pacePct}% pace) — ${teamAbbr}'s lead has upside.`;
+            } else {
+              starNarrative += ` ${star.name.split(' ').pop()} is cold (${pacePct}% pace) — ${teamAbbr} could rally.`;
+            }
+          } else if (pacePct > 150 && per <= (isNCAA() ? 2 : 3)) {
+            const leading = aS > hS ? aA : hA;
+            if (teamAbbr === leading) {
+              starNarrative += ` ${star.name.split(' ').pop()} is erupting (${pacePct}% pace) — ${teamAbbr}'s scoring may not hold.`;
+            }
+          }
+        };
+        addStarNote('away', aA);
+        addStarNote('home', hA);
+
         html += `<div class="xray-section">
           <div class="xray-confirmation ${xray.narrativeClass}">
-            ${xray.narrativeClass === 'warning' || xray.narrativeClass === 'danger' ? '<strong style="color:var(--orange);">WARNING</strong> ' : xray.narrativeClass === 'safe' ? '<strong style="color:var(--green);">CONFIRMED</strong> ' : ''}${xray.narrative}
+            ${xray.narrativeClass === 'warning' || xray.narrativeClass === 'danger' ? '<strong style="color:var(--orange);">WARNING</strong> ' : xray.narrativeClass === 'safe' ? '<strong style="color:var(--green);">CONFIRMED</strong> ' : ''}${xray.narrative}${starNarrative}
           </div>
         </div>`;
 
@@ -6599,6 +6683,8 @@ try {
 <div class="guide-card" style="border-left:3px solid #f59e0b;"><h3>Aggressiveness</h3><p class="edge-label">Free throw attempts = attacking the rim</p><p>Free throw attempt differential per 48 minutes. Teams that draw more fouls are attacking the basket, getting to the line, and generating the most efficient shots in basketball (free throws). This also puts the opponent in foul trouble.</p><div class="threshold">Positive = more free throw attempts than opponent.<br>+4 or higher = significant aggressiveness edge.</div></div>
 
 <div class="guide-card" style="border-left:3px solid #7c3aed;"><h3>Defense</h3><p class="edge-label">Steals + Blocks = disruption</p><p>Combined steals and blocks differential per 48 minutes. Measures how much a team is disrupting the opponent's offense. Steals create fast breaks, blocks deter paint attacks. Active defense forces lower-quality shots.</p><div class="threshold">Positive = more disruption than opponent.<br>+2 or higher = strong defensive activity.</div></div>
+
+<div class="guide-card" style="border-left:3px solid #ef4444;"><h3>Star Pace</h3><p class="edge-label">Star player regression = sustainability signal</p><p>Tracks each team's top scorer's current game pace vs their season PPG average. Stars (21+ PPG in NBA, 16+ in NCAAB) tend to <strong>regress to their mean</strong> over the course of a game.</p><p><strong>Star COLD (< 60% pace):</strong> The team is winning/competitive WITHOUT their star performing. This makes their scoring <span style="color:#10b981;font-weight:700;">more sustainable</span> — the star has upside and will likely heat up in Q2-Q3.</p><p><strong>Star ERUPTING (> 150% pace):</strong> The team's scoring is inflated by a career-level performance. This makes their lead <span style="color:#ef4444;font-weight:700;">less sustainable</span> — the star will cool down and the scoring rate will drop.</p><div class="threshold">Most meaningful in Q1 through early Q3 — there must be enough game time remaining for regression to occur.<br>COLD star + team winning = very sustainable.<br>ERUPTING star + team winning = fragile lead.</div></div>
 </div>
 
 <!-- SCORING SOURCE GUIDE -->
