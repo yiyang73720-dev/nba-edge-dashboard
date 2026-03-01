@@ -496,116 +496,164 @@ async function fetchBoxScore(eventId, sport) {
 }
 
 // === SUSTAINABILITY COMPUTATION ===
+// Output format matches frontend computeSustainabilityClient() exactly so the frontend
+// can use either source interchangeably. Frontend checks:
+//   if (game && game.sustainability) return game.sustainability;
 function clampVal(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
 
-function computeSustainability(homeStats, awayStats, minutes) {
+function computeSustainability(homeStats, awayStats, minutes, homeAbbr, awayAbbr) {
   if (!homeStats || !awayStats || minutes < 4) return null;
 
-  const pace = Math.max(minutes / 48, 0.1);
+  const mins = Math.max(minutes, 1);
+  const _clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
-  // 5 Process Factors (per-48 normalized differentials, home perspective)
-  const rebounding = clampVal((homeStats.REB - awayStats.REB) / pace, -10, 10);
-  const hustle = clampVal((homeStats.OREB - awayStats.OREB) / pace, -6, 6);
-  const ballMovement = clampVal(
-    (homeStats.AST / Math.max(homeStats.TOV, 1)) - (awayStats.AST / Math.max(awayStats.TOV, 1)),
-    -3, 3
-  );
-  const aggressiveness = clampVal((homeStats.FTA - awayStats.FTA) / pace, -10, 10);
-  const defense = clampVal(
-    ((homeStats.STL + homeStats.BLK) - (awayStats.STL + awayStats.BLK)) / pace,
-    -8, 8
-  );
-
-  // Process score: each factor gets 0-2 based on normalized value within its range
-  function factorScore(val, lo, hi) {
-    // Normalize to 0-1 within range, then scale to 0-2
-    return ((val - lo) / (hi - lo)) * 2;
+  // --- Process Score per team (matches frontend computeProcessScore) ---
+  function computeProcessScore(stats) {
+    const fgm = stats.FGM || 0;
+    const fga = stats.FGA || 0;
+    const fg3m = stats.FG3M || 0;
+    const fta = stats.FTA || 0;
+    const ast = stats.AST || 0;
+    const tov = stats.TOV || 0;
+    const oreb = stats.OREB || 0;
+    const stl = stats.STL || 0;
+    const blk = stats.BLK || 0;
+    const astRate = fgm > 0 ? ast / fgm : 0;
+    const poss = fga + 0.44 * fta + tov;
+    const tovRate = poss > 0 ? tov / poss : 0;
+    const orebRate = oreb / mins;
+    const hustleRate = (stl + blk) / mins;
+    const astScore = _clamp(astRate / 0.70, 0, 1) * 3;
+    const tovScore = _clamp(1 - (tovRate - 0.08) / 0.12, 0, 1) * 3;
+    const orebScore = _clamp(orebRate / 0.30, 0, 1) * 2;
+    const hustleScore = _clamp(hustleRate / 0.20, 0, 1) * 2;
+    const score = _clamp(astScore + tovScore + orebScore + hustleScore, 0, 10);
+    return { score: Math.round(score * 10) / 10, astRate, tovRate, orebRate, hustleRate };
   }
-  const homeProcessScore =
-    factorScore(rebounding, -10, 10) +
-    factorScore(hustle, -6, 6) +
-    factorScore(ballMovement, -3, 3) +
-    factorScore(aggressiveness, -10, 10) +
-    factorScore(defense, -8, 8);
 
-  // Away process score is the inverse
-  const awayProcessScore = 10 - homeProcessScore;
-
-  // Scoring source per team
-  // paintPts = 2PT field goals only (NOT including FTM — FTM is its own category)
-  // Sum of paintPct + threePtPct + ftPct = 1.0
-  function scoringSource(stats) {
-    const paintPts = (stats.FGM - stats.FG3M) * 2;
-    const threePts = stats.FG3M * 3;
-    const total = Math.max(paintPts + threePts + stats.FTM, 1);
-    const paintPct = paintPts / total;
-    const threePtPct = threePts / total;
-    const ftPct = stats.FTM / total;
+  // --- Scoring Source per team (matches frontend computeScoringSource) ---
+  function computeScoringSource(stats) {
+    const fgm = stats.FGM || 0;
+    const fg3m = stats.FG3M || 0;
+    const ftm = stats.FTM || 0;
+    const paintPts = (fgm - fg3m) * 2;
+    const threePts = fg3m * 3;
+    const total = paintPts + threePts + ftm;
+    if (total <= 0) return { paintPct: 0, threePtPct: 0, ftPct: 0 };
     return {
-      paintPct: Math.round(paintPct * 1000) / 1000,
-      threePtPct: Math.round(threePtPct * 1000) / 1000,
-      ftPct: Math.round(ftPct * 1000) / 1000,
+      paintPct: Math.round((paintPts / total) * 1000) / 1000,
+      threePtPct: Math.round((threePts / total) * 1000) / 1000,
+      ftPct: Math.round((ftm / total) * 1000) / 1000,
     };
   }
-  const homeScoring = scoringSource(homeStats);
-  const awayScoring = scoringSource(awayStats);
 
-  // Sustainability verdict per team
-  function verdict(processScore, scoring) {
-    if (processScore >= 6 && scoring.paintPct >= 0.40 && scoring.threePtPct < 0.35) return 'sustainable';
-    if (processScore <= 3 || scoring.threePtPct >= 0.45 || scoring.paintPct < 0.25) return 'unsustainable';
-    return 'mixed';
+  const hProc = computeProcessScore(homeStats);
+  const aProc = computeProcessScore(awayStats);
+  const hSrc = computeScoringSource(homeStats);
+  const aSrc = computeScoringSource(awayStats);
+
+  // --- Sustainability classification (matches frontend classifySustainability) ---
+  function classifySustainability(srcData, procData, score) {
+    if (score <= 0) return { label: 'N/A', cls: 'mixed' };
+    const threeHeavy = srcData.threePtPct > 0.40;
+    const veryThreeHeavy = srcData.threePtPct > 0.50;
+    const paintDominant = srcData.paintPct > 0.45;
+    const strongProcess = procData.score >= 7;
+    const weakProcess = procData.score < 4;
+    if (veryThreeHeavy || (threeHeavy && weakProcess)) return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
+    if (paintDominant && strongProcess) return { label: 'SUSTAINABLE', cls: 'sustainable' };
+    if (threeHeavy && !weakProcess) return { label: 'MIXED', cls: 'mixed' };
+    if (strongProcess) return { label: 'SUSTAINABLE', cls: 'sustainable' };
+    if (weakProcess) return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
+    return { label: 'MIXED', cls: 'mixed' };
   }
-  const homeVerdict = verdict(homeProcessScore, homeScoring);
-  const awayVerdict = verdict(awayProcessScore, awayScoring);
 
-  // Lead analysis narrative
-  const lead = homeStats.PTS - awayStats.PTS;
+  const hS = homeStats.PTS || 0;
+  const aS = awayStats.PTS || 0;
+  const hSust = classifySustainability(hSrc, hProc, hS);
+  const aSust = classifySustainability(aSrc, aProc, aS);
+
+  // --- Factor deltas (matches frontend computeDeltas) ---
+  function extractFactors(stats) {
+    const reb = stats.REB || 0;
+    const oreb = stats.OREB || 0;
+    const ast = stats.AST || 0;
+    const fgm = stats.FGM || 0;
+    const fta = stats.FTA || 0;
+    const stl = stats.STL || 0;
+    const blk = stats.BLK || 0;
+    const tov = stats.TOV || 0;
+    return { rebounding: reb, hustle: oreb, ballMovement: fgm > 0 ? ast / fgm : 0, aggressiveness: fta, defense: stl + blk, turnovers: tov };
+  }
+  function computeDeltas(myF, oppF) {
+    const m = Math.max(minutes, 1);
+    return {
+      rebounding: ((myF.rebounding - oppF.rebounding) / m * 10).toFixed(1),
+      hustle: ((myF.hustle - oppF.hustle) / m * 10).toFixed(1),
+      ballMovement: ((myF.ballMovement - oppF.ballMovement) * 10).toFixed(1),
+      aggressiveness: ((myF.aggressiveness - oppF.aggressiveness) / m * 10).toFixed(1),
+      defense: ((myF.defense - oppF.defense) / m * 10).toFixed(1),
+    };
+  }
+  const aFactors = extractFactors(awayStats);
+  const hFactors = extractFactors(homeStats);
+  const aDeltas = computeDeltas(aFactors, hFactors);
+  const hDeltas = computeDeltas(hFactors, aFactors);
+
+  // --- Narrative + classification (matches frontend) ---
+  const margin = aS - hS;
+  const absMargin = Math.abs(margin);
+  const leadingTeam = margin > 0 ? (awayAbbr || 'Away') : margin < 0 ? (homeAbbr || 'Home') : null;
+  const trailingTeam = margin > 0 ? (homeAbbr || 'Home') : margin < 0 ? (awayAbbr || 'Away') : null;
+  const leadSust = margin > 0 ? aSust : margin < 0 ? hSust : null;
+  const trailSust = margin > 0 ? hSust : margin < 0 ? aSust : null;
+  const leadProc = margin > 0 ? aProc : margin < 0 ? hProc : null;
+  const trailProc = margin > 0 ? hProc : margin < 0 ? aProc : null;
+  const leadSrc = margin > 0 ? aSrc : margin < 0 ? hSrc : null;
+
   let narrative = '';
-  if (lead > 0) {
-    narrative = `Home leads by ${lead}. `;
-    if (homeVerdict === 'sustainable') narrative += 'Lead is process-backed (sustainable). ';
-    else if (homeVerdict === 'unsustainable') narrative += 'WARNING: Lead built on hot shooting — regression likely. ';
-    else narrative += 'Lead quality is mixed. ';
-  } else if (lead < 0) {
-    narrative = `Away leads by ${Math.abs(lead)}. `;
-    if (awayVerdict === 'sustainable') narrative += 'Lead is process-backed (sustainable). ';
-    else if (awayVerdict === 'unsustainable') narrative += 'WARNING: Lead built on hot shooting — regression likely. ';
-    else narrative += 'Lead quality is mixed. ';
+  let narrativeClass = '';
+  if (leadingTeam && absMargin > 0) {
+    const lead3Pct = (leadSrc.threePtPct * 100).toFixed(0);
+    if (leadSust.cls === 'unsustainable') {
+      narrative = `${leadingTeam} leads by ${absMargin} but ${lead3Pct}% of scoring from 3PT. ${trailingTeam} has ${trailProc.score >= leadProc.score ? 'stronger' : 'comparable'} process (${trailProc.score.toFixed(1)} vs ${leadProc.score.toFixed(1)}). Lead may narrow if shooting regresses.`;
+      narrativeClass = 'warning';
+    } else if (leadSust.cls === 'mixed') {
+      narrative = `${leadingTeam} leads by ${absMargin} with mixed scoring sustainability. ${trailingTeam} process: ${trailProc.score.toFixed(1)}. Watch for shooting regression.`;
+      narrativeClass = 'warning';
+    } else if (leadSust.cls === 'sustainable' && trailSust && trailSust.cls !== 'sustainable') {
+      narrative = `${leadingTeam} leads by ${absMargin} with sustainable scoring (paint-driven, strong process ${leadProc.score.toFixed(1)}). Lead looks durable.`;
+      narrativeClass = 'safe';
+    } else {
+      narrative = `${leadingTeam} leads by ${absMargin}. Both teams scoring sustainably. Margin likely to hold.`;
+      narrativeClass = 'safe';
+    }
   } else {
-    narrative = 'Game tied. ';
+    narrative = 'Game is tied. Monitor scoring sources for emerging edge.';
+    narrativeClass = '';
   }
 
-  // Process comparison
-  if (Math.abs(homeProcessScore - awayProcessScore) >= 2) {
-    const dominant = homeProcessScore > awayProcessScore ? 'Home' : 'Away';
-    narrative += `${dominant} dominates process factors. `;
-  }
+  const isWarning = !!(leadingTeam && (leadSust.cls === 'unsustainable' || leadSust.cls === 'mixed'));
 
-  // Warnings
-  if (homeScoring.threePtPct >= 0.45) narrative += 'Home 3PT-dependent (>45% from 3). ';
-  if (awayScoring.threePtPct >= 0.45) narrative += 'Away 3PT-dependent (>45% from 3). ';
-
+  // Return format matches frontend computeSustainabilityClient exactly
   return {
-    home: {
-      processScore: Math.round(homeProcessScore * 10) / 10,
-      verdict: homeVerdict,
-      scoring: homeScoring,
-    },
     away: {
-      processScore: Math.round(awayProcessScore * 10) / 10,
-      verdict: awayVerdict,
-      scoring: awayScoring,
+      sustainability: aSust,
+      processScore: aProc,
+      scoringSource: aSrc,
+      deltas: aDeltas,
     },
-    factors: {
-      rebounding: Math.round(rebounding * 10) / 10,
-      hustle: Math.round(hustle * 10) / 10,
-      ballMovement: Math.round(ballMovement * 10) / 10,
-      aggressiveness: Math.round(aggressiveness * 10) / 10,
-      defense: Math.round(defense * 10) / 10,
+    home: {
+      sustainability: hSust,
+      processScore: hProc,
+      scoringSource: hSrc,
+      deltas: hDeltas,
     },
     narrative,
-    minutes: Math.round(minutes * 10) / 10,
+    narrativeClass,
+    isWarning,
+    leadingTeam,
+    margin: absMargin,
   };
 }
 
@@ -843,8 +891,24 @@ async function detectSignals(cfg) {
       let sustainability = null;
       const boxScore = await fetchBoxScore(gid, cfg.mode);
       if (boxScore) {
-        sustainability = computeSustainability(boxScore.home, boxScore.away, gMins);
+        sustainability = computeSustainability(boxScore.home, boxScore.away, gMins, hA, aA);
       }
+
+      // Compute star pace data for all stars in this game
+      const starPaceData = [];
+      [...aLeaders, ...hLeaders].forEach(leader => {
+        const star = matchStar(cfg, leader.name, leader.team);
+        if (!star) return;
+        const exp = getExpectedByTime(cfg, star.ppg, gMins);
+        const pr = exp > 0 ? leader.pts / exp : 1;
+        if (pr < 0.80) {
+          starPaceData.push({
+            name: leader.name, team: leader.team,
+            pts: leader.pts, exp: exp.toFixed(0),
+            pace: Math.round(pr * 100), rawPr: pr, ppg: star.ppg,
+          });
+        }
+      });
 
       // Store live game state for frontend API
       liveGamesState[gid] = {
@@ -857,6 +921,13 @@ async function detectSignals(cfg) {
         periodLabel: periodLabel(cfg, per),
         gameMins: Math.round(gMins * 10) / 10,
         sustainability,
+        // 3PT shooting data
+        threePoint: {
+          away: { pct: a3P, made: a3M, att: a3A },
+          home: { pct: h3P, made: h3M, att: h3A },
+        },
+        // Star pace data (stars below 80% of expected pace)
+        starPace: starPaceData,
         lastUpdated: Date.now(),
       };
 
@@ -945,12 +1016,11 @@ async function detectSignals(cfg) {
           signalCount = 2; // Elevated confidence
           log(`  [${cfg.league}] ${gLabel}: STAR COIL PLUS — opponent shooting cold, double edge`);
 
-          // Notify on Star Coil Plus
-          const scpStarTeam = starTeamKeys[0];
-          const scpOppTeam = scpStarTeam === aA ? hA : aA;
-          const notifTitle = `STAR COIL+: ${gLabel}`;
-          const notifBody = `Star cold + ${scpOppTeam} shooting cold\nDouble regression edge — higher confidence`;
-          sendNotification(notifTitle, notifBody);
+          // Notification disabled — Star Coil Plus detection kept for logging + engine-signals.json
+          // The frontend handles its own notifications via Resend email
+          // const scpStarTeam = starTeamKeys[0];
+          // const scpOppTeam = scpStarTeam === aA ? hA : aA;
+          // sendNotification(`STAR COIL+: ${gLabel}`, `Star cold + ${scpOppTeam} shooting cold\nDouble regression edge — higher confidence`);
         }
       }
 
@@ -1053,10 +1123,9 @@ async function detectSignals(cfg) {
                 newSignals++;
                 log(`  [${cfg.league}] QUALITY EDGE: ${gLabel} ${aS}-${hS} ${periodLabel(cfg, per)} ${clk} | ${strongerTeamFull} (.${(strongerWinPct*1000|0)}) trailing by ${trailingBy} | Pre-game: ${bookSpread} | Est live: ${estLiveSpread !== null ? estLiveSpread.toFixed(1) : 'n/a'} | Gap: ${qeEntry.qualityGap}%`);
 
-                // Send notification
-                const notifTitle = `QUALITY EDGE: ${gLabel}`;
-                const notifBody = `${strongerTeamFull} (.${(strongerWinPct*1000|0).toString().replace(/^0/, '')}) trailing by ${trailingBy} in ${periodLabel(cfg, per)}\nPre-game spread: ${bookSpread} | Est live: ${estLiveSpread !== null ? estLiveSpread.toFixed(1) : 'n/a'}\nLive spread still negative — 72% cover rate\nBet: ${strongerTeam} to cover the spread`;
-                sendNotification(notifTitle, notifBody);
+                // Notification disabled — Quality Edge detection kept for logging + engine-signals.json
+                // The frontend handles its own notifications via Resend email
+                // sendNotification(`QUALITY EDGE: ${gLabel}`, `${strongerTeamFull} trailing by ${trailingBy}...`);
               }
             }
           }
@@ -1255,6 +1324,11 @@ function startHTTPServer() {
     }
 
     // === API ENDPOINTS ===
+    // NOTE: The GitHub Pages frontend (index.html) does NOT fetch from these endpoints.
+    // It fetches directly from ESPN. These endpoints are available for local dev or
+    // future use when running the site via localhost:3000 (served by this engine).
+    // The sustainability data format matches computeSustainabilityClient() exactly,
+    // so the frontend can consume either source seamlessly.
     if (urlPath === '/api/live-games') {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(Object.values(liveGamesState)));
