@@ -2830,144 +2830,154 @@ function computeSustainabilityClient(game, aStats, hStats, aA, hA, aS, hS, elaps
   // Use backend sustainability data if available
   if (game && game.sustainability) return game.sustainability;
 
-  // opts: { period, playerMap, scorerCache } — for star pace
   const { period, playerMap, scorerCache } = opts || {};
+  const _ncaa = typeof isNCAA === 'function' && isNCAA();
+  const mins = Math.max(elapsedMins, 1);
 
-  const src = (stats) => computeScoringSource(stats);
-  const aSrc = src(aStats);
-  const hSrc = src(hStats);
+  const aSrc = computeScoringSource(aStats);
+  const hSrc = computeScoringSource(hStats);
 
-  // Compute star pace % for a team (0 = no star data)
+  // ── Star Pace ──
   const getStarPacePct = (side, teamAbbr) => {
     if (!scorerCache || !playerMap) return 0;
-    const scorers = scorerCache[teamAbbr] || [];
-    const star = scorers[0];
-    if (!star || star.ppg < (typeof isNCAA === 'function' && isNCAA() ? 16 : 21)) return 0;
+    const star = (scorerCache[teamAbbr] || [])[0];
+    if (!star || star.ppg < (_ncaa ? 16 : 21)) return 0;
     const players = (playerMap || {})[side] || [];
     const starLast = star.name.split(' ').pop().toLowerCase();
     const match = players.find(p => p.name.toLowerCase().includes(starLast));
-    if (!match) return 0;
-    const totalMin = (typeof isNCAA === 'function' && isNCAA()) ? 40 : 48;
-    if (elapsedMins <= 0 || star.ppg <= 0) return 0;
-    return Math.round((match.pts * totalMin / elapsedMins) / star.ppg * 100);
+    if (!match || elapsedMins <= 0 || star.ppg <= 0) return 0;
+    return Math.round((match.pts * (_ncaa ? 40 : 48) / elapsedMins) / star.ppg * 100);
   };
-
   const aStarPace = getStarPacePct('away', aA);
   const hStarPace = getStarPacePct('home', hA);
-  // In regression window? (Q1-Q3 NBA, H1-early H2 NCAA)
-  const inWindow = period ? (typeof isNCAA === 'function' && isNCAA() ? period <= 2 : period <= 3) : true;
+  const inWindow = period ? (_ncaa ? period <= 2 : period <= 3) : true;
 
-  // Sustainability classification: scoring source + star pace
-  const classifySustainability = (srcData, score, starPace) => {
+  // ── Process Factors (3 kept — OREB, FTA, TOV) ──
+  // These are the least endogenous to score and most defensible for sustainability.
+  const extractProcess = (stats, bxStats) => {
+    const m = Object.assign({}, stats, bxStats || {});
+    const oreb = parseInt(m.offensiveRebounds || 0);
+    const fta = parseInt(m.freeThrowsAttempted || 0);
+    const tov = parseInt(m.turnovers || 0);
+    return { oreb, fta, tov };
+  };
+  const bxAway = (boxscoreTeamStats || {})[`away`] || {};
+  const bxHome = (boxscoreTeamStats || {})[`home`] || {};
+  const aPF = extractProcess(aStats, bxAway);
+  const hPF = extractProcess(hStats, bxHome);
+
+  // Per-48 differentials for display (positive = advantage for that team)
+  const per48 = (myVal, oppVal) => ((myVal - oppVal) / mins * 48);
+  const computeDeltas = (my, opp) => ({
+    oreb:  per48(my.oreb, opp.oreb),
+    fta:   per48(my.fta, opp.fta),
+    tov:   per48(opp.tov, my.tov) // inverted: opponent turnovers = your advantage
+  });
+  const aDeltas = computeDeltas(aPF, hPF);
+  const hDeltas = computeDeltas(hPF, aPF);
+
+  // Process Score (0-10): OREB advantage (0-3.3) + FTA advantage (0-3.3) + TOV advantage (0-3.3)
+  const _clamp = (v) => Math.max(0, Math.min(1, v));
+  const computeProcessScore = (my, opp) => {
+    // OREB: 3+ per-48 advantage = max. Typical range 0-6 per-48 diff.
+    const orebAdv = _clamp(per48(my.oreb, opp.oreb) / 6) * 3.33;
+    // FTA: 8+ per-48 advantage = max. Typical range 0-15 per-48 diff.
+    const ftaAdv = _clamp(per48(my.fta, opp.fta) / 15) * 3.33;
+    // TOV: opponent has 5+ more per-48 = max. Typical range 0-10 per-48 diff.
+    const tovAdv = _clamp(per48(opp.tov, my.tov) / 10) * 3.33;
+    return Math.round(Math.min(orebAdv + ftaAdv + tovAdv, 10) * 10) / 10;
+  };
+  const aProcessScore = computeProcessScore(aPF, hPF);
+  const hProcessScore = computeProcessScore(hPF, aPF);
+
+  // ── Sustainability Classification: Scoring Source + Star Pace + Process Score ──
+  const classifySustainability = (srcData, score, starPace, procScore) => {
     if (score <= 0) return { label: 'N/A', cls: 'mixed' };
     const threeHeavy = srcData.threePtPct > 0.40;
     const veryThreeHeavy = srcData.threePtPct > 0.50;
     const paintDominant = srcData.paintPct > 0.45;
     const starCold = inWindow && starPace > 0 && starPace < 60;
     const starErupting = inWindow && starPace > 150;
+    const strongProcess = procScore >= 6;
+    const weakProcess = procScore < 2;
 
-    // Very 3PT heavy + erupting star = clearly unsustainable
-    if (veryThreeHeavy && starErupting) return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
-    // Very 3PT heavy = unsustainable regardless
+    // Unsustainable tier
     if (veryThreeHeavy) return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
-    // 3PT heavy + erupting star = unsustainable
     if (threeHeavy && starErupting) return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
-    // Paint dominant + cold star = very sustainable
+    if (threeHeavy && weakProcess) return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
+    if (starErupting && weakProcess) return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
+    // Sustainable tier
     if (paintDominant && starCold) return { label: 'SUSTAINABLE', cls: 'sustainable' };
-    // Paint dominant = sustainable
+    if (paintDominant && strongProcess) return { label: 'SUSTAINABLE', cls: 'sustainable' };
+    if (starCold && strongProcess) return { label: 'SUSTAINABLE', cls: 'sustainable' };
     if (paintDominant) return { label: 'SUSTAINABLE', cls: 'sustainable' };
-    // Cold star upgrades mixed → sustainable
     if (starCold && !threeHeavy) return { label: 'SUSTAINABLE', cls: 'sustainable' };
-    // Erupting star downgrades mixed → unsustainable
-    if (starErupting) return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
-    // 3PT heavy but no extreme star = mixed
+    // Mixed tier
+    if (starErupting) return { label: 'MIXED', cls: 'mixed' };
     if (threeHeavy) return { label: 'MIXED', cls: 'mixed' };
+    if (strongProcess) return { label: 'SUSTAINABLE', cls: 'sustainable' };
     return { label: 'MIXED', cls: 'mixed' };
   };
 
-  const aSust = classifySustainability(aSrc, aS, aStarPace);
-  const hSust = classifySustainability(hSrc, hS, hStarPace);
+  const aSust = classifySustainability(aSrc, aS, aStarPace, aProcessScore);
+  const hSust = classifySustainability(hSrc, hS, hStarPace, hProcessScore);
 
-  // Box score raw stats
-  const extractFactors = (stats, bxStats) => {
-    const merged = Object.assign({}, stats, bxStats || {});
-    const reb = parseInt(merged.totalRebounds || merged.rebounds || 0);
-    const oreb = parseInt(merged.offensiveRebounds || 0);
-    const ast = parseInt(merged.assists || 0);
-    const fgm = parseInt(merged.fieldGoalsMade || 0);
-    const fta = parseInt(merged.freeThrowsAttempted || 0);
-    const stl = parseInt(merged.steals || 0);
-    const blk = parseInt(merged.blocks || 0);
-    const tov = parseInt(merged.turnovers || 0);
-    const fga = parseInt(merged.fieldGoalsAttempted || 0);
-    return { rebounding: reb, hustle: oreb, assists: ast, aggressiveness: fta, steals: stl, blocks: blk, turnovers: tov };
-  };
-
-  const bxAway = (boxscoreTeamStats || {})[`away`] || {};
-  const bxHome = (boxscoreTeamStats || {})[`home`] || {};
-  const aFactors = extractFactors(aStats, bxAway);
-  const hFactors = extractFactors(hStats, bxHome);
-
-  // Build confirmation narrative — based on scoring source + star pace only
+  // ── Narrative ──
   const margin = aS - hS;
   const absMargin = Math.abs(margin);
   const leadingTeam = margin > 0 ? aA : margin < 0 ? hA : null;
   const trailingTeam = margin > 0 ? hA : margin < 0 ? aA : null;
   const leadSust = margin > 0 ? aSust : margin < 0 ? hSust : null;
-  const trailSust = margin > 0 ? hSust : margin < 0 ? aSust : null;
   const leadSrc = margin > 0 ? aSrc : margin < 0 ? hSrc : null;
   const leadStarPace = margin > 0 ? aStarPace : margin < 0 ? hStarPace : 0;
+  const leadProc = margin > 0 ? aProcessScore : margin < 0 ? hProcessScore : 0;
   const trailStarPace = margin > 0 ? hStarPace : margin < 0 ? aStarPace : 0;
 
-  let narrative = '';
-  let narrativeClass = '';
+  let narrative = '', narrativeClass = '';
   if (leadingTeam && absMargin > 0) {
     const lead3Pct = (leadSrc.threePtPct * 100).toFixed(0);
     const leadPaintPct = (leadSrc.paintPct * 100).toFixed(0);
     if (leadSust.cls === 'unsustainable') {
       let reason = `${lead3Pct}% from 3PT`;
-      if (inWindow && leadStarPace > 150) reason += `, star erupting at ${leadStarPace}% pace`;
+      if (inWindow && leadStarPace > 150) reason += `, star erupting (${leadStarPace}%)`;
+      if (leadProc < 2) reason += ', weak process';
       narrative = `${leadingTeam} leads by ${absMargin} but scoring is fragile (${reason}). Expect regression.`;
       narrativeClass = 'warning';
     } else if (leadSust.cls === 'mixed') {
-      narrative = `${leadingTeam} leads by ${absMargin} with mixed sustainability (${lead3Pct}% from 3PT). Watch for cooling.`;
+      narrative = `${leadingTeam} leads by ${absMargin} with mixed sustainability (${lead3Pct}% from 3PT, process ${leadProc.toFixed(1)}). Watch for cooling.`;
       narrativeClass = 'warning';
-    } else if (leadSust.cls === 'sustainable') {
-      let reason = `${leadPaintPct}% paint scoring`;
-      if (inWindow && leadStarPace > 0 && leadStarPace < 60) reason += `, star cold (${leadStarPace}% pace) — upside remains`;
+    } else {
+      let reason = `${leadPaintPct}% paint, process ${leadProc.toFixed(1)}`;
+      if (inWindow && leadStarPace > 0 && leadStarPace < 60) reason += `, star cold (${leadStarPace}%) — upside`;
       narrative = `${leadingTeam} leads by ${absMargin} with sustainable scoring (${reason}). Lead looks durable.`;
       narrativeClass = 'safe';
     }
-    // Add trailing team star info
     if (inWindow && trailStarPace > 0 && trailStarPace < 60) {
-      narrative += ` ${trailingTeam}'s star is cold (${trailStarPace}% pace) — comeback potential.`;
+      narrative += ` ${trailingTeam}'s star is cold (${trailStarPace}%) — comeback potential.`;
     }
   } else {
-    narrative = 'Game is tied. Monitor scoring sources and star pace for emerging edge.';
+    narrative = 'Game is tied. Monitor scoring source, star pace, and process.';
     narrativeClass = '';
   }
 
-  // Is leading team's scoring a warning?
   const isWarning = leadingTeam && (leadSust.cls === 'unsustainable' || leadSust.cls === 'mixed');
 
   return {
     away: {
       sustainability: aSust,
       scoringSource: aSrc,
-      rawStats: aFactors,
+      processScore: aProcessScore,
+      deltas: aDeltas,
       starPacePct: aStarPace
     },
     home: {
       sustainability: hSust,
       scoringSource: hSrc,
-      rawStats: hFactors,
+      processScore: hProcessScore,
+      deltas: hDeltas,
       starPacePct: hStarPace
     },
-    narrative,
-    narrativeClass,
-    isWarning,
-    leadingTeam,
-    margin: absMargin
+    narrative, narrativeClass, isWarning, leadingTeam, margin: absMargin
   };
 }
 
@@ -4472,7 +4482,8 @@ async function fetchESPNScoreboard() {
       const buildXRayBody = () => {
         if (!xray || !isLive) return '';
         const aw = xray.away, hm = xray.home;
-        // procColor/procBarW removed — process score no longer shown
+        const procColor = (s) => s >= 6 ? '#10b981' : s >= 3 ? '#f59e0b' : '#ef4444';
+        const procBarW = (s) => Math.min(s / 10 * 100, 100);
 
         // Scoring Source stacked bars
         const buildSourceBar = (src, teamAbbr) => {
@@ -4487,13 +4498,12 @@ async function fetchESPNScoreboard() {
             + `<div class="xray-source-legend"><span class="paint">Paint ${(src.paintPct*100).toFixed(0)}%</span><span class="three${threeHotCls}">3PT ${(src.threePtPct*100).toFixed(0)}%</span><span class="ft">FT ${(src.ftPct*100).toFixed(0)}%</span></div>`;
         };
 
-        // Raw box score comparison row — winning side gets bold highlight
-        const statRow = (label, aVal, hVal) => {
-          const a = parseInt(aVal)||0, h = parseInt(hVal)||0;
-          const aW = a > h, hW = h > a;
-          const aStyle = aW ? 'font-weight:800;color:var(--text-primary);' : 'color:var(--text-muted);';
-          const hStyle = hW ? 'font-weight:800;color:var(--text-primary);' : 'color:var(--text-muted);';
-          return `<tr><td style="font-size:10px;color:var(--text-secondary);padding:2px 0;">${label}</td><td style="text-align:right;font-size:11px;padding:2px 0;font-variant-numeric:tabular-nums;${aStyle}">${a}</td><td style="text-align:right;font-size:11px;padding:2px 0;font-variant-numeric:tabular-nums;${hStyle}">${h}</td></tr>`;
+        // Process factor row — positive=green, negative=red
+        const factorRow = (label, aVal, hVal) => {
+          const aF = parseFloat(aVal)||0, hF = parseFloat(hVal)||0;
+          const fmt = (v) => (v > 0 ? '+' : '') + v.toFixed(1);
+          const cls = (v) => v > 0.5 ? 'color:#10b981;font-weight:700;' : v < -0.5 ? 'color:#ef4444;font-weight:700;' : 'color:var(--text-muted);';
+          return `<tr><td style="font-size:10px;color:var(--text-secondary);padding:3px 0;">${label}</td><td style="text-align:right;font-size:11px;padding:3px 0;font-variant-numeric:tabular-nums;${cls(aF)}">${fmt(aF)}</td><td style="text-align:right;font-size:11px;padding:3px 0;font-variant-numeric:tabular-nums;${cls(hF)}">${fmt(hF)}</td></tr>`;
         };
 
         let html = '';
@@ -4512,7 +4522,22 @@ async function fetchESPNScoreboard() {
           </div>
         </div>`;
 
-        // Process Score bars removed — composite score was misleading
+        // Section 2: Process Score bars
+        html += `<div class="xray-section">
+          <div class="xray-section-label">Process Score</div>
+          <div class="xray-process-row">
+            <div class="xray-process-item">
+              <span class="xray-process-team">${aA}</span>
+              <div class="xray-process-bar"><div class="xray-process-fill" style="width:${procBarW(aw.processScore)}%;background:${procColor(aw.processScore)};"></div></div>
+              <span class="xray-process-val" style="color:${procColor(aw.processScore)};">${aw.processScore.toFixed(1)}</span>
+            </div>
+            <div class="xray-process-item">
+              <span class="xray-process-team">${hA}</span>
+              <div class="xray-process-bar"><div class="xray-process-fill" style="width:${procBarW(hm.processScore)}%;background:${procColor(hm.processScore)};"></div></div>
+              <span class="xray-process-val" style="color:${procColor(hm.processScore)};">${hm.processScore.toFixed(1)}</span>
+            </div>
+          </div>
+        </div>`;
 
         // Section 3: Scoring Source bars
         html += `<div class="xray-section">
@@ -4542,19 +4567,15 @@ async function fetchESPNScoreboard() {
           </div>
         </div>`;
 
-        // Section 4: Raw Box Score comparison — just the actual numbers
-        const aR = aw.rawStats || {}, hR = hm.rawStats || {};
+        // Section 4: Process Factors (3 kept — per-48 differentials)
+        const aD = aw.deltas || {}, hD2 = hm.deltas || {};
         html += `<div class="xray-section">
-          <div class="xray-section-label">Box Score</div>
+          <div class="xray-section-label">Process Factors</div>
           <table style="width:100%;border-collapse:collapse;">
-            <tr><td style="font-size:9px;font-weight:700;color:var(--text-muted);padding:2px 0;"></td><td style="text-align:right;font-size:9px;font-weight:700;color:var(--text-muted);padding:2px 0;">${aA}</td><td style="text-align:right;font-size:9px;font-weight:700;color:var(--text-muted);padding:2px 0;">${hA}</td></tr>
-            ${statRow('REB', aR.rebounding, hR.rebounding)}
-            ${statRow('OREB', aR.hustle, hR.hustle)}
-            ${statRow('AST', aR.assists, hR.assists)}
-            ${statRow('TOV', aR.turnovers, hR.turnovers)}
-            ${statRow('STL', aR.steals, hR.steals)}
-            ${statRow('BLK', aR.blocks, hR.blocks)}
-            ${statRow('FTA', aR.aggressiveness, hR.aggressiveness)}
+            <tr><td style="font-size:9px;font-weight:700;color:var(--text-muted);padding:3px 0;">Factor</td><td style="text-align:right;font-size:9px;font-weight:700;color:var(--text-muted);padding:3px 0;">${aA}</td><td style="text-align:right;font-size:9px;font-weight:700;color:var(--text-muted);padding:3px 0;">${hA}</td></tr>
+            ${factorRow('Hustle (OREB)', aD.oreb, hD2.oreb)}
+            ${factorRow('Aggressiveness (FTA)', aD.fta, hD2.fta)}
+            ${factorRow('Ball Security (TOV)', aD.tov, hD2.tov)}
           </table>
         </div>`;
 
@@ -6731,7 +6752,7 @@ try {
 <strong style="font-size:12px;">Step 3:</strong> <span style="font-size:13px;">Look at <strong>Scoring Source</strong> — paint-heavy scoring (green) is sustainable, 3PT-heavy scoring (orange/red) tends to regress.</span>
 </div>
 <div style="background:var(--card-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--purple);">
-<strong style="font-size:12px;">Step 4:</strong> <span style="font-size:13px;">Check <strong>Star Pace</strong> — a cold star means upside (sustainable), an erupting star means fragile lead. Glance at <strong>Box Score</strong> for game context.</span>
+<strong style="font-size:12px;">Step 4:</strong> <span style="font-size:13px;">Check <strong>Process Score</strong> (hustle, aggression, ball security) and <strong>Star Pace</strong> — a cold star means upside, an erupting star means fragile.</span>
 </div>
 </div>
 </div>
@@ -6749,8 +6770,8 @@ try {
 <tbody>
 <tr style="border-bottom:1px solid var(--border-light);">
 <td style="padding:10px 6px;"><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#10b981;padding:3px 8px;border-radius:4px;">SUSTAINABLE</span></td>
-<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">Team's scoring is <strong>paint-dominant</strong> (45%+ from paint), OR their star is cold (&lt;60% pace) meaning upside remains. Paint scoring is high-percentage and repeatable; a cold star will likely heat up.</td>
-<td style="padding:10px 6px;font-weight:600;color:#10b981;">This team's scoring has room to grow or is built on high-% shots. Lead is durable.</td>
+<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">Team's scoring is <strong>paint-dominant</strong> (45%+ from paint), star is cold (&lt;60% pace), and/or strong process (6+). Multiple factors align toward durability.</td>
+<td style="padding:10px 6px;font-weight:600;color:#10b981;">This team's scoring is built on repeatable actions. Lead is durable.</td>
 </tr>
 <tr style="border-bottom:1px solid var(--border-light);">
 <td style="padding:10px 6px;"><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#f59e0b;padding:3px 8px;border-radius:4px;">MIXED</span></td>
@@ -6759,8 +6780,8 @@ try {
 </tr>
 <tr style="border-bottom:1px solid var(--border-light);">
 <td style="padding:10px 6px;"><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#ef4444;padding:3px 8px;border-radius:4px;">UNSUSTAINABLE</span></td>
-<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">Scoring heavily dependent on <strong>3PT shooting</strong> (50%+ from threes), OR star is erupting (&gt;150% pace). Hot shooting and career performances both regress hard.</td>
-<td style="padding:10px 6px;font-weight:600;color:#ef4444;">This team's scoring is fragile. Expect regression from shooting and/or star cooling.</td>
+<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">Scoring heavily dependent on <strong>3PT shooting</strong> (50%+ from threes), star erupting (&gt;150% pace), and/or weak process (&lt;2). Multiple fragility signals.</td>
+<td style="padding:10px 6px;font-weight:600;color:#ef4444;">This team's scoring is fragile. Expect regression — the numbers can't hold.</td>
 </tr>
 </tbody>
 </table>
@@ -6768,9 +6789,15 @@ try {
 
 <!-- GUIDE CARDS -->
 <div class="guide-grid">
-<div class="guide-card" style="border-left:3px solid #ef4444;"><h3>Star Pace</h3><p class="edge-label">Star player regression = sustainability signal</p><p>Tracks each team's top scorer's current game pace vs their season PPG average. Stars (21+ PPG in NBA, 16+ in NCAAB) tend to <strong>regress to their mean</strong> over the course of a game.</p><p><strong>Star COLD (< 60% pace):</strong> The team is winning/competitive WITHOUT their star performing. This makes their scoring <span style="color:#10b981;font-weight:700;">more sustainable</span> — the star has upside and will likely heat up.</p><p><strong>Star ERUPTING (> 150% pace):</strong> The team's scoring is inflated by a career-level performance. This makes their lead <span style="color:#ef4444;font-weight:700;">less sustainable</span> — the star will cool down.</p><div class="threshold">Most meaningful in Q1 through early Q3.<br>COLD star + team winning = very sustainable.<br>ERUPTING star + team winning = fragile lead.</div></div>
+<div class="guide-card" style="border-left:3px solid #ef4444;"><h3>Star Pace</h3><p class="edge-label">Star player regression = sustainability signal</p><p>Tracks each team's top scorer's current game pace vs their season PPG average. Stars (21+ PPG in NBA, 16+ in NCAAB) tend to <strong>regress to their mean</strong> over the course of a game.</p><p><strong>Star COLD (&lt; 60% pace):</strong> The team is winning/competitive WITHOUT their star performing. This makes their scoring <span style="color:#10b981;font-weight:700;">more sustainable</span> — the star has upside and will likely heat up.</p><p><strong>Star ERUPTING (&gt; 150% pace):</strong> The team's scoring is inflated by a career-level performance. This makes their lead <span style="color:#ef4444;font-weight:700;">less sustainable</span> — the star will cool down.</p><div class="threshold">Most meaningful in Q1 through early Q3.<br>COLD star + team winning = very sustainable.<br>ERUPTING star + team winning = fragile lead.</div></div>
 
-<div class="guide-card" style="border-left:3px solid #64748b;"><h3>Box Score</h3><p class="edge-label">Raw stats — context, not predictions</p><p>Shows actual game stats (REB, OREB, AST, TOV, STL, BLK, FTA) side by side. The winning stat is <strong>bolded</strong>.</p><p style="color:#f59e0b;font-weight:600;">Important: Our ML research (7,499 games) proved these box score stats do NOT predict winners beyond what the score already tells you. They're shown as <strong>context for what you're watching</strong>, not as predictive signals.</p><div class="threshold">Use to understand the game flow, not to bet.<br>The score + scoring source + star pace are what matter.</div></div>
+<div class="guide-card" style="border-left:3px solid #0ea5e9;"><h3>Process Score (0-10)</h3><p class="edge-label">Effort + aggression + ball security</p><p>Composite of three factors that measure <strong>sustainable process</strong> — actions that don't regress like shooting does. Each factor is a per-48-minute differential vs the opponent.</p><p><strong>6+ = Strong process</strong> — team is creating advantages through effort, not luck.<br><strong>2- = Weak process</strong> — team lacks hustle, aggression, or ball security.</p><div class="threshold">Strong process + paint scoring = very sustainable.<br>Weak process + 3PT heavy = very fragile.</div></div>
+
+<div class="guide-card" style="border-left:3px solid #10b981;"><h3>Hustle (OREB)</h3><p class="edge-label">Second chances through effort</p><p>Offensive rebound differential per 48 minutes. OREB create extra possessions through <strong>effort and size</strong>, not luck. Unlike shooting, hustle doesn't regress — a team crashing the boards will keep crashing them.</p><div class="threshold">Green (+) = your team gets more second chances.<br>The most effort-based and least score-dependent stat.</div></div>
+
+<div class="guide-card" style="border-left:3px solid #f59e0b;"><h3>Aggressiveness (FTA)</h3><p class="edge-label">Getting to the line = sustainable shots</p><p>Free throw attempt differential per 48 minutes. Teams that <strong>attack the rim</strong> draw fouls and generate the highest-percentage shots in basketball. Aggressiveness also puts the opponent in foul trouble.</p><div class="threshold">Green (+) = more free throw attempts than opponent.<br>FTA-driven scoring is repeatable within a game.</div></div>
+
+<div class="guide-card" style="border-left:3px solid #7c3aed;"><h3>Ball Security (TOV)</h3><p class="edge-label">Fewer turnovers = sustained possessions</p><p>Turnover differential per 48 minutes (inverted: positive = YOUR team turns it over less). Teams that <strong>take care of the ball</strong> sustain more possessions and more scoring opportunities. Careless teams waste possessions.</p><div class="threshold">Green (+) = opponent turns it over more than you.<br>Ball security measures offensive discipline, not luck.</div></div>
 </div>
 
 <!-- SCORING SOURCE GUIDE -->
@@ -6791,7 +6818,7 @@ try {
   <p>The actual three-point field goal percentage (made/attempted). League average is ~36%. Teams shooting well above this will likely regress. Teams shooting well below may improve. Use this alongside the scoring source to assess sustainability.</p>
   <hr class="signal-divider">
   <h4>Data Sources</h4>
-  <p>Box scores from ESPN live API. Stats update every 30 seconds. Sustainability is based on scoring source composition (paint vs 3PT) and star player pace. Box score stats (REB, AST, TOV, STL, BLK, FTA) are shown as context only — our ML research proved they don't predict outcomes beyond the score.</p>
+  <p>Box scores from ESPN live API. Stats update every 30 seconds. Sustainability verdict combines three inputs: <strong>scoring source</strong> (paint vs 3PT), <strong>star pace</strong> (mean reversion), and <strong>process score</strong> (hustle, aggression, ball security). Process factors are the 3 least score-dependent box score stats — OREB, FTA, and turnovers.</p>
 </div>
 
 </div>
