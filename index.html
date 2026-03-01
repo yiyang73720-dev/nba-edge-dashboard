@@ -438,7 +438,7 @@
     .tp-row { display: flex; justify-content: space-between; padding: 2px 0; font-size: 12px; }
     .tp-row .tp-label { color: var(--text-muted); }
     .tp-row .tp-val { font-weight: 700; color: var(--text-primary); }
-    .team-score { font-size: 28px; font-weight: 900; color: var(--text-primary); margin-top: 4px; letter-spacing: -1px; line-height: 1; font-variant-numeric: tabular-nums; transition: color var(--transition-fast); }
+    .team-score { font-size: 26px; font-weight: 900; color: var(--text-primary); margin-top: 3px; letter-spacing: -0.8px; line-height: 1; font-variant-numeric: tabular-nums; transition: color var(--transition-fast); }
     .team-record { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
     .team-3pt-avg { font-size: 10px; color: var(--text-muted); }
     .vs-block { padding: 0 10px; color: var(--border); font-size: 14px; font-weight: 300; display: flex; flex-direction: column; align-items: center; gap: 4px; }
@@ -705,7 +705,7 @@
     .signal-badge.badge-qtr{background:linear-gradient(135deg,#eab308,#ca8a04)}
 
     /* ===== THEORY PANEL ===== */
-    .theory-toggle{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px 20px;margin:16px auto;max-width:1200px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all var(--transition-normal)}
+    .theory-toggle{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:12px 18px;margin:14px auto;max-width:1200px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all var(--transition-normal)}
     .theory-toggle:hover{border-color:var(--orange);background:var(--orange-light);box-shadow:var(--shadow-sm)}
     .theory-toggle h3{margin:0;font-size:14px;color:var(--text-primary);font-weight:700}.theory-toggle .arrow{transition:transform .3s cubic-bezier(0.4,0,0.2,1);font-size:16px;color:var(--text-muted)}
     .theory-toggle.open .arrow{transform:rotate(180deg)}
@@ -730,7 +730,7 @@
     @media(max-width:600px){.theory-panel .thresh-grid{grid-template-columns:1fr}}
 
     /* ===== ODDS ROW ===== */
-    .odds-row{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;margin:6px 0;background:var(--bg);border:1px solid var(--border-light);border-radius:var(--radius-sm);font-size:11px;color:var(--text-secondary);transition:background var(--transition-fast),border-color var(--transition-fast);}
+    .odds-row{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;margin:4px 0;background:var(--bg);border:1px solid var(--border-light);border-radius:var(--radius-sm);font-size:10px;color:var(--text-secondary);transition:background var(--transition-fast),border-color var(--transition-fast);}
     .odds-row:hover{border-color:var(--border);background:rgba(0,212,170,0.03);}
     .odds-row .odds-label{color:var(--text-muted);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;}
     .odds-row .odds-val{font-weight:700;font-size:13px;font-family:'Inter',monospace;color:var(--text-primary);}
@@ -751,8 +751,8 @@
     [data-theme="dark"] .odds-row .odds-implied { color: #78909c; }
 
     /* ===== LIVE INDICATOR ===== */
-    .live-indicator { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: var(--green); letter-spacing: 0.8px; }
-    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: livePulse 1.5s ease-in-out infinite; box-shadow: 0 0 6px rgba(16,185,129,0.4); }
+    .live-indicator { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 800; color: var(--green); letter-spacing: 1px; }
+    .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: livePulse 1.5s ease-in-out infinite; box-shadow: 0 0 6px rgba(16,185,129,0.4); }
     @keyframes livePulse { 0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 6px rgba(16,185,129,0.4); } 50% { opacity: 0.5; transform: scale(0.75); box-shadow: 0 0 12px rgba(16,185,129,0.6); } }
 
     /* ===== SIGNAL FIRE / WARN GAME CARDS ===== */
@@ -1049,7 +1049,7 @@
     </div>
 
 <!-- QUICK BET ACTION CARDS -->
-<div id="quick-bet-panel" style="display:none; margin-bottom: 18px; background: linear-gradient(135deg, var(--accent-light), rgba(255,255,255,0.95)); border: 1px solid rgba(0,212,170,0.3); border-radius: 12px; padding: 16px 18px;">
+<div id="quick-bet-panel" style="display:none; margin-bottom: 16px;">
   <div style="font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; display:flex; align-items:center; gap:8px;">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
     ACTION REQUIRED
@@ -1152,9 +1152,9 @@
 
   <!-- ==================== BANKROLL TAB ==================== -->
   <div class="tab-content" id="content-bankroll">
-    <div style="margin-bottom:20px">
+    <div style="margin-bottom:16px">
       <h2 style="font-size:18px;font-weight:800;margin-bottom:4px">Position Sizing</h2>
-      <p style="font-size:12px;color:var(--text-muted)">Kelly criterion-based bet sizing. Conservative by default - capped at 5% max per bet.</p>
+      <p style="font-size:11px;color:var(--text-muted)">Kelly criterion-based bet sizing. Conservative by default -- capped at 5% max per bet.</p>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
       <div class="card" style="padding:20px">
