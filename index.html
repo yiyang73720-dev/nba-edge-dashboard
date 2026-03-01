@@ -2876,18 +2876,20 @@ function computeSustainabilityClient(game, aStats, hStats, aA, hA, aS, hS, elaps
   const aDeltas = computeDeltas(aPF, hPF);
   const hDeltas = computeDeltas(hPF, aPF);
 
-  // Per-48 helper for internal process score only
-  const per48 = (myVal, oppVal) => ((myVal - oppVal) / mins * 48);
-
   // Process Score (0-10): OREB advantage (0-3.3) + FTA advantage (0-3.3) + TOV advantage (0-3.3)
+  // Thresholds scale with game time so 1 OREB at min 5 ≠ 1 OREB at min 40.
+  // Full-game expected advantage for max score: OREB +5, FTA +10, TOV +6.
+  // At elapsed mins, scale threshold proportionally: threshold = fullGame * (mins / 48).
   const _clamp = (v) => Math.max(0, Math.min(1, v));
+  const totalMin = _ncaa ? 40 : 48;
+  const timeFrac = Math.min(mins / totalMin, 1); // 0..1 how far into game
   const computeProcessScore = (my, opp) => {
-    // OREB: 3+ per-48 advantage = max. Typical range 0-6 per-48 diff.
-    const orebAdv = _clamp(per48(my.oreb, opp.oreb) / 6) * 3.33;
-    // FTA: 8+ per-48 advantage = max. Typical range 0-15 per-48 diff.
-    const ftaAdv = _clamp(per48(my.fta, opp.fta) / 15) * 3.33;
-    // TOV: opponent has 5+ more per-48 = max. Typical range 0-10 per-48 diff.
-    const tovAdv = _clamp(per48(opp.tov, my.tov) / 10) * 3.33;
+    const orebThresh = Math.max(5 * timeFrac, 0.5);  // at min 12: ~1.25, at min 48: 5
+    const ftaThresh  = Math.max(10 * timeFrac, 1);    // at min 12: ~2.5, at min 48: 10
+    const tovThresh  = Math.max(6 * timeFrac, 0.5);   // at min 12: ~1.5, at min 48: 6
+    const orebAdv = _clamp((my.oreb - opp.oreb) / orebThresh) * 3.33;
+    const ftaAdv  = _clamp((my.fta - opp.fta) / ftaThresh) * 3.33;
+    const tovAdv  = _clamp((opp.tov - my.tov) / tovThresh) * 3.33;
     return Math.round(Math.min(orebAdv + ftaAdv + tovAdv, 10) * 10) / 10;
   };
   const aProcessScore = computeProcessScore(aPF, hPF);
