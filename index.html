@@ -16,7 +16,7 @@
       --card-bg: #ffffff;
       --border: #e5e7eb;
       --border-light: #f1f3f5;
-      --text-primary: #1a1a2e;
+      --text-primary: #111827;
       --text-secondary: #6b7280;
       --text-muted: #9ca3af;
       --accent: #00d4aa;
@@ -59,14 +59,14 @@
       --shadow-glow-green: 0 0 24px rgba(16,185,129,0.2), 0 0 8px rgba(16,185,129,0.15);
       --shadow-glow-purple: 0 0 24px rgba(139,92,246,0.2), 0 0 8px rgba(139,92,246,0.15);
     }
-    [data-theme="dark"] .header { background: rgba(26,26,46,0.95); border-bottom-color: #2d2d44; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    [data-theme="dark"] .header { background: rgba(26,26,46,0.95); border-bottom-color: #2d2d44; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
     [data-theme="dark"] .game-card-header { background: #151525; }
-    [data-theme="dark"] .tab.active { color: var(--accent); }
+    [data-theme="dark"] .tab.active { color: #fff; background: var(--accent); }
     [data-theme="dark"] input, [data-theme="dark"] select, [data-theme="dark"] textarea { background: #252540; color: #e2e8f0; border-color: #2d2d44; }
     [data-theme="dark"] .modal { background: #1a1a2e; }
     [data-theme="dark"] .edge-box { background: #151525; border-color: #2d2d44; }
-    [data-theme="dark"] .signal-strip { background: rgba(26,26,46,0.8); border-color: #2d2d44; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-    [data-theme="dark"] .tab-bar { background: rgba(26,26,46,0.95); border-bottom-color: #2d2d44; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    [data-theme="dark"] .signal-strip { background: rgba(26,26,46,0.85); border-color: #2d2d44; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+    [data-theme="dark"] .tab-bar { background: rgba(26,26,46,0.95); border-bottom-color: #2d2d44; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
     [data-theme="dark"] .tab-bar .tab-pill-bg { background: rgba(255,255,255,0.04); }
     [data-theme="dark"] .odds-row { background: linear-gradient(135deg,#1a1a2e,#16213e); }
     [data-theme="dark"] .header-controls { background: rgba(255,255,255,0.04); border-color: #2d2d44; }
@@ -77,6 +77,9 @@
     [data-theme="dark"] .game-card.signal-fire { border-color: var(--accent); box-shadow: var(--shadow-glow-green); }
     [data-theme="dark"] .guide-card { border-color: #2d2d44; background: linear-gradient(135deg, #1a1a2e 0%, #1e1e36 100%); }
     [data-theme="dark"] .guide-card:hover { border-color: var(--accent); }
+    [data-theme="dark"] .game-card.signal-dog { border-color: var(--purple); box-shadow: var(--shadow-glow-purple); }
+    [data-theme="dark"] .thesis-card, [data-theme="dark"] .edge-card { border-color: #2d2d44; border-left-color: var(--accent); }
+    [data-theme="dark"] #quick-bet-panel { background: linear-gradient(135deg, rgba(0,212,170,0.08), rgba(26,26,46,0.95)) !important; border-color: rgba(0,212,170,0.2) !important; }
 
     /* ===== RESET & BASE ===== */
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -93,18 +96,18 @@
 
     /* ===== HEADER ===== */
     .header {
-      background: rgba(255,255,255,0.85);
-      backdrop-filter: blur(16px) saturate(180%);
-      -webkit-backdrop-filter: blur(16px) saturate(180%);
-      border-bottom: 1px solid rgba(229,231,235,0.6);
-      padding: 16px 32px;
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid rgba(229,231,235,0.5);
+      padding: 14px 32px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       position: sticky;
       top: 0;
       z-index: 200;
-      min-height: 64px;
+      min-height: 56px;
       transition: background var(--transition-normal), box-shadow var(--transition-normal);
     }
     .header h1, .header .title { font-size: 18px; font-weight: 800; color: var(--accent); letter-spacing: -0.3px; }
@@ -173,13 +176,13 @@
     .tab-bar {
       display: flex;
       align-items: center;
-      background: rgba(255,255,255,0.85);
-      backdrop-filter: blur(16px) saturate(180%);
-      -webkit-backdrop-filter: blur(16px) saturate(180%);
-      border-bottom: 1px solid rgba(229,231,235,0.6);
-      padding: 8px 32px;
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid rgba(229,231,235,0.5);
+      padding: 6px 32px;
       position: sticky;
-      top: 64px;
+      top: 56px;
       z-index: 100;
       gap: 4px;
       overflow-x: auto;
@@ -195,7 +198,7 @@
       padding: 3px;
     }
     .tab {
-      padding: 8px 18px;
+      padding: 7px 18px;
       cursor: pointer;
       font-size: 13px;
       font-weight: 500;
@@ -206,10 +209,11 @@
       white-space: nowrap;
       position: relative;
       letter-spacing: -0.01em;
+      user-select: none;
     }
     .tab:hover { color: var(--text-primary); background: rgba(0,0,0,0.03); }
     .tab.active {
-      color: var(--white);
+      color: #fff;
       font-weight: 700;
       background: var(--accent);
       box-shadow: 0 2px 8px rgba(0,212,170,0.25);
@@ -223,6 +227,9 @@
       border-radius: 10px;
       margin-left: 4px;
       vertical-align: middle;
+      background: rgba(0,212,170,0.12);
+      color: var(--accent);
+      font-weight: 700;
     }
     .tab.active .badge { background: rgba(255,255,255,0.25); color: #fff; }
     .tab-content { display: none; }
@@ -230,19 +237,19 @@
     @keyframes tabFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
     /* ===== CONTENT AREA ===== */
-    .content, .main-content, .tab-content { padding: 28px 32px; max-width: 1440px; margin: 0 auto; }
+    .content, .main-content, .tab-content { padding: 24px 32px; max-width: 1440px; margin: 0 auto; }
 
     /* ===== TYPOGRAPHY ===== */
-    h2, .section-title { font-size: 20px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.5px; margin-bottom: 4px; line-height: 1.25; }
-    h3, h4 { font-size: 15px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.25px; line-height: 1.3; }
+    h2, .section-title { font-size: 18px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.4px; margin-bottom: 4px; line-height: 1.25; }
+    h3, h4 { font-size: 14px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.2px; line-height: 1.35; }
 
     /* ===== STATS ROW (KPI TILES) ===== */
-    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 22px; }
     .stat-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 20px 18px;
+      padding: 16px 14px;
       text-align: center;
       box-shadow: var(--shadow-xs);
       transition: all var(--transition-smooth);
@@ -255,22 +262,22 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 3px;
+      height: 2px;
       background: linear-gradient(90deg, var(--accent), var(--green));
       opacity: 0;
       transition: opacity var(--transition-normal);
     }
-    .stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); border-color: var(--accent); }
+    .stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); border-color: var(--accent); }
     .stat-card:hover::before { opacity: 1; }
     .stat-label {
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 700;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 1.2px;
-      margin-bottom: 8px;
+      letter-spacing: 1.4px;
+      margin-bottom: 6px;
     }
-    .stat-value { font-size: 30px; font-weight: 800; color: var(--text-primary); letter-spacing: -1.5px; line-height: 1.1; }
+    .stat-value { font-size: 26px; font-weight: 800; color: var(--text-primary); letter-spacing: -1.2px; line-height: 1.1; }
     .stat-value.red { color: var(--red); }
     .stat-value.orange { color: var(--orange); }
     .stat-value.green { color: var(--green); }
@@ -282,15 +289,15 @@
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       overflow: visible;
-      background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,249,251,0.95) 100%);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      background: linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(248,249,251,0.98) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       box-shadow: var(--shadow-sm);
-      margin-bottom: 24px;
+      margin-bottom: 22px;
     }
     .signal-chip {
       flex: 1;
-      padding: 16px 10px;
+      padding: 18px 14px;
       text-align: center;
       border-right: 1px solid var(--border-light);
       transition: all var(--transition-smooth);
@@ -299,9 +306,9 @@
     }
     .signal-chip:last-child { border-right: none; }
     .signal-chip:hover { background: rgba(0,0,0,0.02); }
-    .signal-chip .chip-value { font-size: 24px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.5px; line-height: 1.2; transition: transform var(--transition-fast); }
-    .signal-chip:hover .chip-value { transform: scale(1.05); }
-    .signal-chip .chip-label { font-size: 9px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.2px; margin-top: 5px; }
+    .signal-chip .chip-value { font-size: 26px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.5px; line-height: 1.15; transition: transform var(--transition-fast); font-variant-numeric: tabular-nums; }
+    .signal-chip:hover .chip-value { transform: scale(1.06); }
+    .signal-chip .chip-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.2px; margin-top: 5px; }
     .signal-chip .chip-value.orange { color: var(--orange); }
     .signal-chip .chip-value.teal { color: var(--green); }
     .signal-chip .chip-value.red { color: var(--red); }
@@ -340,23 +347,23 @@
     .section-divider { height: 1px; background: var(--border-light); margin: 20px 0; }
 
     /* ===== EDGE THESIS ===== */
-    .edge-thesis-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-    .edge-thesis-header h2 { font-size: 13px; font-weight: 700; color: var(--text-primary); letter-spacing: 1px; text-transform: uppercase; margin: 0; }
-    .edge-count-badge, .thesis-count { background: linear-gradient(135deg, var(--accent), var(--green)); color: white; font-size: 11px; font-weight: 700; padding: 3px 12px; border-radius: 20px; min-width: 24px; text-align: center; box-shadow: 0 2px 8px rgba(0,212,170,0.3); }
+    .edge-thesis-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .edge-thesis-header h2 { font-size: 12px; font-weight: 800; color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase; margin: 0; }
+    .edge-count-badge, .thesis-count { background: linear-gradient(135deg, var(--accent), var(--green)); color: white; font-size: 11px; font-weight: 800; padding: 3px 12px; border-radius: 20px; min-width: 24px; text-align: center; box-shadow: 0 2px 8px rgba(0,212,170,0.3); }
 
     /* ===== AUTO REFRESH BAR ===== */
     .auto-refresh-bar {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 10px 0;
-      font-size: 12px;
+      gap: 10px;
+      padding: 8px 0;
+      font-size: 11px;
       color: var(--text-secondary);
       flex-wrap: wrap;
     }
-    .refresh-pill { padding: 5px 14px; font-size: 11px; font-weight: 700; border-radius: 20px; border: 1px solid var(--accent); color: var(--accent); background: transparent; cursor: pointer; transition: all var(--transition-normal); }
+    .refresh-pill { padding: 4px 12px; font-size: 11px; font-weight: 700; border-radius: 20px; border: 1px solid var(--accent); color: var(--accent); background: transparent; cursor: pointer; transition: all var(--transition-normal); }
     .refresh-pill:hover { background: var(--accent); color: white; box-shadow: 0 2px 8px rgba(0,212,170,0.25); }
-    .countdown-bar { flex: 0 0 120px; height: 3px; background: var(--border-light); border-radius: 2px; overflow: hidden; }
+    .countdown-bar { flex: 0 0 100px; height: 3px; background: var(--border-light); border-radius: 2px; overflow: hidden; }
     .countdown-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--green)); border-radius: 2px; transition: width 1s linear; }
 
     /* ===== CARDS ===== */
@@ -364,9 +371,9 @@
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 22px;
+      padding: 20px;
       box-shadow: var(--shadow-xs);
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       transition: all var(--transition-smooth);
     }
     .card:hover { box-shadow: var(--shadow-sm); }
@@ -374,16 +381,16 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       font-weight: 700;
-      font-size: 15px;
+      font-size: 14px;
       color: var(--text-primary);
       letter-spacing: -0.2px;
     }
     .card-body { font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
 
     /* ===== GAME CARDS ===== */
-    .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px; }
+    .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; }
     .game-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -392,21 +399,22 @@
       transition: all var(--transition-smooth);
       position: relative;
     }
-    .game-card:hover { box-shadow: var(--shadow-md); border-color: #c8cbd0; transform: translateY(-2px); }
+    .game-card:hover { box-shadow: var(--shadow-md); border-color: var(--border); transform: translateY(-2px); }
     .game-card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 16px;
+      padding: 8px 14px;
       background: var(--bg);
       border-bottom: 1px solid var(--border-light);
-      font-size: 11px;
+      font-size: 10px;
       color: var(--text-muted);
       font-weight: 600;
-      letter-spacing: .3px;
+      letter-spacing: .5px;
+      text-transform: uppercase;
       transition: background var(--transition-normal);
     }
-    .game-card-body { padding: 16px 18px; }
+    .game-card-body { padding: 14px 16px; }
     .game-teams { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
     .team-block { text-align: center; flex: 1; min-width: 0; }
     .team-block strong, .team-block b { display: block; font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 1px; }
@@ -440,17 +448,20 @@
     /* ===== EMPTY STATES ===== */
     .empty-state {
       text-align: center;
-      padding: 60px 24px;
+      padding: 48px 24px;
       color: var(--text-muted);
-      font-size: 14px;
+      font-size: 13px;
+      background: linear-gradient(135deg, rgba(248,249,251,0.5) 0%, rgba(255,255,255,0) 100%);
+      border-radius: var(--radius-sm);
     }
+    [data-theme="dark"] .empty-state { background: linear-gradient(135deg, rgba(26,26,46,0.3) 0%, transparent 100%); }
     .empty-state .icon {
-      font-size: 40px;
-      margin-bottom: 12px;
-      opacity: 0.3;
+      font-size: 36px;
+      margin-bottom: 10px;
+      opacity: 0.25;
       filter: grayscale(1);
     }
-    .empty-state p { max-width: 340px; margin: 0 auto; line-height: 1.7; }
+    .empty-state p { max-width: 340px; margin: 0 auto; line-height: 1.7; font-size: 12px; }
 
     /* ===== FORMS ===== */
     .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
@@ -475,37 +486,38 @@
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 22px;
-      margin-bottom: 20px;
+      padding: 20px;
+      margin-bottom: 18px;
       box-shadow: var(--shadow-xs);
       transition: box-shadow var(--transition-normal);
     }
     .panel:hover, .section:hover { box-shadow: var(--shadow-sm); }
-    .panel-header, .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--border-light); }
+    .panel-header, .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border-light); }
     .grid-section-label { grid-column: 1/-1; padding: 12px 0 4px; border-top: 1px solid var(--border); margin-top: 8px; }
     .grid-section-label span { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
     .grid-section-label:first-child { border-top: none; margin-top: 0; }
 
     /* ===== TABLES ===== */
-    table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; }
+    table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12px; }
     thead th {
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 1.2px;
       color: var(--text-muted);
-      padding: 12px 14px;
+      padding: 10px 12px;
       border-bottom: 2px solid var(--border);
       text-align: left;
       background: var(--bg);
       position: sticky;
       top: 0;
+      white-space: nowrap;
     }
-    tbody td { padding: 12px 14px; border-bottom: 1px solid var(--border-light); color: var(--text-primary); font-weight: 500; transition: background var(--transition-fast); }
+    tbody td { padding: 10px 12px; border-bottom: 1px solid var(--border-light); color: var(--text-primary); font-weight: 500; transition: background var(--transition-fast); font-variant-numeric: tabular-nums; }
     tbody tr { transition: background var(--transition-fast); }
     tbody tr:hover { background: rgba(0,212,170,0.04); }
     tbody tr:last-child td { border-bottom: none; }
-    tbody tr:nth-child(even) { background: rgba(0,0,0,0.015); }
+    tbody tr:nth-child(even) { background: rgba(0,0,0,0.02); }
     [data-theme="dark"] tbody tr:nth-child(even) { background: rgba(255,255,255,0.025); }
     [data-theme="dark"] tbody tr:hover { background: rgba(0,212,170,0.06); }
 
@@ -525,10 +537,11 @@
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 20px;
-      box-shadow: var(--shadow-xs);
-      margin-bottom: 16px;
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 14px;
       transition: all var(--transition-smooth);
+      border-left: 3px solid var(--accent);
     }
     .thesis-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
     .criteria-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border-light); }
@@ -632,10 +645,10 @@
     ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
     /* ===== BANKROLL ===== */
-    .bankroll-section, .bankroll-settings { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow-xs); margin-bottom: 20px; }
+    .bankroll-section, .bankroll-settings { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow-xs); margin-bottom: 22px; }
     .bankroll-section label, label { font-size: 12px; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 6px; }
     .stop-loss, .rules-box, [style*="border-left: 3px solid"] { background: var(--orange-light) !important; border: 1px solid #fde68a !important; border-left: 3px solid var(--orange) !important; border-radius: var(--radius-sm) !important; padding: 12px 16px !important; color: #92400e !important; font-size: 13px !important; }
-    .notification-toast, .toast { position: fixed; top: 20px; right: 20px; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 22px; box-shadow: 0 16px 48px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06); z-index: 2000; font-size: 13px; font-weight: 500; animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1); max-width: 360px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .notification-toast, .toast { position: fixed; top: 20px; right: 20px; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 22px; box-shadow: 0 16px 48px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06); z-index: 2000; font-size: 13px; font-weight: 500; animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1); max-width: 360px; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
     @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
     .auto-refresh-controls, .refresh-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; font-size: 13px; color: var(--text-secondary); }
     .auto-refresh-controls select, .refresh-controls select { width: auto; min-width: 80px; }
@@ -666,17 +679,17 @@
     .signal-chip.combined-active:last-child { border-radius: 0 var(--radius-lg) var(--radius-lg) 0; }
 
     /* ===== GUIDE ===== */
-    .guide-section{padding:24px 0}
-    .guide-intro{color:var(--text-secondary);font-size:13px;margin-bottom:20px;line-height:1.8}
-    .guide-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:20px}
-    .guide-card{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;transition:all var(--transition-smooth);position:relative;overflow:hidden}
+    .guide-section{padding:20px 0}
+    .guide-intro{color:var(--text-secondary);font-size:13px;margin-bottom:16px;line-height:1.8}
+    .guide-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}
+    .guide-card{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px;transition:all var(--transition-smooth);position:relative;overflow:hidden}
     .guide-card::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,rgba(0,212,170,0.02) 0%,transparent 60%);pointer-events:none;opacity:0;transition:opacity var(--transition-normal)}
-    .guide-card:hover{border-color:var(--accent);box-shadow:var(--shadow-md);transform:translateY(-2px)}
+    .guide-card:hover{border-color:var(--accent);box-shadow:var(--shadow-md);transform:translateY(-1px)}
     .guide-card:hover::after{opacity:1}
-    .guide-card h3{font-size:16px;margin-bottom:12px;display:flex;align-items:center;gap:8px;letter-spacing:-0.3px}
-    .guide-card .edge-label{font-size:12px;color:var(--accent);font-weight:600;margin-bottom:10px;letter-spacing:0.2px}
-    .guide-card p{font-size:12.5px;color:var(--text-secondary);line-height:1.7;margin-bottom:12px}
-    .guide-card .threshold{font-size:11px;color:var(--text-secondary);background:var(--bg);padding:12px 16px;border-radius:var(--radius-sm);border-left:3px solid var(--accent);line-height:1.7;margin-top:4px}
+    .guide-card h3{font-size:15px;margin-bottom:10px;display:flex;align-items:center;gap:8px;letter-spacing:-0.3px}
+    .guide-card .edge-label{font-size:11px;color:var(--accent);font-weight:700;margin-bottom:8px;letter-spacing:0.3px;text-transform:uppercase}
+    .guide-card p{font-size:12px;color:var(--text-secondary);line-height:1.7;margin-bottom:10px}
+    .guide-card .threshold{font-size:11px;color:var(--text-secondary);background:var(--bg);padding:10px 14px;border-radius:var(--radius-sm);border-left:3px solid var(--accent);line-height:1.7;margin-top:4px;font-family:'Inter',monospace}
 
     /* ===== SIGNAL BADGES ===== */
     .signal-badge.badge-3pt{background:linear-gradient(135deg,#3b82f6,#2563eb)}
@@ -748,13 +761,17 @@
       box-shadow: var(--shadow-glow-green), var(--shadow-sm);
       animation: cardSignalPulse 3s ease-in-out infinite;
     }
-    .game-card.signal-fire:hover { box-shadow: var(--shadow-glow-green), var(--shadow-md); transform: translateY(-3px); }
-    .game-card.signal-fire .game-card-header { background: linear-gradient(135deg, var(--accent-light) 0%, var(--bg) 100%); }
+    .game-card.signal-fire:hover { box-shadow: var(--shadow-glow-green), var(--shadow-md); transform: translateY(-2px); }
+    .game-card.signal-fire .game-card-header { background: linear-gradient(135deg, var(--accent-light) 0%, rgba(236,253,248,0.5) 50%, var(--bg) 100%); border-bottom-color: rgba(0,212,170,0.2); }
     .game-card.signal-warn { border: 1px solid var(--orange); box-shadow: 0 0 12px rgba(245,158,11,0.08); }
     .game-card.signal-warn .game-card-header { background: linear-gradient(135deg, var(--orange-light) 0%, var(--bg) 100%); }
+    .game-card.signal-dog { border: 2px solid var(--purple); box-shadow: var(--shadow-glow-purple), var(--shadow-sm); }
+    .game-card.signal-dog:hover { box-shadow: var(--shadow-glow-purple), var(--shadow-md); transform: translateY(-2px); }
+    .game-card.signal-dog .game-card-header { background: linear-gradient(135deg, var(--purple-light) 0%, var(--bg) 100%); border-bottom-color: rgba(124,58,237,0.15); }
+    [data-theme="dark"] .game-card.signal-dog { border-color: var(--purple); box-shadow: var(--shadow-glow-purple); }
     @keyframes cardSignalPulse {
       0%, 100% { box-shadow: var(--shadow-glow-green), var(--shadow-sm); }
-      50% { box-shadow: 0 0 28px rgba(16,185,129,0.2), 0 0 8px rgba(16,185,129,0.12), var(--shadow-md); }
+      50% { box-shadow: 0 0 24px rgba(16,185,129,0.18), 0 0 8px rgba(16,185,129,0.1), var(--shadow-md); }
     }
 
     /* ===== STAT BARS (game card inline stats) ===== */
@@ -795,7 +812,7 @@
     .fav-star:hover { opacity: 1; transform: scale(1.15); }
 
     /* Edge thesis container */
-    .edge-thesis-container { margin-bottom: 20px; }
+    .edge-thesis-container { margin-bottom: 22px; }
     .edge-thesis-container:not(.active) { display: none; }
     .edge-thesis-container.active { display: block; }
 
@@ -827,53 +844,97 @@
 
     /* ===== MOBILE RESPONSIVE ===== */
     @media (max-width: 768px) {
-      .header { padding: 12px 16px; flex-wrap: wrap; gap: 8px; min-height: auto; }
+      .header { padding: 10px 16px; flex-wrap: wrap; gap: 6px; min-height: auto; }
       .header h1 { font-size: 15px; }
       .header .subtitle { font-size: 10px; }
-      .logo-icon { width: 30px; height: 30px; }
-      .logo-text .logo-main { font-size: 16px; letter-spacing: 1px; }
-      .logo-text .logo-sub { font-size: 8px; letter-spacing: 2px; }
+      .logo-icon { width: 28px; height: 28px; }
+      .logo-text .logo-main { font-size: 15px; letter-spacing: 1px; }
+      .logo-text .logo-sub { font-size: 7px; letter-spacing: 2px; }
       .logo-wrap { gap: 8px; }
       .header-right { gap: 4px; }
       .header-right button { font-size: 10px; padding: 4px 8px; }
-      .tab-bar { padding: 6px 12px; top: auto; gap: 2px; }
+      .tab-bar { padding: 4px 12px; top: auto; gap: 2px; }
       .tab-pill-bg { padding: 2px; gap: 1px; }
       .tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
       .tabs::-webkit-scrollbar { display: none; }
-      .tab { padding: 7px 12px; font-size: 12px; }
+      .tab { padding: 6px 12px; font-size: 11px; }
       .signal-strip { flex-wrap: wrap; border-radius: var(--radius); }
-      .signal-chip { flex: 1 1 30%; min-width: 90px; padding: 12px 6px; }
-      .signal-chip .chip-value { font-size: 20px; }
-      .signal-chip .chip-label { font-size: 10px; }
+      .signal-chip { flex: 1 1 30%; min-width: 80px; padding: 10px 6px; }
+      .signal-chip .chip-value { font-size: 18px; }
+      .signal-chip .chip-label { font-size: 8px; letter-spacing: 1px; }
       .signal-chip .chip-desc { display: none !important; }
       .game-card-body { padding: 12px 14px; }
-      .game-card { margin-bottom: 12px; }
+      .game-card { margin-bottom: 10px; }
       .game-card:hover { transform: none; }
       .modal { width: 95%; padding: 20px; border-radius: var(--radius-lg); }
       .container { padding: 12px; }
-      .content, .main-content, .tab-content { padding: 16px; }
+      .content, .main-content, .tab-content { padding: 14px 16px; }
       #live-games, #tab-3pt, #tab-star, #tab-betlog, #tab-bankroll, #tab-guide { padding: 12px; }
       .edge-panel { padding: 12px; }
       .guide-card { padding: 16px; }
       .guide-grid { grid-template-columns: 1fr; }
-      .games-grid { grid-template-columns: 1fr; gap: 12px; }
-      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .games-grid { grid-template-columns: 1fr; gap: 10px; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .stat-card { padding: 12px 10px; }
       .thesis-card:hover, .guide-card:hover { transform: none; }
+      .thesis-card, .edge-card { padding: 14px; }
+      .edge-thesis-header h2 { font-size: 11px; }
+      table { font-size: 11px; }
+      thead th { padding: 8px 8px; font-size: 8px; }
+      tbody td { padding: 8px 8px; }
     }
     @media (max-width: 480px) {
       .header h1 { font-size: 13px; }
       .signal-chip { flex: 1 1 45%; }
-      .tab { padding: 6px 10px; font-size: 11px; }
-      .logo-icon { width: 24px; height: 24px; }
-      .logo-text .logo-main { font-size: 14px; }
+      .tab { padding: 5px 10px; font-size: 10px; }
+      .logo-icon { width: 22px; height: 22px; }
+      .logo-text .logo-main { font-size: 13px; }
       .logo-text .logo-sub { display: none; }
       .logo-wrap { gap: 6px; }
-      .stats-row { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-      .stat-card { padding: 14px 10px; }
-      .stat-value { font-size: 24px; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .stat-card { padding: 10px 8px; }
+      .stat-value { font-size: 22px; }
+      .stat-label { font-size: 8px; }
       .game-card-body { padding: 10px 12px; }
       .tab-bar { padding: 4px 8px; }
+      .auto-refresh-bar { font-size: 10px; gap: 6px; }
+      .countdown-bar { flex: 0 0 60px; }
     }
+
+
+    /* ===== QUICK BET PANEL PREMIUM ===== */
+    #quick-bet-panel {
+      border-radius: var(--radius);
+      padding: 20px;
+      background: linear-gradient(135deg, var(--accent-light) 0%, rgba(236,253,248,0.3) 100%);
+      border: 1px solid rgba(0,212,170,0.2);
+    }
+    [data-theme="dark"] #quick-bet-panel {
+      background: linear-gradient(135deg, rgba(0,212,170,0.06) 0%, rgba(13,61,51,0.3) 100%);
+      border-color: rgba(0,212,170,0.15);
+    }
+
+    /* ===== DARK MODE CONTRAST FIXES ===== */
+    [data-theme="dark"] .chip-detail-panel { background: #1e1e36; border-color: #3d3d5c; }
+    [data-theme="dark"] .chip-detail-header { background: #151525; }
+    [data-theme="dark"] .thesis-card, [data-theme="dark"] .edge-card { border-color: #2d2d44; }
+    [data-theme="dark"] .thesis-bet-line { background: #151525; border-color: #2d2d44; }
+    [data-theme="dark"] .criteria-value { background: rgba(0,212,170,0.1); }
+    [data-theme="dark"] .criteria-value.warn { background: rgba(245,158,11,0.1); }
+    [data-theme="dark"] .criteria-value.neg { background: rgba(255,255,255,0.05); }
+    [data-theme="dark"] .tp-modal { background: #1e1e36; border-color: #3d3d5c; }
+    [data-theme="dark"] .stop-loss, [data-theme="dark"] .rules-box { background: rgba(245,158,11,0.08) !important; border-color: rgba(245,158,11,0.2) !important; color: var(--orange) !important; }
+
+    /* ===== SIGNAL BADGE POLISH ===== */
+    .signal-badge.badge-fav, .signal-badge.badge-FAV { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
+    .signal-badge.badge-dog, .signal-badge.badge-DOG { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: #fff; }
+
+    /* ===== GUIDE CARD GRID BALANCE ===== */
+    .guide-grid { gap: 18px; }
+    .guide-card p { margin-bottom: 10px; }
+
+    /* ===== FOCUS VISIBLE FOR ACCESSIBILITY ===== */
+    .tab:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 </style>
 </head>
@@ -946,12 +1007,12 @@
       <div id="edgeThesisCards"></div>
     </div>
 
-    <div class="auto-refresh-bar" style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:10px 16px;margin-bottom:16px;">
+    <div class="auto-refresh-bar" style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:7px 14px;margin-bottom:14px;font-size:11px;">
       <span class="dot" id="autoRefreshDot" style="width:6px;height:6px;border-radius:50%;background:var(--text-muted);flex-shrink:0;"></span>
-      <span style="font-weight:500;">Auto-refresh: <strong id="autoRefreshLabel" style="color:var(--text-primary);">OFF</strong></span>
-      <button class="btn btn-sm btn-green" id="autoRefreshBtn" onclick="toggleAutoRefresh()" style="background:var(--accent);color:white;border:none;padding:6px 16px;border-radius:20px;font-size:11px;font-weight:700;">Start</button>
-      <span style="color:var(--text-muted);font-size:11px;">Every:</span>
-      <select id="refreshInterval" style="padding:4px 8px;font-size:11px;border-radius:6px;border:1px solid var(--border);width:auto;min-width:60px;" onchange="updateRefreshInterval()">
+      <span style="font-weight:500;font-size:11px;">Auto-refresh: <strong id="autoRefreshLabel" style="color:var(--text-primary);">OFF</strong></span>
+      <button class="btn btn-sm btn-green" id="autoRefreshBtn" onclick="toggleAutoRefresh()" style="background:var(--accent);color:white;border:none;padding:5px 14px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:0.3px;">Start</button>
+      <span style="color:var(--text-muted);font-size:10px;">Every:</span>
+      <select id="refreshInterval" style="padding:3px 8px;font-size:10px;border-radius:6px;border:1px solid var(--border);width:auto;min-width:55px;" onchange="updateRefreshInterval()">
         <option value="30" selected>30s</option>
         <option value="60">60s</option>
         <option value="120">2min</option>
@@ -988,8 +1049,8 @@
     </div>
 
 <!-- QUICK BET ACTION CARDS -->
-<div id="quick-bet-panel" style="display:none; margin-bottom: 20px;">
-  <div style="font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 10px; display:flex; align-items:center; gap:8px;">
+<div id="quick-bet-panel" style="display:none; margin-bottom: 18px; background: linear-gradient(135deg, var(--accent-light), rgba(255,255,255,0.95)); border: 1px solid rgba(0,212,170,0.3); border-radius: 12px; padding: 16px 18px;">
+  <div style="font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; display:flex; align-items:center; gap:8px;">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
     ACTION REQUIRED
   </div>
@@ -1003,11 +1064,11 @@
       <div class="card-body">
         <div class="games-grid" id="live-games-grid">
           <div class="empty-state" style="grid-column:1/-1;">
-            <div style="width:56px;height:56px;margin:0 auto 16px;background:var(--bg);border:2px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <div style="width:48px;height:48px;margin:0 auto 14px;background:var(--bg);border:1.5px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             </div>
-            <p style="font-weight:600;color:var(--text-secondary);margin-bottom:4px;">Waiting for games</p>
-            <p style="font-size:12px;">Click "Refresh Now" or start auto-refresh to load live games.</p>
+            <p style="font-weight:600;color:var(--text-secondary);margin-bottom:4px;font-size:13px;">Waiting for games</p>
+            <p style="font-size:11px;color:var(--text-muted);">Click "Refresh Now" or start auto-refresh to load live games.</p>
           </div>
         </div>
       </div>
@@ -1071,18 +1132,18 @@
       <h2 style="font-size:18px;font-weight:800;margin-bottom:4px">Bet Tracker</h2>
       <p style="font-size:12px;color:var(--text-muted)">Auto-logged when signals fire. Results auto-resolved from ESPN final scores.</p>
     </div>
-    <div id="backtest-panel" style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px">
-      <div class="stat-card"><div class="stat-label">TOTAL BETS</div><div class="stat-value" id="bt-total" style="font-size:24px">0</div></div>
-      <div class="stat-card"><div class="stat-label">WIN RATE</div><div class="stat-value" id="bt-winrate" style="font-size:24px;color:var(--green)">-</div></div>
-      <div class="stat-card"><div class="stat-label">ROI</div><div class="stat-value" id="bt-roi" style="font-size:24px">-</div></div>
-      <div class="stat-card"><div class="stat-label">AVG EDGE</div><div class="stat-value" id="bt-edge" style="font-size:24px;color:var(--accent)">-</div></div>
-      <div class="stat-card"><div class="stat-label">UNITS P/L</div><div class="stat-value" id="bt-units" style="font-size:24px">0.00</div></div>
+    <div id="backtest-panel" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px">
+      <div class="stat-card"><div class="stat-label">TOTAL BETS</div><div class="stat-value" id="bt-total" style="font-size:22px">0</div></div>
+      <div class="stat-card"><div class="stat-label">WIN RATE</div><div class="stat-value" id="bt-winrate" style="font-size:22px;color:var(--green)">-</div></div>
+      <div class="stat-card"><div class="stat-label">ROI</div><div class="stat-value" id="bt-roi" style="font-size:22px">-</div></div>
+      <div class="stat-card"><div class="stat-label">AVG EDGE</div><div class="stat-value" id="bt-edge" style="font-size:22px;color:var(--accent)">-</div></div>
+      <div class="stat-card"><div class="stat-label">UNITS P/L</div><div class="stat-value" id="bt-units" style="font-size:22px">0.00</div></div>
     </div>
     <div id="signal-breakdown" style="margin-bottom:20px"></div>
-    <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center">
-      <button style="background:var(--accent);color:white;border:none;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer" onclick="exportBetLog()">Export CSV</button>
-      <button style="background:var(--card-bg);color:var(--text-muted);border:1px solid var(--border);padding:8px 16px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer" onclick="if(confirm('Clear all bet log data?'))clearBetLog()">Clear Log</button>
-      <span style="margin-left:auto;font-size:11px;color:var(--text-muted)">Bets auto-log when combined signals fire</span>
+    <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center">
+      <button style="background:var(--accent);color:white;border:none;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;letter-spacing:0.2px" onclick="exportBetLog()">Export CSV</button>
+      <button style="background:var(--card-bg);color:var(--text-muted);border:1px solid var(--border);padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer" onclick="if(confirm('Clear all bet log data?'))clearBetLog()">Clear Log</button>
+      <span style="margin-left:auto;font-size:10px;color:var(--text-muted)">Bets auto-log when combined signals fire</span>
     </div>
     <div class="card" style="padding:0;overflow:hidden">
       <div id="bet-log-entries" style="overflow-x:auto"></div>
@@ -2387,7 +2448,7 @@ function showQuarterToast(a) {
 function renderQtrAlerts() {
   const tb = document.getElementById('qtr-alerts-body');
   if (!state.quarterAlerts.length) { tb.innerHTML = '<tr><td colspan="7" class="empty-state">No quarter-end alerts yet.</td></tr>'; document.getElementById('threept-qtr-alerts').textContent = '0'; return; }
-  tb.innerHTML = state.quarterAlerts.map(a => { const pLabel = isNCAA() ? (a.quarter <= 2 ? `H${a.quarter}` : `OT`) : `Q${a.quarter}`; return `<tr><td>${a.time}</td><td><strong>${a.team}</strong></td><td>${pLabel}</td><td style="color:var(--red);font-weight:800;">${a.pct}%</td><td>${a.made}/${a.att}</td><td>${a.game}</td><td><button class="btn btn-purple btn-sm" onclick="openLogModal('${a.game}','3PT ${pLabel}','3PT Regression')">Log</button></td></tr>`; }).join('');
+  tb.innerHTML = state.quarterAlerts.map(a => { const pLabel = isNCAA() ? (a.quarter <= 2 ? `H${a.quarter}` : `OT`) : `Q${a.quarter}`; return `<tr><td>${a.time}</td><td><strong>${a.team}</strong></td><td>${pLabel}</td><td style="color:var(--red);font-weight:800;">${a.pct}%</td><td>${a.made}/${a.att}</td><td>${a.game}</td><td><span style="color:var(--text-muted);font-size:10px;">Monitor only</span></td></tr>`; }).join('');
   document.getElementById('threept-qtr-alerts').textContent = state.quarterAlerts.length;
 }
 function clearQtrAlerts() { if(confirm('Clear all?')) { state.quarterAlerts=[]; localStorage.setItem('quarterAlerts','[]'); renderQtrAlerts(); const b=document.getElementById('threept-badge'); if(b) b.style.display='none'; } }
@@ -3526,7 +3587,8 @@ async function fetchESPNScoreboard() {
 
         // ===== DOG SIGNAL =====
         // Pre-game dog leading at 14+ min → bet dog ML or spread (63-71% cover)
-        if (favSide && _elapsed >= 14 && dogLeading) {
+        // Require 3+ pt lead to filter noise (1-2 pt leads are coinflips)
+        if (favSide && _elapsed >= 14 && dogLeadAmt >= 3) {
           let dogTier = 'LEADING'; let dogPct = '63.4%'; let dogExtras = [];
           const dogStats2 = dogSide === 'home' ? hStats : aStats;
           const favStats2 = dogSide === 'home' ? aStats : hStats;
@@ -3701,7 +3763,7 @@ async function fetchESPNScoreboard() {
           }
           thesis.eventId = event.id;
           thesis.betTeamAbbr = betTeam;
-          // Always log the bet — use default -110 odds if live odds unavailable
+          // Log the bet if EV is sufficient — use default -110 odds if live odds unavailable
           const _logOdds = _betML || -110;
           const _logImplP = _betML ? _implP : 0.524; // -110 implied = 52.4%
           autoLogBet(event.id, betTeam, 'ML', signals.filter(x=>x.level===2).map(x=>x.type), _logOdds, _logImplP, effectiveSignals, _urgency.mult);
@@ -3901,7 +3963,7 @@ async function fetchESPNScoreboard() {
         const cb=(aHot||hHot)?'hot-card':(aWarm||hWarm)?'warm-card':'';
         const _pCount=isNCAA()?2:4,_pPfx=isNCAA()?'H':'Q';const qBoxes=(t,p,m,a)=>{const pv=parseFloat(p)||0,mv=parseInt(m)||0,av=parseInt(a)||0;let b='';for(let q=1;q<=_pCount;q++){const act=q===per,past=q<per;if(past||act){const hc2=pv>=50&&av>=8&&act?'hot-q':act?'active-q':'';b+=`<div class="qtr-box ${hc2}"><div class="qtr-label">${_pPfx}${q}${act?' *':''}</div><div class="qtr-value ${act&&pv>=50?'hot-val':'normal-val'}">${act?pv.toFixed(0)+'%':'-'}</div><div class="qtr-detail">${act?mv+'/'+av:'done'}</div></div>`;}else b+=`<div class="qtr-box"><div class="qtr-label">${_pPfx}${q}</div><div class="qtr-value normal-val">-</div><div class="qtr-detail">-</div></div>`;}return b;};
         const tRow=(t,p,m,a,hot,warm)=>{const badge=hot?'<span class="signal-badge signal-fire">UNSUSTAINABLE</span>':warm?'<span class="signal-badge signal-moderate">ELEVATED</span>':'<span class="signal-badge signal-none">Normal</span>';return `<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><span style="font-weight:800;font-size:14px;color:var(--text-primary);">${t}</span>${badge}</div>${bar3(p,m,a,t)}<div class="qtr-grid">${qBoxes(t,p,m,a)}</div></div>`;};
-        tpCards+=`<div class="three-pt-card ${cb}"><div class="three-pt-card-header"><span style="display:inline-flex;align-items:center;gap:4px;">${teamLogoImg(aLogo,16)}${gLabel}${teamLogoImg(hLogo,16)}</span><span>${periodLabel} ${clk}</span></div><div class="three-pt-card-body">${tRow(aA,a3P,a3M,a3A,aHot,aWarm)}${tRow(hA,h3P,h3M,h3A,hHot,hWarm)}${(aHot||hHot)?`<div style="text-align:center;margin-top:6px;"><button class="btn btn-purple btn-sm" onclick="openLogModal('${gLabel}','3PT Reg','3PT Regression')">Log 3PT Bet</button></div>`:''}</div></div>`;
+        tpCards+=`<div class="three-pt-card ${cb}"><div class="three-pt-card-header"><span style="display:inline-flex;align-items:center;gap:4px;">${teamLogoImg(aLogo,16)}${gLabel}${teamLogoImg(hLogo,16)}</span><span>${periodLabel} ${clk}</span></div><div class="three-pt-card-body">${tRow(aA,a3P,a3M,a3A,aHot,aWarm)}${tRow(hA,h3P,h3M,h3A,hHot,hWarm)}${(aHot||hHot)?`<div style="text-align:center;margin-top:6px;"><span style="color:var(--text-muted);font-size:10px;">3PT tracking only — no proven edge</span></div>`:''}</div></div>`;
       }
     }
 
@@ -4039,7 +4101,7 @@ async function fetchESPNScoreboard() {
                 <div class="thesis-bet-action">BET ${betSideDisplay} ML ${t.marketOdds ? "(" + (t.marketOdds > 0 ? "+" : "") + t.marketOdds + ")" : ""}</div>${t.kellyPct ? '<div style="color:var(--green);font-size:12px;margin-top:4px"><strong>KELLY:</strong> ' + t.kellyPct + '% of bankroll ($' + t.kellyBet + ') &bull; <strong>Our P:</strong> ' + t.estimatedP + '% vs <strong>Market:</strong> ' + (t.impliedP * 100).toFixed(1) + '%</div>' : ""}
                 <div class="thesis-bet-side">Fade ${fadeSideDisplay} — ${t.confidence.toUpperCase()} confidence</div>
               </div>
-              <button class="btn btn-orange btn-sm" onclick="openLogModal('${t.game}','Live ML','Mean Reversion')">Log This Bet</button>
+              ${(()=>{ if (t.confidence === 'low' || !t.kellyBet || t.kellyBet <= 0) return '<span style="font-size:10px;color:var(--text-muted);">Low EV — monitor only</span>'; return '<button class="btn btn-orange btn-sm" onclick="openLogModal(\'' + t.game + '\',\'Live ML\',\'Mean Reversion\')">Log This Bet</button>'; })()}
             </div>
             <div class="thesis-logic">
               <div class="thesis-logic-title">Why This Is an Edge</div>
@@ -4053,7 +4115,7 @@ async function fetchESPNScoreboard() {
             <div class="thesis-criteria">${criteriaHTML}</div>
             <div class="thesis-actions">
               <span style="font-size:10px;color:#666;display:inline-flex;align-items:center;gap:3px;">${teamLogoImg(t.aLogo, 14)}${aTeamDisplay} ${t.aScore} - ${t.hScore} ${hTeamDisplay}${teamLogoImg(t.hLogo, 14)} | ${t.detail}</span>
-              <button class="btn btn-green btn-sm" onclick="openLogModal('${t.game}','Live ML','Mean Reversion')">Log Bet</button>
+              ${(()=>{ if (t.confidence === 'low' || !t.kellyBet || t.kellyBet <= 0) return ''; return '<button class="btn btn-green btn-sm" onclick="openLogModal(\'' + t.game + '\',\'Live ML\',\'Mean Reversion\')">Log Bet</button>'; })()}
             </div>
           </div>
         </div>`;
@@ -4193,17 +4255,30 @@ function updateSignalGuide(mode) {
 }
 
 // ==================== BET LOG ====================
-function openLogModal(g,p,s) { document.getElementById('modal-game').value=g; document.getElementById('modal-price').value=p; document.getElementById('modal-strategy').value=s; document.getElementById('modal-side').value=''; document.getElementById('modal-notes').value=''; document.getElementById('logModal').classList.add('active'); }
+// Dead strategies confirmed to have no edge — block from logging
+const DEAD_STRATEGIES = ['3PT Regression', '3PT Fragile', 'Momentum Reversal', 'Fade the Public', 'Q1 Signal'];
+function isDeadStrategy(s) { return s && DEAD_STRATEGIES.some(d => s.toLowerCase().includes(d.toLowerCase())); }
+
+function openLogModal(g,p,s) {
+  if (isDeadStrategy(s)) { alert('Strategy "' + s + '" has no proven edge. Bet not logged.'); return; }
+  document.getElementById('modal-game').value=g; document.getElementById('modal-price').value=p; document.getElementById('modal-strategy').value=s; document.getElementById('modal-side').value=''; document.getElementById('modal-notes').value=''; document.getElementById('logModal').classList.add('active');
+}
 function closeModal() { document.getElementById('logModal').classList.remove('active'); }
 function confirmLogBet() {
-  state.betLog.push({date:new Date().toLocaleDateString(),strategy:document.getElementById('modal-strategy').value,game:document.getElementById('modal-game').value,side:document.getElementById('modal-side').value,price:document.getElementById('modal-price').value,units:parseFloat(document.getElementById('modal-units').value),result:'Pending',profit:0,notes:document.getElementById('modal-notes').value,id:Date.now()});
+  const side = document.getElementById('modal-side').value.trim();
+  if (!side) { alert('Enter which side you are betting (team name).'); return; }
+  const strategy = document.getElementById('modal-strategy').value;
+  if (isDeadStrategy(strategy)) { alert('Strategy "' + strategy + '" has no proven edge. Bet not logged.'); closeModal(); return; }
+  // Re-read from localStorage to avoid overwriting auto-logged entries
+  state.betLog = JSON.parse(localStorage.getItem('betLog') || '[]');
+  state.betLog.push({date:new Date().toLocaleDateString(),strategy:strategy,game:document.getElementById('modal-game').value,side:side,price:document.getElementById('modal-price').value,units:parseFloat(document.getElementById('modal-units').value),result:'Pending',profit:0,notes:document.getElementById('modal-notes').value,id:Date.now()});
   localStorage.setItem('betLog',JSON.stringify(state.betLog)); renderBetLog(); closeModal();
 }
 function getEdgeBonus(signalCount) {
   const mode = document.getElementById('edge-mode') ? document.getElementById('edge-mode').value : 'moderate';
   if (mode === 'backtest') {
     const d = getBacktestData();
-    if (d.total >= 10) return Math.max(0.01, Math.min(0.10, d.edge));
+    if (d.total >= 10) return Math.max(0.03, Math.min(0.10, d.edge));
     return 0.03;
   }
   const sc = signalCount || 1;
@@ -4239,6 +4314,12 @@ function autoLogBet(gameId, team, side, signals, marketOdds, impliedP, signalCou
   const key = gameId + '_' + team;
   if (log.find(x => x.key === key)) return;
   const k = kellySize(impliedP, marketOdds, null, signalCount || 1, urgencyMult);
+  // EV FILTER: Do NOT log bets with zero Kelly (no edge) or tiny edge (<3%)
+  // User's proven strategies have 34-67% ROI — don't pollute the log with garbage
+  if (k.bet <= 0 || k.edge < 3) {
+    console.log('[Bet Log] Skipped low-EV signal:', team, 'edge:', k.edge, 'kelly:', k.bet);
+    return;
+  }
   log.push({
     id: Date.now(),
     key: key,
@@ -4428,10 +4509,12 @@ async function importEngineSignals() {
       };
       state.signalTracker.push(entry);
       imported++;
-      // Also add to bet log if not there
+      // Also add to bet log if not there — but only if edge is meaningful
       const logKey = sig.eventId + '_' + sig.betTeam;
+      const _engEdge = sig.estEdge || 0;
+      const _engKelly = sig.kellyBet || 0;
       let betLog = JSON.parse(localStorage.getItem('betLog') || '[]');
-      if (!betLog.find(x => x.key === logKey)) {
+      if (!betLog.find(x => x.key === logKey) && _engKelly > 0 && _engEdge >= 3) {
         betLog.push({
           id: sig.timestamp,
           key: logKey,
@@ -5136,6 +5219,7 @@ function clearBetLog() {
   updateBacktestPanel();
 }
 function resolveBet(id,r) {
+  state.betLog = JSON.parse(localStorage.getItem('betLog') || '[]');
   const b=state.betLog.find(x=>x.id===id); if(!b) return; b.result=r;
   if(r==='W'){const p=parseInt(b.price)||-110; b.profit=p>0?b.units*(p/100):b.units*(100/Math.abs(p));}
   else if(r==='L') b.profit=-b.units; else b.profit=0;
@@ -5810,13 +5894,22 @@ try {
 </script>
 
 <div id="content-history" class="tab-content">
+  <div style="margin-bottom:16px">
+    <h2 style="font-size:18px;font-weight:800;margin-bottom:4px">Signal History</h2>
+    <p style="font-size:12px;color:var(--text-muted)">Auto-logs every signal fired during live games. Results resolved from ESPN final scores.</p>
+  </div>
   <div class="card">
-    <div class="card-header"><span>Signal History</span>
-      <button class="btn btn-sm btn-green" onclick="renderSignalHistoryFull()">Refresh</button>
-      <button class="btn btn-sm btn-red" onclick="if(confirm('Clear all history?')){state.signalTracker=[];state.signalHistory=[];localStorage.removeItem('signalTracker');localStorage.removeItem('signalHistory');renderSignalHistoryFull();}">Clear</button>
+    <div class="card-header" style="padding-bottom:10px;border-bottom:1px solid var(--border-light)"><span style="font-size:13px;font-weight:700;">Signal Log</span>
+      <div style="display:flex;gap:6px;">
+        <button class="btn btn-sm btn-green" onclick="renderSignalHistoryFull()" style="padding:5px 12px;font-size:10px;">Refresh</button>
+        <button class="btn btn-sm btn-red" onclick="if(confirm('Clear all history?')){state.signalTracker=[];state.signalHistory=[];localStorage.removeItem('signalTracker');localStorage.removeItem('signalHistory');renderSignalHistoryFull();}" style="padding:5px 12px;font-size:10px;">Clear</button>
+      </div>
     </div>
     <div class="card-body" id="historyContent">
-      <div style="text-align:center;padding:20px;color:var(--text-muted);">Auto-logs every signal. Open during live games to start tracking.</div>
+      <div class="empty-state" style="padding:36px 20px;">
+        <p style="font-weight:600;color:var(--text-secondary);margin-bottom:4px;font-size:13px;">No signals recorded yet</p>
+        <p style="font-size:11px;">Auto-logs every signal. Open during live games to start tracking.</p>
+      </div>
     </div>
   </div>
 </div>
