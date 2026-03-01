@@ -694,6 +694,7 @@
     /* ===== SIGNAL BADGES ===== */
     .signal-badge.badge-3pt{background:linear-gradient(135deg,#3b82f6,#2563eb)}
     .signal-badge.badge-star{background:linear-gradient(135deg,#f59e0b,#d97706)}
+    .signal-badge.badge-quality{background:linear-gradient(135deg,#f59e0b,#d97706)}
 
     .signal-badge.badge-paint{background:linear-gradient(135deg,#10b981,#059669)}
     .signal-badge.badge-foul{background:linear-gradient(135deg,#8b5cf6,#7c3aed)}
@@ -1039,6 +1040,12 @@
         <div class="chip-label" style="color:#7c3aed;">DOG</div>
         <div class="chip-desc">Pre-game dog leading — bet dog ML/spread (63-71% cover)</div>
         <div class="chip-detail-panel" id="chip-detail-dog"></div>
+      </div>
+      <div class="signal-chip signal-chip-clickable" onclick="toggleSignalDetail('quality')" style="border-left:3px solid #f59e0b;">
+        <div class="chip-value" id="live-quality-signals" style="color:#f59e0b;">0</div>
+        <div class="chip-label" style="color:#f59e0b;">QUALITY</div>
+        <div class="chip-desc">Quality team trailing early — bet fav spread/ML</div>
+        <div class="chip-detail-panel" id="chip-detail-quality"></div>
       </div>
       <div class="signal-chip signal-chip-clickable" onclick="toggleSignalDetail('star')">
         <div class="chip-value" id="live-star-signals">0</div>
@@ -2046,14 +2053,15 @@ function sendSignalNotification(title, body, gameId, signalType, kellyInfo) {
 
   const isFav = signalType.startsWith('fav_');
   const isDog = signalType.startsWith('dog_');
+  const isQuality = signalType.startsWith('quality_');
 
   // Play alert sound for actionable signals
-  if (isFav || isDog) playAlertSound('coil');
+  if (isFav || isDog || isQuality) playAlertSound('coil');
 
-  // Send email for FAV and DOG signals only — include Kelly sizing
-  if (isFav || isDog) {
-    const color = isFav ? '#10b981' : '#7c3aed';
-    const label = isFav ? 'FAV SIGNAL' : 'DOG SIGNAL';
+  // Send email for FAV, DOG, and QUALITY signals — include Kelly sizing
+  if (isFav || isDog || isQuality) {
+    const color = isQuality ? '#f59e0b' : isFav ? '#10b981' : '#7c3aed';
+    const label = isQuality ? 'QUALITY EDGE' : isFav ? 'FAV SIGNAL' : 'DOG SIGNAL';
     // Build Kelly section for email
     let kellyHTML = '';
     if (kellyInfo && kellyInfo.bet > 0) {
@@ -2107,7 +2115,7 @@ function toggleSignalDetail(type) {
 
   // Build panel content from stored signal games
   const games = window._signalGames ? window._signalGames[type] : [];
-  const labels = { 'star': 'Star Coil', 'starcoilplus': 'Star Coil+', 'quality_edge': 'Quality Edge' };
+  const labels = { 'star': 'Star Coil', 'starcoilplus': 'Star Coil+', 'quality_edge': 'Quality Edge', 'quality': 'Quality Edge' };
 
   if (!games || games.length === 0) {
     panel.innerHTML = `<div class="chip-detail-header">${labels[type] || type} Games</div><div class="chip-detail-empty">No active ${labels[type] || ''} signals right now</div>`;
@@ -3205,10 +3213,10 @@ async function fetchESPNScoreboard() {
     // Section headers
     let sectionHeaders = { live: false, upcoming: false, completed: false };
 
-    let sigStar=0, sigFav=0, sigDog=0, hotTeams=0, warmTeams=0;
+    let sigStar=0, sigFav=0, sigDog=0, sigQuality=0, hotTeams=0, warmTeams=0;
     let cards='', tpCards='', gameTheses=[];
     // Per-signal game tracking for chip click-to-expand
-    let signalGames = { 'fav': [], 'dog': [], 'star': [] };
+    let signalGames = { 'fav': [], 'dog': [], 'star': [], 'quality': [] };
 
     for (const event of allDisplayEvents) {
       const comp = event.competitions?.[0]; if (!comp) continue;
@@ -3673,7 +3681,7 @@ async function fetchESPNScoreboard() {
                 const _qRecType = trailBy <= 5 ? 'ML' : 'SPREAD';
                 const _qColor = _qRecType === 'ML' ? '#f0b90b' : '#16c784';
                 signals.push({type:'quality', text:`QUALITY EDGE: ${strongAbbr} (${(strongIsHome?_hWP:_aWP).toFixed(0)}% WP) trails by ${trailBy} in Q${per}. Gap: ${_qualGap.toFixed(0)}% → <span style="color:${_qColor};font-weight:800;">BET ${_qRecType}</span>`, level:2, betType:_qRecType, betColor:_qColor});
-                signalLevel = 2; activeSignals++;
+                signalLevel = 2; activeSignals++; sigQuality++;
                 if (!state.signalFirstSeen[gid]) state.signalFirstSeen[gid] = Date.now();
                 // Kelly sizing for QUALITY_EDGE
                 const _qKelly = (function() {
@@ -3713,6 +3721,7 @@ async function fetchESPNScoreboard() {
         if (hasFav) signalGames['fav'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='fav'&&s.level===2).map(s=>s.text).join('; ') });
         if (hasDog) signalGames['dog'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='dog'&&s.level===2).map(s=>s.text).join('; ') });
         if (hasStar) signalGames['star'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='star'&&s.level===2).map(s=>s.text).join('; ') });
+        if (signals.some(s=>s.type==='quality')) signalGames['quality'].push({ ..._gameInfo, sigDetail: signals.filter(s=>s.type==='quality').map(s=>s.text).join('; ') });
 
         // Determine bet side and build thesis logic
         if (signalLevel >= 2) {
@@ -4109,10 +4118,12 @@ async function fetchESPNScoreboard() {
     const dogEl = document.getElementById('live-dog-signals');
     if (dogEl) dogEl.textContent = sigDog;
     document.getElementById('live-star-signals').textContent = sigStar;
+    const qualEl = document.getElementById('live-quality-signals');
+    if (qualEl) qualEl.textContent = sigQuality;
     document.getElementById('threept-hot-count').textContent = hotTeams;
     document.getElementById('threept-warm-count').textContent = warmTeams;
 
-    const totalSigs = sigFav + sigDog + sigStar;
+    const totalSigs = sigFav + sigDog + sigStar + sigQuality;
     if (totalSigs>0) { document.getElementById('live-badge').style.display='inline'; document.getElementById('live-badge').textContent=totalSigs; }
     else document.getElementById('live-badge').style.display='none';
     const tpBadge = document.getElementById('threept-badge');
@@ -6068,7 +6079,7 @@ try {
 <strong style="font-size:12px;">Step 2:</strong> <span style="font-size:13px;">When a signal fires, the chip turns on and shows a number. <strong>Click it</strong> to see which game, then <strong>click the game</strong> to jump to it.</span>
 </div>
 <div style="background:var(--card-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--green);">
-<strong style="font-size:12px;">Step 3:</strong> <span style="font-size:13px;">The game card tells you <strong>who to bet on</strong> and <strong>why</strong>. Green FAV = bet fav spread. Purple DOG = bet dog ML (gold) or spread (blue).</span>
+<strong style="font-size:12px;">Step 3:</strong> <span style="font-size:13px;">The game card tells you <strong>who to bet on</strong> and <strong>why</strong>. Green FAV = bet fav spread. Purple DOG = bet dog ML (gold) or spread (blue). Blue QUALITY = strong team trailing early.</span>
 </div>
 </div>
 </div>
@@ -6091,13 +6102,18 @@ try {
 </tr>
 <tr style="border-bottom:1px solid var(--border-light);">
 <td style="padding:10px 6px;"><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#7c3aed;padding:3px 8px;border-radius:4px;">DOG</span></td>
-<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">Pre-game <strong>underdog is winning</strong> at 14+ min. The market had them losing — they're proving it wrong. <strong>63-71% cover rate.</strong><br><em>DOG LEADING:</em> 63.4% cover. <em>DOG PHYSICAL:</em> +REB dominance → 65.5%. <em>DOG STRONG:</em> +5pt lead, +REB, +FTA → 70.6%.</td>
+<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">Pre-game <strong>underdog is winning</strong> at 14+ min. The market had them losing — they're proving it wrong. <strong>63-72% cover rate.</strong><br>Tier hierarchy: <strong>STRONG</strong> (72.5% cover, 38.4% ROI) &gt; <strong>MEDIUM FAV</strong> (70.0%, 33.6% — pre-game spread 3.5-7 pts) &gt; <strong>PHYSICAL</strong> (67.2%, 28.3%) &gt; <strong>LEADING</strong> (66.6%, 27.2%).</td>
 <td style="padding:10px 6px;font-weight:700;color:#7c3aed;">If dog ML &ge; -100: <span style="color:#f0b90b;font-weight:800;">BET ML</span>. If dog ML &lt; -100: <span style="color:#3861fb;font-weight:800;">BET SPREAD</span>.</td>
 </tr>
 <tr style="border-bottom:1px solid var(--border-light);">
 <td style="padding:10px 6px;"><span class="signal-badge badge-star" style="font-size:10px;">STAR COIL</span></td>
 <td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">A star player (21+ PPG) is cold (&lt;65% pace) AND the game is close (within 15pts) in Q2-Q3. <strong>Supplemental signal</strong> — confirms FAV/DOG when it aligns.</td>
 <td style="padding:10px 6px;font-weight:700;color:var(--text-muted);">Supplemental only. Use to <strong>confirm</strong> FAV/DOG signals, not as standalone bet trigger.</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-light);">
+<td style="padding:10px 6px;"><span class="signal-badge badge-quality" style="font-size:10px;">QUALITY</span></td>
+<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">Stronger team (by season win%) <strong>trailing 1-10 pts in Q1-Q2</strong>. Win% gap must be &ge; 15%. <strong>Est. 3.5% edge.</strong><br>Market overreacts to early deficits against superior teams. Quality gap + early game = regression opportunity.</td>
+<td style="padding:10px 6px;font-weight:700;color:#0ea5e9;">If trailing &le; 5pts: <strong>BET ML</strong>. If trailing 6-10pts: <strong>BET SPREAD</strong>.</td>
 </tr>
 </tbody>
 </table>
@@ -6119,7 +6135,9 @@ try {
 <div class="guide-grid">
 <div class="guide-card" style="border-left:3px solid #10b981;"><h3><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#10b981;padding:3px 8px;border-radius:4px;">FAV</span> Favorite Signal</h3><p class="edge-label">Pre-game favorite dominating — validated 72-83% cover rate</p><p><strong>FAV SIMPLE:</strong> Fav leads by 11+ points, 14+ min elapsed (Q2+). <strong>72.2% cover, +37.8% ROI, N=1,336, Z=16.20.</strong></p><p><strong>FAV TIER 1:</strong> Lead Safety &ge; 3 AND Spread Relative &ge; 10. <strong>82.9% cover, +58.3% ROI, N=544, Z=15.35.</strong></p><p><strong>Why it works:</strong> Books adjust live spreads only ~1 point per 10 points of in-game lead. This is massively insufficient. 5/5 seasons profitable, 100% of rolling 200-game windows profitable.</p><div class="threshold">Trigger: Fav leads 11+ at 14+ min elapsed.<br>TIER 1: lead_safety &ge; 3 AND spread_rel &ge; 10.<br>Bet: Favorite's live spread.</div></div>
 
-<div class="guide-card" style="border-left:3px solid #7c3aed;"><h3><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#7c3aed;padding:3px 8px;border-radius:4px;">DOG</span> Dog Signal</h3><p class="edge-label">Pre-game underdog leading — 63-71% cover rate with hybrid ML/spread</p><p><strong>DOG LEADING:</strong> Pre-game dog ahead at 14+ min. <strong>63.4% cover, N=1,955.</strong></p><p><strong>DOG PHYSICAL:</strong> + dog wins rebound battle. <strong>65.5% cover.</strong></p><p><strong>DOG STRONG:</strong> + dog leads 5+ AND wins REB AND wins FTA. <strong>70.6% cover.</strong></p><p><strong>Hybrid ML/SPREAD:</strong> If dog ML &ge; -100 → <span style="color:#f0b90b;font-weight:800;">BET ML</span> (+30.7% ROI). If dog ML &lt; -100 → <span style="color:#3861fb;font-weight:800;">BET SPREAD</span>.</p><div class="threshold">Trigger: Pre-game dog leading at 14+ min elapsed.<br>Tiers upgrade with REB/FTA dominance.<br>Hybrid: ML when plus-money, spread when minus.</div></div>
+<div class="guide-card" style="border-left:3px solid #7c3aed;"><h3><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#7c3aed;padding:3px 8px;border-radius:4px;">DOG</span> Dog Signal</h3><p class="edge-label">Pre-game underdog leading — 63-72% cover rate with hybrid ML/spread</p><p><strong>DOG LEADING:</strong> Pre-game dog ahead at 14+ min. <strong>66.6% cover, 27.2% ROI.</strong></p><p><strong>DOG MEDIUM FAV:</strong> Pre-game spread 3.5-7 pts. <strong>70.0% cover, 33.6% ROI.</strong></p><p><strong>DOG PHYSICAL:</strong> + dog wins rebound battle. <strong>67.2% cover, 28.3% ROI.</strong></p><p><strong>DOG STRONG:</strong> + dog leads 5+ AND wins REB AND wins FTA. <strong>72.5% cover, 38.4% ROI.</strong></p><p><strong>Hybrid ML/SPREAD:</strong> If dog ML &ge; -100 → <span style="color:#f0b90b;font-weight:800;">BET ML</span> (+30.7% ROI). If dog ML &lt; -100 → <span style="color:#3861fb;font-weight:800;">BET SPREAD</span>.</p><div class="threshold">Trigger: Pre-game dog leading at 14+ min elapsed.<br>Tiers: STRONG &gt; MEDIUM FAV &gt; PHYSICAL &gt; LEADING.<br>Hybrid: ML when plus-money, spread when minus.</div></div>
+
+<div class="guide-card" style="border-left:3px solid #0ea5e9;"><h3><span class="signal-badge badge-quality" style="font-size:10px;">QUALITY</span> Quality Edge Signal</h3><p class="edge-label">Strong team trailing early — market overreacts to early deficits</p><p>When a team with significantly higher win% (15%+ gap) falls behind early, the market overvalues the deficit. Superior teams regress toward their true strength as the game progresses.</p><p><strong>Key conditions:</strong> Q1-Q2 only, trailing by 1-10 points, season win% gap &ge; 15%, estimated live spread still favors the stronger team.</p><p><strong>Bet sizing:</strong> Half-Kelly with urgency multiplier. ML if trailing &le; 5pts, SPREAD if trailing 6-10pts.</p><p><strong>Estimated edge:</strong> ~3.5% over market.</p><div class="threshold">Trigger: Strong team (win% gap &ge;15%) trailing 1-10 pts in Q1-Q2.<br>ML if trailing &le;5pts, SPREAD if trailing 6-10pts.<br>Half-Kelly sizing with urgency multiplier.</div></div>
 
 </div></div>
 <div id="theory-panel" class="theory-panel">
