@@ -1029,30 +1029,19 @@
         <div class="chip-label">Games</div>
         <div class="chip-desc">Total live games tracked</div>
       </div>
-      <div class="signal-chip signal-chip-clickable" onclick="toggleSignalDetail('fav')" style="border-left:3px solid #10b981;">
-        <div class="chip-value" id="live-fav-signals" style="color:#10b981;">0</div>
-        <div class="chip-label" style="color:#10b981;">FAV</div>
-        <div class="chip-desc">Fav leading big — bet fav spread (72-83% cover)</div>
-        <div class="chip-detail-panel" id="chip-detail-fav"></div>
+      <div class="signal-chip signal-chip-clickable" onclick="toggleSignalDetail('all')" style="border-left:3px solid var(--accent);">
+        <div class="chip-value" id="live-total-signals" style="color:var(--accent);">0</div>
+        <div class="chip-label" style="color:var(--accent);">Signals</div>
+        <div class="chip-desc">Active edge signals across all games</div>
+        <div class="chip-detail-panel" id="chip-detail-all"></div>
       </div>
-      <div class="signal-chip signal-chip-clickable" onclick="toggleSignalDetail('dog')" style="border-left:3px solid #7c3aed;">
-        <div class="chip-value" id="live-dog-signals" style="color:#7c3aed;">0</div>
-        <div class="chip-label" style="color:#7c3aed;">DOG</div>
-        <div class="chip-desc">Pre-game dog leading — bet dog ML/spread (63-71% cover)</div>
-        <div class="chip-detail-panel" id="chip-detail-dog"></div>
-      </div>
-      <div class="signal-chip signal-chip-clickable" onclick="toggleSignalDetail('quality')" style="border-left:3px solid #f59e0b;">
-        <div class="chip-value" id="live-quality-signals" style="color:#f59e0b;">0</div>
-        <div class="chip-label" style="color:#f59e0b;">QUALITY</div>
-        <div class="chip-desc">Quality team trailing early — bet fav spread/ML</div>
-        <div class="chip-detail-panel" id="chip-detail-quality"></div>
-      </div>
-      <div class="signal-chip signal-chip-clickable" onclick="toggleSignalDetail('star')">
-        <div class="chip-value" id="live-star-signals">0</div>
-        <div class="chip-label">Star Coil</div>
-        <div class="chip-desc">Star cold + game close + Q2-Q3 (supplemental)</div>
-        <div class="chip-detail-panel" id="chip-detail-star"></div>
-      </div>
+    </div>
+    <!-- Hidden elements for backward compat with signal counting code -->
+    <div style="display:none;">
+      <span id="live-fav-signals">0</span>
+      <span id="live-dog-signals">0</span>
+      <span id="live-quality-signals">0</span>
+      <span id="live-star-signals">0</span>
     </div>
 
 <!-- QUICK BET ACTION CARDS -->
@@ -2115,18 +2104,20 @@ function toggleSignalDetail(type) {
 
   // Build panel content from stored signal games
   const games = window._signalGames ? window._signalGames[type] : [];
-  const labels = { 'star': 'Star Coil', 'starcoilplus': 'Star Coil+', 'quality_edge': 'Quality Edge', 'quality': 'Quality Edge' };
+  const labels = { 'all': 'All Signals', 'star': 'Star Coil', 'starcoilplus': 'Star Coil+', 'quality_edge': 'Quality Edge', 'quality': 'Quality Edge', 'fav': 'FAV', 'dog': 'DOG' };
+  const sigTypeColors = { 'FAV': '#ef4444', 'DOG': '#22c55e', 'QUALITY': '#f59e0b', 'STAR COIL': '#8b5cf6' };
 
   if (!games || games.length === 0) {
-    panel.innerHTML = `<div class="chip-detail-header">${labels[type] || type} Games</div><div class="chip-detail-empty">No active ${labels[type] || ''} signals right now</div>`;
+    panel.innerHTML = `<div class="chip-detail-header">${labels[type] || type} Games</div><div class="chip-detail-empty">No active signals right now</div>`;
   } else {
     const periodLabel = (per) => isNCAA() ? (per <= 2 ? `H${per}` : `OT${per-2}`) : `Q${per}`;
     panel.innerHTML = `<div class="chip-detail-header">${labels[type] || type} — ${games.length} game${games.length>1?'s':''}</div>` +
       games.map(g => {
         const truncDetail = g.sigDetail && g.sigDetail.length > 120 ? g.sigDetail.substring(0, 120) + '...' : (g.sigDetail || '');
         const eid = g.eventId || '';
+        const typeBadge = g.sigType ? `<span style="font-size:9px;font-weight:700;color:${sigTypeColors[g.sigType]||'var(--accent)'};background:${sigTypeColors[g.sigType]||'var(--accent)'}15;padding:1px 5px;border-radius:3px;margin-right:4px;">${g.sigType}</span>` : '';
         return `<div class="chip-detail-item chip-detail-clickable" onclick="scrollToGame('${eid}')" title="Click to jump to game">
-          <div class="chip-detail-game">${g.gameFull || g.game} <span style="font-size:9px;color:var(--accent);margin-left:4px;">↗ go</span></div>
+          <div class="chip-detail-game">${typeBadge}${g.gameFull || g.game} <span style="font-size:9px;color:var(--accent);margin-left:4px;">↗ go</span></div>
           <div class="chip-detail-score">${g.aScore} - ${g.hScore} | ${periodLabel(g.per)} ${g.clk}</div>
           <div class="chip-detail-sig">${truncDetail}</div>
         </div>`;
@@ -4235,6 +4226,8 @@ async function fetchESPNScoreboard() {
     document.getElementById('threept-warm-count').textContent = warmTeams;
 
     const totalSigs = sigFav + sigDog + sigStar + sigQuality;
+    const totalSigEl = document.getElementById('live-total-signals');
+    if (totalSigEl) totalSigEl.textContent = totalSigs;
     if (totalSigs>0) { document.getElementById('live-badge').style.display='inline'; document.getElementById('live-badge').textContent=totalSigs; }
     else document.getElementById('live-badge').style.display='none';
     const tpBadge = document.getElementById('threept-badge');
@@ -4320,6 +4313,13 @@ async function fetchESPNScoreboard() {
       }).join('');
     } else { etc.classList.remove('active'); etCards.innerHTML = ''; }
 
+    // Build combined 'all' list for unified signal chip
+    signalGames['all'] = [
+      ...signalGames['fav'].map(g => ({...g, sigType: 'FAV'})),
+      ...signalGames['dog'].map(g => ({...g, sigType: 'DOG'})),
+      ...signalGames['quality'].map(g => ({...g, sigType: 'QUALITY'})),
+      ...signalGames['star'].map(g => ({...g, sigType: 'STAR COIL'})),
+    ];
     // Store signal games globally for chip click-to-expand
     window._signalGames = signalGames;
 
