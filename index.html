@@ -681,7 +681,7 @@
     /* ===== SIGNAL BADGES ===== */
     .signal-badge.badge-3pt{background:linear-gradient(135deg,#3b82f6,#2563eb)}
     .signal-badge.badge-star{background:linear-gradient(135deg,#f59e0b,#d97706)}
-    .signal-badge.badge-fragile{background:linear-gradient(135deg,#ef4444,#dc2626)}
+
     .signal-badge.badge-paint{background:linear-gradient(135deg,#10b981,#059669)}
     .signal-badge.badge-foul{background:linear-gradient(135deg,#8b5cf6,#7c3aed)}
     .signal-badge.badge-hustle{background:linear-gradient(135deg,#f59e0b,#d97706)}
@@ -690,7 +690,6 @@
     .signal-badge.badge-hot{background:linear-gradient(135deg,#ef4444,#dc2626)}
     .signal-badge.badge-warm{background:linear-gradient(135deg,#f97316,#ea580c)}
     .signal-badge.badge-qtr{background:linear-gradient(135deg,#eab308,#ca8a04)}
-    .signal-badge.badge-3ptFragile{background:linear-gradient(135deg,#3b82f6,#2563eb)}
 
     /* ===== THEORY PANEL ===== */
     .theory-toggle{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px 20px;margin:16px auto;max-width:1200px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all var(--transition-normal)}
@@ -2401,15 +2400,12 @@ function analyzeScoringDurability(teamAbbr, score, fg3Made, opponentScore) {
   const pts3 = m3 * 3;
   const pct3 = (pts3 / s * 100);
   const nonThreePts = s - pts3;
-  // League average: ~35% of points come from 3PT. Above 42% is fragile, below 28% is durable
   const isLeading = s > (parseInt(opponentScore) || 0);
-  const fragile = pct3 >= getFragile3PtThreshold() && isLeading && s >= 20;
   const durable = pct3 <= 28 && isLeading && s >= 20;
   let label = `${pct3.toFixed(0)}% from 3`;
   let durability = 'neutral';
-  if (fragile) { durability = 'fragile'; label = `${pct3.toFixed(0)}% from 3 - FRAGILE lead`; }
-  else if (durable) { durability = 'durable'; label = `${pct3.toFixed(0)}% from 3 - DURABLE lead`; }
-  return { pct3, durability, label, fragile, durable, pts3, nonThreePts };
+  if (durable) { durability = 'durable'; label = `${pct3.toFixed(0)}% from 3 - DURABLE lead`; }
+  return { pct3, durability, label, fragile: false, durable, pts3, nonThreePts };
 }
 
 
@@ -2430,7 +2426,7 @@ let _hbtRunning = false;
  *                        away3PM, away3PA, home3PM, home3PA, awayLeaders:[{name,team,pts}], homeLeaders:[{name,team,pts}] }
  * @param {Array}  starDB - Array of { name, team, ppg } objects (star player database)
  * @param {string} mode   - 'nba' or 'ncaab'
- * @returns {Object} { signalLevel, signals[], betSide, betSideAbbr, signalTypes[], sig3Fragile, sigStar,
+ * @returns {Object} { signalLevel, signals[], betSide, betSideAbbr, signalTypes[], sigStar,
  *                      sigCombined, period, clock, awayScore, homeScore, gMins, starCoilTeams }
  */
 function evaluateSignalsFromState(gs, starDB, mode) {
@@ -2439,9 +2435,6 @@ function evaluateSignalsFromState(gs, starDB, mode) {
   // ===== MODE-AWARE CONSTANTS =====
   const totalGameMinutes   = isNcaa ? 40  : 48;
   const periodLength       = isNcaa ? 20  : 12;
-  const fragileThreshold   = isNcaa ? 40  : 42;   // % of scoring from 3PT to be "fragile"
-  const noEngineThreshold  = isNcaa ? 1.1 : 1.3;  // non-3PT PPM below this = no engine
-  const fragileMaxMargin   = isNcaa ? 12  : 15;
   const coilMaxMargin      = isNcaa ? 12  : 15;
 
   // ===== INLINE HELPER: elapsed minutes =====
@@ -2463,9 +2456,7 @@ function evaluateSignalsFromState(gs, starDB, mode) {
     if (s <= 0) return { pct3: 0, fragile: false };
     const pts3 = m3 * 3;
     const pct3 = (pts3 / s * 100);
-    const isLeading = s > (parseInt(opponentScore) || 0);
-    const fragile = pct3 >= fragileThreshold && isLeading && s >= 20;
-    return { pct3, fragile, pts3, nonThreePts: s - pts3 };
+    return { pct3, fragile: false, pts3, nonThreePts: s - pts3 };
   };
 
   // ===== INLINE HELPER: 3PT hot check =====
@@ -2625,7 +2616,7 @@ function evaluateSignalsFromState(gs, starDB, mode) {
   if (signalLevel >= 2) {
     let awayFade = 0, homeFade = 0;
 
-    // Star Coil fade weights (only signal system now — 3PT Fragile removed)
+    // Star Coil fade weights
     const aStarCoil = starCoilTeams[aA];
     const hStarCoil = starCoilTeams[hA];
 
@@ -2662,7 +2653,6 @@ function evaluateSignalsFromState(gs, starDB, mode) {
     sigStar,
     sigStarPlus,
     sigCombined: 0,
-    sig3Fragile: 0,
     period: per,
     clock: clk,
     awayScore: aS,
@@ -3048,7 +3038,6 @@ function initHistoricalBacktest() { setBTRange(7); renderHBTResults(); }
 function getLeague3PtAvg() { return isNCAA() ? 33.5 : 36.5; }
 // Team Season 3PT% Averages
 
-function getFragile3PtThreshold() { return isNCAA() ? 40 : 42; }
 function getLeagueName() { return isNCAA() ? 'NCAAB' : 'NBA'; }
 let _modeFetchController = null;
 
@@ -3305,7 +3294,7 @@ async function fetchESPNScoreboard() {
       let thesis = { game: gLabel, gameFull: gLabelFull, aTeam: aA, hTeam: hA, aTeamFull: aFull, hTeamFull: hFull, aLogo, hLogo, aScore: aS, hScore: hS, per, clk, detail, criteria: {}, betSide: '', betSideFull: '', betLogic: '', signals: [] };
 
       if (isLive) {
-        // 3PT CHECK — evaluate shooting stats (used as input for 3PT Fragile signal)
+        // 3PT CHECK — evaluate shooting stats for 3PT tracker alerts
         const chk3 = (p,m,a,t,side,tFull) => {
           const pn=parseFloat(p), an=parseInt(a), mn=parseInt(m);
           const tD = teamDisplay(t, tFull);
@@ -3315,108 +3304,13 @@ async function fetchESPNScoreboard() {
           if (isHot) {
             fire3PTAlert(t, pn.toFixed(0), mn, an, gLabel, per, clk); hotTeams++;
           } else if (isWarm) { warmTeams++; }
-          // NOTE: 3PT alone no longer fires as a level 2 signal.
-          // It will be combined with Fragile Lead below into "3PT Fragile"
           return { isHot, isWarm, pn, an, mn, tD };
         };
         const a3Check = chk3(a3P,a3M,a3A,aA,'away',aFull), h3Check = chk3(h3P,h3M,h3A,hA,'home',hFull);
 
-        // FRAGILE LEAD CHECK — evaluate lead composition (used as input for 3PT Fragile signal)
+        // Scoring durability (used for durability display bars)
         const aDur = analyzeScoringDurability(aA, aS, a3M, hS);
         const hDur = analyzeScoringDurability(hA, hS, h3M, aS);
-        let aFragileData = null, hFragileData = null;
-        if (aS > hS && aDur.pct3 >= getFragile3PtThreshold() && aS >= 20) {
-          const hNon3Pct = hS > 0 ? ((hS - (parseInt(h3M)||0)*3) / hS * 100) : 0;
-          if (hNon3Pct >= 58) aFragileData = { pct3: aDur.pct3, oppPaintPct: hNon3Pct };
-        }
-        if (hS > aS && hDur.pct3 >= getFragile3PtThreshold() && hS >= 20) {
-          const aNon3Pct = aS > 0 ? ((aS - (parseInt(a3M)||0)*3) / aS * 100) : 0;
-          if (aNon3Pct >= 58) hFragileData = { pct3: hDur.pct3, oppPaintPct: aNon3Pct };
-        }
-
-        // ========== 3PT FRAGILE SIGNAL — fires ONLY when BOTH conditions are met ==========
-        // Condition 1: Team shooting hot from 3 (50%+ on 12+ att or 55%+ on 8+ att)
-        // Condition 2: Their lead is fragile (3PT-heavy) AND trailing team scores from paint
-        const _aD = teamDisplay(aA, aFull), _hD = teamDisplay(hA, hFull);
-
-        // ===== OPPONENT ENGINE CHECK =====
-        // Can the trailing team actually capitalize if 3PT regression happens?
-        // Compute non-3PT points per minute for each team (paint + FT + mid-range)
-        const _gMinsNow = getElapsedMinutes(per, clk) || 1;
-        const aNon3Pts = aS - (parseInt(a3M)||0)*3;
-        const hNon3Pts = hS - (parseInt(h3M)||0)*3;
-        const aNon3Ppm = aNon3Pts / _gMinsNow;  // away non-3PT points per minute
-        const hNon3Ppm = hNon3Pts / _gMinsNow;  // home non-3PT points per minute
-        // League avg ~1.8-2.0 non-3PT ppm (NBA). NCAA is lower scoring → threshold 1.1.
-        const NO_ENGINE_THRESHOLD = isNCAA() ? 1.1 : 1.3;
-
-        // Away team: both hot 3PT AND fragile lead
-        const awayLead = aS - hS;
-        // If away leads with fragile 3s, check if HOME (trailing) has enough non-3PT engine to capitalize
-        const hNoEngine = awayLead > 0 && hNon3Ppm < NO_ENGINE_THRESHOLD && _gMinsNow >= 10;
-        const hEngineLabel = hNoEngine ? ` ⚠️ BUT ${_hD} has no scoring engine (${hNon3Ppm.toFixed(1)} non-3PT PPM) — may not capitalize even if 3s regress` : '';
-
-        const _fragileMaxMargin = isNCAA() ? 12 : 15;
-        if (a3Check.isHot && aFragileData && awayLead >= 3 && awayLead <= _fragileMaxMargin) {
-          const fragileStrength = hNoEngine ? 'weakened' : 'strong';
-          // 3PT Fragile REMOVED from signals array (backtest: 31.3% ML win rate, below 35.1% baseline)
-          // Thesis criteria below still populate the detail panel for informational purposes
-          const engineDetail = hNoEngine
-            ? `<br><strong>⚠️ Opponent Engine Check:</strong> ${_hD} is producing only ${hNon3Ppm.toFixed(1)} non-3PT points/min (threshold: ${NO_ENGINE_THRESHOLD}). Their offense is broken beyond just 3PT variance — even if ${_aD}'s 3s cool down, ${_hD} may not have the scoring engine to capitalize. <strong>Signal is weaker.</strong>`
-            : `<br><strong>✅ Opponent Engine:</strong> ${_hD} is producing ${hNon3Ppm.toFixed(1)} non-3PT points/min — they have a real scoring engine from paint/FT/mid-range. When ${_aD}'s 3s regress, ${_hD} can capitalize.`;
-          thesis.criteria['3ptfragile_away'] = {met:true, strong:!hNoEngine, label:`${_aD} 3PT Fragile Lead${hNoEngine?' ⚠️':''}`, detail:`<strong>3PT Shooting:</strong> ${_aD} is shooting ${a3Check.pn.toFixed(0)}% from 3 on ${a3Check.an} attempts (${getLeagueName()} avg: ${getLeague3PtAvg()}%).<br><strong>Lead Composition:</strong> ${aFragileData.pct3.toFixed(0)}% of ${_aD}'s scoring comes from 3PT (threshold: ${getFragile3PtThreshold()}%).<br><strong>Score Margin:</strong> ${awayLead} pts — in the 3-15pt sweet spot where regression flips the game.<br><strong>Opponent Durability:</strong> ${_hD} has ${aFragileData.oppPaintPct.toFixed(0)}% non-3PT scoring — paint-heavy and sustainable.${engineDetail}<br><strong>Signal:</strong> ${hNoEngine ? 'Hot 3PT + fragile lead detected, but trailing team\'s offense is too weak to exploit regression. Proceed with caution.' : 'Hot 3PT + fragile lead + competitive margin. When shooting cools, lead evaporates.'}`, value:`${a3Check.pn.toFixed(0)}% 3PT + ${aFragileData.pct3.toFixed(0)}% fragile | Lead: ${awayLead}${hNoEngine?' ⚠️':''}`};
-        } else if (a3Check.isHot && aFragileData && awayLead > _fragileMaxMargin) {
-          // Hot + fragile but blowout — too large a margin for reliable fade
-          // 3PT Fragile removed from signals (blowout case) — thesis criteria only
-          thesis.criteria['3ptfragile_away'] = {met:true, strong:false, label:`${_aD} 3PT Fragile (Blowout)`, detail:`${_aD} has a fragile 3PT lead (${aFragileData.pct3.toFixed(0)}% from 3PT) but the ${awayLead}pt margin is too large. Signal needs 3-${_fragileMaxMargin}pt lead to fire. Even if 3PT% regresses, blowout margin provides too much cushion.`, value:`${awayLead}pt lead — too wide`, warn:true};
-        } else if (a3Check.isHot && aFragileData && awayLead < 3) {
-          // Hot + fragile but lead too small — not enough edge
-          // 3PT Fragile removed from signals (tight margin case) — thesis criteria only
-          thesis.criteria['3ptfragile_away'] = {met:true, strong:false, label:`${_aD} 3PT Fragile (Tight)`, detail:`${_aD} has both conditions but only a ${awayLead}pt lead. Signal needs 3-${_fragileMaxMargin}pt margin to ensure meaningful edge from 3PT regression.`, value:`${awayLead}pt lead — too tight`, warn:true};
-        } else if (a3Check.isHot && !aFragileData) {
-          // Hot shooting but lead not fragile enough — informational only
-          // 3PT Fragile removed from signals (no fragile lead case) — thesis criteria only
-          thesis.criteria['3ptfragile_away'] = {met:true, strong:false, label:`${_aD} 3PT Hot (no fragile lead)`, detail:`${_aD} is shooting ${a3Check.pn.toFixed(0)}% from 3 on ${a3Check.an} attempts — elevated, but the lead composition isn't fragile enough (needs 3PT-heavy lead vs paint-heavy opponent). Monitoring only.`, value:`${a3Check.pn.toFixed(0)}% 3PT`, warn:true};
-        } else if (!a3Check.isHot && aFragileData) {
-          // Fragile lead but shooting not extreme — informational only
-          thesis.criteria['3ptfragile_away'] = {met:true, strong:false, label:`${_aD} Fragile Lead (not hot enough)`, detail:`${_aD}'s lead is ${aFragileData.pct3.toFixed(0)}% from 3PT — fragile composition detected, but current 3PT shooting rate isn't extreme enough to trigger. Needs 50%+ on 12+ attempts.`, value:`${aFragileData.pct3.toFixed(0)}% fragile`, warn:true};
-        } else if (a3Check.isWarm) {
-          // 3PT warm — no signal push (removed)
-          thesis.criteria['3ptfragile_away'] = {met:false, label:`${_aD} 3PT: ${a3Check.pn.toFixed(0)}%`, detail:`Elevated but no fragile lead. Both conditions needed.`, value:'Watching'};
-        } else {
-          thesis.criteria['3ptfragile_away'] = {met:false, label:`${_aD} 3PT Fragile`, detail:`No 3PT fragile signal. Normal shooting range and/or no fragile lead composition.`, value:'N/A'};
-        }
-
-        // Home team: both hot 3PT AND fragile lead
-        const homeLead = hS - aS;
-        // If home leads with fragile 3s, check if AWAY (trailing) has enough non-3PT engine to capitalize
-        const aNoEngine = homeLead > 0 && aNon3Ppm < NO_ENGINE_THRESHOLD && _gMinsNow >= 10;
-        const aEngineLabel = aNoEngine ? ` ⚠️ BUT ${_aD} has no scoring engine (${aNon3Ppm.toFixed(1)} non-3PT PPM) — may not capitalize even if 3s regress` : '';
-
-        if (h3Check.isHot && hFragileData && homeLead >= 3 && homeLead <= _fragileMaxMargin) {
-          // 3PT Fragile REMOVED from signals array (backtest: 31.3% ML win rate, below 35.1% baseline)
-          // Thesis criteria below still populate the detail panel for informational purposes
-          const hEngineDetail = aNoEngine
-            ? `<br><strong>⚠️ Opponent Engine Check:</strong> ${_aD} is producing only ${aNon3Ppm.toFixed(1)} non-3PT points/min (threshold: ${NO_ENGINE_THRESHOLD}). Their offense is broken beyond just 3PT variance — even if ${_hD}'s 3s cool down, ${_aD} may not have the scoring engine to capitalize. <strong>Signal is weaker.</strong>`
-            : `<br><strong>✅ Opponent Engine:</strong> ${_aD} is producing ${aNon3Ppm.toFixed(1)} non-3PT points/min — they have a real scoring engine from paint/FT/mid-range. When ${_hD}'s 3s regress, ${_aD} can capitalize.`;
-          thesis.criteria['3ptfragile_home'] = {met:true, strong:!aNoEngine, label:`${_hD} 3PT Fragile Lead${aNoEngine?' ⚠️':''}`, detail:`<strong>3PT Shooting:</strong> ${_hD} is shooting ${h3Check.pn.toFixed(0)}% from 3 on ${h3Check.an} attempts (${getLeagueName()} avg: ${getLeague3PtAvg()}%).<br><strong>Lead Composition:</strong> ${hFragileData.pct3.toFixed(0)}% of ${_hD}'s scoring comes from 3PT (threshold: ${getFragile3PtThreshold()}%).<br><strong>Score Margin:</strong> ${homeLead} pts — in the 3-15pt sweet spot where regression flips the game.<br><strong>Opponent Durability:</strong> ${_aD} has ${hFragileData.oppPaintPct.toFixed(0)}% non-3PT scoring — paint-heavy and sustainable.${hEngineDetail}<br><strong>Signal:</strong> ${aNoEngine ? 'Hot 3PT + fragile lead detected, but trailing team\'s offense is too weak to exploit regression. Proceed with caution.' : 'Hot 3PT + fragile lead + competitive margin. When shooting cools, lead evaporates.'}`, value:`${h3Check.pn.toFixed(0)}% 3PT + ${hFragileData.pct3.toFixed(0)}% fragile | Lead: ${homeLead}${aNoEngine?' ⚠️':''}`};
-        } else if (h3Check.isHot && hFragileData && homeLead > _fragileMaxMargin) {
-          // 3PT Fragile removed from signals (blowout case) — thesis criteria only
-          thesis.criteria['3ptfragile_home'] = {met:true, strong:false, label:`${_hD} 3PT Fragile (Blowout)`, detail:`${_hD} has a fragile 3PT lead (${hFragileData.pct3.toFixed(0)}% from 3PT) but the ${homeLead}pt margin is too large. Signal needs 3-${_fragileMaxMargin}pt lead to fire. Even if 3PT% regresses, blowout margin provides too much cushion.`, value:`${homeLead}pt lead — too wide`, warn:true};
-        } else if (h3Check.isHot && hFragileData && homeLead < 3) {
-          // 3PT Fragile removed from signals (tight margin case) — thesis criteria only
-          thesis.criteria['3ptfragile_home'] = {met:true, strong:false, label:`${_hD} 3PT Fragile (Tight)`, detail:`${_hD} has both conditions but only a ${homeLead}pt lead. Signal needs 3-${_fragileMaxMargin}pt margin to ensure meaningful edge from 3PT regression.`, value:`${homeLead}pt lead — too tight`, warn:true};
-        } else if (h3Check.isHot && !hFragileData) {
-          // 3PT Fragile removed from signals (no fragile lead case) — thesis criteria only
-          thesis.criteria['3ptfragile_home'] = {met:true, strong:false, label:`${_hD} 3PT Hot (no fragile lead)`, detail:`${_hD} is shooting ${h3Check.pn.toFixed(0)}% from 3 on ${h3Check.an} attempts — elevated, but the lead composition isn't fragile enough. Monitoring only.`, value:`${h3Check.pn.toFixed(0)}% 3PT`, warn:true};
-        } else if (!h3Check.isHot && hFragileData) {
-          thesis.criteria['3ptfragile_home'] = {met:true, strong:false, label:`${_hD} Fragile Lead (not hot enough)`, detail:`${_hD}'s lead is ${hFragileData.pct3.toFixed(0)}% from 3PT — fragile composition detected, but 3PT shooting rate isn't extreme enough. Needs 50%+ on 12+ attempts.`, value:`${hFragileData.pct3.toFixed(0)}% fragile`, warn:true};
-        } else if (h3Check.isWarm) {
-          // 3PT warm — no signal push (removed)
-          thesis.criteria['3ptfragile_home'] = {met:false, label:`${_hD} 3PT: ${h3Check.pn.toFixed(0)}%`, detail:`Elevated but no fragile lead. Both conditions needed.`, value:'Watching'};
-        } else {
-          thesis.criteria['3ptfragile_home'] = {met:false, label:`${_hD} 3PT Fragile`, detail:`No 3PT fragile signal. Normal shooting and/or no fragile lead composition.`, value:'N/A'};
-        }
 
         // STAR COIL CHECK — Star cold (<60% pace) + competitive game + prime window
         const cM = parseFloat(clk?.split(':')[0]||getPeriodLength()), cS = parseFloat(clk?.split(':')[1]||0);
@@ -3856,7 +3750,7 @@ async function fetchESPNScoreboard() {
           if (dur.pct3 <= 0) return '';
           const cls = dur.durability;
           const w = Math.min(dur.pct3, 100);
-          const col = dur.fragile ? 'var(--red)' : dur.durable ? 'var(--green)' : 'var(--accent)';
+          const col = dur.durable ? 'var(--green)' : 'var(--accent)';
           return `<div class="durability-bar ${cls}"><span>${team}</span><div class="durability-meter"><div class="durability-meter-fill" style="width:${w}%;background:${col};"></div></div><span>${dur.label}</span></div>`;
         };
         durabilityHTML = durBar(aA, aDur) + durBar(hA, hDur);
@@ -3875,7 +3769,7 @@ async function fetchESPNScoreboard() {
 
       // Signal summary for card header
       const sigSummary = signals.filter(s=>s.level===2).map(s => {
-        const icons = {'3pt':'3PT','star':'STAR','fragile':'FRAG','combined':'COMBO'};
+        const icons = {'3pt':'3PT','star':'STAR','combined':'COMBO'};
         return icons[s.type] || s.type.toUpperCase();
       });
 
@@ -4024,7 +3918,7 @@ async function fetchESPNScoreboard() {
       qbPanel.style.display = 'block';
       qbCards.innerHTML = gameTheses.map(t => {
         let sigs = t.signals.filter(s=>s.level===2).map(s => {
-          const badges = {'3pt':'3PT','star':'STAR','fragile':'FRAGILE'};
+          const badges = {'3pt':'3PT','star':'STAR'};
           return '<span class="signal-badge badge-' + s.type + '">' + (badges[s.type]||s.type.toUpperCase()) + '</span>';
         }).join(' ');
         if (t.homeCourtBoost) sigs += ' <span class="signal-badge badge-road">🏟️ HOME BOOST</span>';
@@ -4106,7 +4000,7 @@ async function fetchESPNScoreboard() {
         const trailing = t.aScore > t.hScore ? teamDisplay(t.hTeam, t.hTeamFull) : t.hScore > t.aScore ? teamDisplay(t.aTeam, t.aTeamFull) : '';
 
         // Build criteria cards
-        const criteriaKeys = ['star_away','star_home','starcoilplus','3ptfragile_away','3ptfragile_home'];
+        const criteriaKeys = ['star_away','star_home','starcoilplus'];
         const criteriaHTML = criteriaKeys.map(k => {
           const c = t.criteria[k];
           if (!c) return '';
@@ -4263,15 +4157,10 @@ function removeStar(i) { state.stars.splice(i,1); localStorage.setItem('starPlay
 function updateSignalGuide(mode) {
   const ncaa = mode === 'ncaab';
   // Quick reference table
-  const fragileDesc = ncaa
-    ? 'A team is <strong>way too hot from 3</strong> (48%+ on 10+ att or 52%+ on 7+) and their entire lead depends on it. NCAA avg is ~33.5%. That shooting will cool off → lead will shrink.'
-    : 'A team is <strong>way too hot from 3</strong> (50%+) and their entire lead depends on it. That shooting will cool off → lead will shrink.';
   const starDesc = ncaa
     ? 'A lead scorer (16+ PPG) is cold (&lt;65% pace) AND the game is close (within 12pts) during minutes 8-35. <strong>Compressed spring</strong> — breakout incoming. NCAA teams are more star-dependent.'
     : 'A star player (21+ PPG) is cold (&lt;65% pace) AND the game is close (within 15pts) in Q2-Q3. <strong>Compressed spring</strong> — breakout incoming.';
   // Update quick reference cells
-  const cells = document.querySelectorAll('#guide-fragile-desc');
-  if (cells.length) cells[0].innerHTML = fragileDesc;
   const starCells = document.querySelectorAll('#guide-star-desc');
   if (starCells.length) starCells[0].innerHTML = starDesc;
 
@@ -4281,14 +4170,10 @@ function updateSignalGuide(mode) {
   const leagueName = ncaa ? 'NCAAB' : 'NBA';
   const leagueAvg = ncaa ? '~33.5%' : '~36.5%';
   const hotThresh = ncaa ? '48%+ from 3 on 10+ attempts (or 52%+ on 7+)' : '50%+ from 3 on 12+ attempts (or 55%+ on 8+)';
-  const fragileThresh = ncaa ? '40%' : '42%';
-  const marginRange = ncaa ? '3-12' : '3-15';
-  const enginePPM = ncaa ? '1.1' : '1.3';
   const starPPG = ncaa ? '16+' : '21+';
   const coilMargin = ncaa ? '12' : '15';
   const coilWindow = ncaa ? 'minutes 8-35 (first half through mid second half)' : 'Q2-Q3';
   const gameMins = ncaa ? '40 min (2×20 halves)' : '48 min (4×12 quarters)';
-  const softHot = ncaa ? '40%/7att (or 45%/5att), fragile ≥36%, margin 2-18pts' : '45%/10att (or 50%/8att), fragile ≥38%, margin 2-18pts';
   const softStar = ncaa ? '&lt;80% pace, minutes 4-37, margin ≤18pts, accepts weak cast' : '&lt;75% pace, Q1-Q3 (not just Q2-Q3), margin ≤18pts';
   const homeCourtNote = ncaa ? '<p style="margin-top:8px;"><strong>Home Court Booster (NCAAB only):</strong> When signals point toward betting the home team, a +0.5 boost is applied. NCAA home court advantage is ~3.5-4 points — significantly stronger than NBA (~2.5). Crowd energy + regression signals = double tailwind.</p>' : '';
 
@@ -5330,11 +5215,6 @@ function playAlertSound(type) {
     playNote(ctx, 783.99, t + 0.24, 0.5, 0.1, 'sine');   // G5
     // Soft harmonic shimmer on top
     playNote(ctx, 1046.5, t + 0.3, 0.4, 0.04, 'sine');   // C6 (octave shimmer)
-  } else if (type === 'hot3pt') {
-    // 3PT Fragile — two-tone notification (D5 → A5, clean and crisp)
-    playNote(ctx, 587.33, t, 0.25, 0.12, 'sine');         // D5
-    playNote(ctx, 880.00, t + 0.15, 0.4, 0.10, 'sine');   // A5
-    playNote(ctx, 1174.66, t + 0.25, 0.3, 0.04, 'sine');  // D6 shimmer
   } else if (type === 'combined') {
     // Combined Edge — triumphant major chord (C → E → G → C, all at once then arpeggiated)
     playNote(ctx, 523.25, t, 0.6, 0.08, 'sine');          // C5
