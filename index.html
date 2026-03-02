@@ -2863,29 +2863,23 @@ function computeSustainabilityClient(game, aStats, hStats, aA, hA, aS, hS, elaps
   const hStarPace = hStarPaces.length ? (mostCold(hStarPaces) < 60 ? mostCold(hStarPaces) : mostHot(hStarPaces)) : 0;
   const inWindow = period ? (_ncaa ? period <= 2 : period <= 3) : true;
 
-  // ── Process Factors (3 kept — OREB, FTA, TOV) ──
-  // These are the least endogenous to score and most defensible for sustainability.
-  const extractProcess = (stats, bxStats) => {
+  // ── Box Score Stats ──
+  const extractStats = (stats, bxStats) => {
     const m = Object.assign({}, stats, bxStats || {});
-    const oreb = parseInt(m.offensiveRebounds || 0);
-    const fta = parseInt(m.freeThrowsAttempted || 0);
-    const tov = parseInt(m.turnovers || 0);
-    return { oreb, fta, tov };
+    return {
+      reb:  parseInt(m.totalRebounds || m.rebounds || 0),
+      oreb: parseInt(m.offensiveRebounds || 0),
+      ast:  parseInt(m.assists || 0),
+      tov:  parseInt(m.turnovers || 0),
+      stl:  parseInt(m.steals || 0),
+      blk:  parseInt(m.blocks || 0),
+      fta:  parseInt(m.freeThrowsAttempted || 0)
+    };
   };
   const bxAway = (boxscoreTeamStats || {})[`away`] || {};
   const bxHome = (boxscoreTeamStats || {})[`home`] || {};
-  const aPF = extractProcess(aStats, bxAway);
-  const hPF = extractProcess(hStats, bxHome);
-
-  // Raw differentials for display (positive = advantage for that team)
-  const rawDiff = (my, opp) => my - opp;
-  const computeDeltas = (my, opp) => ({
-    oreb:  rawDiff(my.oreb, opp.oreb),
-    fta:   rawDiff(my.fta, opp.fta),
-    tov:   rawDiff(opp.tov, my.tov) // inverted: opponent turnovers = your advantage
-  });
-  const aDeltas = computeDeltas(aPF, hPF);
-  const hDeltas = computeDeltas(hPF, aPF);
+  const aPF = extractStats(aStats, bxAway);
+  const hPF = extractStats(hStats, bxHome);
 
   // Process Score (0-10): OREB advantage (0-3.3) + FTA advantage (0-3.3) + TOV advantage (0-3.3)
   // Thresholds scale with game time so 1 OREB at min 5 ≠ 1 OREB at min 40.
@@ -2983,14 +2977,14 @@ function computeSustainabilityClient(game, aStats, hStats, aA, hA, aS, hS, elaps
       sustainability: aSust,
       scoringSource: aSrc,
       processScore: aProcessScore,
-      deltas: aDeltas,
+      stats: aPF,
       starPacePct: aStarPace
     },
     home: {
       sustainability: hSust,
       scoringSource: hSrc,
       processScore: hProcessScore,
-      deltas: hDeltas,
+      stats: hPF,
       starPacePct: hStarPace
     },
     narrative, narrativeClass, isWarning, leadingTeam, margin: absMargin
@@ -4514,12 +4508,14 @@ async function fetchESPNScoreboard() {
             + `<div class="xray-source-legend"><span class="paint">Paint ${(src.paintPct*100).toFixed(0)}%</span><span class="three${threeHotCls}">3PT ${(src.threePtPct*100).toFixed(0)}%</span><span class="ft">FT ${(src.ftPct*100).toFixed(0)}%</span></div>`;
         };
 
-        // Process factor row — positive=green, negative=red, raw integers
-        const factorRow = (label, aVal, hVal) => {
+        // Box score row — actual values, winning side bolded green
+        const statRow = (label, aVal, hVal, lowIsGood) => {
           const a = parseInt(aVal)||0, h = parseInt(hVal)||0;
-          const fmt = (v) => (v > 0 ? '+' + v : v === 0 ? '0' : '' + v);
-          const cls = (v) => v > 0 ? 'color:#10b981;font-weight:700;' : v < 0 ? 'color:#ef4444;font-weight:700;' : 'color:var(--text-muted);';
-          return `<tr><td style="font-size:10px;color:var(--text-secondary);padding:3px 0;">${label}</td><td style="text-align:right;font-size:11px;padding:3px 0;font-variant-numeric:tabular-nums;${cls(a)}">${fmt(a)}</td><td style="text-align:right;font-size:11px;padding:3px 0;font-variant-numeric:tabular-nums;${cls(h)}">${fmt(h)}</td></tr>`;
+          const aWins = lowIsGood ? a < h : a > h;
+          const hWins = lowIsGood ? h < a : h > a;
+          const aS2 = aWins ? 'color:#10b981;font-weight:800;' : 'color:var(--text-muted);';
+          const hS2 = hWins ? 'color:#10b981;font-weight:800;' : 'color:var(--text-muted);';
+          return `<tr><td style="font-size:10px;color:var(--text-secondary);padding:3px 0;">${label}</td><td style="text-align:right;font-size:11px;padding:3px 0;font-variant-numeric:tabular-nums;${aS2}">${a}</td><td style="text-align:right;font-size:11px;padding:3px 0;font-variant-numeric:tabular-nums;${hS2}">${h}</td></tr>`;
         };
 
         let html = '';
@@ -4583,15 +4579,19 @@ async function fetchESPNScoreboard() {
           </div>
         </div>`;
 
-        // Section 4: Process Factors (3 kept — per-48 differentials)
-        const aD = aw.deltas || {}, hD2 = hm.deltas || {};
+        // Section 4: Box Score — actual values, winning side bolded
+        const aBS = aw.stats || {}, hBS = hm.stats || {};
         html += `<div class="xray-section">
-          <div class="xray-section-label">Process Factors</div>
+          <div class="xray-section-label">Box Score</div>
           <table style="width:100%;border-collapse:collapse;">
-            <tr><td style="font-size:9px;font-weight:700;color:var(--text-muted);padding:3px 0;">Factor</td><td style="text-align:right;font-size:9px;font-weight:700;color:var(--text-muted);padding:3px 0;">${aA}</td><td style="text-align:right;font-size:9px;font-weight:700;color:var(--text-muted);padding:3px 0;">${hA}</td></tr>
-            ${factorRow('Hustle (OREB)', aD.oreb, hD2.oreb)}
-            ${factorRow('Aggressiveness (FTA)', aD.fta, hD2.fta)}
-            ${factorRow('Ball Security (TOV)', aD.tov, hD2.tov)}
+            <tr><td style="font-size:9px;font-weight:700;color:var(--text-muted);padding:3px 0;"></td><td style="text-align:right;font-size:9px;font-weight:700;color:var(--text-muted);padding:3px 0;">${aA}</td><td style="text-align:right;font-size:9px;font-weight:700;color:var(--text-muted);padding:3px 0;">${hA}</td></tr>
+            ${statRow('REB', aBS.reb, hBS.reb)}
+            ${statRow('OREB', aBS.oreb, hBS.oreb)}
+            ${statRow('AST', aBS.ast, hBS.ast)}
+            ${statRow('TOV', aBS.tov, hBS.tov, true)}
+            ${statRow('STL', aBS.stl, hBS.stl)}
+            ${statRow('BLK', aBS.blk, hBS.blk)}
+            ${statRow('FTA', aBS.fta, hBS.fta)}
           </table>
         </div>`;
 
@@ -6799,11 +6799,17 @@ try {
 
 <div class="guide-card" style="border-left:3px solid #0ea5e9;"><h3>Process Score (0-10)</h3><p class="edge-label">Effort + aggression + ball security</p><p>Composite of three factors that measure <strong>sustainable process</strong> — actions that don't regress like shooting does. Each factor is a per-48-minute differential vs the opponent.</p><p><strong>6+ = Strong process</strong> — team is creating advantages through effort, not luck.<br><strong>2- = Weak process</strong> — team lacks hustle, aggression, or ball security.</p><div class="threshold">Strong process + paint scoring = very sustainable.<br>Weak process + 3PT heavy = very fragile.</div></div>
 
-<div class="guide-card" style="border-left:3px solid #10b981;"><h3>Hustle (OREB)</h3><p class="edge-label">Second chances through effort</p><p>Offensive rebound differential per 48 minutes. OREB create extra possessions through <strong>effort and size</strong>, not luck. Unlike shooting, hustle doesn't regress — a team crashing the boards will keep crashing them.</p><div class="threshold">Green (+) = your team gets more second chances.<br>The most effort-based and least score-dependent stat.</div></div>
-
-<div class="guide-card" style="border-left:3px solid #f59e0b;"><h3>Aggressiveness (FTA)</h3><p class="edge-label">Getting to the line = sustainable shots</p><p>Free throw attempt differential per 48 minutes. Teams that <strong>attack the rim</strong> draw fouls and generate the highest-percentage shots in basketball. Aggressiveness also puts the opponent in foul trouble.</p><div class="threshold">Green (+) = more free throw attempts than opponent.<br>FTA-driven scoring is repeatable within a game.</div></div>
-
-<div class="guide-card" style="border-left:3px solid #7c3aed;"><h3>Ball Security (TOV)</h3><p class="edge-label">Fewer turnovers = sustained possessions</p><p>Turnover differential per 48 minutes (inverted: positive = YOUR team turns it over less). Teams that <strong>take care of the ball</strong> sustain more possessions and more scoring opportunities. Careless teams waste possessions.</p><div class="threshold">Green (+) = opponent turns it over more than you.<br>Ball security measures offensive discipline, not luck.</div></div>
+<div class="guide-card" style="border-left:3px solid #10b981;"><h3>Box Score Stats</h3><p class="edge-label">Raw team stats side-by-side — context for your eye test</p><p>Shows actual stat totals for each team. The <span style="color:#10b981;font-weight:700;">winning side is bolded green</span>. These are <strong>context</strong>, not predictions — our ML research (7,499 games) proved box score stats add zero predictive value beyond the score. Use them to confirm what you see on court.</p>
+<table style="width:100%;font-size:11px;margin:8px 0;">
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">REB</td><td style="padding:4px 0;color:var(--text-secondary);">Total rebounds. Overall board control.</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">OREB</td><td style="padding:4px 0;color:var(--text-secondary);">Offensive rebounds. Extra possessions through hustle and size.</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">AST</td><td style="padding:4px 0;color:var(--text-secondary);">Assists. Ball movement and team-oriented offense.</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">TOV</td><td style="padding:4px 0;color:var(--text-secondary);">Turnovers (lower is better). Ball security and discipline.</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">STL</td><td style="padding:4px 0;color:var(--text-secondary);">Steals. Defensive pressure and disruption.</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">BLK</td><td style="padding:4px 0;color:var(--text-secondary);">Blocks. Rim protection and interior defense.</td></tr>
+<tr><td style="padding:4px 0;font-weight:700;">FTA</td><td style="padding:4px 0;color:var(--text-secondary);">Free throw attempts. Aggressiveness attacking the rim.</td></tr>
+</table>
+<div class="threshold">Process Score (0-10) is computed internally from OREB + FTA + TOV only.<br>These 3 are the least score-dependent stats.<br>Thresholds scale with game time (so 1 OREB at minute 5 ≠ 1 OREB at minute 40).</div></div>
 </div>
 
 <!-- SCORING SOURCE GUIDE -->
@@ -6824,7 +6830,7 @@ try {
   <p>The actual three-point field goal percentage (made/attempted). League average is ~36%. Teams shooting well above this will likely regress. Teams shooting well below may improve. Use this alongside the scoring source to assess sustainability.</p>
   <hr class="signal-divider">
   <h4>Data Sources</h4>
-  <p>Box scores from ESPN live API. Stats update every 30 seconds. Sustainability verdict combines three inputs: <strong>scoring source</strong> (paint vs 3PT), <strong>star pace</strong> (mean reversion), and <strong>process score</strong> (hustle, aggression, ball security). Process factors are the 3 least score-dependent box score stats — OREB, FTA, and turnovers.</p>
+  <p>Box scores from ESPN live API, update every 30 seconds. Sustainability verdict combines three inputs: <strong>scoring source</strong> (paint vs 3PT percentage), <strong>star pace</strong> (stars' current scoring rate vs season average), and <strong>process score</strong> (0-10, from OREB + FTA + TOV differentials with time-scaled thresholds). Box Score table shows all 7 raw stats side-by-side as context for your eye test — winning side bolded green, TOV inverted (lower is better).</p>
 </div>
 
 </div>
