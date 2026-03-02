@@ -5845,8 +5845,16 @@ function markOutcome(id, won) {
   updateBacktestPanel();
 }
 
+function getMergedBetLog() {
+  const localLog = JSON.parse(localStorage.getItem('betLog') || '[]');
+  const daemonLog = _daemonBetsCache || [];
+  const seen = new Set(localLog.map(b => b.key));
+  const merged = [...localLog];
+  daemonLog.forEach(b => { if (b.key && !seen.has(b.key)) { merged.push(b); seen.add(b.key); } });
+  return merged;
+}
 function getBacktestData() {
-  const log = JSON.parse(localStorage.getItem('betLog') || '[]');
+  const log = getMergedBetLog();
   const settled = log.filter(x => x.outcome);
   const total = settled.length;
   const wins = settled.filter(x => x.outcome === 'W').length;
@@ -5868,10 +5876,31 @@ function getBacktestData() {
   return { total, wins, winRate, roi, edge: avgEdge / 100, units, bySignal };
 }
 
+// Fetch daemon bets from sust-bets.json (pushed by daemon via git)
+let _daemonBetsCache = null;
+async function _fetchDaemonBets() {
+  try {
+    const r = await fetch('sust-bets.json?t=' + Date.now());
+    if (!r.ok) return [];
+    const d = await r.json();
+    _daemonBetsCache = (d.bets || []).concat(d.resolved || []);
+    return _daemonBetsCache;
+  } catch { return _daemonBetsCache || []; }
+}
+// Auto-refresh daemon bets every 2 min
+setInterval(() => { _fetchDaemonBets().then(() => { if (document.getElementById('tab-betlog')?.classList?.contains('active') || document.querySelector('[onclick*="betlog"]')?.classList?.contains('active')) renderBetLog(); }); }, 120000);
+_fetchDaemonBets(); // initial load
+
 function renderBetLog() {
   const el = document.getElementById('bet-log-entries');
   if (!el) return;
-  const log = JSON.parse(localStorage.getItem('betLog') || '[]').slice().reverse();
+  // Merge localStorage bets + daemon bets (dedup by key)
+  const localLog = JSON.parse(localStorage.getItem('betLog') || '[]');
+  const daemonLog = _daemonBetsCache || [];
+  const seen = new Set(localLog.map(b => b.key));
+  const merged = [...localLog];
+  daemonLog.forEach(b => { if (b.key && !seen.has(b.key)) { merged.push(b); seen.add(b.key); } });
+  const log = merged.slice().sort((a,b) => new Date(b.timestamp||0) - new Date(a.timestamp||0));
   if (log.length === 0) {
     el.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:40px;font-size:13px">No bets logged yet. Bets are auto-logged when combined signals fire.</p>';
     return;
