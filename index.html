@@ -4498,6 +4498,48 @@ async function fetchESPNScoreboard() {
         window._xrayWarningCount++;
       }
 
+      // ====== SUSTAINABILITY BET: Auto-log spread bet when SUSTAINABLE vs UNSUSTAINABLE in Q2-Q3 ======
+      if (xray && isLive) {
+        const _sustQ = isNCAA() ? (per >= 1 && per <= 2) : (per >= 2 && per <= 3); // Q2-Q3 NBA, H1-H2 NCAA
+        if (_sustQ) {
+          const aCls = xray.away.sustainability.cls;
+          const hCls = xray.home.sustainability.cls;
+          const hasDivergence = (aCls === 'sustainable' && hCls === 'unsustainable') ||
+                                (aCls === 'unsustainable' && hCls === 'sustainable');
+          if (hasDivergence) {
+            const sustTeam = aCls === 'sustainable' ? aA : hA;
+            const sustSide = aCls === 'sustainable' ? 'away' : 'home';
+            const _sustOdds = matchOdds(aA, hA, aFull, hFull);
+            const _sustSpread = _sustOdds ? (sustSide === 'away' ? _sustOdds.awaySpread : _sustOdds.homeSpread) : null;
+            const _sustKey = gid + '_sust_' + sustTeam;
+            let _sustLog = JSON.parse(localStorage.getItem('betLog') || '[]');
+            if (!_sustLog.find(x => x.key === _sustKey)) {
+              _sustLog.push({
+                id: Date.now(),
+                key: _sustKey,
+                gameId: gid,
+                team: sustTeam,
+                side: 'SPREAD',
+                spread: _sustSpread,
+                signals: ['sust'],
+                marketOdds: -110,
+                impliedP: 52.4,
+                estimatedP: 55,
+                kellyPct: 2.5,
+                kellyBet: 500,
+                timestamp: new Date().toISOString(),
+                outcome: null,
+                payout: null,
+                mode: currentMode || 'nba',
+                sustDetail: `${sustTeam} SUSTAINABLE vs ${sustTeam === aA ? hA : aA} UNSUSTAINABLE | ${isNCAA() ? 'H' : 'Q'}${per} ${clk}`
+              });
+              localStorage.setItem('betLog', JSON.stringify(_sustLog));
+              console.log('[Sust Bet] Logged:', sustTeam, 'SPREAD', _sustSpread, '@', gid);
+            }
+          }
+        }
+      }
+
       // Signal summary for card header
       const sigSummary = signals.filter(s=>s.level===2).map(s => {
         const icons = {'3pt':'3PT','star':'STAR','combined':'COMBO'};
@@ -5737,15 +5779,21 @@ async function autoResolveBets() {
       const aAbbr = away.team?.abbreviation || '';
       const hAbbr = home.team?.abbreviation || '';
 
-      // Determine winner abbreviation
-      const winner = aScore > hScore ? aAbbr : hAbbr;
-
-      // Check if our bet team won
-      // bet.team could be abbreviation like "BOS" or display name
+      // Determine if bet won
       const betTeamUpper = bet.team.toUpperCase();
-      const betWon = betTeamUpper === winner.toUpperCase() ||
-                     winner.toUpperCase().includes(betTeamUpper) ||
-                     betTeamUpper.includes(winner.toUpperCase());
+      const betIsAway = betTeamUpper === aAbbr.toUpperCase() || aAbbr.toUpperCase().includes(betTeamUpper) || betTeamUpper.includes(aAbbr.toUpperCase());
+      const betIsHome = betTeamUpper === hAbbr.toUpperCase() || hAbbr.toUpperCase().includes(betTeamUpper) || betTeamUpper.includes(hAbbr.toUpperCase());
+      const betTeamScore = betIsAway ? aScore : betIsHome ? hScore : 0;
+      const oppTeamScore = betIsAway ? hScore : betIsHome ? aScore : 0;
+
+      let betWon;
+      if (bet.side === 'SPREAD' && bet.spread != null) {
+        // Spread bet: team covers if teamScore + spread > oppScore
+        betWon = (betTeamScore + bet.spread) > oppTeamScore;
+      } else {
+        // ML bet: team wins outright
+        betWon = betTeamScore > oppTeamScore;
+      }
 
       bet.outcome = betWon ? 'W' : 'L';
       bet.finalScore = aAbbr + ' ' + aScore + ' - ' + hScore + ' ' + hAbbr;
@@ -5851,7 +5899,9 @@ function renderBetLog() {
     const sigBadges = (b.signals||[]).map(s => '<span class="signal-badge badge-' + s + '" style="font-size:9px;padding:1px 6px">' + s.toUpperCase() + '</span>').join(' ');
     html += '<tr style="border-bottom:1px solid var(--border-light)">';
     html += '<td style="padding:10px 12px;color:var(--text-muted);font-size:11px">' + time + '</td>';
-    html += '<td style="padding:10px 12px;color:var(--text-primary);font-weight:700">' + b.team + ' <span style="color:var(--text-muted);font-weight:400">' + (b.side||'ML') + '</span></td>';
+    const _sideLabel = b.side === 'SPREAD' && b.spread != null ? 'SPR ' + (b.spread > 0 ? '+' : '') + b.spread : (b.side||'ML');
+    const _sustTip = b.sustDetail ? ' title="' + b.sustDetail.replace(/"/g, '&quot;') + '"' : '';
+    html += '<td style="padding:10px 12px;color:var(--text-primary);font-weight:700"' + _sustTip + '>' + b.team + ' <span style="color:var(--text-muted);font-weight:400">' + _sideLabel + '</span></td>';
     html += '<td style="padding:10px 12px">' + sigBadges + '</td>';
     html += '<td style="padding:10px 12px;text-align:right;color:var(--text-secondary);font-family:monospace">' + oddsStr + '</td>';
     html += '<td style="padding:10px 12px;text-align:right;color:var(--accent);font-weight:600">' + edgeVal + '</td>';
