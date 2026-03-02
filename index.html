@@ -1328,8 +1328,8 @@
 
   <!-- ==================== LIVE GAMES TAB ==================== -->
   <div class="tab-content active" id="content-live">
-    <!-- EDGE THESIS PANEL -->
-    <div class="edge-thesis-container" id="edgeThesisContainer">
+    <!-- EDGE THESIS PANEL (disabled — old signal system) -->
+    <div class="edge-thesis-container" id="edgeThesisContainer" style="display:none !important;">
       <div class="edge-thesis-header">
         <h2>LIVE EDGE OPPORTUNITIES</h2>
         <span class="thesis-count" id="thesisCount">0</span>
@@ -2837,19 +2837,30 @@ function computeSustainabilityClient(game, aStats, hStats, aA, hA, aS, hS, elaps
   const aSrc = computeScoringSource(aStats);
   const hSrc = computeScoringSource(hStats);
 
-  // ── Star Pace ──
-  const getStarPacePct = (side, teamAbbr) => {
-    if (!scorerCache || !playerMap) return 0;
-    const star = (scorerCache[teamAbbr] || [])[0];
-    if (!star || star.ppg < (_ncaa ? 16 : 21)) return 0;
+  // ── Star Pace (all stars 21+ PPG on the team) ──
+  const starThresh = _ncaa ? 16 : 21;
+  const totalGameMin = _ncaa ? 40 : 48;
+  const getStarPaces = (side, teamAbbr) => {
+    if (!scorerCache || !playerMap) return [];
+    const stars = (scorerCache[teamAbbr] || []).filter(s => s.ppg >= starThresh);
+    if (!stars.length) return [];
     const players = (playerMap || {})[side] || [];
-    const starLast = star.name.split(' ').pop().toLowerCase();
-    const match = players.find(p => p.name.toLowerCase().includes(starLast));
-    if (!match || elapsedMins <= 0 || star.ppg <= 0) return 0;
-    return Math.round((match.pts * (_ncaa ? 40 : 48) / elapsedMins) / star.ppg * 100);
+    const paces = [];
+    for (const star of stars) {
+      const starLast = star.name.split(' ').pop().toLowerCase();
+      const match = players.find(p => p.name.toLowerCase().includes(starLast));
+      if (!match || elapsedMins <= 0 || star.ppg <= 0) continue;
+      paces.push(Math.round((match.pts * totalGameMin / elapsedMins) / star.ppg * 100));
+    }
+    return paces;
   };
-  const aStarPace = getStarPacePct('away', aA);
-  const hStarPace = getStarPacePct('home', hA);
+  const aStarPaces = getStarPaces('away', aA);
+  const hStarPaces = getStarPaces('home', hA);
+  // For sustainability verdict: use the most extreme pace (coldest or hottest)
+  const mostCold = (paces) => paces.length ? Math.min(...paces) : 0;
+  const mostHot = (paces) => paces.length ? Math.max(...paces) : 0;
+  const aStarPace = aStarPaces.length ? (mostCold(aStarPaces) < 60 ? mostCold(aStarPaces) : mostHot(aStarPaces)) : 0;
+  const hStarPace = hStarPaces.length ? (mostCold(hStarPaces) < 60 ? mostCold(hStarPaces) : mostHot(hStarPaces)) : 0;
   const inWindow = period ? (_ncaa ? period <= 2 : period <= 3) : true;
 
   // ── Process Factors (3 kept — OREB, FTA, TOV) ──
@@ -4584,57 +4595,47 @@ async function fetchESPNScoreboard() {
           </table>
         </div>`;
 
-        // Section 5: Star Player Pace (sustainability factor)
+        // Section 5: Star Player Pace — ALL stars (21+ PPG) on each team
         const _bxPlayers = _boxscoreMap[gid] || { away: [], home: [] };
-        const buildStarLine = (side, teamAbbr) => {
+        const starThreshold = isNCAA() ? 16 : 21;
+        // Only show in regression window (Q1-Q3 NBA, H1-H2 NCAA)
+        const _showStars = isNCAA() ? per <= 2 : per <= 3;
+        const buildStarLines = (side, teamAbbr) => {
+          if (!_showStars) return '';
           const scorers = teamScorerCache[teamAbbr] || [];
-          const star = scorers[0]; // Top scorer = star (highest season PPG)
-          if (!star || star.ppg < 16) return ''; // Only show for meaningful scorers
-          // Find this player's current game points
+          const stars = scorers.filter(s => s.ppg >= starThreshold);
+          if (!stars.length) return '';
           const players = _bxPlayers[side] || [];
-          const starLast = star.name.split(' ').pop().toLowerCase();
-          const match = players.find(p => p.name.toLowerCase().includes(starLast));
-          if (!match) return '';
-          const currentPts = match.pts || 0;
-          // Calculate pace: project current scoring rate to full game
           const totalMin = isNCAA() ? 40 : 48;
-          const paceMultiplier = gMins > 0 ? totalMin / gMins : 1;
-          const projectedPts = currentPts * paceMultiplier;
-          const paceRatio = star.ppg > 0 ? projectedPts / star.ppg : 1;
-          const pacePct = Math.round(paceRatio * 100);
-          // Sustainability interpretation
-          let paceLabel, paceColor, paceMeaning;
-          if (pacePct < 60) {
-            paceLabel = 'COLD'; paceColor = '#10b981';
-            paceMeaning = 'upside — star will likely heat up';
-          } else if (pacePct < 85) {
-            paceLabel = 'BELOW'; paceColor = '#10b981';
-            paceMeaning = 'room to grow';
-          } else if (pacePct <= 115) {
-            paceLabel = 'ON PACE'; paceColor = 'var(--text-muted)';
-            paceMeaning = 'normal output';
-          } else if (pacePct <= 150) {
-            paceLabel = 'HOT'; paceColor = '#f59e0b';
-            paceMeaning = 'may cool down';
-          } else {
-            paceLabel = 'ERUPTING'; paceColor = '#ef4444';
-            paceMeaning = 'unsustainable — expect regression';
+          let lines = '';
+          for (const star of stars) {
+            const starLast = star.name.split(' ').pop().toLowerCase();
+            const match = players.find(p => p.name.toLowerCase().includes(starLast));
+            if (!match) continue;
+            const currentPts = match.pts || 0;
+            const pacePct = (gMins > 0 && star.ppg > 0)
+              ? Math.round((currentPts * totalMin / gMins) / star.ppg * 100) : 100;
+            let paceLabel, paceColor;
+            if (pacePct < 60) { paceLabel = 'COLD'; paceColor = '#10b981'; }
+            else if (pacePct < 85) { paceLabel = 'BELOW'; paceColor = '#10b981'; }
+            else if (pacePct <= 115) { paceLabel = 'ON PACE'; paceColor = 'var(--text-muted)'; }
+            else if (pacePct <= 150) { paceLabel = 'HOT'; paceColor = '#f59e0b'; }
+            else { paceLabel = 'ERUPTING'; paceColor = '#ef4444'; }
+            const firstName = star.name.split(' ').pop();
+            lines += `<div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;padding:2px 0;">
+              <span style="color:var(--text-secondary);font-weight:500;">${firstName} <span style="color:var(--text-muted);">(${star.ppg.toFixed(1)})</span></span>
+              <span><span style="font-weight:700;">${currentPts} pts</span> <span style="color:${paceColor};font-weight:700;">${pacePct}%</span> <span style="color:${paceColor};font-size:9px;">${paceLabel}</span></span>
+            </div>`;
           }
-          // Only show in Q1-Q3 (meaningful regression window)
-          if (per > 3 && !isNCAA()) return '';
-          if (per > 2 && isNCAA()) return '';
-          const firstName = star.name.split(' ').pop();
-          return `<div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;padding:2px 0;">
-            <span style="color:var(--text-secondary);font-weight:500;">${firstName} <span style="color:var(--text-muted);">(${star.ppg.toFixed(1)} ppg)</span></span>
-            <span><span style="font-weight:700;">${currentPts} pts</span> <span style="color:${paceColor};font-weight:700;">${pacePct}% pace</span> <span style="color:${paceColor};font-size:9px;">${paceLabel}</span></span>
-          </div>`;
+          return lines;
         };
-        const awayStarHTML = buildStarLine('away', aA);
-        const homeStarHTML = buildStarLine('home', hA);
+        const awayStarHTML = buildStarLines('away', aA);
+        const homeStarHTML = buildStarLines('home', hA);
         if (awayStarHTML || homeStarHTML) {
           html += `<div class="xray-section">
             <div class="xray-section-label">Star Pace</div>
-            ${awayStarHTML}${homeStarHTML}
+            ${awayStarHTML ? '<div style="margin-bottom:4px;font-size:9px;font-weight:700;color:var(--text-muted);">' + aA + '</div>' + awayStarHTML : ''}
+            ${homeStarHTML ? '<div style="margin-bottom:4px;margin-top:6px;font-size:9px;font-weight:700;color:var(--text-muted);">' + hA + '</div>' + homeStarHTML : ''}
           </div>`;
         }
 
