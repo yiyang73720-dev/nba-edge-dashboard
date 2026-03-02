@@ -4510,31 +4510,38 @@ async function fetchESPNScoreboard() {
             const sustTeam = aCls === 'sustainable' ? aA : hA;
             const sustSide = aCls === 'sustainable' ? 'away' : 'home';
             const _sustOdds = matchOdds(aA, hA, aFull, hFull);
-            const _sustSpread = _sustOdds ? (sustSide === 'away' ? _sustOdds.awaySpread : _sustOdds.homeSpread) : null;
-            const _sustKey = gid + '_sust_' + sustTeam;
-            let _sustLog = JSON.parse(localStorage.getItem('betLog') || '[]');
-            if (!_sustLog.find(x => x.key === _sustKey)) {
-              _sustLog.push({
-                id: Date.now(),
-                key: _sustKey,
-                gameId: gid,
-                team: sustTeam,
-                side: 'SPREAD',
-                spread: _sustSpread,
-                signals: ['sust'],
-                marketOdds: -110,
-                impliedP: 52.4,
-                estimatedP: 55,
-                kellyPct: 2.5,
-                kellyBet: 500,
-                timestamp: new Date().toISOString(),
-                outcome: null,
-                payout: null,
-                mode: currentMode || 'nba',
-                sustDetail: `${sustTeam} SUSTAINABLE vs ${sustTeam === aA ? hA : aA} UNSUSTAINABLE | ${isNCAA() ? 'H' : 'Q'}${per} ${clk}`
-              });
-              localStorage.setItem('betLog', JSON.stringify(_sustLog));
-              console.log('[Sust Bet] Logged:', sustTeam, 'SPREAD', _sustSpread, '@', gid);
+            // Must have actual spread from Odds API / ESPN to log bet
+            if (_sustOdds) {
+              const _sustSpread = sustSide === 'away' ? _sustOdds.awaySpread : _sustOdds.homeSpread;
+              const _sustPrice = sustSide === 'away' ? _sustOdds.awaySpreadPrice : _sustOdds.homeSpreadPrice;
+              const _spreadOdds = _sustPrice || -110; // actual juice from book, fallback -110
+              const _spreadImplP = _spreadOdds < 0 ? Math.abs(_spreadOdds) / (Math.abs(_spreadOdds) + 100) : 100 / (_spreadOdds + 100);
+              const _sustKey = gid + '_sust_' + sustTeam;
+              let _sustLog = JSON.parse(localStorage.getItem('betLog') || '[]');
+              if (!_sustLog.find(x => x.key === _sustKey)) {
+                _sustLog.push({
+                  id: Date.now(),
+                  key: _sustKey,
+                  gameId: gid,
+                  team: sustTeam,
+                  side: 'SPREAD',
+                  spread: _sustSpread,
+                  signals: ['sust'],
+                  marketOdds: _spreadOdds,
+                  impliedP: Math.round(_spreadImplP * 1000) / 10,
+                  estimatedP: 55,
+                  kellyPct: 2.5,
+                  kellyBet: 500,
+                  book: _sustOdds.book || 'unknown',
+                  timestamp: new Date().toISOString(),
+                  outcome: null,
+                  payout: null,
+                  mode: currentMode || 'nba',
+                  sustDetail: `${sustTeam} SUSTAINABLE vs ${sustTeam === aA ? hA : aA} UNSUSTAINABLE | ${isNCAA() ? 'H' : 'Q'}${per} ${clk} | ${_sustOdds.book || ''} ${_sustSpread != null ? ((_sustSpread > 0 ? '+' : '') + _sustSpread) : '?'} (${_spreadOdds > 0 ? '+' : ''}${_spreadOdds})`
+                });
+                localStorage.setItem('betLog', JSON.stringify(_sustLog));
+                console.log('[Sust Bet] Logged:', sustTeam, 'SPREAD', _sustSpread, '@', _spreadOdds, 'from', _sustOdds.book, gid);
+              }
             }
           }
         }
@@ -5881,7 +5888,8 @@ function renderBetLog() {
   log.forEach(b => {
     const t = new Date(b.timestamp);
     const time = (t.getMonth()+1) + '/' + t.getDate() + ' ' + t.getHours() + ':' + String(t.getMinutes()).padStart(2,'0');
-    const oddsStr = b.marketOdds > 0 ? '+' + b.marketOdds : '' + b.marketOdds;
+    const _oddsNum = b.marketOdds > 0 ? '+' + b.marketOdds : '' + b.marketOdds;
+    const oddsStr = b.book ? _oddsNum + ' <span style="font-size:9px;color:var(--text-muted);font-family:inherit">' + b.book + '</span>' : _oddsNum;
     const edgeVal = b.estimatedP && b.impliedP ? (b.estimatedP - b.impliedP).toFixed(1) + '%' : '-';
     let resultCell;
     if (b.outcome) {
