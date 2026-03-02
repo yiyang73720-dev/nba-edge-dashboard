@@ -2916,27 +2916,23 @@ function computeSustainabilityClient(game, aStats, hStats, aA, hA, aS, hS, elaps
     const shootingHot = srcData.fg3a >= 5 && srcData.threeFgPct >= 0.45;  // 45%+ on 5+ attempts
     const shootingCold = srcData.fg3a >= 5 && srcData.threeFgPct <= 0.25; // 25%- on 5+ attempts
 
-    // Unsustainable tier
+    // Count positive signals for SUSTAINABLE (require 2+ to avoid false positives)
+    const sustSignals = [paintDominant, starCold, shootingCold, strongProcess].filter(Boolean).length;
+    // Count fragility signals for UNSUSTAINABLE
+    const fragSignals = [threeHeavy, shootingHot, starErupting, weakProcess].filter(Boolean).length;
+
+    // Unsustainable tier — need clear fragility evidence
     if (veryThreeHeavy) return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
     if (threeHeavy && shootingHot) return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
     if (threeHeavy && starErupting) return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
     if (threeHeavy && weakProcess) return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
     if (shootingHot && starErupting) return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
     if (starErupting && weakProcess) return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
-    // Sustainable tier
-    if (paintDominant && starCold) return { label: 'SUSTAINABLE', cls: 'sustainable' };
-    if (paintDominant && shootingCold) return { label: 'SUSTAINABLE', cls: 'sustainable' };
-    if (paintDominant && strongProcess) return { label: 'SUSTAINABLE', cls: 'sustainable' };
-    if (starCold && strongProcess) return { label: 'SUSTAINABLE', cls: 'sustainable' };
-    if (shootingCold && strongProcess) return { label: 'SUSTAINABLE', cls: 'sustainable' };
-    if (paintDominant) return { label: 'SUSTAINABLE', cls: 'sustainable' };
-    if (starCold && !threeHeavy) return { label: 'SUSTAINABLE', cls: 'sustainable' };
-    if (shootingCold && !weakProcess) return { label: 'SUSTAINABLE', cls: 'sustainable' };
+    // Sustainable tier — require 2+ positive signals to avoid noise
+    if (sustSignals >= 2 && fragSignals === 0) return { label: 'SUSTAINABLE', cls: 'sustainable' };
     // Mixed tier
-    if (shootingHot) return { label: 'MIXED', cls: 'mixed' };
-    if (starErupting) return { label: 'MIXED', cls: 'mixed' };
-    if (threeHeavy) return { label: 'MIXED', cls: 'mixed' };
-    if (strongProcess) return { label: 'SUSTAINABLE', cls: 'sustainable' };
+    if (shootingHot || starErupting || threeHeavy) return { label: 'MIXED', cls: 'mixed' };
+    if (sustSignals >= 2) return { label: 'SUSTAINABLE', cls: 'sustainable' }; // 2+ positive even with 1 fragile
     return { label: 'MIXED', cls: 'mixed' };
   };
 
@@ -4500,8 +4496,11 @@ async function fetchESPNScoreboard() {
 
       // ====== SUSTAINABILITY BET: Auto-log spread bet when SUSTAINABLE vs UNSUSTAINABLE in Q2-Q3 ======
       if (xray && isLive) {
-        const _sustQ = isNCAA() ? (per >= 1 && per <= 2) : (per >= 2 && per <= 3); // Q2-Q3 NBA, H1-H2 NCAA
-        if (_sustQ) {
+        // NBA: Q2-Q3 (per 2-3). NCAA: mid-game only (elapsed 10-30 min of 40 min game)
+        const _sustQ = isNCAA() ? (gMins >= 10 && gMins <= 30) : (per >= 2 && per <= 3);
+        // Both teams must have scored 20+ points (enough data for meaningful sustainability read)
+        const _sustMinScore = aS >= 20 && hS >= 20;
+        if (_sustQ && _sustMinScore) {
           const aCls = xray.away.sustainability.cls;
           const hCls = xray.home.sustainability.cls;
           const hasDivergence = (aCls === 'sustainable' && hCls === 'unsustainable') ||
@@ -4537,7 +4536,11 @@ async function fetchESPNScoreboard() {
                   outcome: null,
                   payout: null,
                   mode: currentMode || 'nba',
-                  sustDetail: `${sustTeam} SUSTAINABLE vs ${sustTeam === aA ? hA : aA} UNSUSTAINABLE | ${isNCAA() ? 'H' : 'Q'}${per} ${clk} | ${_sustOdds.book || ''} ${_sustSpread != null ? ((_sustSpread > 0 ? '+' : '') + _sustSpread) : '?'} (${_spreadOdds > 0 ? '+' : ''}${_spreadOdds})`
+                  awayScore: aS, homeScore: hS, period: per, clock: clk,
+                  sustLeader: aS > hS ? aA : hS > aS ? hA : 'TIE',
+                  sustMargin: Math.abs(aS - hS),
+                  betOnLeader: (aS > hS && sustTeam === aA) || (hS > aS && sustTeam === hA),
+                  sustDetail: `${sustTeam} SUSTAINABLE vs ${sustTeam === aA ? hA : aA} UNSUSTAINABLE | ${aA} ${aS}-${hS} ${hA} | ${isNCAA() ? 'H' : 'Q'}${per} ${clk} | ${_sustOdds.book || ''} ${_sustSpread != null ? ((_sustSpread > 0 ? '+' : '') + _sustSpread) : '?'} (${_spreadOdds > 0 ? '+' : ''}${_spreadOdds})`
                 });
                 localStorage.setItem('betLog', JSON.stringify(_sustLog));
                 console.log('[Sust Bet] Logged:', sustTeam, 'SPREAD', _sustSpread, '@', _spreadOdds, 'from', _sustOdds.book, gid);
@@ -6880,27 +6883,25 @@ try {
 <p style="font-size:10px;color:var(--text-muted);line-height:1.5;margin:4px 0;">Formula: <code style="background:var(--border-light);padding:1px 4px;border-radius:3px;">score = clamp(oreb_diff/thresh) × 3.33 + clamp(fta_diff/thresh) × 3.33 + clamp(tov_diff/thresh) × 3.33</code></p>
 <p><strong>6+ = Strong process</strong> — effort-driven advantages, not shooting luck.<br><strong>2- = Weak process</strong> — lacks hustle, aggression, or ball security.</p><div class="threshold">Example: At minute 12, OREB threshold = 5 × 12/48 = 1.25.<br>If you lead OREB by 2: score = clamp(2/1.25) × 3.33 = 3.33 (max).</div></div>
 
-<div class="guide-card" style="border-left:3px solid #f59e0b;"><h3>Sustainability Rules</h3><p class="edge-label">How SUSTAINABLE / MIXED / UNSUSTAINABLE is decided</p><p>The verdict combines <strong>4 inputs</strong>: Scoring Source, 3PT FG%, Star Pace, and Process Score. Evaluated in order — first match wins:</p>
-<p style="font-size:10px;color:var(--text-muted);margin:4px 0;"><strong>Definitions:</strong> 3PT Heavy = &gt;40% of pts from 3. Shooting Hot = 3FG% &ge; 45% on 5+ attempts. Shooting Cold = 3FG% &le; 25% on 5+ attempts.</p>
+<div class="guide-card" style="border-left:3px solid #f59e0b;"><h3>Sustainability Rules</h3><p class="edge-label">How SUSTAINABLE / MIXED / UNSUSTAINABLE is decided</p><p>4 positive signals: <strong>Paint &gt;45%</strong>, <strong>Star Cold &lt;60%</strong>, <strong>Shooting Cold &le;25%</strong>, <strong>Strong Process &ge;6</strong>.<br>4 fragility signals: <strong>3PT Heavy &gt;40%</strong>, <strong>Shooting Hot &ge;45%</strong>, <strong>Star Erupting &gt;150%</strong>, <strong>Weak Process &lt;2</strong>.</p>
 <table style="width:100%;font-size:10px;margin:8px 0;border-collapse:collapse;">
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#ef4444;width:100px;">UNSUSTAINABLE</td><td style="padding:4px 0;color:var(--text-secondary);">3PT &gt; 50% of points</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#ef4444;">UNSUSTAINABLE</td><td style="padding:4px 0;color:var(--text-secondary);">3PT heavy AND shooting hot (&ge;45% FG)</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#ef4444;">UNSUSTAINABLE</td><td style="padding:4px 0;color:var(--text-secondary);">3PT heavy AND star erupting (&gt;150%)</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#ef4444;">UNSUSTAINABLE</td><td style="padding:4px 0;color:var(--text-secondary);">3PT heavy AND weak process (&lt;2)</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#ef4444;">UNSUSTAINABLE</td><td style="padding:4px 0;color:var(--text-secondary);">Shooting hot AND star erupting</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#ef4444;">UNSUSTAINABLE</td><td style="padding:4px 0;color:var(--text-secondary);">Star erupting AND weak process</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#10b981;">SUSTAINABLE</td><td style="padding:4px 0;color:var(--text-secondary);">Paint &gt; 45% AND star cold (&lt;60%)</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#10b981;">SUSTAINABLE</td><td style="padding:4px 0;color:var(--text-secondary);">Paint &gt; 45% AND shooting cold (&le;25%)</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#10b981;">SUSTAINABLE</td><td style="padding:4px 0;color:var(--text-secondary);">Paint &gt; 45% AND strong process (&ge;6)</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#10b981;">SUSTAINABLE</td><td style="padding:4px 0;color:var(--text-secondary);">Star cold AND strong process</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#10b981;">SUSTAINABLE</td><td style="padding:4px 0;color:var(--text-secondary);">Shooting cold AND strong process</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#10b981;">SUSTAINABLE</td><td style="padding:4px 0;color:var(--text-secondary);">Paint &gt; 45% (alone)</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#10b981;">SUSTAINABLE</td><td style="padding:4px 0;color:var(--text-secondary);">Star cold AND 3PT &le; 40%</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#10b981;">SUSTAINABLE</td><td style="padding:4px 0;color:var(--text-secondary);">Shooting cold AND process &ge; 2</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#10b981;">SUSTAINABLE</td><td style="padding:4px 0;color:var(--text-secondary);">Strong process (&ge;6) alone</td></tr>
-<tr><td style="padding:4px 0;font-weight:700;color:#f59e0b;">MIXED</td><td style="padding:4px 0;color:var(--text-secondary);">Everything else (shooting hot alone, star erupting only, etc.)</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#ef4444;width:100px;">UNSUSTAINABLE</td><td style="padding:4px 0;color:var(--text-secondary);">3PT &gt; 50% of points (alone)</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#ef4444;">UNSUSTAINABLE</td><td style="padding:4px 0;color:var(--text-secondary);">Any 2 fragility signals combined (e.g. 3PT heavy + shooting hot)</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#10b981;">SUSTAINABLE</td><td style="padding:4px 0;color:var(--text-secondary);">2+ positive signals AND 0 fragility signals</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#10b981;">SUSTAINABLE</td><td style="padding:4px 0;color:var(--text-secondary);">2+ positive signals (even with 1 fragility, if no UNSUSTAINABLE combo)</td></tr>
+<tr><td style="padding:4px 0;font-weight:700;color:#f59e0b;">MIXED</td><td style="padding:4px 0;color:var(--text-secondary);">Everything else (1 positive signal, or 1 fragility signal alone)</td></tr>
 </table>
-<div class="threshold">Star Pace only counts in Q1-Q3 (regression window).<br>3PT FG% needs 5+ attempts to count (avoids 1/2 = 50% noise).</div></div>
+<div class="threshold">Key change: single signals (paint dominant alone, star cold alone) now = MIXED.<br>SUSTAINABLE requires 2+ positive signals — higher bar, fewer false triggers.<br>3PT FG% needs 5+ attempts. Star Pace only counts Q1-Q3.</div></div>
+
+<div class="guide-card" style="border-left:3px solid #7c3aed;"><h3>Auto-Bet Trigger</h3><p class="edge-label">When the dashboard logs a $500 spread bet</p><p>A spread bet is auto-logged when ALL conditions are met:</p>
+<table style="width:100%;font-size:10px;margin:8px 0;border-collapse:collapse;">
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;width:80px;">Timing</td><td style="padding:4px 0;color:var(--text-secondary);">NBA: Q2-Q3. NCAA: minutes 10-30 (mid-game).</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">Divergence</td><td style="padding:4px 0;color:var(--text-secondary);">One team SUSTAINABLE, the other UNSUSTAINABLE.</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">Min Score</td><td style="padding:4px 0;color:var(--text-secondary);">Both teams &ge; 20 points (enough data).</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">Odds</td><td style="padding:4px 0;color:var(--text-secondary);">Spread + price available from Odds API / ESPN.</td></tr>
+<tr><td style="padding:4px 0;font-weight:700;">Bet</td><td style="padding:4px 0;color:var(--text-secondary);">$500 flat on SUSTAINABLE team's spread.</td></tr>
+</table>
+<div class="threshold">One bet per game per team. Logs exact book, spread, and juice.<br>Auto-resolves after game: checks if team covered the spread.</div></div>
 
 <div class="guide-card" style="border-left:3px solid #10b981;"><h3>Box Score Stats</h3><p class="edge-label">Raw team stats side-by-side — context for your eye test</p><p>Shows actual stat totals for each team. The <span style="color:#10b981;font-weight:700;">winning side is bolded green</span>. These are <strong>context</strong>, not predictions — our ML research (7,499 games) proved box score stats add zero predictive value beyond the score. Use them to confirm what you see on court.</p>
 <table style="width:100%;font-size:11px;margin:8px 0;">
