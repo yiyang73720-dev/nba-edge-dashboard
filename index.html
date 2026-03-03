@@ -865,8 +865,8 @@
       .tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
       .tabs::-webkit-scrollbar { display: none; }
       .tab { padding: 5px 12px; font-size: 11px; }
-      .signal-strip { flex-wrap: wrap; border-radius: var(--radius); }
-      .signal-chip { flex: 1 1 30%; min-width: 80px; padding: 10px 6px; }
+      .signal-strip { grid-template-columns: repeat(2, 1fr) !important; border-radius: var(--radius); }
+      .signal-chip { min-width: 0; padding: 12px 8px; }
       .signal-chip .chip-value { font-size: 18px; }
       .signal-chip .chip-label { font-size: 8px; letter-spacing: 1px; }
       .signal-chip .chip-desc { display: none !important; }
@@ -1353,16 +1353,38 @@
       <span style="margin-left:auto;color:var(--text-muted);font-size:10px;">Last: <span id="live-last-update">-</span> | Errors: <span id="errorCount">0</span> <span id="odds-status"></span></span>
     </div>
 
-    <div class="signal-strip">
-      <div class="signal-chip">
-        <div class="chip-value" id="live-games-count">-</div>
+    <div class="signal-strip" style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;">
+      <div class="signal-chip" style="position:relative;">
+        <div style="position:absolute;top:10px;left:14px;width:28px;height:28px;border-radius:8px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><rect x="2" y="7" width="20" height="15" rx="2"/><path d="M16 7V5a4 4 0 00-8 0v2"/></svg>
+        </div>
+        <div class="chip-value" id="live-games-count" style="margin-top:4px;">-</div>
         <div class="chip-label">Games</div>
-        <div class="chip-desc">Total live games tracked</div>
+        <div class="chip-desc">Total live games being tracked</div>
       </div>
-      <div class="signal-chip" style="border-left:2px solid var(--orange);">
+      <div class="signal-chip" style="position:relative;">
+        <div style="position:absolute;top:10px;left:14px;width:28px;height:28px;border-radius:8px;background:rgba(245,158,11,0.1);display:flex;align-items:center;justify-content:center;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
         <div class="chip-value orange" id="live-xray-warnings">0</div>
-        <div class="chip-label orange">Warnings</div>
-        <div class="chip-desc">Games where the leading team has unsustainable or mixed scoring</div>
+        <div class="chip-label orange">Fragile</div>
+        <div class="chip-desc">Leading teams with unsustainable scoring</div>
+      </div>
+      <div class="signal-chip" style="position:relative;">
+        <div style="position:absolute;top:10px;left:14px;width:28px;height:28px;border-radius:8px;background:rgba(16,185,129,0.1);display:flex;align-items:center;justify-content:center;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="chip-value green" id="live-active-bets">0</div>
+        <div class="chip-label green">Active Bets</div>
+        <div class="chip-desc">Daemon bets currently in play</div>
+      </div>
+      <div class="signal-chip" style="position:relative;">
+        <div style="position:absolute;top:10px;left:14px;width:28px;height:28px;border-radius:8px;background:rgba(124,58,237,0.1);display:flex;align-items:center;justify-content:center;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        </div>
+        <div class="chip-value purple" id="live-tonight-pl">-</div>
+        <div class="chip-label purple">Tonight P/L</div>
+        <div class="chip-desc">Profit/loss from tonight's resolved bets</div>
       </div>
     </div>
     <!-- Hidden elements for backward compat with signal counting code -->
@@ -3661,6 +3683,9 @@ async function fetchESPNScoreboard() {
     const postGames = events.filter(e => e.status?.type?.state === 'post');
     document.getElementById('live-games-count').textContent = inProgress.length;
 
+    // Update active bets + tonight P/L from daemon data
+    _updateStripFromDaemon();
+
     // If no live/pre games, fetch tomorrow's schedule too
     // Use ESPN's own day.date (ET-based) to compute "tomorrow" correctly
     if (inProgress.length === 0 && preGames.length === 0) {
@@ -5027,40 +5052,24 @@ function removeStar(i) { state.stars.splice(i,1); localStorage.setItem('starPlay
 // ==================== SIGNAL GUIDE (MODE-AWARE) ====================
 function updateSignalGuide(mode) {
   const ncaa = mode === 'ncaab';
-  // Quick reference table
-  const starDesc = ncaa
-    ? 'A lead scorer (16+ PPG) is cold (&lt;65% pace) AND the game is close (within 12pts) during minutes 8-35. <strong>Compressed spring</strong> — breakout incoming. NCAA teams are more star-dependent.'
-    : 'A star player (21+ PPG) is cold (&lt;65% pace) AND the game is close (within 15pts) in Q2-Q3. <strong>Compressed spring</strong> — breakout incoming.';
-  // Update quick reference cells
-  const starCells = document.querySelectorAll('#guide-star-desc');
-  if (starCells.length) starCells[0].innerHTML = starDesc;
-
-  // Update detailed guide
   const guideEl = document.getElementById('nba-guide');
   if (!guideEl) return;
   const leagueName = ncaa ? 'NCAAB' : 'NBA';
-  const leagueAvg = ncaa ? '~33.5%' : '~36.5%';
-  const hotThresh = ncaa ? '48%+ from 3 on 10+ attempts (or 52%+ on 7+)' : '50%+ from 3 on 12+ attempts (or 55%+ on 8+)';
+  const gameMins = ncaa ? '40 min (2x20 halves)' : '48 min (4x12 quarters)';
   const starPPG = ncaa ? '16+' : '21+';
-  const coilMargin = ncaa ? '12' : '15';
-  const coilWindow = ncaa ? 'minutes 8-35 (first half through mid second half)' : 'Q2-Q3';
-  const gameMins = ncaa ? '40 min (2×20 halves)' : '48 min (4×12 quarters)';
-  const softStar = ncaa ? '&lt;80% pace, minutes 4-37, margin ≤18pts, accepts weak cast' : '&lt;75% pace, Q1-Q3 (not just Q2-Q3), margin ≤18pts';
-  const homeCourtNote = ncaa ? '<p style="margin-top:8px;"><strong>Home Court Booster (NCAAB only):</strong> When signals point toward betting the home team, a +0.5 boost is applied. NCAA home court advantage is ~3.5-4 points — significantly stronger than NBA (~2.5). Crowd energy + regression signals = double tailwind.</p>' : '';
+  const betWindow = ncaa ? 'minutes 10-30' : 'Q2-Q3';
+  const starWindow = ncaa ? 'period 1-2' : 'Q1-Q3';
 
   guideEl.innerHTML = `
-<p class="guide-intro" style="margin-bottom:12px;"><strong>Core thesis:</strong> The current score was built on something unsustainable, so the live odds are mispriced. We bet on regression. <span style="color:var(--accent);font-weight:700;">${leagueName} mode</span> — ${gameMins}.</p>
+<p class="guide-intro" style="margin-bottom:12px;"><strong>Core thesis:</strong> When one team's lead is built on sustainable process while their opponent's scoring is fragile, the live spread misprices the likely regression. We bet the sustainable side. <span style="color:var(--accent);font-weight:700;">${leagueName} mode</span> — ${gameMins}.</p>
 <div style="background:var(--accent-light);border:1px solid var(--accent);border-radius:var(--radius);padding:14px;margin-bottom:16px;font-size:12px;">
-<strong>Backtest Validated (3,517 games, Oct 2023 - Feb 2027):</strong>
+<strong>Forward-Test Status (collecting live data since Mar 2026):</strong>
 <div style="display:flex;gap:16px;margin-top:6px;flex-wrap:wrap;">
-<div><strong>Star Coil:</strong> 58.6% win rate, 2,181 signals, +11.9% ROI</div>
-<div><strong>Star Coil+:</strong> 57.2% win rate, 208 signals (highest conviction)</div>
+<div><strong>Method:</strong> Continuous scoring (-100 to +100) with 6 weighted factors</div>
+<div><strong>Trigger:</strong> sustGap &ge;30 + cushion &gt; -14 + both teams &ge;20pts</div>
 </div>
-</div>
-<div class="guide-grid">
-<div class="guide-card"><h3><span class="signal-badge badge-star">STAR</span> Star Coil</h3><p class="edge-label">Star is cold + game is close + supporting cast is holding = verified profitable edge</p><p>When a ${starPPG} PPG player is at &lt;65% of expected pace AND the game is within ${coilMargin} points during ${coilWindow}. <strong>Backtest: 58.6% win rate on 2,181 signals.</strong></p><p><strong>Supporting Cast Analysis:</strong> Pure live data — team score minus star's points vs opponent total. If cast is within 8pts, team is competitive WITHOUT the star.</p><p><strong>4 tiers:</strong> Elite (cast gap ≥-8), Standard (-8 to -15), Weak (&lt;-15), Locked (deficit stable 3+min).</p><div class="threshold">Trigger: Star &lt;65% pace + margin ≤${coilMargin} + ${coilWindow}.<br>Tiers: Elite (cast gap ≥-8, 1.5× weight), Standard (-8 to -15, 1× weight), Weak (0 weight), Locked (reverse bet).<br>Q3 subset: 68.8% win rate (elite).</div></div>
-<div class="guide-card"><h3><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:var(--accent);padding:3px 8px;border-radius:4px;">STAR COIL+</span> Star Coil Plus</h3><p class="edge-label">Star cold + opponent shooting cold = double regression edge</p><p>When Star Coil fires AND the opponent (leading team) has poor shooting: FG% &lt; 43% or 2PT% &lt; 47%. <strong>Backtest: 57.2% win rate on 208+ signals.</strong></p><p><strong>Why it works:</strong> The opponent's lead is built on two unsustainable factors — star being cold AND opponent shooting unsustainably well from inside. Both regress = dramatic swing.</p><div class="threshold">Trigger: Star Coil active + opponent FG% &lt; 43% OR opponent 2PT% &lt; 47%.<br>Highest-conviction ML signal. Fires ~1x per night.</div></div>
-</div>${homeCourtNote}`;
+<div style="margin-top:6px;font-size:11px;color:var(--text-muted);">Previous backtests were invalidated (Odds API historical = pre-game lines, not live). Now collecting real live odds to validate.</div>
+</div>`;
 }
 
 // ==================== BET LOG ====================
@@ -5879,18 +5888,41 @@ function getBacktestData() {
 
 // Fetch daemon bets from sust-bets.json (pushed by daemon via git)
 let _daemonBetsCache = null;
+let _daemonBetsRaw = null;
 async function _fetchDaemonBets() {
   try {
     const r = await fetch('sust-bets.json?t=' + Date.now());
     if (!r.ok) return [];
     const d = await r.json();
+    _daemonBetsRaw = d;
     _daemonBetsCache = (d.bets || []).concat(d.resolved || []);
     return _daemonBetsCache;
   } catch { return _daemonBetsCache || []; }
 }
+function _updateStripFromDaemon() {
+  if (!_daemonBetsRaw) return;
+  const active = (_daemonBetsRaw.bets || []).filter(b => !b.outcome);
+  const resolved = _daemonBetsRaw.resolved || [];
+  const today = new Date().toLocaleDateString('en-US', { timeZone: 'America/New_York' });
+  const todayResolved = resolved.filter(b => {
+    if (!b.resolvedAt) return false;
+    return new Date(b.resolvedAt).toLocaleDateString('en-US', { timeZone: 'America/New_York' }) === today;
+  });
+  const el1 = document.getElementById('live-active-bets');
+  if (el1) el1.textContent = active.length;
+  const el2 = document.getElementById('live-tonight-pl');
+  if (el2) {
+    const pl = todayResolved.reduce((s, b) => s + (b.payout || 0), 0);
+    if (todayResolved.length === 0) { el2.textContent = '-'; }
+    else {
+      el2.textContent = (pl >= 0 ? '+$' : '-$') + Math.abs(pl).toFixed(0);
+      el2.style.color = pl >= 0 ? 'var(--green)' : 'var(--red)';
+    }
+  }
+}
 // Auto-refresh daemon bets every 2 min
-setInterval(() => { _fetchDaemonBets().then(() => { renderBetLog(); updateBacktestPanel(); }); }, 120000);
-_fetchDaemonBets(); // initial load
+setInterval(() => { _fetchDaemonBets().then(() => { renderBetLog(); updateBacktestPanel(); _updateStripFromDaemon(); }); }, 120000);
+_fetchDaemonBets().then(() => _updateStripFromDaemon()); // initial load
 
 function renderBetLog() {
   const el = document.getElementById('bet-log-entries');
@@ -6907,121 +6939,153 @@ try {
 
 <!-- QUICK START -->
 <div style="background:var(--accent-light);border:1px solid var(--accent);border-radius:var(--radius);padding:24px;margin:16px 0 24px;">
-<h3 style="font-size:16px;font-weight:800;margin-bottom:12px;letter-spacing:-0.2px;">How This Works</h3>
+<h3 style="font-size:16px;font-weight:800;margin-bottom:12px;letter-spacing:-0.2px;">How It Works</h3>
 <div style="font-size:13px;line-height:1.7;color:var(--text-primary);">
-<p style="margin-bottom:10px;"><strong>The idea:</strong> Not all points are created equal. A team up 12 on 8/10 threes is very different from a team up 12 with +8 rebounds and 20 paint points. This dashboard tells you whether each team's scoring is built on <strong>sustainable process</strong> or <strong>hot shooting that will regress</strong>.</p>
-<p style="margin-bottom:14px;"><strong>How to use it:</strong></p>
+<p style="margin-bottom:10px;"><strong>The idea:</strong> Not all points are created equal. A team up 12 on 8/10 threes is very different from a team up 12 with +8 rebounds and 20 paint points. The daemon scores each team's scoring sustainability from <strong>-100 (fragile)</strong> to <strong>+100 (durable)</strong> using 6 weighted factors. When the gap is large enough, it bets the sustainable side's spread.</p>
+<p style="margin-bottom:14px;"><strong>How it runs:</strong></p>
 <div style="display:grid;grid-template-columns:1fr;gap:10px;">
 <div style="background:var(--card-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--accent);">
-<strong style="font-size:12px;">Step 1:</strong> <span style="font-size:13px;">Hit <strong>Start</strong> to auto-refresh. The dashboard monitors every live game's box score.</span>
+<strong style="font-size:12px;">Daemon:</strong> <span style="font-size:13px;">A background process polls every <strong>60 seconds</strong> during live games. It fetches NBA CDN box scores + Odds API live spreads automatically.</span>
 </div>
 <div style="background:var(--card-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--green);">
-<strong style="font-size:12px;">Step 2:</strong> <span style="font-size:13px;">Check the <strong>sustainability badge</strong> on each team — green means their scoring is repeatable, red means it's fragile.</span>
+<strong style="font-size:12px;">Scoring:</strong> <span style="font-size:13px;">Each team gets a <strong>sustScore</strong> (-100 to +100). Score &ge;20 = <span style="color:var(--green);font-weight:700;">SUSTAINABLE</span>, &le;-20 = <span style="color:var(--red);font-weight:700;">UNSUSTAINABLE</span>, between = <span style="color:var(--orange);font-weight:700;">MIXED</span>.</span>
 </div>
 <div style="background:var(--card-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--orange);">
-<strong style="font-size:12px;">Step 3:</strong> <span style="font-size:13px;">Look at <strong>Scoring Source</strong> — paint-heavy scoring (green) is sustainable, 3PT-heavy scoring (orange/red) tends to regress.</span>
+<strong style="font-size:12px;">Trigger:</strong> <span style="font-size:13px;">Auto-bet fires when <strong>sustGap &ge; 30</strong> (one team sustainable, other unsustainable) + <strong>cushion &gt; -14</strong> + both teams have &ge;20 points + game is in Q2-Q3.</span>
 </div>
 <div style="background:var(--card-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--purple);">
-<strong style="font-size:12px;">Step 4:</strong> <span style="font-size:13px;">Check <strong>Process Score</strong> (hustle, aggression, ball security) and <strong>Star Pace</strong> — a cold star means upside, an erupting star means fragile.</span>
+<strong style="font-size:12px;">Bet:</strong> <span style="font-size:13px;"><strong>$500 flat</strong> on the sustainable team's current live spread. Auto-resolves when game ends and sends email alerts.</span>
 </div>
 </div>
 </div>
 </div>
 
+<!-- DYNAMIC GUIDE (populated by updateSignalGuide) -->
+<div id="nba-guide" style="margin-bottom:24px;"></div>
+
 <!-- WHAT EACH ELEMENT MEANS -->
 <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:24px;">
-<h3 style="font-size:15px;font-weight:800;margin-bottom:14px;letter-spacing:-0.2px;">What Each Element Means</h3>
+<h3 style="font-size:15px;font-weight:800;margin-bottom:14px;letter-spacing:-0.2px;">Sustainability Score (-100 to +100)</h3>
+<p style="font-size:12px;color:var(--text-secondary);line-height:1.6;margin-bottom:14px;">Each team gets a continuous <strong>sustScore</strong> computed from 6 weighted factors. The score measures how repeatable (positive) or fragile (negative) their current scoring is. The classification is just a label on the continuous score:</p>
 <table style="width:100%;font-size:12px;border-collapse:collapse;">
 <thead><tr style="border-bottom:2px solid var(--border);text-align:left;">
-<th style="padding:8px 6px;font-weight:700;color:var(--text-muted);font-size:10px;text-transform:uppercase;">Element</th>
-<th style="padding:8px 6px;font-weight:700;color:var(--text-muted);font-size:10px;text-transform:uppercase;">What It Shows</th>
-<th style="padding:8px 6px;font-weight:700;color:var(--text-muted);font-size:10px;text-transform:uppercase;">How to Read It</th>
+<th style="padding:8px 6px;font-weight:700;color:var(--text-muted);font-size:10px;text-transform:uppercase;">Classification</th>
+<th style="padding:8px 6px;font-weight:700;color:var(--text-muted);font-size:10px;text-transform:uppercase;">Threshold</th>
+<th style="padding:8px 6px;font-weight:700;color:var(--text-muted);font-size:10px;text-transform:uppercase;">What It Means</th>
 </tr></thead>
 <tbody>
 <tr style="border-bottom:1px solid var(--border-light);">
 <td style="padding:10px 6px;"><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#10b981;padding:3px 8px;border-radius:4px;">SUSTAINABLE</span></td>
-<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">Team's scoring is <strong>paint-dominant</strong> (45%+ from paint), star is cold (&lt;60% pace), and/or strong process (6+). Multiple factors align toward durability.</td>
-<td style="padding:10px 6px;font-weight:600;color:#10b981;">This team's scoring is built on repeatable actions. Lead is durable.</td>
+<td style="padding:10px 6px;color:var(--text-secondary);font-weight:600;">sustScore &ge; +20</td>
+<td style="padding:10px 6px;color:#10b981;font-weight:600;">Scoring is process-driven and repeatable. Lead is durable.</td>
 </tr>
 <tr style="border-bottom:1px solid var(--border-light);">
 <td style="padding:10px 6px;"><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#f59e0b;padding:3px 8px;border-radius:4px;">MIXED</span></td>
-<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">Scoring comes from a mix of paint and 3PT. Between 35-50% of points from threes — some regression risk but not extreme.</td>
-<td style="padding:10px 6px;font-weight:600;color:#f59e0b;">Watch the 3PT%. If shooting is hot, expect some cooling. Check star pace too.</td>
+<td style="padding:10px 6px;color:var(--text-secondary);font-weight:600;">-20 &lt; sustScore &lt; +20</td>
+<td style="padding:10px 6px;color:#f59e0b;font-weight:600;">No strong lean either way. No bet triggered.</td>
 </tr>
-<tr style="border-bottom:1px solid var(--border-light);">
+<tr>
 <td style="padding:10px 6px;"><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#ef4444;padding:3px 8px;border-radius:4px;">UNSUSTAINABLE</span></td>
-<td style="padding:10px 6px;color:var(--text-secondary);line-height:1.5;">Scoring heavily dependent on <strong>3PT shooting</strong> (50%+ from threes), shooting hot (&ge;45% 3FG on 5+ attempts), star erupting (&gt;150% pace), and/or weak process (&lt;2). Multiple fragility signals.</td>
-<td style="padding:10px 6px;font-weight:600;color:#ef4444;">This team's scoring is fragile. Expect regression — the numbers can't hold.</td>
+<td style="padding:10px 6px;color:var(--text-secondary);font-weight:600;">sustScore &le; -20</td>
+<td style="padding:10px 6px;color:#ef4444;font-weight:600;">Scoring is fragile — hot shooting, star erupting, weak process.</td>
 </tr>
 </tbody>
 </table>
 </div>
 
-<!-- GUIDE CARDS -->
+<!-- 6 FACTOR CARDS -->
+<h3 style="font-size:15px;font-weight:800;margin-bottom:14px;letter-spacing:-0.2px;">The 6 Scoring Factors</h3>
+<p style="font-size:12px;color:var(--text-secondary);line-height:1.6;margin-bottom:14px;">Each factor adds or subtracts from the sustScore. Positive = sustainable, negative = fragile. The weight shows relative importance.</p>
 <div class="guide-grid">
-<div class="guide-card" style="border-left:3px solid #ef4444;"><h3>Star Pace</h3><p class="edge-label">Star player regression = sustainability signal</p><p>Tracks each team's top scorer's current game pace vs their season PPG average. Stars (21+ PPG in NBA, 16+ in NCAAB) tend to <strong>regress to their mean</strong> over the course of a game.</p><p><strong>Star COLD (&lt; 60% pace):</strong> The team is winning/competitive WITHOUT their star performing. This makes their scoring <span style="color:#10b981;font-weight:700;">more sustainable</span> — the star has upside and will likely heat up.</p><p><strong>Star ERUPTING (&gt; 150% pace):</strong> The team's scoring is inflated by a career-level performance. This makes their lead <span style="color:#ef4444;font-weight:700;">less sustainable</span> — the star will cool down.</p><div class="threshold">Most meaningful in Q1 through early Q3.<br>COLD star + team winning = very sustainable.<br>ERUPTING star + team winning = fragile lead.</div></div>
-
-<div class="guide-card" style="border-left:3px solid #0ea5e9;"><h3>Process Score (0-10)</h3><p class="edge-label">OREB + FTA + TOV — time-scaled composite</p><p>Three components, each scored 0-3.33, summed and capped at 10. Uses <strong>time-scaled thresholds</strong> so early-game stats don't inflate the score.</p>
+<div class="guide-card" style="border-left:3px solid #0ea5e9;"><h3 style="display:flex;align-items:center;gap:8px;">
+<span style="background:#0ea5e9;color:white;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;">5x</span> Process Score (0-10)</h3>
+<p class="edge-label">OREB + FTA + TOV — strongest factor, weight 5x</p>
+<p>Three components, each 0-3.33, time-scaled so early-game stats don't inflate:</p>
 <table style="width:100%;font-size:10px;margin:8px 0;border-collapse:collapse;">
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;width:60px;">OREB</td><td style="padding:4px 0;color:var(--text-secondary);">Threshold = 5 × (mins/48). Need +5 OREB at full game for max 3.33.</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">FTA</td><td style="padding:4px 0;color:var(--text-secondary);">Threshold = 10 × (mins/48). Need +10 FTA at full game for max 3.33.</td></tr>
-<tr><td style="padding:4px 0;font-weight:700;">TOV</td><td style="padding:4px 0;color:var(--text-secondary);">Threshold = 6 × (mins/48). Opponent needs +6 TOV for max 3.33.</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;width:60px;">OREB</td><td style="padding:4px 0;color:var(--text-secondary);">Threshold = 5 × (mins/48). Need +5 OREB advantage at full game for max 3.33.</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">FTA</td><td style="padding:4px 0;color:var(--text-secondary);">Threshold = 10 × (mins/48). Need +10 FTA advantage at full game for max 3.33.</td></tr>
+<tr><td style="padding:4px 0;font-weight:700;">TOV</td><td style="padding:4px 0;color:var(--text-secondary);">Threshold = 6 × (mins/48). Opponent needs +6 more turnovers for max 3.33.</td></tr>
 </table>
-<p style="font-size:10px;color:var(--text-muted);line-height:1.5;margin:4px 0;">Formula: <code style="background:var(--border-light);padding:1px 4px;border-radius:3px;">score = clamp(oreb_diff/thresh) × 3.33 + clamp(fta_diff/thresh) × 3.33 + clamp(tov_diff/thresh) × 3.33</code></p>
-<p><strong>6+ = Strong process</strong> — effort-driven advantages, not shooting luck.<br><strong>2- = Weak process</strong> — lacks hustle, aggression, or ball security.</p><div class="threshold">Example: At minute 12, OREB threshold = 5 × 12/48 = 1.25.<br>If you lead OREB by 2: score = clamp(2/1.25) × 3.33 = 3.33 (max).</div></div>
+<p style="font-size:11px;line-height:1.5;"><strong>Score 7+ = strong process</strong> (hustle-driven) → sustScore + large positive.<br><strong>Score &lt;2 = weak process</strong> (no effort advantage) → sustScore - large negative.</p>
+<div class="threshold">Impact: (procScore - 5) × 5. A process score of 8 adds +15. A score of 1 subtracts -20.<br>This is the single most impactful factor — measures effort, not luck.</div></div>
 
-<div class="guide-card" style="border-left:3px solid #f59e0b;"><h3>Sustainability Rules</h3><p class="edge-label">How SUSTAINABLE / MIXED / UNSUSTAINABLE is decided</p><p>4 positive signals: <strong>Paint &gt;45%</strong>, <strong>Star Cold &lt;60%</strong>, <strong>Shooting Cold &le;25%</strong>, <strong>Strong Process &ge;6</strong>.<br>4 fragility signals: <strong>3PT Heavy &gt;40%</strong>, <strong>Shooting Hot &ge;45%</strong>, <strong>Star Erupting &gt;150%</strong>, <strong>Weak Process &lt;2</strong>.</p>
+<div class="guide-card" style="border-left:3px solid #f59e0b;"><h3 style="display:flex;align-items:center;gap:8px;">
+<span style="background:#f59e0b;color:white;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;">2x</span> 3PT Reliance</h3>
+<p class="edge-label">% of points from threes vs league avg (~36%)</p>
+<p>How dependent is the team on three-point shooting? NBA average is ~36% of points from 3PT. Teams well above this are scoring in a volatile, hard-to-repeat way.</p>
+<div class="threshold">Impact: -(3ptPct - 36%) × 2. If 50% of pts from 3 → sustScore -28.<br>If only 20% from 3 (paint-heavy) → sustScore +32.<br>Flags: &gt;44% = "3PT heavy", &lt;28% = "Low 3PT reliance".</div></div>
+
+<div class="guide-card" style="border-left:3px solid #ef4444;"><h3 style="display:flex;align-items:center;gap:8px;">
+<span style="background:#ef4444;color:white;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;">2x</span> 3PT Shooting %</h3>
+<p class="edge-label">Actual 3FG% vs league avg (36%) — requires 5+ attempts</p>
+<p>Even if a team doesn't rely heavily on threes, shooting 55% from 3 is unsustainable. This factor measures deviation from the ~36% league average on actual makes.</p>
+<div class="threshold">Impact: -(3fg% - 36%) × 2. Shooting 50% on 10 att → sustScore -28.<br>Shooting 25% → sustScore +22. Only active with 5+ 3PT attempts.<br>Flags: &ge;45% = "3PT shooting hot", &le;25% = "3PT shooting cold".</div></div>
+
+<div class="guide-card" style="border-left:3px solid #8b5cf6;"><h3 style="display:flex;align-items:center;gap:8px;">
+<span style="background:#8b5cf6;color:white;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;">1.5x</span> eFG% Efficiency</h3>
+<p class="edge-label">Effective FG% vs NBA avg (~53%)</p>
+<p>Measures overall shooting efficiency (eFG% accounts for 3-pointers being worth more). Hot shooting is autocorrelated within games, so this has a lighter weight.</p>
+<div class="threshold">Impact: -(eFG% - 53%) × 1.5. eFG 63% → sustScore -15.<br>eFG 43% → sustScore +15. Lighter weight because hot shooting persists mid-game.<br>Flags: &gt;58% = "eFG% hot", &lt;48% = "eFG% cold".</div></div>
+
+<div class="guide-card" style="border-left:3px solid #ec4899;"><h3 style="display:flex;align-items:center;gap:8px;">
+<span style="background:#ec4899;color:white;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;">±10</span> Star Pace</h3>
+<p class="edge-label">Star player's current pace vs season PPG — only Q1-Q3</p>
+<p>Tracks the team's lead scorer (21+ PPG in NBA, 16+ in NCAAB). A cold star who hasn't scored means the team has upside. An erupting star means the lead is inflated.</p>
 <table style="width:100%;font-size:10px;margin:8px 0;border-collapse:collapse;">
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#ef4444;width:100px;">UNSUSTAINABLE</td><td style="padding:4px 0;color:var(--text-secondary);">3PT &gt; 50% of points (alone)</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#ef4444;">UNSUSTAINABLE</td><td style="padding:4px 0;color:var(--text-secondary);">Any 2 fragility signals combined (e.g. 3PT heavy + shooting hot)</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#10b981;">SUSTAINABLE</td><td style="padding:4px 0;color:var(--text-secondary);">2+ positive signals AND 0 fragility signals</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#10b981;">SUSTAINABLE</td><td style="padding:4px 0;color:var(--text-secondary);">2+ positive signals (even with 1 fragility, if no UNSUSTAINABLE combo)</td></tr>
-<tr><td style="padding:4px 0;font-weight:700;color:#f59e0b;">MIXED</td><td style="padding:4px 0;color:var(--text-secondary);">Everything else (1 positive signal, or 1 fragility signal alone)</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#10b981;width:100px;">&lt;60% pace</td><td style="padding:4px 0;color:var(--text-secondary);">Star is cold → sustScore <strong>+10</strong>. Team winning despite star underperforming = durable.</td></tr>
+<tr><td style="padding:4px 0;font-weight:700;color:#ef4444;">&gt;150% pace</td><td style="padding:4px 0;color:var(--text-secondary);">Star is erupting → sustScore <strong>-10</strong>. Unsustainable individual performance.</td></tr>
 </table>
-<div class="threshold">Key change: single signals (paint dominant alone, star cold alone) now = MIXED.<br>SUSTAINABLE requires 2+ positive signals — higher bar, fewer false triggers.<br>3PT FG% needs 5+ attempts. Star Pace only counts Q1-Q3.</div></div>
+<div class="threshold">Only active in Q1-Q3 (NBA) or period 1-2 (NCAAB).<br>Between 60-150% = no impact (normal production).</div></div>
 
-<div class="guide-card" style="border-left:3px solid #7c3aed;"><h3>Auto-Bet Trigger</h3><p class="edge-label">When the dashboard logs a $500 spread bet</p><p>A spread bet is auto-logged when ALL conditions are met:</p>
-<table style="width:100%;font-size:10px;margin:8px 0;border-collapse:collapse;">
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;width:80px;">Timing</td><td style="padding:4px 0;color:var(--text-secondary);">NBA: Q2-Q3. NCAA: minutes 10-30 (mid-game).</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">Divergence</td><td style="padding:4px 0;color:var(--text-secondary);">One team SUSTAINABLE, the other UNSUSTAINABLE.</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">Min Score</td><td style="padding:4px 0;color:var(--text-secondary);">Both teams &ge; 20 points (enough data).</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">Odds</td><td style="padding:4px 0;color:var(--text-secondary);">Spread + price available from Odds API / ESPN.</td></tr>
-<tr><td style="padding:4px 0;font-weight:700;">Bet</td><td style="padding:4px 0;color:var(--text-secondary);">$500 flat on SUSTAINABLE team's spread.</td></tr>
-</table>
-<div class="threshold">One bet per game per team. Logs exact book, spread, and juice.<br>Auto-resolves after game: checks if team covered the spread.</div></div>
-
-<div class="guide-card" style="border-left:3px solid #10b981;"><h3>Box Score Stats</h3><p class="edge-label">Raw team stats side-by-side — context for your eye test</p><p>Shows actual stat totals for each team. The <span style="color:#10b981;font-weight:700;">winning side is bolded green</span>. These are <strong>context</strong>, not predictions — our ML research (7,499 games) proved box score stats add zero predictive value beyond the score. Use them to confirm what you see on court.</p>
-<table style="width:100%;font-size:11px;margin:8px 0;">
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">REB</td><td style="padding:4px 0;color:var(--text-secondary);">Total rebounds. Overall board control.</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">OREB</td><td style="padding:4px 0;color:var(--text-secondary);">Offensive rebounds. Extra possessions through hustle and size.</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">AST</td><td style="padding:4px 0;color:var(--text-secondary);">Assists. Ball movement and team-oriented offense.</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">TOV</td><td style="padding:4px 0;color:var(--text-secondary);">Turnovers (lower is better). Ball security and discipline.</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">STL</td><td style="padding:4px 0;color:var(--text-secondary);">Steals. Defensive pressure and disruption.</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">BLK</td><td style="padding:4px 0;color:var(--text-secondary);">Blocks. Rim protection and interior defense.</td></tr>
-<tr><td style="padding:4px 0;font-weight:700;">FTA</td><td style="padding:4px 0;color:var(--text-secondary);">Free throw attempts. Aggressiveness attacking the rim.</td></tr>
-</table>
-<div class="threshold">Process Score (0-10) is computed internally from OREB + FTA + TOV only.<br>These 3 are the least score-dependent stats.<br>Thresholds scale with game time (so 1 OREB at minute 5 ≠ 1 OREB at minute 40).</div></div>
+<div class="guide-card" style="border-left:3px solid #10b981;"><h3 style="display:flex;align-items:center;gap:8px;">
+<span style="background:#10b981;color:white;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;">+5</span> FT Rate</h3>
+<p class="edge-label">High free throw rate = getting to the line = sustainable</p>
+<p>If &gt;20% of a team's points come from free throws, they're attacking the basket aggressively. Drawing fouls is repeatable and indicates physical play that doesn't regress.</p>
+<div class="threshold">Impact: +5 if FT% of points &gt; 20%. One-directional bonus only.<br>Drawing fouls consistently is one of the most sustainable scoring actions.</div></div>
 </div>
 
-<!-- SCORING SOURCE GUIDE -->
+<!-- AUTO-BET TRIGGER + CUSHION -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px;">
+<div class="guide-card" style="border-left:3px solid #7c3aed;margin-bottom:0;"><h3>Auto-Bet Trigger</h3>
+<p class="edge-label">When the daemon places a $500 spread bet</p>
+<p>ALL conditions must be met simultaneously:</p>
+<table style="width:100%;font-size:10px;margin:8px 0;border-collapse:collapse;">
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;width:80px;">Timing</td><td style="padding:4px 0;color:var(--text-secondary);">NBA: Q2-Q3. NCAAB: minutes 10-30.</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">Divergence</td><td style="padding:4px 0;color:var(--text-secondary);">sustGap &ge; 30 (one &ge;+20, other &le;-20).</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">Cushion</td><td style="padding:4px 0;color:var(--text-secondary);">cushion &gt; -14 (margin + spread). Skip if too far behind.</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">Min Score</td><td style="padding:4px 0;color:var(--text-secondary);">Both teams &ge; 20 points (enough box score data).</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">Odds</td><td style="padding:4px 0;color:var(--text-secondary);">Live spread + price from Odds API or ESPN.</td></tr>
+<tr><td style="padding:4px 0;font-weight:700;">Bet</td><td style="padding:4px 0;color:var(--text-secondary);">$500 flat on the SUSTAINABLE team's spread.</td></tr>
+</table>
+<div class="threshold">One bet per game per side. Auto-resolves when final. Sends email alert on trigger + resolve.<br>CLV tracked via spreadHistory array (spread at each poll).</div></div>
+
+<div class="guide-card" style="border-left:3px solid #f59e0b;margin-bottom:0;"><h3>Cushion Filter</h3>
+<p class="edge-label">cushion = currentMargin + spread</p>
+<p>The cushion tells you how many more points the bet team can lose by and still cover the spread.</p>
+<table style="width:100%;font-size:10px;margin:8px 0;border-collapse:collapse;">
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#10b981;">cushion &ge; 0</td><td style="padding:4px 0;color:var(--text-secondary);">Already covering — just needs to hold.</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#f59e0b;">-14 &lt; cushion &lt; 0</td><td style="padding:4px 0;color:var(--text-secondary);">Behind but within range. Bet is placed.</td></tr>
+<tr><td style="padding:4px 0;font-weight:700;color:#ef4444;">cushion &le; -14</td><td style="padding:4px 0;color:var(--text-secondary);">Too far behind to cover. Bet is SKIPPED.</td></tr>
+</table>
+<div class="threshold">Example: Team +6.5 spread, currently down 18 → cushion = -18 + 6.5 = -11.5 → bet placed.<br>Team +6.5, down 25 → cushion = -25 + 6.5 = -18.5 → SKIPPED (< -14).</div></div>
+</div>
+
+<!-- DATA + INFRASTRUCTURE -->
 <div id="theory-panel" class="theory-panel">
-  <h4>Scoring Source Breakdown</h4>
-  <p>Every team's points come from three sources. The mix tells you how sustainable their scoring is:</p>
-  <hr class="signal-divider">
-  <h4 style="color:#10b981;">Paint Points (Green) — Most Sustainable</h4>
-  <p>Two-point field goals + free throws. Points generated by attacking the basket, posting up, cutting, and drawing fouls. These are high-percentage, repeatable scoring actions. <strong>40%+ paint scoring = sustainable.</strong></p>
-  <hr class="signal-divider">
-  <h4 style="color:#f59e0b;">3PT Points (Orange/Red) — Volatile</h4>
-  <p>Points from three-point shots. Even the best shooters have hot/cold streaks. <strong>35%+ of points from 3PT = risky. 45%+ = unsustainable.</strong> When shown in red, the team is heavily dependent on outside shooting.</p>
-  <hr class="signal-divider">
-  <h4 style="color:#9ca3af;">Free Throws (Gray) — Neutral/Good</h4>
-  <p>Points from the free throw line. Generally sustainable — teams that draw fouls consistently keep drawing them. A high FT% in scoring source usually indicates aggressiveness.</p>
-  <hr class="signal-divider">
-  <h4>3PT Shooting Percentage</h4>
-  <p>The actual three-point field goal percentage (made/attempted). League average is ~36%. Teams shooting well above this will likely regress. Teams shooting well below may improve. Use this alongside the scoring source to assess sustainability.</p>
-  <hr class="signal-divider">
   <h4>Data Sources</h4>
-  <p>Box scores from ESPN live API, update every 30 seconds. Sustainability verdict combines three inputs: <strong>scoring source</strong> (paint vs 3PT percentage), <strong>star pace</strong> (stars' current scoring rate vs season average), and <strong>process score</strong> (0-10, from OREB + FTA + TOV differentials with time-scaled thresholds). Box Score table shows all 7 raw stats side-by-side as context for your eye test — winning side bolded green, TOV inverted (lower is better).</p>
+  <p>The daemon uses three data sources, all polled every 60 seconds during live games:</p>
+  <hr class="signal-divider">
+  <h4 style="color:#0ea5e9;">NBA CDN Box Scores (Free)</h4>
+  <p>Real-time box scores from <code style="font-size:10px;">cdn.nba.com</code>. Provides FGM/FGA/FG3M/FG3A/FTM/FTA/OREB/DREB/REB/AST/TOV/STL/BLK/PF plus individual player stats for star pace tracking. No rate limiting.</p>
+  <hr class="signal-divider">
+  <h4 style="color:#f59e0b;">Odds API Live Spreads (2 credits/call)</h4>
+  <p>Live in-game spreads from FanDuel, DraftKings, BetMGM. Updates every ~30 seconds during games. ~600 credits per night. Budget: ~4.7M remaining.</p>
+  <hr class="signal-divider">
+  <h4 style="color:#8b5cf6;">ESPN Hidden Odds API (Free)</h4>
+  <p>Opening line comparison. Note: ESPN odds do NOT update live — they show the opening/close spread only. Used for CLV calculation (compare bet spread vs closing spread).</p>
+  <hr class="signal-divider">
+  <h4>Structured Logging</h4>
+  <p>Every poll appends to <code style="font-size:10px;">odds-snapshots.jsonl</code> — odds snapshots (all live games) + sustainability snapshots (Q2-Q3 games). This data feeds the ML analysis pipeline for forward-testing the strategy.</p>
 </div>
 
 </div>
