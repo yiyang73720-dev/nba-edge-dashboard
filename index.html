@@ -2862,11 +2862,7 @@ function computeProcessScore(stats, elapsedMins, oppStats, myScore) {
   const orebBonus = _clamp((my.oreb - opp.oreb) / Math.max(5*timeFrac, 0.5)) * 0.5;
 
   const raw = f1*2.5 + f2*2.0 + f3*1.5 + f4*1.0 + f5*1.0 + f6*1.0 + f7*0.5 + f8*0.5 + orebBonus;
-  const score = Math.round(Math.max(0, Math.min(10, raw)) * 10) / 10;
-  const astRate = my.fgm > 0 ? my.ast / my.fgm : 0;
-  const tovRate = myPoss > 0 ? my.tov / myPoss : 0;
-  const orebRate = my.oreb / mins;
-  return { score, astRate, tovRate, orebRate };
+  return Math.round(Math.max(0, Math.min(10, raw)) * 10) / 10;
 }
 function computeScoringSource(stats) {
   const fgm = parseInt(stats.fieldGoalsMade||0);
@@ -2976,7 +2972,7 @@ function computeSustainabilityClient(game, aStats, hStats, aA, hA, aS, hS, elaps
   // Lantis & Nesson 2021, Bocskocsky 2014, Lee et al. 2022, Poropudas 2023
   const classifySustainability = (srcData, score, starPace, procScore, per) => {
     if (score <= 0) return { label: 'N/A', cls: 'mixed', score: 0, factors: [] };
-    const inWin = per ? (_ncaa ? per <= 2 : per <= 3) : true;
+    const inWindow = per ? (_ncaa ? per <= 2 : per <= 3) : true;
     let sustScore = 0;
     const factors = [];
 
@@ -3001,7 +2997,7 @@ function computeSustainabilityClient(game, aStats, hStats, aA, hA, aS, hS, elaps
     if (procScore <= 2) factors.push(`Weak process (${procScore.toFixed(1)}/10)`);
 
     // Factor 4: Star pace (±10) — cold star = upside, erupting = fragile
-    if (inWin && starPace > 0) {
+    if (inWindow && starPace > 0) {
       if (starPace < 60) { sustScore += 10; factors.push(`Star cold (${starPace}% pace)`); }
       else if (starPace > 150) { sustScore += -10; factors.push(`Star erupting (${starPace}% pace)`); }
     }
@@ -6162,7 +6158,7 @@ function updateBacktestPanel() {
 
   // Group by mode (nba, ncaab, etc)
   const byMode = {};
-  resolved.forEach(b => {
+  approved.forEach(b => {
     const mode = (b.mode || 'nba').toUpperCase();
     if (!byMode[mode]) byMode[mode] = { total: 0, wins: 0, payout: 0, bets: [] };
     byMode[mode].total++;
