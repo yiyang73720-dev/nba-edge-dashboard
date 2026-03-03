@@ -5959,6 +5959,24 @@ function renderBetLog() {
     const clvColor = clvAvg > 0 ? 'var(--green)' : clvAvg < 0 ? 'var(--red)' : 'var(--text-muted)';
     html += '<div class="stat-card" style="padding:12px 16px;flex:1;min-width:100px"><div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Avg CLV</div><div style="font-size:20px;font-weight:800;color:' + clvColor + '">' + (clvAvg > 0 ? '+' : '') + clvAvg + '</div><div style="font-size:11px;color:var(--text-muted)">' + avgCLV.length + ' bets with CLV data</div></div>';
   }
+  // Brier Score card (from daemon meta or computed locally)
+  const brierMeta = _daemonBetsRaw?.meta;
+  if (brierMeta && brierMeta.brierN > 0) {
+    const brier = brierMeta.brierScore;
+    const brierColor = brier < 0.15 ? 'var(--green)' : brier < 0.22 ? 'var(--orange)' : 'var(--red)';
+    const skillPct = Math.round(brierMeta.brierSkill * 100);
+    const skillColor = skillPct > 0 ? 'var(--green)' : skillPct < 0 ? 'var(--red)' : 'var(--text-muted)';
+    html += '<div class="stat-card" style="padding:12px 16px;flex:1;min-width:100px"><div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Brier Score</div><div style="font-size:20px;font-weight:800;color:' + brierColor + '">' + brier.toFixed(4) + '</div><div style="font-size:11px;color:var(--text-muted)">vs baseline 0.25 | skill: <span style="color:' + skillColor + '">' + (skillPct > 0 ? '+' : '') + skillPct + '%</span> (' + brierMeta.brierN + ' bets)</div></div>';
+  } else if (settled.length > 0) {
+    // Compute locally if daemon meta not available
+    let brierSum = 0; let brierN = 0;
+    settled.forEach(b => { if (b.outcome === 'PUSH') return; const p = (b.estimatedP || 55) / 100; const a = b.outcome === 'W' ? 1 : 0; brierSum += (p - a) ** 2; brierN++; });
+    if (brierN > 0) {
+      const brier = Math.round((brierSum / brierN) * 10000) / 10000;
+      const brierColor = brier < 0.15 ? 'var(--green)' : brier < 0.22 ? 'var(--orange)' : 'var(--red)';
+      html += '<div class="stat-card" style="padding:12px 16px;flex:1;min-width:100px"><div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Brier Score</div><div style="font-size:20px;font-weight:800;color:' + brierColor + '">' + brier.toFixed(4) + '</div><div style="font-size:11px;color:var(--text-muted)">< 0.20 = good, 0.25 = coin flip (' + brierN + ' bets)</div></div>';
+    }
+  }
   html += '</div>';
 
   const thS = 'padding:10px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);border-bottom:2px solid var(--border)';
