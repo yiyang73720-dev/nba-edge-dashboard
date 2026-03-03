@@ -2972,44 +2972,45 @@ function computeSustainabilityClient(game, aStats, hStats, aA, hA, aS, hS, elaps
   const aProcessScore = computeProcessScore(aPF, hPF, aS);
   const hProcessScore = computeProcessScore(hPF, aPF, hS);
 
-  // ── Sustainability Score: continuous -100..+100, matches daemon v2 ──
-  // Removed eFG% factor (contradicts autocorrelation). Process score now includes 2P%, DREB, paint, etc.
+  // ── Sustainability Score v3: continuous -100..+100, academic weights ──
+  // Lantis & Nesson 2021, Bocskocsky 2014, Lee et al. 2022, Poropudas 2023
   const classifySustainability = (srcData, score, starPace, procScore, per) => {
     if (score <= 0) return { label: 'N/A', cls: 'mixed', score: 0, factors: [] };
     const inWin = per ? (_ncaa ? per <= 2 : per <= 3) : true;
     let sustScore = 0;
     const factors = [];
 
-    // Factor 1: 3PT reliance — higher = more variance
+    // Factor 1: 3PT reliance (×0.8) — variance real but modest (SD 11.7 vs 11.3)
     const threeDev = (srcData.threePtPct - 0.36) * 100;
-    sustScore += -threeDev * 1.5;
+    sustScore += -threeDev * 0.8;
     if (threeDev > 8) factors.push(`3PT heavy (${(srcData.threePtPct*100).toFixed(0)}% of pts)`);
     if (threeDev < -8) factors.push(`Low 3PT reliance (${(srcData.threePtPct*100).toFixed(0)}%)`);
 
-    // Factor 2: 3PT shooting % — hot 3PT = fragile signal
-    if (srcData.fg3a >= 5) {
-      const threePctDev = (srcData.threeFgPct - 0.36) * 100;
-      sustScore += -threePctDev * 1.5;
-      if (srcData.threeFgPct >= 0.45) factors.push(`3PT hot (${(srcData.threeFgPct*100).toFixed(0)}% on ${srcData.fg3a} att)`);
-      if (srcData.threeFgPct <= 0.25) factors.push(`3PT cold (${(srcData.threeFgPct*100).toFixed(0)}% on ${srcData.fg3a} att)`);
-    }
+    // Factor 2: REMOVED — 3PT shooting % penalized hot shooting, but hot shooting
+    // is autocorrelated (Lantis & Nesson 2021). Same reason we removed eFG%.
 
-    // Factor 3: Process score (0-10) — now includes 2P%, DREB, paint, fastbreak, steals
+    // Factor 3: Process score (×7) — process = 81-92% of outcomes (revised Four Factors)
     const procDev = procScore - 5;
-    sustScore += procDev * 5;
+    sustScore += procDev * 7;
     if (procScore >= 7) factors.push(`Strong process (${procScore.toFixed(1)}/10)`);
     if (procScore <= 2) factors.push(`Weak process (${procScore.toFixed(1)}/10)`);
 
-    // Factor 4: Star pace (only Q1-Q3 / H1 for NCAA)
+    // Factor 4: Star pace (±6) — Bocskocsky: 1.2-2.4pp true effect
     if (inWin && starPace > 0) {
-      if (starPace < 60) { sustScore += 10; factors.push(`Star cold (${starPace}% pace)`); }
-      else if (starPace > 150) { sustScore += -10; factors.push(`Star erupting (${starPace}% pace)`); }
+      if (starPace < 60) { sustScore += 6; factors.push(`Star cold (${starPace}% pace)`); }
+      else if (starPace > 150) { sustScore += -6; factors.push(`Star erupting (${starPace}% pace)`); }
     }
 
-    // Factor 5: Free throw rate — getting to the line is sustainable
-    if (srcData.ftPct > 0.20) {
-      sustScore += 5;
+    // Factor 5: FT rate (graduated) — FT hot hand real (Lantis & Nesson: +2pp/make)
+    if (srcData.ftPct > 0.30) {
+      sustScore += 10;
+      factors.push(`Very high FT rate (${(srcData.ftPct*100).toFixed(0)}% of pts)`);
+    } else if (srcData.ftPct > 0.20) {
+      sustScore += 8;
       factors.push(`High FT rate (${(srcData.ftPct*100).toFixed(0)}% of pts)`);
+    } else if (srcData.ftPct > 0.15) {
+      sustScore += 5;
+      factors.push(`Moderate FT rate (${(srcData.ftPct*100).toFixed(0)}% of pts)`);
     }
 
     sustScore = Math.round(Math.max(-100, Math.min(100, sustScore)) * 10) / 10;
