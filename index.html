@@ -2078,6 +2078,7 @@ function shortName(n) { return TEAM_MAP[n] || n.split(' ').pop().substring(0,3).
 function teamDisplay(abbr, fullName) { return abbr; }
 function teamDisplayShort(abbr, fullName) { return abbr; }
 function teamLogoImg(logoUrl, size) { if (!logoUrl) return ''; return `<img src="${logoUrl}" alt="" onerror="this.style.display='none'" style="width:${size||20}px;height:${size||20}px;object-fit:contain;vertical-align:middle;">`; }
+function esc(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 function gameLinksHTML(espnLink, leaguePassLink) {
   let links = [];
   if (espnLink) links.push(`<a href="${espnLink}" target="_blank" class="watch-link">ESPN</a>`);
@@ -2790,7 +2791,7 @@ function showQuarterToast(a) {
 function renderQtrAlerts() {
   const tb = document.getElementById('qtr-alerts-body');
   if (!state.quarterAlerts.length) { tb.innerHTML = '<tr><td colspan="7" class="empty-state">No quarter-end alerts yet.</td></tr>'; document.getElementById('threept-qtr-alerts').textContent = '0'; return; }
-  tb.innerHTML = state.quarterAlerts.map(a => { const pLabel = isNCAA() ? (a.quarter <= 2 ? `H${a.quarter}` : `OT`) : `Q${a.quarter}`; return `<tr><td>${a.time}</td><td><strong>${a.team}</strong></td><td>${pLabel}</td><td style="color:var(--red);font-weight:800;">${a.pct}%</td><td>${a.made}/${a.att}</td><td>${a.game}</td><td><span style="color:var(--text-muted);font-size:10px;">Monitor only</span></td></tr>`; }).join('');
+  tb.innerHTML = state.quarterAlerts.map(a => { const pLabel = isNCAA() ? (a.quarter <= 2 ? `H${a.quarter}` : `OT`) : `Q${a.quarter}`; return `<tr><td>${esc(a.time)}</td><td><strong>${esc(a.team)}</strong></td><td>${pLabel}</td><td style="color:var(--red);font-weight:800;">${esc(a.pct)}%</td><td>${esc(a.made)}/${esc(a.att)}</td><td>${esc(a.game)}</td><td><span style="color:var(--text-muted);font-size:10px;">Monitor only</span></td></tr>`; }).join('');
   document.getElementById('threept-qtr-alerts').textContent = state.quarterAlerts.length;
 }
 function clearQtrAlerts() { if(confirm('Clear all?')) { state.quarterAlerts=[]; localStorage.setItem('quarterAlerts','[]'); renderQtrAlerts(); const b=document.getElementById('threept-badge'); if(b) b.style.display='none'; } }
@@ -4933,7 +4934,7 @@ async function fetchESPNScoreboard() {
                 <div class="thesis-bet-action">BET ${betSideDisplay} ML ${t.marketOdds ? "(" + (t.marketOdds > 0 ? "+" : "") + t.marketOdds + ")" : ""}</div>${t.kellyPct ? '<div style="color:var(--green);font-size:12px;margin-top:4px"><strong>KELLY:</strong> ' + t.kellyPct + '% of bankroll ($' + t.kellyBet + ') &bull; <strong>Our P:</strong> ' + t.estimatedP + '% vs <strong>Market:</strong> ' + (t.impliedP * 100).toFixed(1) + '%</div>' : ""}
                 <div class="thesis-bet-side">Fade ${fadeSideDisplay} — ${t.confidence.toUpperCase()} confidence</div>
               </div>
-              ${(()=>{ if (t.confidence === 'low' || !t.kellyBet || t.kellyBet <= 0) return '<span style="font-size:10px;color:var(--text-muted);">Low EV — monitor only</span>'; return '<button class="btn btn-orange btn-sm" onclick="openLogModal(\'' + t.game + '\',\'Live ML\',\'Mean Reversion\')">Log This Bet</button>'; })()}
+              ${(()=>{ if (t.confidence === 'low' || !t.kellyBet || t.kellyBet <= 0) return '<span style="font-size:10px;color:var(--text-muted);">Low EV — monitor only</span>'; return '<button class="btn btn-orange btn-sm" onclick="openLogModal(\'' + esc(t.game) + '\',\'Live ML\',\'Mean Reversion\')">Log This Bet</button>'; })()}
             </div>
             <div class="thesis-logic">
               <div class="thesis-logic-title">Why This Is an Edge</div>
@@ -4947,7 +4948,7 @@ async function fetchESPNScoreboard() {
             <div class="thesis-criteria">${criteriaHTML}</div>
             <div class="thesis-actions">
               <span style="font-size:10px;color:#666;display:inline-flex;align-items:center;gap:3px;">${teamLogoImg(t.aLogo, 14)}${aTeamDisplay} ${t.aScore} - ${t.hScore} ${hTeamDisplay}${teamLogoImg(t.hLogo, 14)} | ${t.detail}</span>
-              ${(()=>{ if (t.confidence === 'low' || !t.kellyBet || t.kellyBet <= 0) return ''; return '<button class="btn btn-green btn-sm" onclick="openLogModal(\'' + t.game + '\',\'Live ML\',\'Mean Reversion\')">Log Bet</button>'; })()}
+              ${(()=>{ if (t.confidence === 'low' || !t.kellyBet || t.kellyBet <= 0) return ''; return '<button class="btn btn-green btn-sm" onclick="openLogModal(\'' + esc(t.game) + '\',\'Live ML\',\'Mean Reversion\')">Log Bet</button>'; })()}
             </div>
           </div>
         </div>`;
@@ -4976,7 +4977,7 @@ async function fetchESPNScoreboard() {
   } catch (err) {
     setConnStatus('error');
     if (state.consecutiveErrors < 3) {
-      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><p style="color:var(--orange);">Connection issue (${err.message}). Retrying next cycle...</p></div>`;
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><p style="color:var(--orange);">Connection issue (${esc(err.message)}). Retrying next cycle...</p></div>`;
     } else {
       grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><p style="color:var(--red);">Connection failed ${state.consecutiveErrors}x. ESPN may be rate-limiting. Wait 30s then try again.</p></div>`;
     }
@@ -6375,9 +6376,9 @@ function renderSignalHistoryFull() {
       const isFav = types.includes('FAV');
       const color = isFav ? '#10b981' : '#7c3aed';
       html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border-light);font-size:12px;">`;
-      html += `<span style="font-weight:700;">${s.game||s.gameFull||''}</span>`;
-      html += `<span style="color:${color};font-weight:800;">${types}</span>`;
-      html += `<span style="font-weight:700;">BET ${s.signalSide||s.betTeam||''}</span>`;
+      html += `<span style="font-weight:700;">${esc(s.game||s.gameFull||'')}</span>`;
+      html += `<span style="color:${color};font-weight:800;">${esc(types)}</span>`;
+      html += `<span style="font-weight:700;">BET ${esc(s.signalSide||s.betTeam||'')}</span>`;
       html += `<span style="background:var(--orange-light);color:var(--orange);font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;">LIVE</span>`;
       html += '</div>';
     });
@@ -6398,9 +6399,9 @@ function renderSignalHistoryFull() {
       const score = s.finalAwayScore != null ? `${s.finalAwayScore}-${s.finalHomeScore}` : '';
       const date = s.timestamp ? new Date(s.timestamp).toLocaleDateString() : '';
       html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border-light);font-size:12px;">`;
-      html += `<span style="font-weight:700;min-width:120px;">${s.game||s.gameFull||''}</span>`;
-      html += `<span style="color:${color};font-weight:800;min-width:60px;">${types}</span>`;
-      html += `<span style="min-width:60px;">BET ${s.signalSide||s.betTeam||''}</span>`;
+      html += `<span style="font-weight:700;min-width:120px;">${esc(s.game||s.gameFull||'')}</span>`;
+      html += `<span style="color:${color};font-weight:800;min-width:60px;">${esc(types)}</span>`;
+      html += `<span style="min-width:60px;">BET ${esc(s.signalSide||s.betTeam||'')}</span>`;
       html += `<span style="color:var(--text-muted);min-width:50px;">${score}</span>`;
       html += `<span style="background:${resultBg};color:${resultColor};font-size:10px;font-weight:800;padding:2px 8px;border-radius:4px;min-width:24px;text-align:center;">${s.mlResult}</span>`;
       html += `<span style="font-weight:700;color:${resultColor};min-width:50px;text-align:right;">${payout>=0?'+':''}$${payout}</span>`;
@@ -6414,7 +6415,7 @@ function renderSignalHistoryFull() {
     html += `<div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:8px;">SIGNAL LOG (${hist.length})</div>`;
     hist.slice().reverse().slice(0, 30).forEach(h => {
       html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border-light);font-size:11px;">`;
-      html += `<span style="font-weight:600;">${h.game}</span><span style="color:var(--accent);font-weight:700;">BET ${h.betSide}</span>`;
+      html += `<span style="font-weight:600;">${esc(h.game)}</span><span style="color:var(--accent);font-weight:700;">BET ${esc(h.betSide)}</span>`;
       html += `<span>${(h.signals||[]).map(s=>s.toUpperCase()).join('+')}</span><span style="color:var(--text-muted);">${h.date}</span></div>`;
     });
   }
