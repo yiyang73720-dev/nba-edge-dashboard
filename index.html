@@ -5889,7 +5889,7 @@ async function _fetchDaemonBets() {
   } catch { return _daemonBetsCache || []; }
 }
 // Auto-refresh daemon bets every 2 min
-setInterval(() => { _fetchDaemonBets().then(() => { if (document.getElementById('tab-betlog')?.classList?.contains('active') || document.querySelector('[onclick*="betlog"]')?.classList?.contains('active')) renderBetLog(); }); }, 120000);
+setInterval(() => { _fetchDaemonBets().then(() => { renderBetLog(); updateBacktestPanel(); }); }, 120000);
 _fetchDaemonBets(); // initial load
 
 function renderBetLog() {
@@ -5915,7 +5915,7 @@ function renderBetLog() {
   const plColor2 = totalPL > 0 ? 'var(--green)' : totalPL < 0 ? 'var(--red)' : 'var(--text-muted)';
   let html = '<div style="display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap">';
   html += '<div class="stat-card" style="padding:12px 16px;flex:1;min-width:100px"><div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Record</div><div style="font-size:20px;font-weight:800;color:' + wrColor + '">' + wins + 'W-' + (settled.length - wins) + 'L</div><div style="font-size:11px;color:var(--text-muted)">' + wr + '% win rate</div></div>';
-  html += '<div class="stat-card" style="padding:12px 16px;flex:1;min-width:100px"><div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">P/L</div><div style="font-size:20px;font-weight:800;color:' + plColor2 + '">' + (totalPL >= 0 ? '+' : '') + '$' + Math.abs(totalPL).toFixed(0) + '</div><div style="font-size:11px;color:var(--text-muted)">' + settled.length + ' settled / ' + log.length + ' total</div></div>';
+  html += '<div class="stat-card" style="padding:12px 16px;flex:1;min-width:100px"><div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">P/L</div><div style="font-size:20px;font-weight:800;color:' + plColor2 + '">' + (totalPL >= 0 ? '+$' : '-$') + Math.abs(totalPL).toFixed(0) + '</div><div style="font-size:11px;color:var(--text-muted)">' + settled.length + ' settled / ' + log.length + ' total</div></div>';
   const avgCLV = settled.filter(x => x.clv != null);
   if (avgCLV.length > 0) {
     const clvAvg = Math.round(avgCLV.reduce((s, x) => s + x.clv, 0) / avgCLV.length * 10) / 10;
@@ -5999,7 +5999,11 @@ function renderBetLog() {
     if (b.fragSignals && b.fragSignals.length) detailParts.push('<span style="color:var(--red)">Frag:</span> ' + b.fragSignals.join(', '));
     if (b.sustStats) {
       const st = b.sustStats;
-      detailParts.push('FG:' + (st.fg||'-') + '% eFG:' + (st.efg||'-') + '% 3PT:' + (st.threePt||'-') + '% Proc:' + (st.proc||'-') + '/10 Star:' + (st.star||0) + '%');
+      detailParts.push((b.team||'Sust') + ': FG ' + (st.fg==='NaN'?'-':st.fg||'-') + '% | eFG ' + (st.efg||'-') + '% | 3PT ' + (st.threePt||'-') + '% | Proc ' + (st.proc||'-') + '/10');
+    }
+    if (b.fragStats) {
+      const ft = b.fragStats;
+      detailParts.push((b.opponent||'Frag') + ': FG ' + (ft.fg==='NaN'?'-':ft.fg||'-') + '% | eFG ' + (ft.efg||'-') + '% | 3PT ' + (ft.threePt||'-') + '% | Proc ' + (ft.proc||'-') + '/10');
     }
     if (b.espnOdds) detailParts.push('ESPN: ' + (b.espnOdds.detail||'?') + ' (open: ' + (b.espnOdds.openSpread||'?') + ')');
     if (b.closingSpread != null) detailParts.push('Closing: ' + (b.closingSpread > 0 ? '+' : '') + b.closingSpread + ' (' + ((b.spreadHistory||[]).length) + ' snapshots)');
