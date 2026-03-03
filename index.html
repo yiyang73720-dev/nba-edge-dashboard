@@ -5932,53 +5932,20 @@ _fetchDaemonBets().then(() => _updateStripFromDaemon()); // initial load
 function renderBetLog() {
   const el = document.getElementById('bet-log-entries');
   if (!el) return;
-  // Merge localStorage bets + daemon bets (dedup by key)
-  const localLog = JSON.parse(localStorage.getItem('betLog') || '[]');
-  const daemonLog = _daemonBetsCache || [];
-  const seen = new Set(localLog.map(b => b.key));
-  const merged = [...localLog];
-  daemonLog.forEach(b => { if (b.key && !seen.has(b.key)) { merged.push(b); seen.add(b.key); } });
-  const log = merged.slice().sort((a,b) => new Date(b.timestamp||0) - new Date(a.timestamp||0));
+  // Source from daemon data (authoritative), fallback to localStorage
+  let log;
+  if (_daemonBetsRaw) {
+    const active = (_daemonBetsRaw.bets || []).filter(b => !b.outcome);
+    const resolved = _daemonBetsRaw.resolved || [];
+    log = [...active, ...resolved].sort((a,b) => new Date(b.timestamp||0) - new Date(a.timestamp||0));
+  } else {
+    log = JSON.parse(localStorage.getItem('betLog') || '[]').sort((a,b) => new Date(b.timestamp||0) - new Date(a.timestamp||0));
+  }
   if (log.length === 0) {
     el.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:40px;font-size:13px">No bets logged yet. Bets are auto-logged when combined signals fire.</p>';
     return;
   }
-  // Summary stats
-  const settled = log.filter(x => x.outcome);
-  const wins = settled.filter(x => x.outcome === 'W').length;
-  const totalPL = settled.reduce((s, x) => s + (x.payout || 0), 0);
-  const wr = settled.length > 0 ? Math.round(wins / settled.length * 1000) / 10 : 0;
-  const wrColor = wr >= 55 ? 'var(--green)' : wr >= 45 ? 'var(--orange)' : 'var(--red)';
-  const plColor2 = totalPL > 0 ? 'var(--green)' : totalPL < 0 ? 'var(--red)' : 'var(--text-muted)';
-  let html = '<div style="display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap">';
-  html += '<div class="stat-card" style="padding:12px 16px;flex:1;min-width:100px"><div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Record</div><div style="font-size:20px;font-weight:800;color:' + wrColor + '">' + wins + 'W-' + (settled.length - wins) + 'L</div><div style="font-size:11px;color:var(--text-muted)">' + wr + '% win rate</div></div>';
-  html += '<div class="stat-card" style="padding:12px 16px;flex:1;min-width:100px"><div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">P/L</div><div style="font-size:20px;font-weight:800;color:' + plColor2 + '">' + (totalPL >= 0 ? '+$' : '-$') + Math.abs(totalPL).toFixed(0) + '</div><div style="font-size:11px;color:var(--text-muted)">' + settled.length + ' settled / ' + log.length + ' total</div></div>';
-  const avgCLV = settled.filter(x => x.clv != null);
-  if (avgCLV.length > 0) {
-    const clvAvg = Math.round(avgCLV.reduce((s, x) => s + x.clv, 0) / avgCLV.length * 10) / 10;
-    const clvColor = clvAvg > 0 ? 'var(--green)' : clvAvg < 0 ? 'var(--red)' : 'var(--text-muted)';
-    html += '<div class="stat-card" style="padding:12px 16px;flex:1;min-width:100px"><div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Avg CLV</div><div style="font-size:20px;font-weight:800;color:' + clvColor + '">' + (clvAvg > 0 ? '+' : '') + clvAvg + '</div><div style="font-size:11px;color:var(--text-muted)">' + avgCLV.length + ' bets with CLV data</div></div>';
-  }
-  // Brier Score card (from daemon meta or computed locally)
-  const brierMeta = _daemonBetsRaw?.meta;
-  if (brierMeta && brierMeta.brierN > 0) {
-    const brier = brierMeta.brierScore;
-    const brierColor = brier < 0.15 ? 'var(--green)' : brier < 0.22 ? 'var(--orange)' : 'var(--red)';
-    const skillPct = Math.round(brierMeta.brierSkill * 100);
-    const skillColor = skillPct > 0 ? 'var(--green)' : skillPct < 0 ? 'var(--red)' : 'var(--text-muted)';
-    html += '<div class="stat-card" style="padding:12px 16px;flex:1;min-width:100px"><div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Brier Score</div><div style="font-size:20px;font-weight:800;color:' + brierColor + '">' + brier.toFixed(4) + '</div><div style="font-size:11px;color:var(--text-muted)">vs baseline 0.25 | skill: <span style="color:' + skillColor + '">' + (skillPct > 0 ? '+' : '') + skillPct + '%</span> (' + brierMeta.brierN + ' bets)</div></div>';
-  } else if (settled.length > 0) {
-    // Compute locally if daemon meta not available
-    let brierSum = 0; let brierN = 0;
-    settled.forEach(b => { if (b.outcome === 'PUSH') return; const p = (b.estimatedP || 55) / 100; const a = b.outcome === 'W' ? 1 : 0; brierSum += (p - a) ** 2; brierN++; });
-    if (brierN > 0) {
-      const brier = Math.round((brierSum / brierN) * 10000) / 10000;
-      const brierColor = brier < 0.15 ? 'var(--green)' : brier < 0.22 ? 'var(--orange)' : 'var(--red)';
-      html += '<div class="stat-card" style="padding:12px 16px;flex:1;min-width:100px"><div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Brier Score</div><div style="font-size:20px;font-weight:800;color:' + brierColor + '">' + brier.toFixed(4) + '</div><div style="font-size:11px;color:var(--text-muted)">< 0.20 = good, 0.25 = coin flip (' + brierN + ' bets)</div></div>';
-    }
-  }
-  html += '</div>';
-
+  let html = '';
   const thS = 'padding:10px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);border-bottom:2px solid var(--border)';
   html += '<table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr>';
   html += '<th style="' + thS + ';text-align:left">TIME</th>';
@@ -6069,32 +6036,90 @@ function renderBetLog() {
 }
 
 function updateBacktestPanel() {
-  const d = getBacktestData();
-  const btTotal = document.getElementById('bt-total');
-  if (!btTotal) return;
-  btTotal.textContent = d.total;
-  const wrEl = document.getElementById('bt-winrate');
-  wrEl.textContent = d.total > 0 ? d.winRate + '%' : '-';
-  wrEl.style.color = d.winRate >= 55 ? 'var(--green)' : d.winRate >= 45 ? 'var(--orange)' : 'var(--red)';
+  const recEl = document.getElementById('bt-record');
+  if (!recEl) return;
+
+  // Source exclusively from daemon data
+  const raw = _daemonBetsRaw;
+  const resolved = raw ? (raw.resolved || []) : [];
+  const active = raw ? (raw.bets || []).filter(b => !b.outcome) : [];
+  const settled = resolved.filter(b => b.outcome && b.outcome !== 'PUSH');
+  const wins = settled.filter(b => b.outcome === 'W').length;
+  const losses = settled.length - wins;
+  const pushes = resolved.filter(b => b.outcome === 'PUSH').length;
+  const total = settled.length;
+  const wr = total > 0 ? Math.round(wins / total * 1000) / 10 : 0;
+  const totalPL = resolved.reduce((s, b) => s + (b.payout || 0), 0);
+  const totalRisked = resolved.reduce((s, b) => s + (b.kellyBet || 0), 0);
+  const roi = totalRisked > 0 ? Math.round(totalPL / totalRisked * 1000) / 10 : 0;
+
+  // Record card
+  const wrColor = wr >= 55 ? 'var(--green)' : wr >= 45 ? 'var(--orange)' : 'var(--red)';
+  recEl.textContent = total > 0 ? wins + 'W-' + losses + 'L' : '-';
+  recEl.style.color = total > 0 ? wrColor : 'var(--text-muted)';
+  const recSub = document.getElementById('bt-record-sub');
+  if (recSub) recSub.textContent = total > 0 ? wr + '% win rate' + (pushes > 0 ? ' (' + pushes + ' push)' : '') + (active.length > 0 ? ' | ' + active.length + ' active' : '') : 'No bets yet';
+
+  // P/L card
+  const plEl = document.getElementById('bt-pl');
+  const plSub = document.getElementById('bt-pl-sub');
+  if (plEl) {
+    plEl.textContent = total > 0 ? (totalPL >= 0 ? '+$' : '-$') + Math.abs(totalPL).toFixed(0) : '-';
+    plEl.style.color = totalPL > 0 ? 'var(--green)' : totalPL < 0 ? 'var(--red)' : 'var(--text-muted)';
+  }
+  if (plSub) plSub.textContent = total > 0 ? resolved.length + ' bets settled | $' + totalRisked.toFixed(0) + ' risked' : '-';
+
+  // ROI card
   const roiEl = document.getElementById('bt-roi');
-  roiEl.textContent = d.total > 0 ? (d.roi >= 0 ? '+' : '') + d.roi + '%' : '-';
-  roiEl.style.color = d.roi > 0 ? 'var(--green)' : d.roi < 0 ? 'var(--red)' : 'var(--text-primary)';
-  document.getElementById('bt-edge').textContent = d.total > 0 ? (d.edge * 100).toFixed(1) + '%' : '-';
-  const unitsEl = document.getElementById('bt-units');
-  unitsEl.textContent = (d.units >= 0 ? '+' : '') + d.units.toFixed(2);
-  unitsEl.style.color = d.units > 0 ? 'var(--green)' : d.units < 0 ? 'var(--red)' : 'var(--text-primary)';
+  const roiSub = document.getElementById('bt-roi-sub');
+  if (roiEl) {
+    roiEl.textContent = total > 0 ? (roi >= 0 ? '+' : '') + roi + '%' : '-';
+    roiEl.style.color = roi > 0 ? 'var(--green)' : roi < 0 ? 'var(--red)' : 'var(--text-muted)';
+  }
+  if (roiSub) roiSub.textContent = total > 0 ? '$' + Math.round(totalPL / total) + ' avg per bet' : '-';
+
+  // Brier card
+  const brierEl = document.getElementById('bt-brier');
+  const brierSub = document.getElementById('bt-brier-sub');
+  const meta = raw?.meta;
+  if (brierEl && meta && meta.brierN > 0) {
+    const b = meta.brierScore;
+    brierEl.textContent = b.toFixed(4);
+    brierEl.style.color = b < 0.15 ? 'var(--green)' : b < 0.22 ? 'var(--orange)' : 'var(--red)';
+    const skillPct = Math.round(meta.brierSkill * 100);
+    if (brierSub) brierSub.innerHTML = 'Skill: <span style="color:' + (skillPct > 0 ? 'var(--green)' : 'var(--red)') + ';font-weight:700">' + (skillPct > 0 ? '+' : '') + skillPct + '%</span> vs coin-flip baseline (' + meta.brierN + ' bets)';
+  } else if (brierEl && total > 0) {
+    let bSum = 0; let bN = 0;
+    settled.forEach(b => { const p = (b.estimatedP || 55) / 100; const a = b.outcome === 'W' ? 1 : 0; bSum += (p - a) ** 2; bN++; });
+    if (bN > 0) { const brier = bSum / bN; brierEl.textContent = brier.toFixed(4); brierEl.style.color = brier < 0.15 ? 'var(--green)' : brier < 0.22 ? 'var(--orange)' : 'var(--red)'; }
+  }
+
+  // Signal breakdown — from daemon resolved bets
   const bd = document.getElementById('signal-breakdown');
   if (!bd) return;
-  const sigs = Object.keys(d.bySignal);
-  if (sigs.length === 0) { bd.innerHTML = ''; return; }
-  let html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px">';
-  sigs.forEach(sig => {
-    const sd = d.bySignal[sig];
-    const wr = sd.total > 0 ? Math.round(sd.wins / sd.total * 100) : 0;
-    const wrColor = wr >= 55 ? 'var(--green)' : wr >= 45 ? 'var(--orange)' : 'var(--red)';
-    html += '<div class="stat-card" style="padding:12px"><div style="margin-bottom:6px"><span class="signal-badge badge-' + sig + '" style="font-size:10px">' + sig.toUpperCase() + '</span></div>';
-    html += '<div style="color:' + wrColor + ';font-size:20px;font-weight:800">' + wr + '%</div>';
-    html += '<div style="color:var(--text-muted);font-size:11px;margin-top:2px">' + sd.wins + 'W-' + (sd.total - sd.wins) + 'L | $' + Math.round(sd.payout) + '</div></div>';
+  if (total === 0) { bd.innerHTML = ''; return; }
+
+  // Group by mode (nba, ncaab, etc)
+  const byMode = {};
+  resolved.forEach(b => {
+    const mode = (b.mode || 'nba').toUpperCase();
+    if (!byMode[mode]) byMode[mode] = { total: 0, wins: 0, payout: 0, bets: [] };
+    byMode[mode].total++;
+    if (b.outcome === 'W') byMode[mode].wins++;
+    byMode[mode].payout += (b.payout || 0);
+    byMode[mode].bets.push(b);
+  });
+  let html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px">';
+  Object.entries(byMode).forEach(([mode, sd]) => {
+    const mwr = sd.total > 0 ? Math.round(sd.wins / sd.total * 100) : 0;
+    const mwrColor = mwr >= 55 ? 'var(--green)' : mwr >= 45 ? 'var(--orange)' : 'var(--red)';
+    const plStr = sd.payout >= 0 ? '+$' + Math.abs(sd.payout).toFixed(0) : '-$' + Math.abs(sd.payout).toFixed(0);
+    const plColor = sd.payout > 0 ? 'var(--green)' : sd.payout < 0 ? 'var(--red)' : 'var(--text-muted)';
+    html += '<div class="stat-card" style="padding:14px">';
+    html += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px"><span style="background:var(--accent);color:white;font-size:9px;font-weight:800;padding:2px 8px;border-radius:4px;letter-spacing:0.5px">' + mode + '</span><span style="font-size:10px;color:var(--text-muted)">SUST Strategy</span></div>';
+    html += '<div style="color:' + mwrColor + ';font-size:22px;font-weight:800">' + mwr + '%</div>';
+    html += '<div style="color:var(--text-muted);font-size:11px;margin-top:4px">' + sd.wins + 'W-' + (sd.total - sd.wins) + 'L | <span style="color:' + plColor + ';font-weight:700">' + plStr + '</span></div>';
+    html += '</div>';
   });
   html += '</div>';
   bd.innerHTML = html;
@@ -6159,11 +6184,16 @@ function loadBankrollSettings() {
 }
 
 function exportBetLog() {
-  const log = JSON.parse(localStorage.getItem('betLog') || '[]');
+  let log;
+  if (_daemonBetsRaw) {
+    log = [...(_daemonBetsRaw.bets || []), ...(_daemonBetsRaw.resolved || [])];
+  } else {
+    log = JSON.parse(localStorage.getItem('betLog') || '[]');
+  }
   if (log.length === 0) { alert('No bets to export'); return; }
-  let csv = 'Timestamp,Team,Side,Signals,MarketOdds,ImpliedP,EstimatedP,KellyPct,BetSize,Outcome,PL\n';
+  let csv = 'Timestamp,Team,Opponent,Side,Spread,MarketOdds,Book,BetSize,Outcome,PL,FinalScore,SustScore,Mode\n';
   log.forEach(b => {
-    csv += b.timestamp + ',' + b.team + ',' + b.side + ',"' + (b.signals||[]).join(';') + '",' + b.marketOdds + ',' + b.impliedP + ',' + b.estimatedP + ',' + b.kellyPct + ',' + b.kellyBet + ',' + (b.outcome||'') + ',' + (b.payout||0) + '\n';
+    csv += (b.timestamp||'') + ',' + (b.team||'') + ',' + (b.opponent||'') + ',' + (b.side||'') + ',' + (b.spread||'') + ',' + (b.marketOdds||'') + ',' + (b.book||'') + ',' + (b.kellyBet||'') + ',' + (b.outcome||'') + ',' + (b.payout||0) + ',"' + (b.finalScore||'') + '",' + (b.sustScore||'') + ',' + (b.mode||'nba') + '\n';
   });
   const blob = new Blob([csv], {type:'text/csv'});
   const a = document.createElement('a');
@@ -6858,18 +6888,49 @@ try {
     <h2 style="font-size:18px;font-weight:800;margin-bottom:4px">Bet Tracker</h2>
     <p style="font-size:12px;color:var(--text-muted)">Auto-logged when signals fire. Results auto-resolved from ESPN final scores.</p>
   </div>
-  <div id="backtest-panel" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px">
-    <div class="stat-card"><div class="stat-label">TOTAL BETS</div><div class="stat-value" id="bt-total" style="font-size:22px">0</div></div>
-    <div class="stat-card"><div class="stat-label">WIN RATE</div><div class="stat-value" id="bt-winrate" style="font-size:22px;color:var(--green)">-</div></div>
-    <div class="stat-card"><div class="stat-label">ROI</div><div class="stat-value" id="bt-roi" style="font-size:22px">-</div></div>
-    <div class="stat-card"><div class="stat-label">AVG EDGE</div><div class="stat-value" id="bt-edge" style="font-size:22px;color:var(--accent)">-</div></div>
-    <div class="stat-card"><div class="stat-label">UNITS P/L</div><div class="stat-value" id="bt-units" style="font-size:22px">0.00</div></div>
+  <div id="backtest-panel" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-bottom:18px">
+    <div class="stat-card" style="padding:16px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:-6px;right:-6px;width:48px;height:48px;border-radius:50%;background:rgba(16,185,129,0.06)"></div>
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-weight:700">Record</span>
+      </div>
+      <div id="bt-record" style="font-size:24px;font-weight:800;color:var(--green)">-</div>
+      <div id="bt-record-sub" style="font-size:10px;color:var(--text-muted);margin-top:3px">No bets yet</div>
+    </div>
+    <div class="stat-card" style="padding:16px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:-6px;right:-6px;width:48px;height:48px;border-radius:50%;background:rgba(124,58,237,0.06)"></div>
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        <span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-weight:700">Total P/L</span>
+      </div>
+      <div id="bt-pl" style="font-size:24px;font-weight:800">-</div>
+      <div id="bt-pl-sub" style="font-size:10px;color:var(--text-muted);margin-top:3px">-</div>
+    </div>
+    <div class="stat-card" style="padding:16px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:-6px;right:-6px;width:48px;height:48px;border-radius:50%;background:rgba(99,102,241,0.06)"></div>
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        <span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-weight:700">ROI</span>
+      </div>
+      <div id="bt-roi" style="font-size:24px;font-weight:800">-</div>
+      <div id="bt-roi-sub" style="font-size:10px;color:var(--text-muted);margin-top:3px">-</div>
+    </div>
+    <div class="stat-card" style="padding:16px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:-6px;right:-6px;width:48px;height:48px;border-radius:50%;background:rgba(245,158,11,0.06)"></div>
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        <span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-weight:700">Brier Score</span>
+      </div>
+      <div id="bt-brier" style="font-size:24px;font-weight:800">-</div>
+      <div id="bt-brier-sub" style="font-size:10px;color:var(--text-muted);margin-top:3px">Calibration metric (lower = better)</div>
+    </div>
   </div>
   <div id="signal-breakdown" style="margin-bottom:20px"></div>
   <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center">
     <button style="background:var(--accent);color:white;border:none;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;letter-spacing:0.2px" onclick="exportBetLog()">Export CSV</button>
     <button style="background:var(--card-bg);color:var(--text-muted);border:1px solid var(--border);padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer" onclick="if(confirm('Clear all bet log data?'))clearBetLog()">Clear Log</button>
-    <span style="margin-left:auto;font-size:10px;color:var(--text-muted)">Bets auto-log when combined signals fire</span>
+    <span style="margin-left:auto;font-size:10px;color:var(--text-muted)">Data sourced from daemon (sust-bets.json)</span>
   </div>
   <div class="card" style="padding:0;overflow:hidden;margin-bottom:24px">
     <div id="bet-log-entries" style="overflow-x:auto"></div>
