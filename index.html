@@ -1363,12 +1363,12 @@
         <div class="chip-desc">Total live games being tracked</div>
       </div>
       <div class="signal-chip" style="position:relative;">
-        <div style="position:absolute;top:10px;left:14px;width:28px;height:28px;border-radius:8px;background:rgba(245,158,11,0.1);display:flex;align-items:center;justify-content:center;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div style="position:absolute;top:10px;left:14px;width:28px;height:28px;border-radius:8px;background:rgba(239,68,68,0.1);display:flex;align-items:center;justify-content:center;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
         </div>
-        <div class="chip-value orange" id="live-xray-warnings">0</div>
-        <div class="chip-label orange">Fragile</div>
-        <div class="chip-desc">Leading teams with unsustainable scoring</div>
+        <div class="chip-value red" id="live-xray-warnings">0</div>
+        <div class="chip-label red">Divergences</div>
+        <div class="chip-desc">Games with SUS vs UNSUS (sustGap ≥ 30) — bet trigger</div>
       </div>
       <div class="signal-chip" style="position:relative;">
         <div style="position:absolute;top:10px;left:14px;width:28px;height:28px;border-radius:8px;background:rgba(16,185,129,0.1);display:flex;align-items:center;justify-content:center;">
@@ -4514,10 +4514,15 @@ async function fetchESPNScoreboard() {
       const cc = xrayCardClass;
       const hc = isLive?'game-card-header live-pulse':'game-card-header';
 
-      // Track xray warnings for signal strip
-      if (xray && xray.isWarning) {
-        if (!window._xrayWarningCount) window._xrayWarningCount = 0;
-        window._xrayWarningCount++;
+      // Track divergences for signal strip (SUS vs UNSUS, sustGap ≥ 30)
+      if (xray && xray.away?.sustainability && xray.home?.sustainability) {
+        const aCls = xray.away.sustainability.cls;
+        const hCls = xray.home.sustainability.cls;
+        if ((aCls === 'sustainable' && hCls === 'unsustainable') ||
+            (aCls === 'unsustainable' && hCls === 'sustainable')) {
+          if (!window._xrayWarningCount) window._xrayWarningCount = 0;
+          window._xrayWarningCount++;
+        }
       }
 
       // ====== SUSTAINABILITY BET: Auto-log spread bet when SUSTAINABLE vs UNSUSTAINABLE in Q2-Q3 ======
