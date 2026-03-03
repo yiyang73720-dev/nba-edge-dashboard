@@ -2814,29 +2814,59 @@ function analyzeScoringDurability(teamAbbr, score, fg3Made, opponentScore) {
 
 
 // ==================== PROCESS SCORE & SCORING SOURCE ====================
-function computeProcessScore(stats, elapsedMins) {
-  const fgm = parseInt(stats.fieldGoalsMade||0);
-  const fga = parseInt(stats.fieldGoalsAttempted||0);
-  const fg3m = parseInt(stats.threePointFieldGoalsMade||0);
-  const fta = parseInt(stats.freeThrowsAttempted||0);
-  const ast = parseInt(stats.assists||0);
-  const tov = parseInt(stats.turnovers||0);
-  const oreb = parseInt(stats.offensiveRebounds||0);
-  const stl = parseInt(stats.steals||0);
-  const blk = parseInt(stats.blocks||0);
+function computeProcessScore(stats, elapsedMins, oppStats, myScore) {
+  // Process Score v2: 8-factor, academically weighted (XGBoost/SHAP + Oliver's Four Factors)
+  const _clamp = (v) => Math.max(0, Math.min(1, v));
   const mins = Math.max(elapsedMins, 1);
-  const _clamp = (v,lo,hi) => Math.max(lo, Math.min(hi, v));
-  const astRate = fgm > 0 ? ast / fgm : 0;
-  const poss = fga + 0.44 * fta + tov;
-  const tovRate = poss > 0 ? tov / poss : 0;
-  const orebRate = oreb / mins;
-  const hustleRate = (stl + blk) / mins;
-  const astScore = _clamp(astRate / 0.70, 0, 1) * 3;
-  const tovScore = _clamp(1 - (tovRate - 0.08) / 0.12, 0, 1) * 3;
-  const orebScore = _clamp(orebRate / 0.30, 0, 1) * 2;
-  const hustleScore = _clamp(hustleRate / 0.20, 0, 1) * 2;
-  const score = _clamp(astScore + tovScore + orebScore + hustleScore, 0, 10);
-  return { score: Math.round(score * 10) / 10, astRate, tovRate, orebRate, hustleRate };
+  const timeFrac = Math.min(mins / 48, 1);
+  const my = {
+    fgm: parseInt(stats.fieldGoalsMade||0), fga: parseInt(stats.fieldGoalsAttempted||0),
+    fg3m: parseInt(stats.threePointFieldGoalsMade||0), fg3a: parseInt(stats.threePointFieldGoalsAttempted||0),
+    fta: parseInt(stats.freeThrowsAttempted||0), ast: parseInt(stats.assists||0),
+    tov: parseInt(stats.turnovers||0), oreb: parseInt(stats.offensiveRebounds||0),
+    dreb: parseInt(stats.defensiveRebounds||0), stl: parseInt(stats.steals||0),
+    pip: parseInt(stats.pointsInPaint||0), fbPts: parseInt(stats.fastBreakPoints||0),
+  };
+  const opp = oppStats ? {
+    fgm: parseInt(oppStats.fieldGoalsMade||0), fga: parseInt(oppStats.fieldGoalsAttempted||0),
+    fg3m: parseInt(oppStats.threePointFieldGoalsMade||0), fg3a: parseInt(oppStats.threePointFieldGoalsAttempted||0),
+    fta: parseInt(oppStats.freeThrowsAttempted||0), tov: parseInt(oppStats.turnovers||0),
+    oreb: parseInt(oppStats.offensiveRebounds||0), dreb: parseInt(oppStats.defensiveRebounds||0),
+  } : { fgm:0, fga:0, fg3m:0, fg3a:0, fta:0, tov:0, oreb:0, dreb:0 };
+  const pts = myScore || (my.fgm * 2 + my.fg3m + parseInt(stats.freeThrowsMade||0));
+
+  // F1: 2P% differential (25%)
+  const my2pa = my.fga - my.fg3a, my2pm = my.fgm - my.fg3m;
+  const opp2pa = opp.fga - opp.fg3a, opp2pm = opp.fgm - opp.fg3m;
+  const my2pPct = my2pa > 4 ? my2pm / my2pa : 0.50;
+  const opp2pPct = opp2pa > 4 ? opp2pm / opp2pa : 0.50;
+  const f1 = (_clamp((my2pPct-0.43)/0.20) - _clamp((opp2pPct-0.43)/0.20) + 1) / 2;
+  // F2: TOV rate diff (20%)
+  const myPoss = my.fga + 0.44*my.fta + my.tov;
+  const oppPoss = opp.fga + 0.44*opp.fta + opp.tov;
+  const f2 = _clamp(((oppPoss>0?opp.tov/oppPoss:0.15) - (myPoss>0?my.tov/myPoss:0.15) + 0.06) / 0.12);
+  // F3: DREB differential (15%)
+  const drebThresh = Math.max(20*timeFrac, 2);
+  const f3 = _clamp((my.dreb - opp.dreb) / drebThresh / 2 + 0.5);
+  // F4: Assist rate (10%)
+  const f4 = _clamp((my.fgm > 0 ? my.ast / my.fgm : 0) / 0.70);
+  // F5: FTA rate diff (10%)
+  const f5 = _clamp(((my.fga>0?my.fta/my.fga:0) - (opp.fga>0?opp.fta/opp.fga:0) + 0.15) / 0.30);
+  // F6: Paint pts % (10%)
+  const f6 = _clamp((pts > 0 && my.pip > 0 ? my.pip / pts : 0.40) / 0.60);
+  // F7: Steals rate (5%)
+  const f7 = _clamp((my.stl / mins) / 0.30);
+  // F8: Fastbreak pts % (5%)
+  const f8 = _clamp((pts > 0 && my.fbPts > 0 ? my.fbPts / pts : 0.10) / 0.25);
+  // OREB bonus
+  const orebBonus = _clamp((my.oreb - opp.oreb) / Math.max(5*timeFrac, 0.5)) * 0.5;
+
+  const raw = f1*2.5 + f2*2.0 + f3*1.5 + f4*1.0 + f5*1.0 + f6*1.0 + f7*0.5 + f8*0.5 + orebBonus;
+  const score = Math.round(Math.max(0, Math.min(10, raw)) * 10) / 10;
+  const astRate = my.fgm > 0 ? my.ast / my.fgm : 0;
+  const tovRate = myPoss > 0 ? my.tov / myPoss : 0;
+  const orebRate = my.oreb / mins;
+  return { score, astRate, tovRate, orebRate };
 }
 function computeScoringSource(stats) {
   const fgm = parseInt(stats.fieldGoalsMade||0);
@@ -2895,11 +2925,17 @@ function computeSustainabilityClient(game, aStats, hStats, aA, hA, aS, hS, elaps
     return {
       reb:  parseInt(m.totalRebounds || m.rebounds || 0),
       oreb: parseInt(m.offensiveRebounds || 0),
+      dreb: parseInt(m.defensiveRebounds || 0),
       ast:  parseInt(m.assists || 0),
       tov:  parseInt(m.turnovers || 0),
       stl:  parseInt(m.steals || 0),
-      blk:  parseInt(m.blocks || 0),
-      fta:  parseInt(m.freeThrowsAttempted || 0)
+      fta:  parseInt(m.freeThrowsAttempted || 0),
+      fga:  parseInt(m.fieldGoalsAttempted || 0),
+      fgm:  parseInt(m.fieldGoalsMade || 0),
+      fg3a: parseInt(m.threePointFieldGoalsAttempted || 0),
+      fg3m: parseInt(m.threePointFieldGoalsMade || 0),
+      pip:  parseInt(m.pointsInPaint || 0),
+      fbPts: parseInt(m.fastBreakPoints || 0),
     };
   };
   const bxAway = (boxscoreTeamStats || {})[`away`] || {};
@@ -2907,61 +2943,83 @@ function computeSustainabilityClient(game, aStats, hStats, aA, hA, aS, hS, elaps
   const aPF = extractStats(aStats, bxAway);
   const hPF = extractStats(hStats, bxHome);
 
-  // Process Score (0-10): OREB advantage (0-3.3) + FTA advantage (0-3.3) + TOV advantage (0-3.3)
-  // Thresholds scale with game time so 1 OREB at min 5 ≠ 1 OREB at min 40.
-  // Full-game expected advantage for max score: OREB +5, FTA +10, TOV +6.
-  // At elapsed mins, scale threshold proportionally: threshold = fullGame * (mins / 48).
+  // Process Score v2: 8-factor, academically weighted (XGBoost/SHAP + Oliver's Four Factors)
   const _clamp = (v) => Math.max(0, Math.min(1, v));
   const totalMin = _ncaa ? 40 : 48;
-  const timeFrac = Math.min(mins / totalMin, 1); // 0..1 how far into game
-  const computeProcessScore = (my, opp) => {
-    const orebThresh = Math.max(5 * timeFrac, 0.5);  // at min 12: ~1.25, at min 48: 5
-    const ftaThresh  = Math.max(10 * timeFrac, 1);    // at min 12: ~2.5, at min 48: 10
-    const tovThresh  = Math.max(6 * timeFrac, 0.5);   // at min 12: ~1.5, at min 48: 6
-    const orebAdv = _clamp((my.oreb - opp.oreb) / orebThresh) * 3.33;
-    const ftaAdv  = _clamp((my.fta - opp.fta) / ftaThresh) * 3.33;
-    const tovAdv  = _clamp((opp.tov - my.tov) / tovThresh) * 3.33;
-    return Math.round(Math.min(orebAdv + ftaAdv + tovAdv, 10) * 10) / 10;
+  const timeFrac = Math.min(mins / totalMin, 1);
+  const computeProcessScore = (my, opp, myScore) => {
+    const my2pa = my.fga - my.fg3a, my2pm = my.fgm - my.fg3m;
+    const opp2pa = opp.fga - opp.fg3a, opp2pm = opp.fgm - opp.fg3m;
+    const my2pPct = my2pa > 4 ? my2pm / my2pa : 0.50;
+    const opp2pPct = opp2pa > 4 ? opp2pm / opp2pa : 0.50;
+    const f1 = (_clamp((my2pPct-0.43)/0.20) - _clamp((opp2pPct-0.43)/0.20) + 1) / 2;
+    const myPoss = my.fga + 0.44*my.fta + my.tov;
+    const oppPoss = opp.fga + 0.44*opp.fta + opp.tov;
+    const f2 = _clamp(((oppPoss>0?opp.tov/oppPoss:0.15) - (myPoss>0?my.tov/myPoss:0.15) + 0.06) / 0.12);
+    const drebThresh = Math.max(20*timeFrac, 2);
+    const f3 = _clamp((my.dreb - opp.dreb) / drebThresh / 2 + 0.5);
+    const f4 = _clamp((my.fgm > 0 ? my.ast / my.fgm : 0) / 0.70);
+    const f5 = _clamp(((my.fga>0?my.fta/my.fga:0) - (opp.fga>0?opp.fta/opp.fga:0) + 0.15) / 0.30);
+    const pipPct = myScore > 0 && my.pip > 0 ? my.pip / myScore : 0.40;
+    const f6 = _clamp(pipPct / 0.60);
+    const f7 = _clamp((my.stl / Math.max(mins, 1)) / 0.30);
+    const fbPct = myScore > 0 && my.fbPts > 0 ? my.fbPts / myScore : 0.10;
+    const f8 = _clamp(fbPct / 0.25);
+    const orebBonus = _clamp((my.oreb - opp.oreb) / Math.max(5*timeFrac, 0.5)) * 0.5;
+    const raw = f1*2.5 + f2*2.0 + f3*1.5 + f4*1.0 + f5*1.0 + f6*1.0 + f7*0.5 + f8*0.5 + orebBonus;
+    return Math.round(Math.max(0, Math.min(10, raw)) * 10) / 10;
   };
-  const aProcessScore = computeProcessScore(aPF, hPF);
-  const hProcessScore = computeProcessScore(hPF, aPF);
+  const aProcessScore = computeProcessScore(aPF, hPF, aS);
+  const hProcessScore = computeProcessScore(hPF, aPF, hS);
 
-  // ── Sustainability Classification: Scoring Source + 3PT FG% + Star Pace + Process Score ──
-  const classifySustainability = (srcData, score, starPace, procScore) => {
-    if (score <= 0) return { label: 'N/A', cls: 'mixed' };
-    const threeHeavy = srcData.threePtPct > 0.40;
-    const veryThreeHeavy = srcData.threePtPct > 0.50;
-    const paintDominant = srcData.paintPct > 0.45;
-    const starCold = inWindow && starPace > 0 && starPace < 60;
-    const starErupting = inWindow && starPace > 150;
-    const strongProcess = procScore >= 6;
-    const weakProcess = procScore < 2;
-    // 3PT shooting accuracy — only meaningful with 5+ attempts
-    const shootingHot = srcData.fg3a >= 5 && srcData.threeFgPct >= 0.45;  // 45%+ on 5+ attempts
-    const shootingCold = srcData.fg3a >= 5 && srcData.threeFgPct <= 0.25; // 25%- on 5+ attempts
+  // ── Sustainability Score: continuous -100..+100, matches daemon v2 ──
+  // Removed eFG% factor (contradicts autocorrelation). Process score now includes 2P%, DREB, paint, etc.
+  const classifySustainability = (srcData, score, starPace, procScore, per) => {
+    if (score <= 0) return { label: 'N/A', cls: 'mixed', score: 0, factors: [] };
+    const inWin = per ? (_ncaa ? per <= 2 : per <= 3) : true;
+    let sustScore = 0;
+    const factors = [];
 
-    // Count positive signals for SUSTAINABLE (require 2+ to avoid false positives)
-    const sustSignals = [paintDominant, starCold, shootingCold, strongProcess].filter(Boolean).length;
-    // Count fragility signals for UNSUSTAINABLE
-    const fragSignals = [threeHeavy, shootingHot, starErupting, weakProcess].filter(Boolean).length;
+    // Factor 1: 3PT reliance — higher = more variance
+    const threeDev = (srcData.threePtPct - 0.36) * 100;
+    sustScore += -threeDev * 1.5;
+    if (threeDev > 8) factors.push(`3PT heavy (${(srcData.threePtPct*100).toFixed(0)}% of pts)`);
+    if (threeDev < -8) factors.push(`Low 3PT reliance (${(srcData.threePtPct*100).toFixed(0)}%)`);
 
-    // Unsustainable tier — need clear fragility evidence
-    if (veryThreeHeavy) return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
-    if (threeHeavy && shootingHot) return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
-    if (threeHeavy && starErupting) return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
-    if (threeHeavy && weakProcess) return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
-    if (shootingHot && starErupting) return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
-    if (starErupting && weakProcess) return { label: 'UNSUSTAINABLE', cls: 'unsustainable' };
-    // Sustainable tier — require 2+ positive signals to avoid noise
-    if (sustSignals >= 2 && fragSignals === 0) return { label: 'SUSTAINABLE', cls: 'sustainable' };
-    // Mixed tier
-    if (shootingHot || starErupting || threeHeavy) return { label: 'MIXED', cls: 'mixed' };
-    if (sustSignals >= 2) return { label: 'SUSTAINABLE', cls: 'sustainable' }; // 2+ positive even with 1 fragile
-    return { label: 'MIXED', cls: 'mixed' };
+    // Factor 2: 3PT shooting % — hot 3PT = fragile signal
+    if (srcData.fg3a >= 5) {
+      const threePctDev = (srcData.threeFgPct - 0.36) * 100;
+      sustScore += -threePctDev * 1.5;
+      if (srcData.threeFgPct >= 0.45) factors.push(`3PT hot (${(srcData.threeFgPct*100).toFixed(0)}% on ${srcData.fg3a} att)`);
+      if (srcData.threeFgPct <= 0.25) factors.push(`3PT cold (${(srcData.threeFgPct*100).toFixed(0)}% on ${srcData.fg3a} att)`);
+    }
+
+    // Factor 3: Process score (0-10) — now includes 2P%, DREB, paint, fastbreak, steals
+    const procDev = procScore - 5;
+    sustScore += procDev * 5;
+    if (procScore >= 7) factors.push(`Strong process (${procScore.toFixed(1)}/10)`);
+    if (procScore <= 2) factors.push(`Weak process (${procScore.toFixed(1)}/10)`);
+
+    // Factor 4: Star pace (only Q1-Q3 / H1 for NCAA)
+    if (inWin && starPace > 0) {
+      if (starPace < 60) { sustScore += 10; factors.push(`Star cold (${starPace}% pace)`); }
+      else if (starPace > 150) { sustScore += -10; factors.push(`Star erupting (${starPace}% pace)`); }
+    }
+
+    // Factor 5: Free throw rate — getting to the line is sustainable
+    if (srcData.ftPct > 0.20) {
+      sustScore += 5;
+      factors.push(`High FT rate (${(srcData.ftPct*100).toFixed(0)}% of pts)`);
+    }
+
+    sustScore = Math.round(Math.max(-100, Math.min(100, sustScore)) * 10) / 10;
+    const cls = sustScore >= 20 ? 'sustainable' : sustScore <= -20 ? 'unsustainable' : 'mixed';
+    const labelMap = { sustainable: 'SUSTAINABLE', unsustainable: 'UNSUSTAINABLE', mixed: 'MIXED' };
+    return { label: labelMap[cls], cls, score: sustScore, factors };
   };
 
-  const aSust = classifySustainability(aSrc, aS, aStarPace, aProcessScore);
-  const hSust = classifySustainability(hSrc, hS, hStarPace, hProcessScore);
+  const aSust = classifySustainability(aSrc, aS, aStarPace, aProcessScore, period);
+  const hSust = classifySustainability(hSrc, hS, hStarPace, hProcessScore, period);
 
   // ── Narrative ──
   const margin = aS - hS;
