@@ -1,5 +1,69 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1772580580800,
+      "key": "401808278_sust_TENN",
+      "gameId": "401808278",
+      "team": "TENN",
+      "opponent": "SC",
+      "matchup": "TENN @ SC",
+      "side": "SPREAD",
+      "spread": -9.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -118,
+      "impliedP": 54.1,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-03T23:29:40.800Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "TENN",
+      "homeTeam": "SC",
+      "awayScore": 25,
+      "homeScore": 21,
+      "period": 1,
+      "clock": "6:48",
+      "periodLabel": "H1",
+      "sustLeader": "TENN",
+      "sustMargin": 4,
+      "betOnLeader": true,
+      "currentMargin": 4,
+      "cushion": -5.5,
+      "sustScore": 45,
+      "fragScore": -11,
+      "sustGap": 56,
+      "sustSignals": [
+        "Low 3PT reliance (12%)",
+        "3PT cold (17% on 6 att)",
+        "Strong process (7.3/10)"
+      ],
+      "fragSignals": [
+        "3PT heavy (50% of pts)"
+      ],
+      "sustStats": {
+        "fg": "50",
+        "efg": "53",
+        "threePt": "17",
+        "twoPt": "72",
+        "proc": 7.3,
+        "star": 0
+      },
+      "fragStats": {
+        "fg": "29",
+        "efg": "38",
+        "threePt": "27",
+        "twoPt": "22",
+        "proc": 4.4,
+        "star": 0
+      },
+      "sustDetail": "TENN +45 vs SC -11 (gap:56) | TENN 25-21 SC | H1 6:48 | FanDuel -9.5 (-118)"
+    }
+  ],
   "resolved": [
     {
       "id": 1772498518186,
@@ -112,7 +176,7 @@
       "cushion": 6.5,
       "sustScore": 24.2,
       "fragScore": -24.8,
-      "sustGap": 49.0,
+      "sustGap": 49,
       "v2Approved": true,
       "sustSignals": [
         "Low 3PT reliance (25%)",
@@ -187,7 +251,7 @@
       "cushion": 7.5,
       "sustScore": 14.1,
       "fragScore": -44.9,
-      "sustGap": 59.0,
+      "sustGap": 59,
       "v2Approved": true,
       "sustSignals": [
         "Strong process (6.7/10)"
@@ -263,7 +327,7 @@
       "cushion": -3.5,
       "sustScore": 17.6,
       "fragScore": -17.4,
-      "sustGap": 35.0,
+      "sustGap": 35,
       "v2Approved": true,
       "sustSignals": [
         "3PT cold (23% on 13 att)"
