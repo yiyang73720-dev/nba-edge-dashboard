@@ -2986,11 +2986,10 @@ function computeSustainabilityClient(game, aStats, hStats, aA, hA, aS, hS, elaps
     if (threeDev > 8) factors.push(`3PT heavy (${(srcData.threePtPct*100).toFixed(0)}% of pts)`);
     if (threeDev < -8) factors.push(`Low 3PT reliance (${(srcData.threePtPct*100).toFixed(0)}%)`);
 
-    // Factor 2: 3PT accuracy (×0.3) — true hot hand only 1.2-2.4pp (Bocskocsky 2014)
-    // 55% from 3 = ~17pp noise that regresses + ~2pp real. Low weight, not zero.
+    // Factor 2: 3PT accuracy (×0.5) — most deviation is variance, but autocorrelation dampens it
     if (srcData.fg3a >= 5) {
       const threePctDev = (srcData.threeFgPct - 0.36) * 100;
-      sustScore += -threePctDev * 0.3;
+      sustScore += -threePctDev * 0.5;
       if (srcData.threeFgPct >= 0.45) factors.push(`3PT hot (${(srcData.threeFgPct*100).toFixed(0)}% on ${srcData.fg3a} att)`);
       if (srcData.threeFgPct <= 0.25) factors.push(`3PT cold (${(srcData.threeFgPct*100).toFixed(0)}% on ${srcData.fg3a} att)`);
     }
@@ -3001,16 +3000,16 @@ function computeSustainabilityClient(game, aStats, hStats, aA, hA, aS, hS, elaps
     if (procScore >= 7) factors.push(`Strong process (${procScore.toFixed(1)}/10)`);
     if (procScore <= 2) factors.push(`Weak process (${procScore.toFixed(1)}/10)`);
 
-    // Factor 4: Star pace (±6) — Bocskocsky: 1.2-2.4pp true effect
+    // Factor 4: Star pace (±10) — cold star = upside, erupting = fragile
     if (inWin && starPace > 0) {
-      if (starPace < 60) { sustScore += 6; factors.push(`Star cold (${starPace}% pace)`); }
-      else if (starPace > 150) { sustScore += -6; factors.push(`Star erupting (${starPace}% pace)`); }
+      if (starPace < 60) { sustScore += 10; factors.push(`Star cold (${starPace}% pace)`); }
+      else if (starPace > 150) { sustScore += -10; factors.push(`Star erupting (${starPace}% pace)`); }
     }
 
     // Factor 5 (FT rate): REMOVED — already in process score F5 (FTA rate diff).
 
     sustScore = Math.round(Math.max(-100, Math.min(100, sustScore)) * 10) / 10;
-    const cls = sustScore >= 20 ? 'sustainable' : sustScore <= -20 ? 'unsustainable' : 'mixed';
+    const cls = sustScore >= 8 ? 'sustainable' : sustScore <= -8 ? 'unsustainable' : 'mixed';
     const labelMap = { sustainable: 'SUSTAINABLE', unsustainable: 'UNSUSTAINABLE', mixed: 'MIXED' };
     return { label: labelMap[cls], cls, score: sustScore, factors };
   };
@@ -7090,7 +7089,7 @@ try {
 <strong style="font-size:12px;">Daemon:</strong> <span style="font-size:13px;">A background process polls every <strong>60 seconds</strong> during live games. It fetches NBA CDN box scores + Odds API live spreads automatically.</span>
 </div>
 <div style="background:var(--card-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--green);">
-<strong style="font-size:12px;">Scoring:</strong> <span style="font-size:13px;">Each team gets a <strong>sustScore</strong> (-100 to +100). Score &ge;20 = <span style="color:var(--green);font-weight:700;">SUSTAINABLE</span>, &le;-20 = <span style="color:var(--red);font-weight:700;">UNSUSTAINABLE</span>, between = <span style="color:var(--orange);font-weight:700;">MIXED</span>.</span>
+<strong style="font-size:12px;">Scoring:</strong> <span style="font-size:13px;">Each team gets a <strong>sustScore</strong> (-100 to +100). Score &ge;8 = <span style="color:var(--green);font-weight:700;">SUSTAINABLE</span>, &le;-8 = <span style="color:var(--red);font-weight:700;">UNSUSTAINABLE</span>, between = <span style="color:var(--orange);font-weight:700;">MIXED</span>.</span>
 </div>
 <div style="background:var(--card-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--orange);">
 <strong style="font-size:12px;">Trigger:</strong> <span style="font-size:13px;">Auto-bet fires when <strong>sustGap &ge; 30</strong> (one team sustainable, other unsustainable) + <strong>cushion &gt; -14</strong> + both teams have &ge;20 points + game is in Q2-Q3.</span>
@@ -7118,17 +7117,17 @@ try {
 <tbody>
 <tr style="border-bottom:1px solid var(--border-light);">
 <td style="padding:10px 6px;"><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#10b981;padding:3px 8px;border-radius:4px;">SUSTAINABLE</span></td>
-<td style="padding:10px 6px;color:var(--text-secondary);font-weight:600;">sustScore &ge; +20</td>
+<td style="padding:10px 6px;color:var(--text-secondary);font-weight:600;">sustScore &ge; +8</td>
 <td style="padding:10px 6px;color:#10b981;font-weight:600;">Scoring is process-driven and repeatable. Lead is durable.</td>
 </tr>
 <tr style="border-bottom:1px solid var(--border-light);">
 <td style="padding:10px 6px;"><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#f59e0b;padding:3px 8px;border-radius:4px;">MIXED</span></td>
-<td style="padding:10px 6px;color:var(--text-secondary);font-weight:600;">-20 &lt; sustScore &lt; +20</td>
+<td style="padding:10px 6px;color:var(--text-secondary);font-weight:600;">-8 &lt; sustScore &lt; +8</td>
 <td style="padding:10px 6px;color:#f59e0b;font-weight:600;">No strong lean either way. No bet triggered.</td>
 </tr>
 <tr>
 <td style="padding:10px 6px;"><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#ef4444;padding:3px 8px;border-radius:4px;">UNSUSTAINABLE</span></td>
-<td style="padding:10px 6px;color:var(--text-secondary);font-weight:600;">sustScore &le; -20</td>
+<td style="padding:10px 6px;color:var(--text-secondary);font-weight:600;">sustScore &le; -8</td>
 <td style="padding:10px 6px;color:#ef4444;font-weight:600;">Scoring is fragile — hot shooting, star erupting, weak process.</td>
 </tr>
 </tbody>
@@ -7163,18 +7162,18 @@ try {
 <div class="threshold">Impact: -(3ptPct - 36%) × 0.8. If 50% from 3 → sustScore -11.<br>If only 20% from 3 → sustScore +13.<br>Flags: &gt;44% = "3PT heavy", &lt;28% = "Low 3PT reliance".</div></div>
 
 <div class="guide-card" style="border-left:3px solid #ef4444;"><h3 style="display:flex;align-items:center;gap:8px;">
-<span style="background:#ef4444;color:white;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;">0.3x</span> 3PT Accuracy</h3>
+<span style="background:#ef4444;color:white;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;">0.5x</span> 3PT Accuracy</h3>
 <p class="edge-label">Actual 3FG% vs league avg (36%) — requires 5+ attempts</p>
 <p>Hot shooting is autocorrelated within games (Lantis & Nesson 2021), but the true hot hand is only 1.2-2.4pp (Bocskocsky 2014). A team at 55% has ~17pp of noise that will regress. Low weight reflects this.</p>
-<div class="threshold">Impact: -(3fg% - 36%) × 0.3. Shooting 50% on 10 att → sustScore -4.2.<br>Shooting 25% → sustScore +3.3. Only active with 5+ 3PT attempts.<br>Flags: &ge;45% = "3PT hot", &le;25% = "3PT cold".</div></div>
+<div class="threshold">Impact: -(3fg% - 36%) × 0.5. Shooting 50% on 10 att → sustScore -7.<br>Shooting 25% → sustScore +5.5. Only active with 5+ 3PT attempts.<br>Flags: &ge;45% = "3PT hot", &le;25% = "3PT cold".</div></div>
 
 <div class="guide-card" style="border-left:3px solid #ec4899;"><h3 style="display:flex;align-items:center;gap:8px;">
-<span style="background:#ec4899;color:white;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;">±6</span> Star Pace</h3>
+<span style="background:#ec4899;color:white;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;">±10</span> Star Pace</h3>
 <p class="edge-label">Star player's current pace vs season PPG — only Q1-Q3</p>
 <p>Tracks the team's lead scorer (21+ PPG in NBA, 16+ in NCAAB). A cold star who hasn't scored means the team has upside. An erupting star means the lead is inflated.</p>
 <table style="width:100%;font-size:10px;margin:8px 0;border-collapse:collapse;">
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#10b981;width:100px;">&lt;60% pace</td><td style="padding:4px 0;color:var(--text-secondary);">Star is cold → sustScore <strong>+6</strong>. Team winning despite star underperforming = durable.</td></tr>
-<tr><td style="padding:4px 0;font-weight:700;color:#ef4444;">&gt;150% pace</td><td style="padding:4px 0;color:var(--text-secondary);">Star is erupting → sustScore <strong>-6</strong>. True hot hand only 1.2-2.4pp (Bocskocsky 2014).</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#10b981;width:100px;">&lt;60% pace</td><td style="padding:4px 0;color:var(--text-secondary);">Star is cold → sustScore <strong>+10</strong>. Team winning despite star underperforming = durable.</td></tr>
+<tr><td style="padding:4px 0;font-weight:700;color:#ef4444;">&gt;150% pace</td><td style="padding:4px 0;color:var(--text-secondary);">Star is erupting → sustScore <strong>-10</strong>. True hot hand only 1.2-2.4pp (Bocskocsky 2014).</td></tr>
 </table>
 <div class="threshold">Only active in Q1-Q3 (NBA) or period 1-2 (NCAAB).<br>Between 60-150% = no impact (normal production).</div></div>
 
@@ -7187,7 +7186,7 @@ try {
 <p>ALL conditions must be met simultaneously:</p>
 <table style="width:100%;font-size:10px;margin:8px 0;border-collapse:collapse;">
 <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;width:80px;">Timing</td><td style="padding:4px 0;color:var(--text-secondary);">NBA: Q2-Q3. NCAAB: minutes 10-30.</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">Divergence</td><td style="padding:4px 0;color:var(--text-secondary);">sustGap &ge; 30 (one &ge;+20, other &le;-20).</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">Divergence</td><td style="padding:4px 0;color:var(--text-secondary);">sustGap &ge; 30 (one &ge;+8, other &le;-8).</td></tr>
 <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">Cushion</td><td style="padding:4px 0;color:var(--text-secondary);">cushion &gt; -14 (margin + spread). Skip if too far behind.</td></tr>
 <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">Min Score</td><td style="padding:4px 0;color:var(--text-secondary);">Both teams &ge; 20 points (enough box score data).</td></tr>
 <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">Odds</td><td style="padding:4px 0;color:var(--text-secondary);">Live spread + price from Odds API or ESPN.</td></tr>
