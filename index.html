@@ -6035,8 +6035,8 @@ function renderBetLog() {
       const sc = b.sustScore || 0;
       const fc = b.fragScore || 0;
       const gap = b.sustGap || Math.abs(sc - fc);
-      const scColor = sc >= 20 ? 'var(--green)' : sc <= -20 ? 'var(--red)' : 'var(--orange)';
-      const fcColor = fc >= 20 ? 'var(--green)' : fc <= -20 ? 'var(--red)' : 'var(--orange)';
+      const scColor = sc >= 8 ? 'var(--green)' : sc <= -8 ? 'var(--red)' : 'var(--orange)';
+      const fcColor = fc >= 8 ? 'var(--green)' : fc <= -8 ? 'var(--red)' : 'var(--orange)';
       sustCell = '<span style="color:' + scColor + ';font-weight:700;font-size:11px">' + (sc > 0 ? '+' : '') + sc + '</span>';
       sustCell += '<span style="color:var(--text-muted);font-size:9px"> vs </span>';
       sustCell += '<span style="color:' + fcColor + ';font-weight:700;font-size:11px">' + (fc > 0 ? '+' : '') + fc + '</span>';
@@ -6060,9 +6060,12 @@ function renderBetLog() {
       matchCell += '<div style="font-size:10px;color:' + clvColor + ';font-weight:600">CLV: ' + (b.clv > 0 ? '+' : '') + b.clv + '</div>';
     }
 
-    html += '<tr style="border-bottom:1px solid var(--border-light);cursor:pointer" onclick="this.nextElementSibling&&this.nextElementSibling.classList.toggle(\'hidden\')">';
+    const isSkipped = b.v2Approved === false;
+    const rowOpacity = isSkipped ? 'opacity:0.4;' : '';
+    const skipBadge = isSkipped ? ' <span style="background:var(--red);color:#fff;font-size:8px;padding:1px 5px;border-radius:3px;font-weight:700;vertical-align:middle">SKIP</span>' : '';
+    html += '<tr style="border-bottom:1px solid var(--border-light);cursor:pointer;' + rowOpacity + '" onclick="this.nextElementSibling&&this.nextElementSibling.classList.toggle(\'hidden\')">';
     html += '<td style="padding:10px 12px;color:var(--text-muted);font-size:11px">' + time + '</td>';
-    html += '<td style="padding:10px 12px">' + matchCell + '</td>';
+    html += '<td style="padding:10px 12px">' + matchCell + skipBadge + '</td>';
     html += '<td style="padding:10px 12px;text-align:center">' + sustCell + '</td>';
     html += '<td style="padding:10px 12px;text-align:right;color:var(--text-secondary);font-family:monospace">' + oddsStr + '</td>';
     html += '<td style="padding:10px 12px;text-align:right;color:var(--text-primary);font-weight:700">$' + b.kellyBet + '</td>';
@@ -6072,6 +6075,7 @@ function renderBetLog() {
 
     // Expandable detail row
     let detailParts = [];
+    if (b.v2Approved === false && b.v2Reason) detailParts.push('<span style="color:var(--red);font-weight:700">v2 SKIP:</span> ' + b.v2Reason);
     if (b.sustSignals && b.sustSignals.length) detailParts.push('<span style="color:var(--green)">Sust:</span> ' + b.sustSignals.join(', '));
     if (b.fragSignals && b.fragSignals.length) detailParts.push('<span style="color:var(--red)">Frag:</span> ' + b.fragSignals.join(', '));
     if (b.sustStats) {
@@ -6098,14 +6102,16 @@ function updateBacktestPanel() {
   const raw = _daemonBetsRaw;
   const resolved = raw ? (raw.resolved || []) : [];
   const active = raw ? (raw.bets || []).filter(b => !b.outcome) : [];
-  const settled = resolved.filter(b => b.outcome && b.outcome !== 'PUSH');
+  // Only count v2-approved bets (v2Approved !== false; undefined = approved for backward compat)
+  const approved = resolved.filter(b => b.v2Approved !== false);
+  const settled = approved.filter(b => b.outcome && b.outcome !== 'PUSH');
   const wins = settled.filter(b => b.outcome === 'W').length;
   const losses = settled.length - wins;
-  const pushes = resolved.filter(b => b.outcome === 'PUSH').length;
+  const pushes = approved.filter(b => b.outcome === 'PUSH').length;
   const total = settled.length;
   const wr = total > 0 ? Math.round(wins / total * 1000) / 10 : 0;
-  const totalPL = resolved.reduce((s, b) => s + (b.payout || 0), 0);
-  const totalRisked = resolved.reduce((s, b) => s + (b.kellyBet || 0), 0);
+  const totalPL = approved.reduce((s, b) => s + (b.payout || 0), 0);
+  const totalRisked = approved.reduce((s, b) => s + (b.kellyBet || 0), 0);
   const roi = totalRisked > 0 ? Math.round(totalPL / totalRisked * 1000) / 10 : 0;
 
   // Record card
@@ -6122,7 +6128,7 @@ function updateBacktestPanel() {
     plEl.textContent = total > 0 ? (totalPL >= 0 ? '+$' : '-$') + Math.abs(totalPL).toFixed(0) : '-';
     plEl.style.color = totalPL > 0 ? 'var(--green)' : totalPL < 0 ? 'var(--red)' : 'var(--text-muted)';
   }
-  if (plSub) plSub.textContent = total > 0 ? resolved.length + ' bets settled | $' + totalRisked.toFixed(0) + ' risked' : '-';
+  if (plSub) plSub.textContent = total > 0 ? total + ' bets settled' + (resolved.length > approved.length ? ' (' + (resolved.length - approved.length) + ' skipped)' : '') + ' | $' + totalRisked.toFixed(0) + ' risked' : '-';
 
   // ROI card
   const roiEl = document.getElementById('bt-roi');
