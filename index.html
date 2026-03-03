@@ -5126,7 +5126,7 @@ function updateSignalGuide(mode) {
 <div style="background:var(--accent-light);border:1px solid var(--accent);border-radius:var(--radius);padding:14px;margin-bottom:16px;font-size:12px;">
 <strong>Forward-Test Status (collecting live data since Mar 2026):</strong>
 <div style="display:flex;gap:16px;margin-top:6px;flex-wrap:wrap;">
-<div><strong>Method:</strong> Continuous scoring (-100 to +100) with 6 weighted factors</div>
+<div><strong>Method:</strong> Continuous scoring (-100 to +100) with 4 weighted factors</div>
 <div><strong>Trigger:</strong> sustGap &ge;30 + cushion &gt; -14 + both teams &ge;20pts</div>
 </div>
 <div style="margin-top:6px;font-size:11px;color:var(--text-muted);">Previous backtests were invalidated (Odds API historical = pre-game lines, not live). Now collecting real live odds to validate.</div>
@@ -7083,7 +7083,7 @@ try {
 <div style="background:var(--accent-light);border:1px solid var(--accent);border-radius:var(--radius);padding:24px;margin:16px 0 24px;">
 <h3 style="font-size:16px;font-weight:800;margin-bottom:12px;letter-spacing:-0.2px;">How It Works</h3>
 <div style="font-size:13px;line-height:1.7;color:var(--text-primary);">
-<p style="margin-bottom:10px;"><strong>The idea:</strong> Not all points are created equal. A team up 12 on 8/10 threes is very different from a team up 12 with +8 rebounds and 20 paint points. The daemon scores each team's scoring sustainability from <strong>-100 (fragile)</strong> to <strong>+100 (durable)</strong> using 6 weighted factors. When the gap is large enough, it bets the sustainable side's spread.</p>
+<p style="margin-bottom:10px;"><strong>The idea:</strong> Not all points are created equal. A team up 12 on 8/10 threes is very different from a team up 12 with +8 rebounds and 20 paint points. The daemon scores each team's scoring sustainability from <strong>-100 (fragile)</strong> to <strong>+100 (durable)</strong> using 4 weighted factors. When the gap is large enough, it bets the sustainable side's spread.</p>
 <p style="margin-bottom:14px;"><strong>How it runs:</strong></p>
 <div style="display:grid;grid-template-columns:1fr;gap:10px;">
 <div style="background:var(--card-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--accent);">
@@ -7108,7 +7108,7 @@ try {
 <!-- WHAT EACH ELEMENT MEANS -->
 <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:24px;">
 <h3 style="font-size:15px;font-weight:800;margin-bottom:14px;letter-spacing:-0.2px;">Sustainability Score (-100 to +100)</h3>
-<p style="font-size:12px;color:var(--text-secondary);line-height:1.6;margin-bottom:14px;">Each team gets a continuous <strong>sustScore</strong> computed from 6 weighted factors. The score measures how repeatable (positive) or fragile (negative) their current scoring is. The classification is just a label on the continuous score:</p>
+<p style="font-size:12px;color:var(--text-secondary);line-height:1.6;margin-bottom:14px;">Each team gets a continuous <strong>sustScore</strong> computed from 4 weighted factors. The score measures how repeatable (positive) or fragile (negative) their current scoring is. The classification is just a label on the continuous score:</p>
 <table style="width:100%;font-size:12px;border-collapse:collapse;">
 <thead><tr style="border-bottom:2px solid var(--border);text-align:left;">
 <th style="padding:8px 6px;font-weight:700;color:var(--text-muted);font-size:10px;text-transform:uppercase;">Classification</th>
@@ -7135,55 +7135,49 @@ try {
 </table>
 </div>
 
-<!-- 6 FACTOR CARDS -->
-<h3 style="font-size:15px;font-weight:800;margin-bottom:14px;letter-spacing:-0.2px;">The 6 Scoring Factors</h3>
-<p style="font-size:12px;color:var(--text-secondary);line-height:1.6;margin-bottom:14px;">Each factor adds or subtracts from the sustScore. Positive = sustainable, negative = fragile. The weight shows relative importance.</p>
+<!-- 4 FACTOR CARDS -->
+<h3 style="font-size:15px;font-weight:800;margin-bottom:14px;letter-spacing:-0.2px;">The 4 Scoring Factors</h3>
+<p style="font-size:12px;color:var(--text-secondary);line-height:1.6;margin-bottom:14px;">Each factor adds or subtracts from the sustScore. Positive = sustainable, negative = fragile. Process score dominates (~60% of total range).</p>
 <div class="guide-grid">
 <div class="guide-card" style="border-left:3px solid #0ea5e9;"><h3 style="display:flex;align-items:center;gap:8px;">
-<span style="background:#0ea5e9;color:white;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;">5x</span> Process Score (0-10)</h3>
-<p class="edge-label">OREB + FTA + TOV — strongest factor, weight 5x</p>
-<p>Three components, each 0-3.33, time-scaled so early-game stats don't inflate:</p>
+<span style="background:#0ea5e9;color:white;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;">7x</span> Process Score (0-10)</h3>
+<p class="edge-label">8-factor academic composite — dominant factor, weight 7x</p>
+<p>Based on XGBoost/SHAP feature importance + Oliver's Four Factors research:</p>
 <table style="width:100%;font-size:10px;margin:8px 0;border-collapse:collapse;">
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;width:60px;">OREB</td><td style="padding:4px 0;color:var(--text-secondary);">Threshold = 5 × (mins/48). Need +5 OREB advantage at full game for max 3.33.</td></tr>
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">FTA</td><td style="padding:4px 0;color:var(--text-secondary);">Threshold = 10 × (mins/48). Need +10 FTA advantage at full game for max 3.33.</td></tr>
-<tr><td style="padding:4px 0;font-weight:700;">TOV</td><td style="padding:4px 0;color:var(--text-secondary);">Threshold = 6 × (mins/48). Opponent needs +6 more turnovers for max 3.33.</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;width:80px;">2P% diff (2.5)</td><td style="padding:4px 0;color:var(--text-secondary);">My 2P% vs opp 2P%, scaled 43-63%. SHAP #1 predictor.</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">TOV rate (2.0)</td><td style="padding:4px 0;color:var(--text-secondary);">My TOV% vs opp TOV%. Oliver #2 (35.1%).</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">DREB diff (1.5)</td><td style="padding:4px 0;color:var(--text-secondary);">Defensive rebounds differential. SHAP #2 at halftime.</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">AST rate (1.0)</td><td style="padding:4px 0;color:var(--text-secondary);">AST/FGM, capped at 0.70. SHAP #3 at halftime.</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">FTA rate (1.0)</td><td style="padding:4px 0;color:var(--text-secondary);">My FTA/FGA vs opp FTA/FGA. Oliver #4 (6.8%).</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">Paint pts (1.0)</td><td style="padding:4px 0;color:var(--text-secondary);">Points in paint %. Most sustainable shot type.</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;">Steals (0.5)</td><td style="padding:4px 0;color:var(--text-secondary);">STL/min rate. Blocks removed (Cohen's d=0.016).</td></tr>
+<tr><td style="padding:4px 0;font-weight:700;">Fastbreak (0.5)</td><td style="padding:4px 0;color:var(--text-secondary);">Fastbreak pts %. Transition = 1.228 PPP.</td></tr>
 </table>
-<p style="font-size:11px;line-height:1.5;"><strong>Score 7+ = strong process</strong> (hustle-driven) → sustScore + large positive.<br><strong>Score &lt;2 = weak process</strong> (no effort advantage) → sustScore - large negative.</p>
-<div class="threshold">Impact: (procScore - 5) × 5. A process score of 8 adds +15. A score of 1 subtracts -20.<br>This is the single most impactful factor — measures effort, not luck.</div></div>
+<p style="font-size:11px;line-height:1.5;"><strong>Score 7+ = strong process</strong> → sustScore + large positive.<br><strong>Score &lt;2 = weak process</strong> → sustScore - large negative. OREB bonus up to +0.5.</p>
+<div class="threshold">Impact: (procScore - 5) × 7. Score of 8 adds +21. Score of 1 subtracts -28.<br>This is the dominant factor (~60% of total range) — measures effort, not luck.</div></div>
 
 <div class="guide-card" style="border-left:3px solid #f59e0b;"><h3 style="display:flex;align-items:center;gap:8px;">
-<span style="background:#f59e0b;color:white;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;">2x</span> 3PT Reliance</h3>
+<span style="background:#f59e0b;color:white;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;">0.8x</span> 3PT Reliance</h3>
 <p class="edge-label">% of points from threes vs league avg (~36%)</p>
-<p>How dependent is the team on three-point shooting? NBA average is ~36% of points from 3PT. Teams well above this are scoring in a volatile, hard-to-repeat way.</p>
-<div class="threshold">Impact: -(3ptPct - 36%) × 2. If 50% of pts from 3 → sustScore -28.<br>If only 20% from 3 (paint-heavy) → sustScore +32.<br>Flags: &gt;44% = "3PT heavy", &lt;28% = "Low 3PT reliance".</div></div>
+<p>How dependent is the team on three-point shooting? Variance is real but modest — offensive SD is 11.7 vs 11.3 for low-3PT teams (Nylon Calculus). Reduced weight from prior version.</p>
+<div class="threshold">Impact: -(3ptPct - 36%) × 0.8. If 50% from 3 → sustScore -11.<br>If only 20% from 3 → sustScore +13.<br>Flags: &gt;44% = "3PT heavy", &lt;28% = "Low 3PT reliance".</div></div>
 
 <div class="guide-card" style="border-left:3px solid #ef4444;"><h3 style="display:flex;align-items:center;gap:8px;">
-<span style="background:#ef4444;color:white;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;">2x</span> 3PT Shooting %</h3>
+<span style="background:#ef4444;color:white;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;">0.3x</span> 3PT Accuracy</h3>
 <p class="edge-label">Actual 3FG% vs league avg (36%) — requires 5+ attempts</p>
-<p>Even if a team doesn't rely heavily on threes, shooting 55% from 3 is unsustainable. This factor measures deviation from the ~36% league average on actual makes.</p>
-<div class="threshold">Impact: -(3fg% - 36%) × 2. Shooting 50% on 10 att → sustScore -28.<br>Shooting 25% → sustScore +22. Only active with 5+ 3PT attempts.<br>Flags: &ge;45% = "3PT shooting hot", &le;25% = "3PT shooting cold".</div></div>
-
-<div class="guide-card" style="border-left:3px solid #8b5cf6;"><h3 style="display:flex;align-items:center;gap:8px;">
-<span style="background:#8b5cf6;color:white;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;">1.5x</span> eFG% Efficiency</h3>
-<p class="edge-label">Effective FG% vs NBA avg (~53%)</p>
-<p>Measures overall shooting efficiency (eFG% accounts for 3-pointers being worth more). Hot shooting is autocorrelated within games, so this has a lighter weight.</p>
-<div class="threshold">Impact: -(eFG% - 53%) × 1.5. eFG 63% → sustScore -15.<br>eFG 43% → sustScore +15. Lighter weight because hot shooting persists mid-game.<br>Flags: &gt;58% = "eFG% hot", &lt;48% = "eFG% cold".</div></div>
+<p>Hot shooting is autocorrelated within games (Lantis & Nesson 2021), but the true hot hand is only 1.2-2.4pp (Bocskocsky 2014). A team at 55% has ~17pp of noise that will regress. Low weight reflects this.</p>
+<div class="threshold">Impact: -(3fg% - 36%) × 0.3. Shooting 50% on 10 att → sustScore -4.2.<br>Shooting 25% → sustScore +3.3. Only active with 5+ 3PT attempts.<br>Flags: &ge;45% = "3PT hot", &le;25% = "3PT cold".</div></div>
 
 <div class="guide-card" style="border-left:3px solid #ec4899;"><h3 style="display:flex;align-items:center;gap:8px;">
-<span style="background:#ec4899;color:white;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;">±10</span> Star Pace</h3>
+<span style="background:#ec4899;color:white;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;">±6</span> Star Pace</h3>
 <p class="edge-label">Star player's current pace vs season PPG — only Q1-Q3</p>
 <p>Tracks the team's lead scorer (21+ PPG in NBA, 16+ in NCAAB). A cold star who hasn't scored means the team has upside. An erupting star means the lead is inflated.</p>
 <table style="width:100%;font-size:10px;margin:8px 0;border-collapse:collapse;">
-<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#10b981;width:100px;">&lt;60% pace</td><td style="padding:4px 0;color:var(--text-secondary);">Star is cold → sustScore <strong>+10</strong>. Team winning despite star underperforming = durable.</td></tr>
-<tr><td style="padding:4px 0;font-weight:700;color:#ef4444;">&gt;150% pace</td><td style="padding:4px 0;color:var(--text-secondary);">Star is erupting → sustScore <strong>-10</strong>. Unsustainable individual performance.</td></tr>
+<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:4px 0;font-weight:700;color:#10b981;width:100px;">&lt;60% pace</td><td style="padding:4px 0;color:var(--text-secondary);">Star is cold → sustScore <strong>+6</strong>. Team winning despite star underperforming = durable.</td></tr>
+<tr><td style="padding:4px 0;font-weight:700;color:#ef4444;">&gt;150% pace</td><td style="padding:4px 0;color:var(--text-secondary);">Star is erupting → sustScore <strong>-6</strong>. True hot hand only 1.2-2.4pp (Bocskocsky 2014).</td></tr>
 </table>
 <div class="threshold">Only active in Q1-Q3 (NBA) or period 1-2 (NCAAB).<br>Between 60-150% = no impact (normal production).</div></div>
 
-<div class="guide-card" style="border-left:3px solid #10b981;"><h3 style="display:flex;align-items:center;gap:8px;">
-<span style="background:#10b981;color:white;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;">+5</span> FT Rate</h3>
-<p class="edge-label">High free throw rate = getting to the line = sustainable</p>
-<p>If &gt;20% of a team's points come from free throws, they're attacking the basket aggressively. Drawing fouls is repeatable and indicates physical play that doesn't regress.</p>
-<div class="threshold">Impact: +5 if FT% of points &gt; 20%. One-directional bonus only.<br>Drawing fouls consistently is one of the most sustainable scoring actions.</div></div>
 </div>
 
 <!-- AUTO-BET TRIGGER + CUSHION -->
