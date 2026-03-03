@@ -1,4 +1,74 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1772498518186,
+      "key": "401810734_sust_HOU",
+      "gameId": "401810734",
+      "team": "HOU",
+      "opponent": "WSH",
+      "matchup": "HOU @ WSH",
+      "side": "SPREAD",
+      "spread": -11.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": 106,
+      "impliedP": 48.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-03T00:41:58.186Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "HOU",
+      "homeTeam": "WSH",
+      "awayScore": 26,
+      "homeScore": 30,
+      "period": 2,
+      "clock": "12:00",
+      "periodLabel": "Q2",
+      "sustLeader": "WSH",
+      "sustMargin": 4,
+      "betOnLeader": false,
+      "sustSignals": [
+        "Paint dominant (46% from paint)",
+        "Strong process (score 6.7/10)"
+      ],
+      "fragSignals": [
+        "3PT heavy (80% of pts from 3)",
+        "Very 3PT heavy (80%)",
+        "3PT hot (73% on 11 att)"
+      ],
+      "sustStats": {
+        "fg": "NaN",
+        "threePt": "40",
+        "paint": "46",
+        "proc": 6.7,
+        "star": 0
+      },
+      "fragStats": {
+        "fg": "NaN",
+        "threePt": "73",
+        "paint": "13",
+        "proc": 3.3,
+        "star": 0
+      },
+      "sustDetail": "HOU SUSTAINABLE vs WSH UNSUSTAINABLE | HOU 26-30 WSH | Q2 12:00 | FanDuel -11.5 (+106)",
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": 14.5,
+        "detail": "HOU -14.5",
+        "awaySpread": "-14.5",
+        "homeSpread": "+14.5",
+        "awaySpreadOdds": "-110",
+        "homeSpreadOdds": "-110",
+        "awayML": "-1000",
+        "homeML": "+650",
+        "openSpread": "-16.5"
+      }
+    }
+  ],
   "resolved": []
 }
