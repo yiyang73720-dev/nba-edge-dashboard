@@ -3001,17 +3001,7 @@ function computeSustainabilityClient(game, aStats, hStats, aA, hA, aS, hS, elaps
       else if (starPace > 150) { sustScore += -6; factors.push(`Star erupting (${starPace}% pace)`); }
     }
 
-    // Factor 5: FT rate (graduated) — FT hot hand real (Lantis & Nesson: +2pp/make)
-    if (srcData.ftPct > 0.30) {
-      sustScore += 10;
-      factors.push(`Very high FT rate (${(srcData.ftPct*100).toFixed(0)}% of pts)`);
-    } else if (srcData.ftPct > 0.20) {
-      sustScore += 8;
-      factors.push(`High FT rate (${(srcData.ftPct*100).toFixed(0)}% of pts)`);
-    } else if (srcData.ftPct > 0.15) {
-      sustScore += 5;
-      factors.push(`Moderate FT rate (${(srcData.ftPct*100).toFixed(0)}% of pts)`);
-    }
+    // Factor 5 (FT rate): REMOVED — already in process score F5 (FTA rate diff).
 
     sustScore = Math.round(Math.max(-100, Math.min(100, sustScore)) * 10) / 10;
     const cls = sustScore >= 20 ? 'sustainable' : sustScore <= -20 ? 'unsustainable' : 'mixed';
