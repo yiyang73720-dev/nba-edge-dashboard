@@ -2986,8 +2986,14 @@ function computeSustainabilityClient(game, aStats, hStats, aA, hA, aS, hS, elaps
     if (threeDev > 8) factors.push(`3PT heavy (${(srcData.threePtPct*100).toFixed(0)}% of pts)`);
     if (threeDev < -8) factors.push(`Low 3PT reliance (${(srcData.threePtPct*100).toFixed(0)}%)`);
 
-    // Factor 2: REMOVED — 3PT shooting % penalized hot shooting, but hot shooting
-    // is autocorrelated (Lantis & Nesson 2021). Same reason we removed eFG%.
+    // Factor 2: 3PT accuracy (×0.3) — true hot hand only 1.2-2.4pp (Bocskocsky 2014)
+    // 55% from 3 = ~17pp noise that regresses + ~2pp real. Low weight, not zero.
+    if (srcData.fg3a >= 5) {
+      const threePctDev = (srcData.threeFgPct - 0.36) * 100;
+      sustScore += -threePctDev * 0.3;
+      if (srcData.threeFgPct >= 0.45) factors.push(`3PT hot (${(srcData.threeFgPct*100).toFixed(0)}% on ${srcData.fg3a} att)`);
+      if (srcData.threeFgPct <= 0.25) factors.push(`3PT cold (${(srcData.threeFgPct*100).toFixed(0)}% on ${srcData.fg3a} att)`);
+    }
 
     // Factor 3: Process score (×7) — process = 81-92% of outcomes (revised Four Factors)
     const procDev = procScore - 5;
