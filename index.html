@@ -237,6 +237,7 @@
     .tab.active .badge { background: rgba(255,255,255,0.25); color: #fff; }
     .tab-content { display: none; }
     .tab-content.active { display: block; animation: tabFadeIn 0.25s ease; }
+    .hidden { display: none; }
     @keyframes tabFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
     /* ===== CONTENT AREA ===== */
@@ -5905,14 +5906,30 @@ function renderBetLog() {
     el.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:40px;font-size:13px">No bets logged yet. Bets are auto-logged when combined signals fire.</p>';
     return;
   }
+  // Summary stats
+  const settled = log.filter(x => x.outcome);
+  const wins = settled.filter(x => x.outcome === 'W').length;
+  const totalPL = settled.reduce((s, x) => s + (x.payout || 0), 0);
+  const wr = settled.length > 0 ? Math.round(wins / settled.length * 1000) / 10 : 0;
+  const wrColor = wr >= 55 ? 'var(--green)' : wr >= 45 ? 'var(--orange)' : 'var(--red)';
+  const plColor2 = totalPL > 0 ? 'var(--green)' : totalPL < 0 ? 'var(--red)' : 'var(--text-muted)';
+  let html = '<div style="display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap">';
+  html += '<div class="stat-card" style="padding:12px 16px;flex:1;min-width:100px"><div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Record</div><div style="font-size:20px;font-weight:800;color:' + wrColor + '">' + wins + 'W-' + (settled.length - wins) + 'L</div><div style="font-size:11px;color:var(--text-muted)">' + wr + '% win rate</div></div>';
+  html += '<div class="stat-card" style="padding:12px 16px;flex:1;min-width:100px"><div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">P/L</div><div style="font-size:20px;font-weight:800;color:' + plColor2 + '">' + (totalPL >= 0 ? '+' : '') + '$' + Math.abs(totalPL).toFixed(0) + '</div><div style="font-size:11px;color:var(--text-muted)">' + settled.length + ' settled / ' + log.length + ' total</div></div>';
+  const avgCLV = settled.filter(x => x.clv != null);
+  if (avgCLV.length > 0) {
+    const clvAvg = Math.round(avgCLV.reduce((s, x) => s + x.clv, 0) / avgCLV.length * 10) / 10;
+    const clvColor = clvAvg > 0 ? 'var(--green)' : clvAvg < 0 ? 'var(--red)' : 'var(--text-muted)';
+    html += '<div class="stat-card" style="padding:12px 16px;flex:1;min-width:100px"><div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Avg CLV</div><div style="font-size:20px;font-weight:800;color:' + clvColor + '">' + (clvAvg > 0 ? '+' : '') + clvAvg + '</div><div style="font-size:11px;color:var(--text-muted)">' + avgCLV.length + ' bets with CLV data</div></div>';
+  }
+  html += '</div>';
+
   const thS = 'padding:10px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);border-bottom:2px solid var(--border)';
-  let html = '<table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr>';
+  html += '<table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr>';
   html += '<th style="' + thS + ';text-align:left">TIME</th>';
-  html += '<th style="' + thS + ';text-align:left">TEAM</th>';
-  html += '<th style="' + thS + ';text-align:left">SIGNALS</th>';
+  html += '<th style="' + thS + ';text-align:left">MATCHUP</th>';
+  html += '<th style="' + thS + ';text-align:center">SUST</th>';
   html += '<th style="' + thS + ';text-align:right">ODDS</th>';
-  html += '<th style="' + thS + ';text-align:right">EDGE</th>';
-  html += '<th style="' + thS + ';text-align:right">KELLY</th>';
   html += '<th style="' + thS + ';text-align:right">SIZE</th>';
   html += '<th style="' + thS + ';text-align:center">RESULT</th>';
   html += '<th style="' + thS + ';text-align:right">P/L</th>';
@@ -5921,35 +5938,72 @@ function renderBetLog() {
     const t = new Date(b.timestamp);
     const time = (t.getMonth()+1) + '/' + t.getDate() + ' ' + t.getHours() + ':' + String(t.getMinutes()).padStart(2,'0');
     const _oddsNum = b.marketOdds > 0 ? '+' + b.marketOdds : '' + b.marketOdds;
-    const oddsStr = b.book ? _oddsNum + ' <span style="font-size:9px;color:var(--text-muted);font-family:inherit">' + b.book + '</span>' : _oddsNum;
-    const edgeVal = b.estimatedP && b.impliedP ? (b.estimatedP - b.impliedP).toFixed(1) + '%' : '-';
+    const oddsStr = b.book ? _oddsNum + ' <span style="font-size:9px;color:var(--text-muted)">' + b.book + '</span>' : _oddsNum;
     let resultCell;
     if (b.outcome) {
-      const color = b.outcome === 'W' ? 'var(--green)' : 'var(--red)';
-      const bg = b.outcome === 'W' ? 'var(--green-light)' : 'var(--red-light)';
+      const color = b.outcome === 'W' ? 'var(--green)' : b.outcome === 'PUSH' ? 'var(--orange)' : 'var(--red)';
+      const bg = b.outcome === 'W' ? 'var(--green-light)' : b.outcome === 'PUSH' ? 'var(--orange-light)' : 'var(--red-light)';
       resultCell = '<span style="color:' + color + ';background:' + bg + ';font-weight:700;padding:2px 10px;border-radius:4px;font-size:11px">' + b.outcome + '</span>';
       if (b.finalScore) resultCell += '<div style="font-size:9px;color:var(--text-muted);margin-top:2px">' + b.finalScore + '</div>';
     } else {
-      resultCell = '<span style="font-size:10px;color:var(--orange);font-weight:600">PENDING</span>';
-      resultCell += '<div style="margin-top:3px"><button onclick="markOutcome(' + b.id + ',true)" style="background:var(--green-light);color:var(--green);border:none;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:10px;font-weight:700;margin-right:3px">W</button>';
-      resultCell += '<button onclick="markOutcome(' + b.id + ',false)" style="background:var(--red-light);color:var(--red);border:none;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:10px;font-weight:700">L</button></div>';
+      resultCell = '<span style="font-size:10px;color:var(--orange);font-weight:600">LIVE</span>';
     }
     const plStr = b.payout != null ? (b.payout >= 0 ? '+$' : '-$') + Math.abs(b.payout).toFixed(0) : '-';
     const plColor = b.payout > 0 ? 'var(--green)' : b.payout < 0 ? 'var(--red)' : 'var(--text-muted)';
-    const sigBadges = (b.signals||[]).map(s => '<span class="signal-badge badge-' + s + '" style="font-size:9px;padding:1px 6px">' + s.toUpperCase() + '</span>').join(' ');
-    html += '<tr style="border-bottom:1px solid var(--border-light)">';
+
+    // Sustainability score display
+    const hasSust = b.sustScore != null || b.fragScore != null;
+    let sustCell = '-';
+    if (hasSust) {
+      const sc = b.sustScore || 0;
+      const fc = b.fragScore || 0;
+      const gap = b.sustGap || Math.abs(sc - fc);
+      const scColor = sc >= 20 ? 'var(--green)' : sc <= -20 ? 'var(--red)' : 'var(--orange)';
+      const fcColor = fc >= 20 ? 'var(--green)' : fc <= -20 ? 'var(--red)' : 'var(--orange)';
+      sustCell = '<span style="color:' + scColor + ';font-weight:700;font-size:11px">' + (sc > 0 ? '+' : '') + sc + '</span>';
+      sustCell += '<span style="color:var(--text-muted);font-size:9px"> vs </span>';
+      sustCell += '<span style="color:' + fcColor + ';font-weight:700;font-size:11px">' + (fc > 0 ? '+' : '') + fc + '</span>';
+      sustCell += '<div style="font-size:9px;color:var(--text-muted)">gap: ' + gap + '</div>';
+    }
+
+    // Matchup cell: team, spread, game score at bet time, cushion
+    const _sideLabel = b.side === 'SPREAD' && b.spread != null ? (b.spread > 0 ? '+' : '') + b.spread : (b.side||'ML');
+    let matchCell = '<div style="font-weight:700;color:var(--text-primary)">' + b.team + ' <span style="color:var(--accent);font-weight:600">' + _sideLabel + '</span></div>';
+    matchCell += '<div style="font-size:10px;color:var(--text-muted)">' + (b.matchup || '') + '</div>';
+    if (b.awayScore != null && b.homeScore != null) {
+      matchCell += '<div style="font-size:10px;color:var(--text-muted)">' + (b.awayTeam||'') + ' ' + b.awayScore + '-' + b.homeScore + ' ' + (b.homeTeam||'') + ' ' + (b.periodLabel||'') + ' ' + (b.clock||'') + '</div>';
+    }
+    if (b.cushion != null) {
+      const cushColor = b.cushion >= 0 ? 'var(--green)' : b.cushion >= -5 ? 'var(--orange)' : 'var(--red)';
+      matchCell += '<div style="font-size:10px;color:' + cushColor + '">' + (b.cushion >= 0 ? 'Covering +' + b.cushion : 'Needs ' + Math.abs(b.cushion).toFixed(1) + ' pts') + '</div>';
+    }
+    // CLV on resolved bets
+    if (b.clv != null) {
+      const clvColor = b.clv > 0 ? 'var(--green)' : b.clv < 0 ? 'var(--red)' : 'var(--text-muted)';
+      matchCell += '<div style="font-size:10px;color:' + clvColor + ';font-weight:600">CLV: ' + (b.clv > 0 ? '+' : '') + b.clv + '</div>';
+    }
+
+    html += '<tr style="border-bottom:1px solid var(--border-light);cursor:pointer" onclick="this.nextElementSibling&&this.nextElementSibling.classList.toggle(\'hidden\')">';
     html += '<td style="padding:10px 12px;color:var(--text-muted);font-size:11px">' + time + '</td>';
-    const _sideLabel = b.side === 'SPREAD' && b.spread != null ? 'SPR ' + (b.spread > 0 ? '+' : '') + b.spread : (b.side||'ML');
-    const _sustTip = b.sustDetail ? ' title="' + b.sustDetail.replace(/"/g, '&quot;') + '"' : '';
-    html += '<td style="padding:10px 12px;color:var(--text-primary);font-weight:700"' + _sustTip + '>' + b.team + ' <span style="color:var(--text-muted);font-weight:400">' + _sideLabel + '</span></td>';
-    html += '<td style="padding:10px 12px">' + sigBadges + '</td>';
+    html += '<td style="padding:10px 12px">' + matchCell + '</td>';
+    html += '<td style="padding:10px 12px;text-align:center">' + sustCell + '</td>';
     html += '<td style="padding:10px 12px;text-align:right;color:var(--text-secondary);font-family:monospace">' + oddsStr + '</td>';
-    html += '<td style="padding:10px 12px;text-align:right;color:var(--accent);font-weight:600">' + edgeVal + '</td>';
-    html += '<td style="padding:10px 12px;text-align:right;color:var(--text-secondary)">' + b.kellyPct + '%</td>';
     html += '<td style="padding:10px 12px;text-align:right;color:var(--text-primary);font-weight:700">$' + b.kellyBet + '</td>';
     html += '<td style="padding:10px 12px;text-align:center">' + resultCell + '</td>';
     html += '<td style="padding:10px 12px;text-align:right;color:' + plColor + ';font-weight:700">' + plStr + '</td>';
     html += '</tr>';
+
+    // Expandable detail row
+    let detailParts = [];
+    if (b.sustSignals && b.sustSignals.length) detailParts.push('<span style="color:var(--green)">Sust:</span> ' + b.sustSignals.join(', '));
+    if (b.fragSignals && b.fragSignals.length) detailParts.push('<span style="color:var(--red)">Frag:</span> ' + b.fragSignals.join(', '));
+    if (b.sustStats) {
+      const st = b.sustStats;
+      detailParts.push('FG:' + (st.fg||'-') + '% eFG:' + (st.efg||'-') + '% 3PT:' + (st.threePt||'-') + '% Proc:' + (st.proc||'-') + '/10 Star:' + (st.star||0) + '%');
+    }
+    if (b.espnOdds) detailParts.push('ESPN: ' + (b.espnOdds.detail||'?') + ' (open: ' + (b.espnOdds.openSpread||'?') + ')');
+    if (b.closingSpread != null) detailParts.push('Closing: ' + (b.closingSpread > 0 ? '+' : '') + b.closingSpread + ' (' + ((b.spreadHistory||[]).length) + ' snapshots)');
+    html += '<tr class="hidden" style="background:var(--bg)"><td colspan="7" style="padding:8px 12px 8px 24px;font-size:11px;color:var(--text-secondary);line-height:1.6">' + (detailParts.length ? detailParts.join('<br>') : 'No detail data') + '</td></tr>';
   });
   html += '</tbody></table>';
   el.innerHTML = html;
