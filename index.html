@@ -6109,16 +6109,18 @@ function updateBacktestPanel() {
     byMode[mode].payout += (b.payout || 0);
     byMode[mode].bets.push(b);
   });
-  let html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px">';
-  Object.entries(byMode).forEach(([mode, sd]) => {
+  const modeKeys = Object.keys(byMode);
+  let html = '<div style="display:grid;grid-template-columns:repeat(' + Math.min(modeKeys.length, 4) + ',1fr);gap:12px">';
+  modeKeys.forEach(mode => {
+    const sd = byMode[mode];
     const mwr = sd.total > 0 ? Math.round(sd.wins / sd.total * 100) : 0;
     const mwrColor = mwr >= 55 ? 'var(--green)' : mwr >= 45 ? 'var(--orange)' : 'var(--red)';
     const plStr = sd.payout >= 0 ? '+$' + Math.abs(sd.payout).toFixed(0) : '-$' + Math.abs(sd.payout).toFixed(0);
     const plColor = sd.payout > 0 ? 'var(--green)' : sd.payout < 0 ? 'var(--red)' : 'var(--text-muted)';
-    html += '<div class="stat-card" style="padding:14px">';
-    html += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px"><span style="background:var(--accent);color:white;font-size:9px;font-weight:800;padding:2px 8px;border-radius:4px;letter-spacing:0.5px">' + mode + '</span><span style="font-size:10px;color:var(--text-muted)">SUST Strategy</span></div>';
-    html += '<div style="color:' + mwrColor + ';font-size:22px;font-weight:800">' + mwr + '%</div>';
-    html += '<div style="color:var(--text-muted);font-size:11px;margin-top:4px">' + sd.wins + 'W-' + (sd.total - sd.wins) + 'L | <span style="color:' + plColor + ';font-weight:700">' + plStr + '</span></div>';
+    html += '<div class="stat-card" style="padding:16px;text-align:center">';
+    html += '<div style="display:inline-flex;align-items:center;gap:6px;margin-bottom:10px"><span style="background:var(--accent);color:white;font-size:9px;font-weight:800;padding:2px 8px;border-radius:4px;letter-spacing:0.5px">' + mode + '</span><span style="font-size:10px;color:var(--text-muted)">SUST Strategy</span></div>';
+    html += '<div style="color:' + mwrColor + ';font-size:26px;font-weight:800;line-height:1.1">' + mwr + '%</div>';
+    html += '<div style="color:var(--text-muted);font-size:11px;margin-top:6px">' + sd.wins + 'W-' + (sd.total - sd.wins) + 'L | <span style="color:' + plColor + ';font-weight:700">' + plStr + '</span></div>';
     html += '</div>';
   });
   html += '</div>';
@@ -6884,53 +6886,53 @@ try {
 
 <div id="content-history" class="tab-content">
   <!-- ===== BET TRACKER (merged from Bet Log tab) ===== -->
-  <div style="margin-bottom:20px">
+  <div style="margin-bottom:20px;text-align:center">
     <h2 style="font-size:18px;font-weight:800;margin-bottom:4px">Bet Tracker</h2>
     <p style="font-size:12px;color:var(--text-muted)">Auto-logged when signals fire. Results auto-resolved from ESPN final scores.</p>
   </div>
-  <div id="backtest-panel" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-bottom:18px">
-    <div class="stat-card" style="padding:16px;position:relative;overflow:hidden">
-      <div style="position:absolute;top:-6px;right:-6px;width:48px;height:48px;border-radius:50%;background:rgba(16,185,129,0.06)"></div>
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+  <div id="backtest-panel" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px">
+    <div class="stat-card" style="padding:20px 16px;text-align:center;position:relative;overflow:hidden">
+      <div style="position:absolute;top:-8px;right:-8px;width:52px;height:52px;border-radius:50%;background:rgba(16,185,129,0.06)"></div>
+      <div style="display:inline-flex;align-items:center;gap:5px;margin-bottom:10px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
         <span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-weight:700">Record</span>
       </div>
-      <div id="bt-record" style="font-size:24px;font-weight:800;color:var(--green)">-</div>
-      <div id="bt-record-sub" style="font-size:10px;color:var(--text-muted);margin-top:3px">No bets yet</div>
+      <div id="bt-record" style="font-size:28px;font-weight:800;color:var(--green);line-height:1.1">-</div>
+      <div id="bt-record-sub" style="font-size:10px;color:var(--text-muted);margin-top:6px">No bets yet</div>
     </div>
-    <div class="stat-card" style="padding:16px;position:relative;overflow:hidden">
-      <div style="position:absolute;top:-6px;right:-6px;width:48px;height:48px;border-radius:50%;background:rgba(124,58,237,0.06)"></div>
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+    <div class="stat-card" style="padding:20px 16px;text-align:center;position:relative;overflow:hidden">
+      <div style="position:absolute;top:-8px;right:-8px;width:52px;height:52px;border-radius:50%;background:rgba(124,58,237,0.06)"></div>
+      <div style="display:inline-flex;align-items:center;gap:5px;margin-bottom:10px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
         <span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-weight:700">Total P/L</span>
       </div>
-      <div id="bt-pl" style="font-size:24px;font-weight:800">-</div>
-      <div id="bt-pl-sub" style="font-size:10px;color:var(--text-muted);margin-top:3px">-</div>
+      <div id="bt-pl" style="font-size:28px;font-weight:800;line-height:1.1">-</div>
+      <div id="bt-pl-sub" style="font-size:10px;color:var(--text-muted);margin-top:6px">-</div>
     </div>
-    <div class="stat-card" style="padding:16px;position:relative;overflow:hidden">
-      <div style="position:absolute;top:-6px;right:-6px;width:48px;height:48px;border-radius:50%;background:rgba(99,102,241,0.06)"></div>
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+    <div class="stat-card" style="padding:20px 16px;text-align:center;position:relative;overflow:hidden">
+      <div style="position:absolute;top:-8px;right:-8px;width:52px;height:52px;border-radius:50%;background:rgba(99,102,241,0.06)"></div>
+      <div style="display:inline-flex;align-items:center;gap:5px;margin-bottom:10px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
         <span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-weight:700">ROI</span>
       </div>
-      <div id="bt-roi" style="font-size:24px;font-weight:800">-</div>
-      <div id="bt-roi-sub" style="font-size:10px;color:var(--text-muted);margin-top:3px">-</div>
+      <div id="bt-roi" style="font-size:28px;font-weight:800;line-height:1.1">-</div>
+      <div id="bt-roi-sub" style="font-size:10px;color:var(--text-muted);margin-top:6px">-</div>
     </div>
-    <div class="stat-card" style="padding:16px;position:relative;overflow:hidden">
-      <div style="position:absolute;top:-6px;right:-6px;width:48px;height:48px;border-radius:50%;background:rgba(245,158,11,0.06)"></div>
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+    <div class="stat-card" style="padding:20px 16px;text-align:center;position:relative;overflow:hidden">
+      <div style="position:absolute;top:-8px;right:-8px;width:52px;height:52px;border-radius:50%;background:rgba(245,158,11,0.06)"></div>
+      <div style="display:inline-flex;align-items:center;gap:5px;margin-bottom:10px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
         <span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-weight:700">Brier Score</span>
       </div>
-      <div id="bt-brier" style="font-size:24px;font-weight:800">-</div>
-      <div id="bt-brier-sub" style="font-size:10px;color:var(--text-muted);margin-top:3px">Calibration metric (lower = better)</div>
+      <div id="bt-brier" style="font-size:28px;font-weight:800;line-height:1.1">-</div>
+      <div id="bt-brier-sub" style="font-size:10px;color:var(--text-muted);margin-top:6px">Calibration (lower = better)</div>
     </div>
   </div>
   <div id="signal-breakdown" style="margin-bottom:20px"></div>
-  <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center">
+  <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center;justify-content:center">
     <button style="background:var(--accent);color:white;border:none;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;letter-spacing:0.2px" onclick="exportBetLog()">Export CSV</button>
     <button style="background:var(--card-bg);color:var(--text-muted);border:1px solid var(--border);padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer" onclick="if(confirm('Clear all bet log data?'))clearBetLog()">Clear Log</button>
-    <span style="margin-left:auto;font-size:10px;color:var(--text-muted)">Data sourced from daemon (sust-bets.json)</span>
+    <span style="font-size:10px;color:var(--text-muted)">Data from daemon</span>
   </div>
   <div class="card" style="padding:0;overflow:hidden;margin-bottom:24px">
     <div id="bet-log-entries" style="overflow-x:auto"></div>
