@@ -1,66 +1,5 @@
 {
-  "bets": [
-    {
-      "id": 1772592044565,
-      "key": "401808279_sust_VAN",
-      "gameId": "401808279",
-      "team": "VAN",
-      "opponent": "MISS",
-      "matchup": "VAN @ MISS",
-      "side": "SPREAD",
-      "spread": -5.5,
-      "signals": [
-        "sust"
-      ],
-      "marketOdds": -102,
-      "impliedP": 50.5,
-      "estimatedP": 55,
-      "kellyPct": 2.5,
-      "kellyBet": 500,
-      "book": "FanDuel",
-      "timestamp": "2026-03-04T02:40:44.565Z",
-      "outcome": null,
-      "payout": null,
-      "mode": "ncaab",
-      "awayTeam": "VAN",
-      "homeTeam": "MISS",
-      "awayScore": 33,
-      "homeScore": 32,
-      "period": 1,
-      "clock": "1:44",
-      "periodLabel": "H1",
-      "sustLeader": "VAN",
-      "sustMargin": 1,
-      "betOnLeader": true,
-      "currentMargin": 1,
-      "cushion": -4.5,
-      "sustScore": 16.7,
-      "fragScore": -15.7,
-      "sustGap": 32.4,
-      "sustSignals": [],
-      "fragSignals": [
-        "3PT heavy (47% of pts)",
-        "3PT hot (50% on 10 att)"
-      ],
-      "sustStats": {
-        "fg": "38",
-        "efg": "44",
-        "threePt": "29",
-        "twoPt": "55",
-        "proc": 6.9,
-        "star": 0
-      },
-      "fragStats": {
-        "fg": "52",
-        "efg": "63",
-        "threePt": "50",
-        "twoPt": "44",
-        "proc": 5,
-        "star": 0
-      },
-      "sustDetail": "VAN +16.7 vs MISS -15.7 (gap:32.4) | VAN 33-32 MISS | H1 1:44 | FanDuel -5.5 (-102)"
-    }
-  ],
+  "bets": [],
   "resolved": [
     {
       "id": 1772498518186,
@@ -6783,15 +6722,79 @@
       "finalScore": "SA 131 - 91 PHI",
       "closingSpread": -41.5,
       "clv": 32
+    },
+    {
+      "id": 1772592044565,
+      "key": "401808279_sust_VAN",
+      "gameId": "401808279",
+      "team": "VAN",
+      "opponent": "MISS",
+      "matchup": "VAN @ MISS",
+      "side": "SPREAD",
+      "spread": -5.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -102,
+      "impliedP": 50.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-04T02:40:44.565Z",
+      "outcome": "L",
+      "payout": -500,
+      "mode": "ncaab",
+      "awayTeam": "VAN",
+      "homeTeam": "MISS",
+      "awayScore": 33,
+      "homeScore": 32,
+      "period": 1,
+      "clock": "1:44",
+      "periodLabel": "H1",
+      "sustLeader": "VAN",
+      "sustMargin": 1,
+      "betOnLeader": true,
+      "currentMargin": 1,
+      "cushion": -4.5,
+      "sustScore": 16.7,
+      "fragScore": -15.7,
+      "sustGap": 32.4,
+      "sustSignals": [],
+      "fragSignals": [
+        "3PT heavy (47% of pts)",
+        "3PT hot (50% on 10 att)"
+      ],
+      "sustStats": {
+        "fg": "38",
+        "efg": "44",
+        "threePt": "29",
+        "twoPt": "55",
+        "proc": 6.9,
+        "star": 0
+      },
+      "fragStats": {
+        "fg": "52",
+        "efg": "63",
+        "threePt": "50",
+        "twoPt": "44",
+        "proc": 5,
+        "star": 0
+      },
+      "sustDetail": "VAN +16.7 vs MISS -15.7 (gap:32.4) | VAN 33-32 MISS | H1 1:44 | FanDuel -5.5 (-102)",
+      "resolvedAt": "2026-03-04T04:37:51.965Z",
+      "finalScore": "VAN 89 - 86 MISS",
+      "clv": null,
+      "closingSpread": null
     }
   ],
   "meta": {
-    "brierScore": 0.2311,
+    "brierScore": 0.2358,
     "brierBaseline": 0.25,
-    "brierSkill": 0.0756,
-    "brierN": 14,
-    "winRate": 71.4,
-    "totalPL": 2493.9,
+    "brierSkill": 0.0568,
+    "brierN": 15,
+    "winRate": 66.7,
+    "totalPL": 1993.9,
     "v2Note": "3 of 5 old bets approved by v2 algo. HOU@WSH blocked by cushion (-15.5). LAC@GS skipped (both MIXED, gap 8.6)."
   }
 }
