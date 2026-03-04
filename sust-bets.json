@@ -71,7 +71,106 @@
         "awayML": "-360",
         "homeML": "+285",
         "openSpread": "-10.5"
-      }
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-04T04:43:14.949Z",
+          "spread": 4.5,
+          "score": "28-30",
+          "period": 2,
+          "clock": "10:44"
+        },
+        {
+          "t": "2026-03-04T04:44:19.068Z",
+          "spread": 7.5,
+          "score": "28-30",
+          "period": 2,
+          "clock": "10:44"
+        },
+        {
+          "t": "2026-03-04T04:45:22.620Z",
+          "spread": 7.5,
+          "score": "28-30",
+          "period": 2,
+          "clock": "10:44"
+        },
+        {
+          "t": "2026-03-04T04:46:26.947Z",
+          "spread": 7.5,
+          "score": "28-30",
+          "period": 2,
+          "clock": "10:44"
+        },
+        {
+          "t": "2026-03-04T04:47:34.789Z",
+          "spread": 7.5,
+          "score": "30-32",
+          "period": 2,
+          "clock": "9:48"
+        }
+      ]
+    },
+    {
+      "id": 1772599658672,
+      "key": "401825554_sust_NEB",
+      "gameId": "401825554",
+      "team": "NEB",
+      "opponent": "UCLA",
+      "matchup": "NEB @ UCLA",
+      "side": "SPREAD",
+      "spread": 3.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -108,
+      "impliedP": 51.9,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-04T04:47:38.672Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "NEB",
+      "homeTeam": "UCLA",
+      "awayScore": 22,
+      "homeScore": 29,
+      "period": 1,
+      "clock": "4:50",
+      "periodLabel": "H1",
+      "sustLeader": "UCLA",
+      "sustMargin": 7,
+      "betOnLeader": false,
+      "currentMargin": -7,
+      "cushion": -3.5,
+      "sustScore": 26.4,
+      "fragScore": -11.3,
+      "sustGap": 37.7,
+      "sustSignals": [
+        "Low 3PT reliance (27%)",
+        "3PT cold (15% on 13 att)"
+      ],
+      "fragSignals": [
+        "3PT hot (50% on 8 att)"
+      ],
+      "sustStats": {
+        "fg": "38",
+        "efg": "43",
+        "threePt": "15",
+        "twoPt": "55",
+        "proc": 6.3,
+        "star": 0
+      },
+      "fragStats": {
+        "fg": "55",
+        "efg": "64",
+        "threePt": "50",
+        "twoPt": "55",
+        "proc": 5,
+        "star": 0
+      },
+      "sustDetail": "NEB +26.4 vs UCLA -11.3 (gap:37.7) | NEB 22-29 UCLA | H1 4:50 | FanDuel +3.5 (-108)"
     }
   ],
   "resolved": [
