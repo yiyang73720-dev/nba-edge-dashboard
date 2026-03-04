@@ -660,6 +660,48 @@
           "score": "71-63",
           "period": 3,
           "clock": "6:51"
+        },
+        {
+          "t": "2026-03-04T02:33:05.128Z",
+          "spread": -11.5,
+          "score": "71-63",
+          "period": 3,
+          "clock": "6:51"
+        },
+        {
+          "t": "2026-03-04T02:33:05.131Z",
+          "spread": -11.5,
+          "score": "71-63",
+          "period": 3,
+          "clock": "6:51"
+        },
+        {
+          "t": "2026-03-04T02:34:10.354Z",
+          "spread": -11.5,
+          "score": "71-63",
+          "period": 3,
+          "clock": "6:51"
+        },
+        {
+          "t": "2026-03-04T02:34:10.359Z",
+          "spread": -11.5,
+          "score": "71-63",
+          "period": 3,
+          "clock": "6:51"
+        },
+        {
+          "t": "2026-03-04T02:35:15.993Z",
+          "spread": -11.5,
+          "score": "73-66",
+          "period": 3,
+          "clock": "6:07"
+        },
+        {
+          "t": "2026-03-04T02:35:15.996Z",
+          "spread": -11.5,
+          "score": "73-66",
+          "period": 3,
+          "clock": "6:07"
         }
       ]
     },
@@ -1254,8 +1296,125 @@
           "score": "78-53",
           "period": 2,
           "clock": "0.0"
+        },
+        {
+          "t": "2026-03-04T02:33:05.128Z",
+          "spread": -22.5,
+          "score": "78-53",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-04T02:33:05.131Z",
+          "spread": -22.5,
+          "score": "78-53",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-04T02:34:10.354Z",
+          "spread": -22.5,
+          "score": "78-53",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-04T02:34:10.359Z",
+          "spread": -22.5,
+          "score": "78-53",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-04T02:35:15.993Z",
+          "spread": -22.5,
+          "score": "78-53",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-04T02:35:15.996Z",
+          "spread": -22.5,
+          "score": "78-53",
+          "period": 2,
+          "clock": "0.0"
         }
       ]
+    },
+    {
+      "id": 1772591718720,
+      "key": "401810745_sust_MIN",
+      "gameId": "401810745",
+      "team": "MIN",
+      "opponent": "MEM",
+      "matchup": "MEM @ MIN",
+      "side": "SPREAD",
+      "spread": -5.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -120,
+      "impliedP": 54.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-04T02:35:18.720Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "MEM",
+      "homeTeam": "MIN",
+      "awayScore": 70,
+      "homeScore": 66,
+      "period": 3,
+      "clock": "8:42",
+      "periodLabel": "Q3",
+      "sustLeader": "MEM",
+      "sustMargin": 4,
+      "betOnLeader": false,
+      "currentMargin": -4,
+      "cushion": -9.5,
+      "sustScore": 43.6,
+      "fragScore": -10.2,
+      "sustGap": 53.8,
+      "sustSignals": [
+        "Low 3PT reliance (18%)",
+        "3PT cold (21% on 19 att)",
+        "Star cold (49% pace)"
+      ],
+      "fragSignals": [
+        "3PT hot (45% on 22 att)"
+      ],
+      "sustStats": {
+        "fg": "50",
+        "efg": "54",
+        "threePt": "21",
+        "twoPt": "61",
+        "proc": 6.7,
+        "star": 49
+      },
+      "fragStats": {
+        "fg": "51",
+        "efg": "62",
+        "threePt": "45",
+        "twoPt": "37",
+        "proc": 5,
+        "star": 0
+      },
+      "sustDetail": "MIN +43.6 vs MEM -10.2 (gap:53.8) | MEM 70-66 MIN | Q3 8:42 | FanDuel -5.5 (-120)",
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -14.5,
+        "detail": "MIN -14.5",
+        "awaySpread": "+14.5",
+        "homeSpread": "-14.5",
+        "awaySpreadOdds": "-112",
+        "homeSpreadOdds": "-108",
+        "awayML": "+550",
+        "homeML": "-800",
+        "openSpread": "+14.5"
+      }
     }
   ],
   "resolved": [
