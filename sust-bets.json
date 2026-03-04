@@ -1,69 +1,6 @@
 {
   "bets": [
     {
-      "id": 1772580580800,
-      "key": "401808278_sust_TENN",
-      "gameId": "401808278",
-      "team": "TENN",
-      "opponent": "SC",
-      "matchup": "TENN @ SC",
-      "side": "SPREAD",
-      "spread": -9.5,
-      "signals": [
-        "sust"
-      ],
-      "marketOdds": -118,
-      "impliedP": 54.1,
-      "estimatedP": 55,
-      "kellyPct": 2.5,
-      "kellyBet": 500,
-      "book": "FanDuel",
-      "timestamp": "2026-03-03T23:29:40.800Z",
-      "outcome": null,
-      "payout": null,
-      "mode": "ncaab",
-      "awayTeam": "TENN",
-      "homeTeam": "SC",
-      "awayScore": 25,
-      "homeScore": 21,
-      "period": 1,
-      "clock": "6:48",
-      "periodLabel": "H1",
-      "sustLeader": "TENN",
-      "sustMargin": 4,
-      "betOnLeader": true,
-      "currentMargin": 4,
-      "cushion": -5.5,
-      "sustScore": 45,
-      "fragScore": -11,
-      "sustGap": 56,
-      "sustSignals": [
-        "Low 3PT reliance (12%)",
-        "3PT cold (17% on 6 att)",
-        "Strong process (7.3/10)"
-      ],
-      "fragSignals": [
-        "3PT heavy (50% of pts)"
-      ],
-      "sustStats": {
-        "fg": "50",
-        "efg": "53",
-        "threePt": "17",
-        "twoPt": "72",
-        "proc": 7.3,
-        "star": 0
-      },
-      "fragStats": {
-        "fg": "29",
-        "efg": "38",
-        "threePt": "27",
-        "twoPt": "22",
-        "proc": 4.4,
-        "star": 0
-      },
-      "sustDetail": "TENN +45 vs SC -11 (gap:56) | TENN 25-21 SC | H1 6:48 | FanDuel -9.5 (-118)"
-    },
-    {
       "id": 1772582264707,
       "key": "401808277_sust_UGA",
       "gameId": "401808277",
@@ -385,6 +322,110 @@
         "awayML": "-142",
         "homeML": "+120",
         "openSpread": "-1.5"
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-04T00:42:25.531Z",
+          "spread": 3.5,
+          "score": "29-33",
+          "period": 2,
+          "clock": "10:21"
+        },
+        {
+          "t": "2026-03-04T00:42:26.298Z",
+          "spread": 3.5,
+          "score": "29-33",
+          "period": 2,
+          "clock": "10:21"
+        },
+        {
+          "t": "2026-03-04T00:43:31.066Z",
+          "spread": 0.5,
+          "score": "32-35",
+          "period": 2,
+          "clock": "9:47"
+        },
+        {
+          "t": "2026-03-04T00:43:31.072Z",
+          "spread": 0.5,
+          "score": "32-35",
+          "period": 2,
+          "clock": "9:47"
+        }
+      ]
+    },
+    {
+      "id": 1772585011759,
+      "key": "401810738_sust_DAL",
+      "gameId": "401810738",
+      "team": "DAL",
+      "opponent": "CHA",
+      "matchup": "DAL @ CHA",
+      "side": "SPREAD",
+      "spread": 15.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -112,
+      "impliedP": 52.8,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-04T00:43:31.759Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "DAL",
+      "homeTeam": "CHA",
+      "awayScore": 23,
+      "homeScore": 31,
+      "period": 2,
+      "clock": "10:42",
+      "periodLabel": "Q2",
+      "sustLeader": "CHA",
+      "sustMargin": 8,
+      "betOnLeader": false,
+      "currentMargin": -8,
+      "cushion": 7.5,
+      "sustScore": 48.9,
+      "fragScore": -10.7,
+      "sustGap": 59.599999999999994,
+      "sustSignals": [
+        "Low 3PT reliance (0%)",
+        "3PT cold (0% on 7 att)"
+      ],
+      "fragSignals": [
+        "3PT heavy (58% of pts)"
+      ],
+      "sustStats": {
+        "fg": "36",
+        "efg": "36",
+        "threePt": "0",
+        "twoPt": "70",
+        "proc": 5.3,
+        "star": 0
+      },
+      "fragStats": {
+        "fg": "43",
+        "efg": "54",
+        "threePt": "38",
+        "twoPt": "39",
+        "proc": 6.1,
+        "star": 0
+      },
+      "sustDetail": "DAL +48.9 vs CHA -10.7 (gap:59.599999999999994) | DAL 23-31 CHA | Q2 10:42 | FanDuel +15.5 (-112)",
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -13.5,
+        "detail": "CHA -13.5",
+        "awaySpread": "+13.5",
+        "homeSpread": "-13.5",
+        "awaySpreadOdds": "-110",
+        "homeSpreadOdds": "-110",
+        "awayML": "+490",
+        "homeML": "-675",
+        "openSpread": "+11.5"
       }
     }
   ],
@@ -755,15 +796,82 @@
       "finalScore": "LAC 114 - 101 GS",
       "clv": null,
       "closingSpread": null
+    },
+    {
+      "id": 1772580580800,
+      "key": "401808278_sust_TENN",
+      "gameId": "401808278",
+      "team": "TENN",
+      "opponent": "SC",
+      "matchup": "TENN @ SC",
+      "side": "SPREAD",
+      "spread": -9.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -118,
+      "impliedP": 54.1,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-03T23:29:40.800Z",
+      "outcome": "W",
+      "payout": 423.73,
+      "mode": "ncaab",
+      "awayTeam": "TENN",
+      "homeTeam": "SC",
+      "awayScore": 25,
+      "homeScore": 21,
+      "period": 1,
+      "clock": "6:48",
+      "periodLabel": "H1",
+      "sustLeader": "TENN",
+      "sustMargin": 4,
+      "betOnLeader": true,
+      "currentMargin": 4,
+      "cushion": -5.5,
+      "sustScore": 45,
+      "fragScore": -11,
+      "sustGap": 56,
+      "sustSignals": [
+        "Low 3PT reliance (12%)",
+        "3PT cold (17% on 6 att)",
+        "Strong process (7.3/10)"
+      ],
+      "fragSignals": [
+        "3PT heavy (50% of pts)"
+      ],
+      "sustStats": {
+        "fg": "50",
+        "efg": "53",
+        "threePt": "17",
+        "twoPt": "72",
+        "proc": 7.3,
+        "star": 0
+      },
+      "fragStats": {
+        "fg": "29",
+        "efg": "38",
+        "threePt": "27",
+        "twoPt": "22",
+        "proc": 4.4,
+        "star": 0
+      },
+      "sustDetail": "TENN +45 vs SC -11 (gap:56) | TENN 25-21 SC | H1 6:48 | FanDuel -9.5 (-118)",
+      "resolvedAt": "2026-03-04T00:43:35.116Z",
+      "finalScore": "TENN 78 - 59 SC",
+      "clv": null,
+      "closingSpread": null
     }
   ],
   "meta": {
     "brierScore": 0.2025,
     "brierBaseline": 0.25,
     "brierSkill": 0.19,
-    "brierN": 3,
+    "brierN": 4,
     "winRate": 100,
-    "totalPL": 1420.63,
+    "totalPL": 1844.36,
     "v2Note": "3 of 5 old bets approved by v2 algo. HOU@WSH blocked by cushion (-15.5). LAC@GS skipped (both MIXED, gap 8.6)."
   }
 }
