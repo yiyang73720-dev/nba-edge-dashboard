@@ -323,6 +323,27 @@
           "score": "50-40",
           "period": 2,
           "clock": "0.0"
+        },
+        {
+          "t": "2026-03-05T01:14:04.239Z",
+          "spread": -8.5,
+          "score": "50-40",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-05T01:15:10.565Z",
+          "spread": -8.5,
+          "score": "50-40",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-05T01:16:15.429Z",
+          "spread": -8.5,
+          "score": "50-40",
+          "period": 2,
+          "clock": "0.0"
         }
       ]
     },
@@ -396,6 +417,102 @@
         "awayML": "+260",
         "homeML": "-325",
         "openSpread": "+9.5"
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-05T01:14:04.239Z",
+          "spread": 9.5,
+          "score": "29-37",
+          "period": 2,
+          "clock": "8:51"
+        },
+        {
+          "t": "2026-03-05T01:15:10.565Z",
+          "spread": 9.5,
+          "score": "29-39",
+          "period": 2,
+          "clock": "8:27"
+        },
+        {
+          "t": "2026-03-05T01:16:15.429Z",
+          "spread": 9.5,
+          "score": "30-39",
+          "period": 2,
+          "clock": "8:06"
+        }
+      ]
+    },
+    {
+      "id": 1772673378156,
+      "key": "401810749_sust_CHA",
+      "gameId": "401810749",
+      "team": "CHA",
+      "opponent": "BOS",
+      "matchup": "CHA @ BOS",
+      "side": "SPREAD",
+      "spread": -5.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -118,
+      "impliedP": 54.1,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-05T01:16:18.156Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "CHA",
+      "homeTeam": "BOS",
+      "awayScore": 42,
+      "homeScore": 25,
+      "period": 2,
+      "clock": "9:03",
+      "periodLabel": "Q2",
+      "sustLeader": "CHA",
+      "sustMargin": 17,
+      "betOnLeader": true,
+      "currentMargin": 17,
+      "cushion": 11.5,
+      "sustScore": 8.7,
+      "fragScore": -34.3,
+      "sustGap": 43,
+      "sustSignals": [
+        "Strong process (8.6/10)"
+      ],
+      "fragSignals": [
+        "3PT heavy (60% of pts)"
+      ],
+      "sustStats": {
+        "fg": "58",
+        "efg": "71",
+        "threePt": "47",
+        "twoPt": "38",
+        "proc": 8.6,
+        "star": 0
+      },
+      "fragStats": {
+        "fg": "27",
+        "efg": "35",
+        "threePt": "31",
+        "twoPt": "24",
+        "proc": 2.5,
+        "star": 73
+      },
+      "sustDetail": "CHA +8.7 vs BOS -34.3 (gap:43) | CHA 42-25 BOS | Q2 9:03 | FanDuel -5.5 (-118)",
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -6.5,
+        "detail": "BOS -6.5",
+        "awaySpread": "+6.5",
+        "homeSpread": "-6.5",
+        "awaySpreadOdds": "-105",
+        "homeSpreadOdds": "-115",
+        "awayML": "+205",
+        "homeML": "-250",
+        "openSpread": "+5.5"
       }
     }
   ],
