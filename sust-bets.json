@@ -645,6 +645,20 @@
           "score": "100-94",
           "period": 4,
           "clock": "4:28"
+        },
+        {
+          "t": "2026-03-05T02:43:30.642Z",
+          "spread": -4.5,
+          "score": "100-94",
+          "period": 4,
+          "clock": "3:38"
+        },
+        {
+          "t": "2026-03-05T02:44:34.043Z",
+          "spread": -1.5,
+          "score": "100-98",
+          "period": 4,
+          "clock": "2:37"
         }
       ]
     },
@@ -1273,8 +1287,95 @@
           "score": "112-87",
           "period": 4,
           "clock": "3:32"
+        },
+        {
+          "t": "2026-03-05T02:43:30.642Z",
+          "spread": -22.5,
+          "score": "112-89",
+          "period": 4,
+          "clock": "2:13"
+        },
+        {
+          "t": "2026-03-05T02:44:34.043Z",
+          "spread": -25.5,
+          "score": "115-89",
+          "period": 4,
+          "clock": "1:20"
         }
       ]
+    },
+    {
+      "id": 1772678675400,
+      "key": "401810751_sust_POR",
+      "gameId": "401810751",
+      "team": "POR",
+      "opponent": "MEM",
+      "matchup": "POR @ MEM",
+      "side": "SPREAD",
+      "spread": -9.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -106,
+      "impliedP": 51.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-05T02:44:35.400Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "POR",
+      "homeTeam": "MEM",
+      "awayScore": 82,
+      "homeScore": 78,
+      "period": 3,
+      "clock": "4:02",
+      "periodLabel": "Q3",
+      "sustLeader": "POR",
+      "sustMargin": 4,
+      "betOnLeader": true,
+      "currentMargin": 4,
+      "cushion": -5.5,
+      "sustScore": 17.3,
+      "fragScore": -13.8,
+      "sustGap": 31.1,
+      "sustSignals": [
+        "Strong process (7.2/10)"
+      ],
+      "fragSignals": [
+        "3PT hot (48% on 23 att)"
+      ],
+      "sustStats": {
+        "fg": "47",
+        "efg": "54",
+        "threePt": "31",
+        "twoPt": "54",
+        "proc": 7.2,
+        "star": 0
+      },
+      "fragStats": {
+        "fg": "45",
+        "efg": "54",
+        "threePt": "48",
+        "twoPt": "41",
+        "proc": 4.6,
+        "star": 0
+      },
+      "sustDetail": "POR +17.3 vs MEM -13.8 (gap:31.1) | POR 82-78 MEM | Q3 4:02 | FanDuel -9.5 (-106)",
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": 9.5,
+        "detail": "POR -9.5",
+        "awaySpread": "-9.5",
+        "homeSpread": "+9.5",
+        "awaySpreadOdds": "-112",
+        "homeSpreadOdds": "-108",
+        "awayML": "-395",
+        "homeML": "+310",
+        "openSpread": "-7.5"
+      }
     }
   ],
   "resolved": [
