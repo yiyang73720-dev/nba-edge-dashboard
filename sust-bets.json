@@ -1,5 +1,108 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1772757566733,
+      "key": "401810755_sust_UTAH",
+      "gameId": "401810755",
+      "team": "UTAH",
+      "opponent": "WSH",
+      "matchup": "UTAH @ WSH",
+      "side": "SPREAD",
+      "spread": -4.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -102,
+      "impliedP": 50.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-06T00:39:26.733Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "UTAH",
+      "homeTeam": "WSH",
+      "awayScore": 39,
+      "homeScore": 27,
+      "period": 2,
+      "clock": "10:27",
+      "periodLabel": "Q2",
+      "sustLeader": "UTAH",
+      "sustMargin": 12,
+      "betOnLeader": true,
+      "currentMargin": 12,
+      "cushion": 7.5,
+      "sustScore": 10.1,
+      "fragScore": -45,
+      "sustGap": 55.1,
+      "sustSignals": [
+        "Strong process (8.6/10)"
+      ],
+      "fragSignals": [
+        "3PT heavy (67% of pts)",
+        "3PT hot (46% on 13 att)"
+      ],
+      "sustStats": {
+        "fg": "58",
+        "efg": "69",
+        "threePt": "50",
+        "twoPt": "46",
+        "proc": 8.6,
+        "star": 0
+      },
+      "fragStats": {
+        "fg": "43",
+        "efg": "57",
+        "threePt": "46",
+        "twoPt": "22",
+        "proc": 2.8,
+        "star": 0
+      },
+      "sustDetail": "UTAH +10.1 vs WSH -45 (gap:55.1) | UTAH 39-27 WSH | Q2 10:27 | FanDuel -4.5 (-102)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": false,
+        "g10_ncaa": false,
+        "g11_bigMargin": true,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_procHeavy": 65.1,
+        "v2_no3pt": 40.6,
+        "v3_flip3ptAcc": 58.9,
+        "v4_procOnly": 58,
+        "v5_balanced": 49.5,
+        "v9_anti3ptFull": 60.9
+      },
+      "altStructural": {
+        "v6_cushionBoost": 77.6,
+        "v7_marginWeighted": 66.1,
+        "v8_procDiffOnly": 58,
+        "v10_timeDecay": 55.1
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -3.5,
+        "detail": "WSH -3.5",
+        "awaySpread": "+3.5",
+        "homeSpread": "-3.5",
+        "awaySpreadOdds": "-105",
+        "homeSpreadOdds": "-115",
+        "awayML": "+140",
+        "homeML": "-166",
+        "openSpread": "+2.5"
+      }
+    }
+  ],
   "resolved": [
     {
       "id": 1772498518186,
