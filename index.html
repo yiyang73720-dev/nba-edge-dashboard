@@ -6986,104 +6986,10 @@ try {
 <div id="content-guide" class="tab-content">
 <div class="guide-section">
 <h2 style="font-size:22px;font-weight:800;margin-bottom:4px;letter-spacing:-0.5px;">Sustainability Guide</h2>
-
-<!-- QUICK START -->
 <div style="background:var(--accent-light);border:1px solid var(--accent);border-radius:var(--radius);padding:24px;margin:16px 0 24px;">
-<h3 style="font-size:16px;font-weight:800;margin-bottom:12px;letter-spacing:-0.2px;">How It Works</h3>
-<div style="font-size:13px;line-height:1.7;color:var(--text-primary);">
-<p style="margin-bottom:10px;"><strong>The idea:</strong> Not all points are created equal. A team up 12 on 8/10 threes is very different from a team up 12 with +8 rebounds and 20 paint points. The daemon scores each team's scoring sustainability from <strong>-100 (fragile)</strong> to <strong>+100 (durable)</strong> using 4 weighted factors. When the gap is large enough, it bets the sustainable side's spread.</p>
-<p style="margin-bottom:14px;"><strong>How it runs:</strong></p>
-<div style="display:grid;grid-template-columns:1fr;gap:10px;">
-<div style="background:var(--card-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--accent);">
-<strong style="font-size:12px;">Daemon:</strong> <span style="font-size:13px;">A background process polls every <strong>60 seconds</strong> during live games. It fetches NBA CDN box scores + Odds API live spreads automatically.</span>
+<p style="font-size:13px;line-height:1.7;color:var(--text-primary);">Proprietary live game analysis model. Each team receives a sustainability classification based on multiple real-time factors. Signals fire when divergence thresholds are met.</p>
 </div>
-<div style="background:var(--card-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--green);">
-<strong style="font-size:12px;">Scoring:</strong> <span style="font-size:13px;">Each team gets a <strong>sustScore</strong> (-100 to +100). Score &ge;8 = <span style="color:var(--green);font-weight:700;">SUSTAINABLE</span>, &le;-8 = <span style="color:var(--red);font-weight:700;">UNSUSTAINABLE</span>, between = <span style="color:var(--orange);font-weight:700;">MIXED</span>.</span>
-</div>
-<div style="background:var(--card-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--orange);">
-<strong style="font-size:12px;">Trigger:</strong> <span style="font-size:13px;">Signal fires when sustainability divergence exceeds proprietary thresholds + multiple confirmation filters pass.</span>
-</div>
-<div style="background:var(--card-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--purple);">
-<strong style="font-size:12px;">Bet:</strong> <span style="font-size:13px;"><strong>$500 flat</strong> on the sustainable team's current live spread. Auto-resolves when game ends and sends email alerts.</span>
-</div>
-</div>
-</div>
-</div>
-
-<!-- DYNAMIC GUIDE (populated by updateSignalGuide) -->
 <div id="nba-guide" style="margin-bottom:24px;"></div>
-
-<!-- WHAT EACH ELEMENT MEANS -->
-<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:24px;">
-<h3 style="font-size:15px;font-weight:800;margin-bottom:14px;letter-spacing:-0.2px;">Sustainability Score</h3>
-<p style="font-size:12px;color:var(--text-secondary);line-height:1.6;margin-bottom:14px;">Each team gets a continuous sustainability score computed from multiple weighted factors. The score measures how repeatable or fragile their current scoring pattern is.</p>
-<table style="width:100%;font-size:12px;border-collapse:collapse;">
-<thead><tr style="border-bottom:2px solid var(--border);text-align:left;">
-<th style="padding:8px 6px;font-weight:700;color:var(--text-muted);font-size:10px;text-transform:uppercase;">Classification</th>
-<th style="padding:8px 6px;font-weight:700;color:var(--text-muted);font-size:10px;text-transform:uppercase;">What It Means</th>
-</tr></thead>
-<tbody>
-<tr style="border-bottom:1px solid var(--border-light);">
-<td style="padding:10px 6px;"><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#10b981;padding:3px 8px;border-radius:4px;">SUSTAINABLE</span></td>
-<td style="padding:10px 6px;color:#10b981;font-weight:600;">Scoring is process-driven and repeatable. Lead is durable.</td>
-</tr>
-<tr style="border-bottom:1px solid var(--border-light);">
-<td style="padding:10px 6px;"><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#f59e0b;padding:3px 8px;border-radius:4px;">MIXED</span></td>
-<td style="padding:10px 6px;color:#f59e0b;font-weight:600;">No strong lean either way.</td>
-</tr>
-<tr>
-<td style="padding:10px 6px;"><span style="display:inline-block;font-size:10px;font-weight:700;color:white;background:#ef4444;padding:3px 8px;border-radius:4px;">UNSUSTAINABLE</span></td>
-<td style="padding:10px 6px;color:#ef4444;font-weight:600;">Scoring pattern is fragile and likely to regress.</td>
-</tr>
-</tbody>
-</table>
-</div>
-
-<h3 style="font-size:15px;font-weight:800;margin-bottom:14px;letter-spacing:-0.2px;">Analysis Factors</h3>
-<p style="font-size:12px;color:var(--text-secondary);line-height:1.6;margin-bottom:14px;">The model analyzes multiple dimensions of team performance to determine scoring sustainability.</p>
-<div class="guide-grid">
-<div class="guide-card" style="border-left:3px solid #0ea5e9;"><h3>Process Quality</h3>
-<p class="edge-label">Composite measure of team effort and execution</p>
-<p>Evaluates box score fundamentals that correlate with winning outcomes. Process-driven teams maintain leads more reliably.</p></div>
-
-<div class="guide-card" style="border-left:3px solid #f59e0b;"><h3>Scoring Mix</h3>
-<p class="edge-label">How a team is generating its points</p>
-<p>Analyzes the composition of scoring — some shot types are more repeatable than others over the course of a game.</p></div>
-
-<div class="guide-card" style="border-left:3px solid #ef4444;"><h3>Shooting Variance</h3>
-<p class="edge-label">Hot or cold shooting detection</p>
-<p>Identifies when a team's shooting accuracy deviates significantly from expected levels, signaling potential regression.</p></div>
-
-<div class="guide-card" style="border-left:3px solid #ec4899;"><h3>Key Player Impact</h3>
-<p class="edge-label">Star player production analysis</p>
-<p>Tracks whether key players are performing above or below their typical output, which affects the durability of the current score.</p></div>
-
-</div>
-
-<div style="display:grid;grid-template-columns:1fr;gap:16px;margin-top:24px;">
-<div class="guide-card" style="border-left:3px solid #7c3aed;margin-bottom:0;"><h3>Signal Triggers</h3>
-<p class="edge-label">Proprietary thresholds determine when signals fire</p>
-<p>Multiple conditions must align simultaneously for a signal to trigger. The model considers timing, divergence magnitude, and position viability.</p></div>
-</div>
-
-<!-- DATA + INFRASTRUCTURE -->
-<div id="theory-panel" class="theory-panel">
-  <h4>Data Sources</h4>
-  <p>The daemon uses three data sources, all polled every 60 seconds during live games:</p>
-  <hr class="signal-divider">
-  <h4 style="color:#0ea5e9;">NBA CDN Box Scores (Free)</h4>
-  <p>Real-time box scores from <code style="font-size:10px;">cdn.nba.com</code>. Provides FGM/FGA/FG3M/FG3A/FTM/FTA/OREB/DREB/REB/AST/TOV/STL/BLK/PF plus individual player stats for star pace tracking. No rate limiting.</p>
-  <hr class="signal-divider">
-  <h4 style="color:#f59e0b;">Odds API Live Spreads (2 credits/call)</h4>
-  <p>Live in-game spreads from FanDuel, DraftKings, BetMGM. Updates every ~30 seconds during games. ~600 credits per night. Budget: ~4.7M remaining.</p>
-  <hr class="signal-divider">
-  <h4 style="color:#8b5cf6;">ESPN Hidden Odds API (Free)</h4>
-  <p>Opening line comparison. Note: ESPN odds do NOT update live — they show the opening/close spread only. Used for CLV calculation (compare bet spread vs closing spread).</p>
-  <hr class="signal-divider">
-  <h4>Structured Logging</h4>
-  <p>Every poll appends to <code style="font-size:10px;">odds-snapshots.jsonl</code> — odds snapshots (all live games) + sustainability snapshots (Q2-Q3 games). This data feeds the ML analysis pipeline for forward-testing the strategy.</p>
-</div>
-
 </div>
 </div>
 
