@@ -1368,7 +1368,7 @@
         </div>
         <div class="chip-value red" id="live-xray-warnings">0</div>
         <div class="chip-label red">Divergences</div>
-        <div class="chip-desc">Games with SUS vs UNSUS (sustGap ≥ 30) — bet trigger</div>
+        <div class="chip-desc">Games with SUS vs UNSUS divergence — signal trigger</div>
       </div>
       <div class="signal-chip" style="position:relative;">
         <div style="position:absolute;top:10px;left:14px;width:28px;height:28px;border-radius:8px;background:rgba(16,185,129,0.1);display:flex;align-items:center;justify-content:center;">
@@ -4472,7 +4472,7 @@ async function fetchESPNScoreboard() {
       const cc = xrayCardClass;
       const hc = isLive?'game-card-header live-pulse':'game-card-header';
 
-      // Track divergences for signal strip (SUS vs UNSUS, sustGap ≥ 30)
+      // Track divergences for signal strip
       if (xray && xray.away?.sustainability && xray.home?.sustainability) {
         const aCls = xray.away.sustainability.cls;
         const hCls = xray.home.sustainability.cls;
@@ -7001,7 +7001,7 @@ try {
 <strong style="font-size:12px;">Scoring:</strong> <span style="font-size:13px;">Each team gets a <strong>sustScore</strong> (-100 to +100). Score &ge;8 = <span style="color:var(--green);font-weight:700;">SUSTAINABLE</span>, &le;-8 = <span style="color:var(--red);font-weight:700;">UNSUSTAINABLE</span>, between = <span style="color:var(--orange);font-weight:700;">MIXED</span>.</span>
 </div>
 <div style="background:var(--card-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--orange);">
-<strong style="font-size:12px;">Trigger:</strong> <span style="font-size:13px;">Auto-bet fires when <strong>sustGap &ge; 30</strong> (one team sustainable, other unsustainable) + <strong>cushion &gt; -14</strong> + both teams have &ge;20 points + game is in Q2-Q3.</span>
+<strong style="font-size:12px;">Trigger:</strong> <span style="font-size:13px;">Signal fires when sustainability divergence exceeds proprietary thresholds + multiple confirmation filters pass.</span>
 </div>
 <div style="background:var(--card-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--purple);">
 <strong style="font-size:12px;">Bet:</strong> <span style="font-size:13px;"><strong>$500 flat</strong> on the sustainable team's current live spread. Auto-resolves when game ends and sends email alerts.</span>
