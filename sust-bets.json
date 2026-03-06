@@ -100,6 +100,118 @@
         "awayML": "+140",
         "homeML": "-166",
         "openSpread": "+2.5"
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-06T00:40:32.394Z",
+          "spread": -4.5,
+          "score": "39-28",
+          "period": 2,
+          "clock": "10:04"
+        }
+      ]
+    },
+    {
+      "id": 1772757633652,
+      "key": "401810754_sust_ORL",
+      "gameId": "401810754",
+      "team": "ORL",
+      "opponent": "DAL",
+      "matchup": "DAL @ ORL",
+      "side": "SPREAD",
+      "spread": -3.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -106,
+      "impliedP": 51.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-06T00:40:33.652Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "DAL",
+      "homeTeam": "ORL",
+      "awayScore": 36,
+      "homeScore": 26,
+      "period": 2,
+      "clock": "11:04",
+      "periodLabel": "Q2",
+      "sustLeader": "DAL",
+      "sustMargin": 10,
+      "betOnLeader": false,
+      "currentMargin": -10,
+      "cushion": -13.5,
+      "sustScore": 39.5,
+      "fragScore": -19,
+      "sustGap": 58.5,
+      "sustSignals": [
+        "Low 3PT reliance (12%)",
+        "3PT cold (20% on 5 att)"
+      ],
+      "fragSignals": [
+        "3PT heavy (55% of pts)",
+        "3PT hot (50% on 12 att)"
+      ],
+      "sustStats": {
+        "fg": "42",
+        "efg": "44",
+        "threePt": "20",
+        "twoPt": "69",
+        "proc": 6.7,
+        "star": 86
+      },
+      "fragStats": {
+        "fg": "48",
+        "efg": "60",
+        "threePt": "50",
+        "twoPt": "36",
+        "proc": 5.4,
+        "star": 0
+      },
+      "sustDetail": "ORL +39.5 vs DAL -19 (gap:58.5) | DAL 36-26 ORL | Q2 11:04 | FanDuel -3.5 (-106)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": false,
+        "g3_threePtDriven": true,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": true,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_procHeavy": 39.2,
+        "v2_no3pt": 9.1,
+        "v3_flip3ptAcc": 28.5,
+        "v4_procOnly": 13,
+        "v5_balanced": 49.5,
+        "v9_anti3ptFull": 13.5
+      },
+      "altStructural": {
+        "v6_cushionBoost": 58.5,
+        "v7_marginWeighted": 58.5,
+        "v8_procDiffOnly": 13,
+        "v10_timeDecay": 58.5
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -7.5,
+        "detail": "ORL -7.5",
+        "awaySpread": "+7.5",
+        "homeSpread": "-7.5",
+        "awaySpreadOdds": "EVEN",
+        "homeSpreadOdds": "-120",
+        "awayML": "+260",
+        "homeML": "-325",
+        "openSpread": "+8.5"
       }
     }
   ],
