@@ -459,8 +459,167 @@
           "score": "72-65",
           "period": 3,
           "clock": "5:39"
+        },
+        {
+          "t": "2026-03-06T03:38:24.266Z",
+          "spread": 0.5,
+          "score": "72-65",
+          "period": 3,
+          "clock": "5:25"
+        },
+        {
+          "t": "2026-03-06T03:39:27.097Z",
+          "spread": 2.5,
+          "score": "72-66",
+          "period": 3,
+          "clock": "5:12"
+        },
+        {
+          "t": "2026-03-06T03:40:29.931Z",
+          "spread": 2.5,
+          "score": "72-67",
+          "period": 3,
+          "clock": "4:45"
+        },
+        {
+          "t": "2026-03-06T03:41:32.986Z",
+          "spread": 2.5,
+          "score": "76-69",
+          "period": 3,
+          "clock": "3:55"
+        },
+        {
+          "t": "2026-03-06T03:42:36.600Z",
+          "spread": 0.5,
+          "score": "76-71",
+          "period": 3,
+          "clock": "3:22"
+        },
+        {
+          "t": "2026-03-06T03:43:39.809Z",
+          "spread": 2.5,
+          "score": "76-71",
+          "period": 3,
+          "clock": "3:22"
+        },
+        {
+          "t": "2026-03-06T03:44:43.161Z",
+          "spread": 2.5,
+          "score": "76-73",
+          "period": 3,
+          "clock": "2:56"
+        },
+        {
+          "t": "2026-03-06T03:45:46.474Z",
+          "spread": 2.5,
+          "score": "76-73",
+          "period": 3,
+          "clock": "2:34"
         }
       ]
+    },
+    {
+      "id": 1772768747821,
+      "key": "401810761_sust_LAL",
+      "gameId": "401810761",
+      "team": "LAL",
+      "opponent": "DEN",
+      "matchup": "LAL @ DEN",
+      "side": "SPREAD",
+      "spread": 9.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -136,
+      "impliedP": 57.6,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-06T03:45:47.821Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "LAL",
+      "homeTeam": "DEN",
+      "awayScore": 25,
+      "homeScore": 32,
+      "period": 2,
+      "clock": "11:44",
+      "periodLabel": "Q2",
+      "sustLeader": "DEN",
+      "sustMargin": 7,
+      "betOnLeader": false,
+      "currentMargin": -7,
+      "cushion": 2.5,
+      "sustScore": 38.1,
+      "fragScore": -18.9,
+      "sustGap": 57,
+      "sustSignals": [
+        "Low 3PT reliance (14%)",
+        "3PT cold (17% on 6 att)"
+      ],
+      "fragSignals": [
+        "3PT hot (50% on 8 att)",
+        "Star erupting (162% pace)"
+      ],
+      "sustStats": {
+        "fg": "42",
+        "efg": "45",
+        "threePt": "17",
+        "twoPt": "64",
+        "proc": 6.5,
+        "star": 92
+      },
+      "fragStats": {
+        "fg": "50",
+        "efg": "59",
+        "threePt": "50",
+        "twoPt": "44",
+        "proc": 4.9,
+        "star": 162
+      },
+      "sustDetail": "LAL +38.1 vs DEN -18.9 (gap:57) | LAL 25-32 DEN | Q2 11:44 | FanDuel +9.5 (-136)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": false,
+        "g3_threePtDriven": true,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_procHeavy": 45.5,
+        "v2_no3pt": 21.2,
+        "v3_flip3ptAcc": 23.6,
+        "v4_procOnly": 16,
+        "v5_balanced": 46.9,
+        "v9_anti3ptFull": 7
+      },
+      "altStructural": {
+        "v6_cushionBoost": 64.5,
+        "v7_marginWeighted": 39.9,
+        "v8_procDiffOnly": 16,
+        "v10_timeDecay": 57
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -3.5,
+        "detail": "DEN -3.5",
+        "awaySpread": "+3.5",
+        "homeSpread": "-3.5",
+        "awaySpreadOdds": "-105",
+        "homeSpreadOdds": "-115",
+        "awayML": "+142",
+        "homeML": "-170",
+        "openSpread": "+4.5"
+      }
     }
   ],
   "resolved": [
