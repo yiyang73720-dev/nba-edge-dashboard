@@ -148,6 +148,13 @@
           "score": "23-38",
           "period": 1,
           "clock": "4:56"
+        },
+        {
+          "t": "2026-03-07T17:35:36.527Z",
+          "spread": -21.5,
+          "score": "23-38",
+          "period": 1,
+          "clock": "4:39"
         }
       ]
     },
@@ -274,6 +281,13 @@
           "score": "32-28",
           "period": 1,
           "clock": "7:08"
+        },
+        {
+          "t": "2026-03-07T17:35:36.528Z",
+          "spread": -6.5,
+          "score": "32-28",
+          "period": 1,
+          "clock": "7:08"
         }
       ]
     },
@@ -383,6 +397,13 @@
           "t": "2026-03-07T17:34:15.932Z",
           "spread": -8.5,
           "score": "29-20",
+          "period": 1,
+          "clock": "3:50"
+        },
+        {
+          "t": "2026-03-07T17:35:36.529Z",
+          "spread": -8.5,
+          "score": "30-20",
           "period": 1,
           "clock": "3:50"
         }
@@ -495,6 +516,124 @@
       "kalshi": {
         "success": false,
         "error": "no_market"
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-07T17:35:36.529Z",
+          "spread": -15.5,
+          "score": "23-32",
+          "period": 1,
+          "clock": "4:08"
+        }
+      ]
+    },
+    {
+      "id": 1772904937211,
+      "key": "401808285_sust_ARK",
+      "gameId": "401808285",
+      "team": "ARK",
+      "opponent": "MIZ",
+      "matchup": "ARK @ MIZ",
+      "side": "SPREAD",
+      "spread": -7.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -120,
+      "impliedP": 54.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-07T17:35:37.211Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "ARK",
+      "homeTeam": "MIZ",
+      "awayName": "Arkansas Razorbacks",
+      "homeName": "Missouri Tigers",
+      "awayScore": 35,
+      "homeScore": 23,
+      "period": 1,
+      "clock": "5:09",
+      "periodLabel": "H1",
+      "sustLeader": "ARK",
+      "sustMargin": 12,
+      "betOnLeader": true,
+      "currentMargin": 12,
+      "cushion": 4.5,
+      "sustScore": 57.7,
+      "fragScore": -29.7,
+      "sustGap": 87.4,
+      "sustSignals": [
+        "Low 3PT reliance (17%)",
+        "Strong process (7.6/10)"
+      ],
+      "fragSignals": [
+        "Star erupting (155% pace)"
+      ],
+      "sustStats": {
+        "fg": "58",
+        "efg": "62",
+        "threePt": "40",
+        "twoPt": "74",
+        "proc": 7.6,
+        "star": 0
+      },
+      "fragStats": {
+        "fg": "42",
+        "efg": "45",
+        "threePt": "14",
+        "twoPt": "70",
+        "proc": 3.7,
+        "star": 155
+      },
+      "sustDetail": "ARK +57.7 vs MIZ -29.7 (gap:87.4) | ARK 35-23 MIZ | H1 5:09 | FanDuel -7.5 (-120)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 88,
+        "v2_f1low": 95.4,
+        "v3_f1high": 70.7,
+        "v4_f3boost": 103,
+        "v5_noStar": 77.4
+      },
+      "altStructural": {
+        "v6_cushionBoost": 100.9,
+        "v7_marginWeighted": 104.9,
+        "v8_procDiffOnly": 39,
+        "v10_timeDecay": 87.4
+      },
+      "alertSent": true,
+      "kalshi": {
+        "success": true,
+        "orderId": "95b4c7a4-b4d8-4982-8f55-af6ef37d4121",
+        "market": {
+          "ticker": "KXNCAAMBSPREAD-26MAR07ARKMIZZ-ARK7",
+          "side": "yes",
+          "price": 52,
+          "spreadTeam": "ARK",
+          "spreadVal": 7.5,
+          "yesBid": 44,
+          "yesAsk": 52,
+          "volume": 50922,
+          "bestDist": 0
+        },
+        "contracts": 181,
+        "totalCost": 9955
       }
     }
   ],
