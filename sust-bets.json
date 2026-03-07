@@ -134,6 +134,20 @@
           "score": "23-38",
           "period": 1,
           "clock": "6:18"
+        },
+        {
+          "t": "2026-03-07T17:33:11.597Z",
+          "spread": -20.5,
+          "score": "23-38",
+          "period": 1,
+          "clock": "5:29"
+        },
+        {
+          "t": "2026-03-07T17:34:15.931Z",
+          "spread": -21.5,
+          "score": "23-38",
+          "period": 1,
+          "clock": "4:56"
         }
       ]
     },
@@ -246,6 +260,20 @@
           "score": "27-26",
           "period": 1,
           "clock": "9:03"
+        },
+        {
+          "t": "2026-03-07T17:33:11.598Z",
+          "spread": -5.5,
+          "score": "30-28",
+          "period": 1,
+          "clock": "8:06"
+        },
+        {
+          "t": "2026-03-07T17:34:15.931Z",
+          "spread": -7.5,
+          "score": "32-28",
+          "period": 1,
+          "clock": "7:08"
         }
       ]
     },
@@ -343,6 +371,20 @@
           "score": "29-20",
           "period": 1,
           "clock": "4:11"
+        },
+        {
+          "t": "2026-03-07T17:33:11.598Z",
+          "spread": -9.5,
+          "score": "29-20",
+          "period": 1,
+          "clock": "3:50"
+        },
+        {
+          "t": "2026-03-07T17:34:15.932Z",
+          "spread": -8.5,
+          "score": "29-20",
+          "period": 1,
+          "clock": "3:50"
         }
       ],
       "alertSent": true,
@@ -362,6 +404,97 @@
         },
         "contracts": 192,
         "totalCost": 9984
+      }
+    },
+    {
+      "id": 1772904856803,
+      "key": "401851351_sust_HPU",
+      "gameId": "401851351",
+      "team": "HPU",
+      "opponent": "UNCA",
+      "matchup": "UNCA @ HPU",
+      "side": "SPREAD",
+      "spread": -14.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -105,
+      "impliedP": 51.2,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-07T17:34:16.803Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "UNCA",
+      "homeTeam": "HPU",
+      "awayName": "UNC Asheville Bulldogs",
+      "homeName": "High Point Panthers",
+      "awayScore": 23,
+      "homeScore": 30,
+      "period": 1,
+      "clock": "4:52",
+      "periodLabel": "H1",
+      "sustLeader": "HPU",
+      "sustMargin": 7,
+      "betOnLeader": true,
+      "currentMargin": 7,
+      "cushion": -7.5,
+      "sustScore": 34.8,
+      "fragScore": -3,
+      "sustGap": 37.8,
+      "sustSignals": [],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "48",
+        "efg": "57",
+        "threePt": "36",
+        "twoPt": "47",
+        "proc": 6.8,
+        "star": 0
+      },
+      "fragStats": {
+        "fg": "42",
+        "efg": "46",
+        "threePt": "25",
+        "twoPt": "70",
+        "proc": 4.2,
+        "star": 56
+      },
+      "sustDetail": "HPU +34.8 vs UNCA -3 (gap:37.8) | UNCA 23-30 HPU | H1 4:52 | FanDuel -14.5 (-105)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 42,
+        "v2_f1low": 44.4,
+        "v3_f1high": 20.5,
+        "v4_f3boost": 48.2,
+        "v5_noStar": 47.8
+      },
+      "altStructural": {
+        "v6_cushionBoost": 37.8,
+        "v7_marginWeighted": 26.5,
+        "v8_procDiffOnly": 26,
+        "v10_timeDecay": 37.8
+      },
+      "alertSent": true,
+      "kalshi": {
+        "success": false,
+        "error": "no_market"
       }
     }
   ],
