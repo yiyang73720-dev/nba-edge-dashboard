@@ -2033,7 +2033,7 @@ function buildOddsHTML(aAbbr,hAbbr,aFull,hFull,espnOdds){
   return html;
 }
 
-function getESPNUrl(){return isNCAA() ? 'https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard' : 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard';}
+function getESPNUrl(){return isNCAA() ? 'https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard?groups=50&limit=500' : 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard';}
 
 // ==================== STAR DATABASE (23+ PPG) ====================
 const DEFAULT_STARS = [
@@ -2177,7 +2177,8 @@ async function fetchTeamProfiles() {
     // Step 1: Get team IDs. NBA: all 30. NCAA: today's scoreboard teams.
     let teamIds = [];
     if (isNCAA()) {
-      const sbRes = await fetch(`https://site.api.espn.com/apis/site/v2/sports/basketball/${league}/scoreboard`);
+      const ncaaGroups = isNCAA() ? '?groups=50&limit=500' : '';
+      const sbRes = await fetch(`https://site.api.espn.com/apis/site/v2/sports/basketball/${league}/scoreboard${ncaaGroups}`);
       if (!sbRes.ok) return;
       const sbData = await sbRes.json();
       const idSet = new Set();
@@ -3393,7 +3394,8 @@ async function runHistoricalBacktest() {
   for (const ds of dateStrings) {
     if (signal.aborted) break;
     try {
-      const resp = await fetch(`${baseUrl}scoreboard?dates=${ds}`, { signal });
+      const groupsParam = mode === 'ncaab' ? '&groups=50&limit=500' : '';
+      const resp = await fetch(`${baseUrl}scoreboard?dates=${ds}${groupsParam}`, { signal });
       const data = await resp.json();
       const events = (data.events || []).filter(ev => ev.status?.type?.state === 'post');
       dateGames[ds] = events;
@@ -3662,7 +3664,8 @@ async function fetchESPNScoreboard() {
           nowET.setDate(nowET.getDate() + 1);
           dateStr = nowET.getFullYear() + String(nowET.getMonth()+1).padStart(2,'0') + String(nowET.getDate()).padStart(2,'0');
         }
-        const tmrwRes = await fetch(getESPNUrl() + '?dates=' + dateStr, { signal: AbortSignal.timeout(8000) });
+        const sep = getESPNUrl().includes('?') ? '&' : '?';
+        const tmrwRes = await fetch(getESPNUrl() + sep + 'dates=' + dateStr, { signal: AbortSignal.timeout(8000) });
         if (tmrwRes.ok) {
           const tmrwData = await tmrwRes.json();
           const tmrwEvents = (tmrwData.events || []).filter(e => e.status?.type?.state === 'pre');
@@ -5374,7 +5377,8 @@ async function resolveSignalTracker(specificDateStr) {
   for (const ds of datesToFetch) {
     try {
       const base = getESPNUrl();
-      const url = ds === 'today' ? base : base + '?dates=' + ds;
+      const sep = base.includes('?') ? '&' : '?';
+      const url = ds === 'today' ? base : base + sep + 'dates=' + ds;
       const resp = await fetch(url);
       if (!resp.ok) continue;
       const data = await resp.json();
