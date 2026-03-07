@@ -127,6 +127,13 @@
           "score": "21-36",
           "period": 1,
           "clock": "7:06"
+        },
+        {
+          "t": "2026-03-07T17:31:54.762Z",
+          "spread": -19.5,
+          "score": "23-38",
+          "period": 1,
+          "clock": "6:18"
         }
       ]
     },
@@ -232,8 +239,130 @@
           "score": "24-26",
           "period": 1,
           "clock": "9:38"
+        },
+        {
+          "t": "2026-03-07T17:31:54.763Z",
+          "spread": -4.5,
+          "score": "27-26",
+          "period": 1,
+          "clock": "9:03"
         }
       ]
+    },
+    {
+      "id": 1772904651805,
+      "key": "401804964_sust_LT",
+      "gameId": "401804964",
+      "team": "LT",
+      "opponent": "DEL",
+      "matchup": "LT @ DEL",
+      "side": "SPREAD",
+      "spread": -8.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -115,
+      "impliedP": 53.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-07T17:30:51.805Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "LT",
+      "homeTeam": "DEL",
+      "awayName": "Louisiana Tech Bulldogs",
+      "homeName": "Delaware Blue Hens",
+      "awayScore": 29,
+      "homeScore": 20,
+      "period": 1,
+      "clock": "4:11",
+      "periodLabel": "H1",
+      "sustLeader": "LT",
+      "sustMargin": 7,
+      "betOnLeader": true,
+      "currentMargin": 7,
+      "cushion": 0.5,
+      "sustScore": 31.3,
+      "fragScore": -13.2,
+      "sustGap": 44.5,
+      "sustSignals": [],
+      "fragSignals": [
+        "3PT heavy (53% of pts)"
+      ],
+      "sustStats": {
+        "fg": "40",
+        "efg": "50",
+        "threePt": "38",
+        "twoPt": "37",
+        "proc": 6.6,
+        "star": 0
+      },
+      "fragStats": {
+        "fg": "32",
+        "efg": "39",
+        "threePt": "30",
+        "twoPt": "35",
+        "proc": 4.5,
+        "star": 30
+      },
+      "sustDetail": "LT +26.1 vs DEL -5.1 (gap:31.200000000000003) | LT 27-20 DEL | H1 4:40 | FanDuel -8.5 (-115)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 32,
+        "v2_f1low": 35.7,
+        "v3_f1high": 21.5,
+        "v4_f3boost": 39.6,
+        "v5_noStar": 41.2
+      },
+      "altStructural": {
+        "v6_cushionBoost": 31.2,
+        "v7_marginWeighted": 21.8,
+        "v8_procDiffOnly": 21,
+        "v10_timeDecay": 31.2
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-07T17:31:54.765Z",
+          "spread": -8.5,
+          "score": "29-20",
+          "period": 1,
+          "clock": "4:11"
+        }
+      ],
+      "alertSent": true,
+      "kalshi": {
+        "success": true,
+        "orderId": "6b40282b-e932-4cfa-8315-6b2d6e91a01c",
+        "market": {
+          "ticker": "KXNCAAMBSPREAD-26MAR07LTDEL-LT8",
+          "side": "yes",
+          "price": 49,
+          "spreadTeam": "LT",
+          "spreadVal": 8.5,
+          "yesBid": 42,
+          "yesAsk": 49,
+          "volume": 593,
+          "bestDist": 0
+        },
+        "contracts": 192,
+        "totalCost": 9984
+      }
     }
   ],
   "resolved": [
