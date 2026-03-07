@@ -1182,6 +1182,13 @@
           "score": "47-54",
           "period": 2,
           "clock": "6:14"
+        },
+        {
+          "t": "2026-03-07T23:42:23.766Z",
+          "spread": -6.5,
+          "score": "49-54",
+          "period": 2,
+          "clock": "6:14"
         }
       ]
     },
@@ -1700,6 +1707,13 @@
           "score": "59-86",
           "period": 2,
           "clock": "5:48"
+        },
+        {
+          "t": "2026-03-07T23:42:23.767Z",
+          "spread": -27.5,
+          "score": "63-90",
+          "period": 2,
+          "clock": "4:32"
         }
       ]
     },
@@ -1899,6 +1913,13 @@
           "score": "42-40",
           "period": 1,
           "clock": "2:08"
+        },
+        {
+          "t": "2026-03-07T23:42:23.768Z",
+          "spread": 1.5,
+          "score": "43-40",
+          "period": 1,
+          "clock": "1:49"
         }
       ],
       "alertSent": true,
@@ -2037,6 +2058,13 @@
           "score": "25-31",
           "period": 1,
           "clock": "3:10"
+        },
+        {
+          "t": "2026-03-07T23:42:23.769Z",
+          "spread": -3.5,
+          "score": "25-31",
+          "period": 1,
+          "clock": "3:10"
         }
       ]
     },
@@ -2166,6 +2194,119 @@
         },
         "contracts": 200,
         "totalCost": 10000
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-07T23:42:20.912Z",
+          "spread": -0.5,
+          "score": "44-31",
+          "period": 2,
+          "clock": "10:51"
+        }
+      ]
+    },
+    {
+      "id": 1772926945296,
+      "key": "401851493_sust_UNI",
+      "gameId": "401851493",
+      "team": "UNI",
+      "opponent": "BRAD",
+      "matchup": "UNI @ BRAD",
+      "side": "SPREAD",
+      "spread": -15.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -112,
+      "impliedP": 52.8,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-07T23:42:25.296Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "UNI",
+      "homeTeam": "BRAD",
+      "awayName": "Northern Iowa Panthers",
+      "homeName": "Bradley Braves",
+      "awayScore": 39,
+      "homeScore": 24,
+      "period": 1,
+      "clock": "3:05",
+      "periodLabel": "H1",
+      "sustLeader": "UNI",
+      "sustMargin": 15,
+      "betOnLeader": true,
+      "currentMargin": 15,
+      "cushion": -0.5,
+      "sustScore": 75.9,
+      "fragScore": -34.4,
+      "sustGap": 110.30000000000001,
+      "sustSignals": [
+        "Low 3PT reliance (23%)",
+        "Strong process (8.6/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "71",
+        "efg": "77",
+        "threePt": "75",
+        "twoPt": "72",
+        "proc": 8.6,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "45",
+        "efg": "52",
+        "threePt": "43",
+        "twoPt": "58",
+        "proc": 2.8,
+        "star": 41,
+        "scq": 0
+      },
+      "sustDetail": "UNI +75.9 vs BRAD -34.4 (gap:110.30000000000001) | UNI 39-24 BRAD | H1 3:05 | FanDuel -15.5 (-112)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 106,
+        "v2_f1low": 120.5,
+        "v3_f1high": 94.3,
+        "v4_f3boost": 133.5,
+        "v5_noStar": 120.3
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 75.9,
+        "hScore": -34.4,
+        "gap": 110.3,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 110.3,
+        "v7_marginWeighted": 165.5,
+        "v8_procDiffOnly": 58,
+        "v10_timeDecay": 110.3
+      },
+      "alertSent": true,
+      "kalshi": {
+        "success": false,
+        "error": "ncaab_disabled"
       }
     }
   ],
