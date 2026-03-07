@@ -91,6 +91,132 @@
       "kalshi": {
         "success": false,
         "error": "no_market"
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-07T17:27:10.183Z",
+          "spread": -19.5,
+          "score": "21-36",
+          "period": 1,
+          "clock": "8:19"
+        },
+        {
+          "t": "2026-03-07T17:28:19.388Z",
+          "spread": -21.5,
+          "score": "21-36",
+          "period": 1,
+          "clock": "7:25"
+        },
+        {
+          "t": "2026-03-07T17:29:23.720Z",
+          "spread": -21.5,
+          "score": "21-36",
+          "period": 1,
+          "clock": "7:25"
+        },
+        {
+          "t": "2026-03-07T17:30:27.612Z",
+          "spread": -21.5,
+          "score": "21-36",
+          "period": 1,
+          "clock": "7:25"
+        }
+      ]
+    },
+    {
+      "id": 1772904628062,
+      "key": "401856423_sust_CAM",
+      "gameId": "401856423",
+      "team": "CAM",
+      "opponent": "STBK",
+      "matchup": "CAM @ STBK",
+      "side": "SPREAD",
+      "spread": -1.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -125,
+      "impliedP": 55.6,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-07T17:30:28.062Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "CAM",
+      "homeTeam": "STBK",
+      "awayName": "Campbell Fighting Camels",
+      "homeName": "Stony Brook Seawolves",
+      "awayScore": 24,
+      "homeScore": 26,
+      "period": 1,
+      "clock": "9:47",
+      "periodLabel": "H1",
+      "sustLeader": "STBK",
+      "sustMargin": 2,
+      "betOnLeader": false,
+      "currentMargin": -2,
+      "cushion": -3.5,
+      "sustScore": 37.3,
+      "fragScore": -27,
+      "sustGap": 64.3,
+      "sustSignals": [
+        "Low 3PT reliance (25%)"
+      ],
+      "fragSignals": [
+        "3PT heavy (46% of pts)",
+        "Star erupting (162% pace)"
+      ],
+      "sustStats": {
+        "fg": "56",
+        "efg": "63",
+        "threePt": "67",
+        "twoPt": "58",
+        "proc": 6.7,
+        "star": 0
+      },
+      "fragStats": {
+        "fg": "53",
+        "efg": "67",
+        "threePt": "67",
+        "twoPt": "31",
+        "proc": 4.3,
+        "star": 162
+      },
+      "sustDetail": "CAM +37.3 vs STBK -27 (gap:64.3) | CAM 24-26 STBK | H1 9:47 | FanDuel -1.5 (-125)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 58,
+        "v2_f1low": 67,
+        "v3_f1high": 65.3,
+        "v4_f3boost": 73.9,
+        "v5_noStar": 54.3
+      },
+      "altStructural": {
+        "v6_cushionBoost": 64.3,
+        "v7_marginWeighted": 12.9,
+        "v8_procDiffOnly": 24,
+        "v10_timeDecay": 64.3
+      },
+      "alertSent": true,
+      "kalshi": {
+        "success": false,
+        "error": "no_market"
       }
     }
   ],
