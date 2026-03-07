@@ -1,5 +1,108 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1772847897606,
+      "key": "401810765_sust_HOU",
+      "gameId": "401810765",
+      "team": "HOU",
+      "opponent": "POR",
+      "matchup": "POR @ HOU",
+      "side": "SPREAD",
+      "spread": -3.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -140,
+      "impliedP": 58.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-07T01:44:57.606Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "POR",
+      "homeTeam": "HOU",
+      "awayScore": 37,
+      "homeScore": 34,
+      "period": 2,
+      "clock": "9:29",
+      "periodLabel": "Q2",
+      "sustLeader": "POR",
+      "sustMargin": 3,
+      "betOnLeader": false,
+      "currentMargin": -3,
+      "cushion": -6.5,
+      "sustScore": 28,
+      "fragScore": -23.1,
+      "sustGap": 51.1,
+      "sustSignals": [
+        "Low 3PT reliance (9%)"
+      ],
+      "fragSignals": [
+        "3PT heavy (65% of pts)",
+        "3PT hot (57% on 14 att)"
+      ],
+      "sustStats": {
+        "fg": "56",
+        "efg": "58",
+        "threePt": "25",
+        "twoPt": "76",
+        "proc": 5.9,
+        "star": 0
+      },
+      "fragStats": {
+        "fg": "42",
+        "efg": "58",
+        "threePt": "57",
+        "twoPt": "16",
+        "proc": 5.9,
+        "star": 0
+      },
+      "sustDetail": "HOU +28 vs POR -23.1 (gap:51.1) | POR 37-34 HOU | Q2 9:29 | FanDuel -3.5 (-140)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": false,
+        "g3_threePtDriven": true,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_procHeavy": 28.8,
+        "v2_no3pt": 0,
+        "v3_flip3ptAcc": 34.3,
+        "v4_procOnly": 0,
+        "v5_balanced": 56,
+        "v9_anti3ptFull": 23.7
+      },
+      "altStructural": {
+        "v6_cushionBoost": 51.1,
+        "v7_marginWeighted": 15.3,
+        "v8_procDiffOnly": 0,
+        "v10_timeDecay": 51.1
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -6.5,
+        "detail": "HOU -6.5",
+        "awaySpread": "+6.5",
+        "homeSpread": "-6.5",
+        "awaySpreadOdds": "-112",
+        "homeSpreadOdds": "-108",
+        "awayML": "+215",
+        "homeML": "-265",
+        "openSpread": "+7.5"
+      }
+    }
+  ],
   "resolved": [
     {
       "id": 1772500649056,
