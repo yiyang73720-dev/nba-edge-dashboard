@@ -253,6 +253,13 @@
           "score": "32-44",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-07T17:50:48.734Z",
+          "spread": -16.5,
+          "score": "32-44",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
     },
@@ -484,6 +491,13 @@
           "score": "41-33",
           "period": 1,
           "clock": "3:07"
+        },
+        {
+          "t": "2026-03-07T17:50:48.734Z",
+          "spread": -7.5,
+          "score": "43-35",
+          "period": 1,
+          "clock": "2:53"
         }
       ]
     },
@@ -696,6 +710,13 @@
         },
         {
           "t": "2026-03-07T17:49:40.546Z",
+          "spread": -15.5,
+          "score": "40-22",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-07T17:50:48.735Z",
           "spread": -15.5,
           "score": "40-22",
           "period": 1,
@@ -916,6 +937,13 @@
           "score": "34-33",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-07T17:50:48.736Z",
+          "spread": -7.5,
+          "score": "34-33",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
     },
@@ -1105,6 +1133,13 @@
         },
         {
           "t": "2026-03-07T17:49:40.547Z",
+          "spread": 0.5,
+          "score": "36-33",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-07T17:50:48.736Z",
           "spread": 0.5,
           "score": "36-33",
           "period": 1,
@@ -1319,6 +1354,13 @@
           "score": "39-36",
           "period": 1,
           "clock": "0:03"
+        },
+        {
+          "t": "2026-03-07T17:50:48.737Z",
+          "spread": -2.5,
+          "score": "39-36",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
     },
@@ -1507,6 +1549,13 @@
           "score": "32-36",
           "period": 1,
           "clock": "0:13"
+        },
+        {
+          "t": "2026-03-07T17:50:48.737Z",
+          "spread": 11.5,
+          "score": "32-36",
+          "period": 1,
+          "clock": "0:00"
         }
       ],
       "alertSent": true,
@@ -1702,6 +1751,13 @@
           "score": "39-32",
           "period": 1,
           "clock": "1:03"
+        },
+        {
+          "t": "2026-03-07T17:50:48.738Z",
+          "spread": 2.5,
+          "score": "39-32",
+          "period": 1,
+          "clock": "0:32"
         }
       ],
       "alertSent": true,
@@ -1877,6 +1933,13 @@
           "score": "32-39",
           "period": 1,
           "clock": "1:18"
+        },
+        {
+          "t": "2026-03-07T17:50:48.739Z",
+          "spread": 4.5,
+          "score": "32-39",
+          "period": 1,
+          "clock": "1:08"
         }
       ]
     },
@@ -2046,6 +2109,117 @@
           "score": "25-41",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-07T17:50:48.739Z",
+          "spread": 18.5,
+          "score": "25-41",
+          "period": 1,
+          "clock": "0:00"
+        }
+      ],
+      "alertSent": true,
+      "kalshi": {
+        "success": false,
+        "error": "ncaab_disabled"
+      }
+    },
+    {
+      "id": 1772905783394,
+      "key": "401820793_sust_BC",
+      "gameId": "401820793",
+      "team": "BC",
+      "opponent": "ND",
+      "matchup": "ND @ BC",
+      "side": "SPREAD",
+      "spread": 5.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -120,
+      "impliedP": 54.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-07T17:49:43.395Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "ND",
+      "homeTeam": "BC",
+      "awayName": "Notre Dame Fighting Irish",
+      "homeName": "Boston College Eagles",
+      "awayScore": 30,
+      "homeScore": 24,
+      "period": 1,
+      "clock": "1:29",
+      "periodLabel": "H1",
+      "sustLeader": "ND",
+      "sustMargin": 7,
+      "betOnLeader": false,
+      "currentMargin": -7,
+      "cushion": -0.5,
+      "sustScore": 35.3,
+      "fragScore": -1.2,
+      "sustGap": 36.5,
+      "sustSignals": [
+        "Low 3PT reliance (26%)"
+      ],
+      "fragSignals": [
+        "3PT heavy (60% of pts)"
+      ],
+      "sustStats": {
+        "fg": "30",
+        "efg": "33",
+        "threePt": "14",
+        "twoPt": "52",
+        "proc": 6.5,
+        "star": 0
+      },
+      "fragStats": {
+        "fg": "38",
+        "efg": "50",
+        "threePt": "43",
+        "twoPt": "27",
+        "proc": 5,
+        "star": 28
+      },
+      "sustDetail": "BC +33 vs ND 2.8 (gap:30.2) | ND 30-23 BC | H1 1:50 | FanDuel +6.5 (-120)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 20,
+        "v2_f1low": 29.8,
+        "v3_f1high": 41.1,
+        "v4_f3boost": 36.2,
+        "v5_noStar": 40.2
+      },
+      "altStructural": {
+        "v6_cushionBoost": 30.2,
+        "v7_marginWeighted": 21.1,
+        "v8_procDiffOnly": 15,
+        "v10_timeDecay": 30.2
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-07T17:50:48.740Z",
+          "spread": 5.5,
+          "score": "30-24",
+          "period": 1,
+          "clock": "1:29"
         }
       ],
       "alertSent": true,
