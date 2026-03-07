@@ -4577,32 +4577,36 @@ async function fetchESPNScoreboard() {
 
         let html = '';
 
-        // Section 1: Team Score Blocks with Sustainability Badges + Numeric Score
+        // Section 1: Team Score Blocks with Sustainability Scores + Gap
         const _aSustScore = aw.sustainability.score || 0;
         const _hSustScore = hm.sustainability.score || 0;
         const _sustGap = Math.abs(_aSustScore - _hSustScore);
         const _sustScoreColor = (s) => s >= 8 ? '#10b981' : s <= -8 ? '#ef4444' : '#f59e0b';
         const _sustScoreStr = (s) => (s > 0 ? '+' : '') + s.toFixed(1);
-        const _gapColor = _sustGap >= 40 ? '#10b981' : _sustGap >= 30 ? '#f59e0b' : 'var(--text-muted)';
         const _hasDivergence = (aw.sustainability.cls === 'sustainable' && hm.sustainability.cls === 'unsustainable') ||
                                (aw.sustainability.cls === 'unsustainable' && hm.sustainability.cls === 'sustainable');
-        html += `<div class="xray-team-blocks">
-          <div class="xray-team-box">
+        const _gapLevel = _hasDivergence && _sustGap >= 40 ? 'hot' : _hasDivergence && _sustGap >= 30 ? 'warm' : 'neutral';
+        const _gapBg = { hot: 'rgba(16,185,129,0.08)', warm: 'rgba(245,158,11,0.06)', neutral: 'var(--bg)' }[_gapLevel];
+        const _gapBorder = { hot: 'rgba(16,185,129,0.25)', warm: 'rgba(245,158,11,0.2)', neutral: 'var(--border-light)' }[_gapLevel];
+        const _gapNumColor = { hot: '#10b981', warm: '#f59e0b', neutral: 'var(--text-muted)' }[_gapLevel];
+        const _gapShadow = _gapLevel === 'hot' ? 'box-shadow:0 0 12px rgba(16,185,129,0.12);' : _gapLevel === 'warm' ? 'box-shadow:0 0 8px rgba(245,158,11,0.08);' : '';
+        html += `<div style="display:grid;grid-template-columns:1fr auto 1fr;gap:6px;margin-bottom:10px;align-items:stretch;">
+          <div class="xray-team-box" style="margin:0;">
             <div class="xray-team-name">${teamLogoImg(aLogo, 18)}${teamDisplayShort(aA, aFull)}</div>
             <div class="xray-team-score">${aS}</div>
             <span class="sustainability-badge ${aw.sustainability.cls}">${aw.sustainability.label}</span>
-            <div style="font-size:18px;font-weight:800;color:${_sustScoreColor(_aSustScore)};margin-top:4px;font-variant-numeric:tabular-nums;">${_sustScoreStr(_aSustScore)}</div>
+            <div style="font-size:20px;font-weight:900;color:${_sustScoreColor(_aSustScore)};margin-top:6px;font-variant-numeric:tabular-nums;letter-spacing:-0.5px;">${_sustScoreStr(_aSustScore)}</div>
           </div>
-          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 4px;">
-            <div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Gap</div>
-            <div style="font-size:22px;font-weight:900;color:${_gapColor};font-variant-numeric:tabular-nums;">${_sustGap.toFixed(0)}</div>
-            ${_hasDivergence && _sustGap >= 30 ? '<div style="font-size:9px;font-weight:700;color:#10b981;margin-top:2px;">SIGNAL</div>' : ''}
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:56px;background:${_gapBg};border:1px solid ${_gapBorder};border-radius:var(--radius-sm);${_gapShadow}transition:all 0.3s ease;">
+            <div style="font-size:8px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;line-height:1;">GAP</div>
+            <div style="font-size:24px;font-weight:900;color:${_gapNumColor};font-variant-numeric:tabular-nums;line-height:1.1;letter-spacing:-1px;">${_sustGap.toFixed(0)}</div>
+            ${_gapLevel === 'hot' ? `<div style="margin-top:2px;padding:1px 6px;background:rgba(16,185,129,0.15);border-radius:8px;font-size:8px;font-weight:800;color:#10b981;letter-spacing:0.8px;">BET</div>` : _gapLevel === 'warm' ? `<div style="margin-top:2px;padding:1px 6px;background:rgba(245,158,11,0.12);border-radius:8px;font-size:8px;font-weight:800;color:#f59e0b;letter-spacing:0.6px;">WATCH</div>` : ''}
           </div>
-          <div class="xray-team-box">
+          <div class="xray-team-box" style="margin:0;">
             <div class="xray-team-name">${teamLogoImg(hLogo, 18)}${teamDisplayShort(hA, hFull)}</div>
             <div class="xray-team-score">${hS}</div>
             <span class="sustainability-badge ${hm.sustainability.cls}">${hm.sustainability.label}</span>
-            <div style="font-size:18px;font-weight:800;color:${_sustScoreColor(_hSustScore)};margin-top:4px;font-variant-numeric:tabular-nums;">${_sustScoreStr(_hSustScore)}</div>
+            <div style="font-size:20px;font-weight:900;color:${_sustScoreColor(_hSustScore)};margin-top:6px;font-variant-numeric:tabular-nums;letter-spacing:-0.5px;">${_sustScoreStr(_hSustScore)}</div>
           </div>
         </div>`;
 
