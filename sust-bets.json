@@ -675,8 +675,168 @@
           "score": "89-95",
           "period": 4,
           "clock": "4:21"
+        },
+        {
+          "t": "2026-03-07T03:13:48.790Z",
+          "spread": -6.5,
+          "score": "89-95",
+          "period": 4,
+          "clock": "4:21"
+        },
+        {
+          "t": "2026-03-07T03:14:53.724Z",
+          "spread": -6.5,
+          "score": "89-95",
+          "period": 4,
+          "clock": "4:21"
+        },
+        {
+          "t": "2026-03-07T03:15:58.672Z",
+          "spread": -6.5,
+          "score": "89-98",
+          "period": 4,
+          "clock": "4:06"
+        },
+        {
+          "t": "2026-03-07T03:16:43.580Z",
+          "spread": -9.5,
+          "score": "89-98",
+          "period": 4,
+          "clock": "3:41"
         }
       ]
+    },
+    {
+      "id": 1772853164455,
+      "key": "401810768_sust_LAC",
+      "gameId": "401810768",
+      "team": "LAC",
+      "opponent": "SA",
+      "matchup": "LAC @ SA",
+      "side": "SPREAD",
+      "spread": 2.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -132,
+      "impliedP": 56.9,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-07T03:12:44.455Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "LAC",
+      "homeTeam": "SA",
+      "awayScore": 32,
+      "homeScore": 25,
+      "period": 2,
+      "clock": "12:00",
+      "periodLabel": "Q2",
+      "sustLeader": "LAC",
+      "sustMargin": 7,
+      "betOnLeader": true,
+      "currentMargin": 7,
+      "cushion": 9.5,
+      "sustScore": 23.3,
+      "fragScore": -26.6,
+      "sustGap": 49.900000000000006,
+      "sustSignals": [
+        "Strong process (7.3/10)"
+      ],
+      "fragSignals": [
+        "3PT heavy (48% of pts)"
+      ],
+      "sustStats": {
+        "fg": "48",
+        "efg": "57",
+        "threePt": "33",
+        "twoPt": "44",
+        "proc": 7.3,
+        "star": 64
+      },
+      "fragStats": {
+        "fg": "43",
+        "efg": "52",
+        "threePt": "40",
+        "twoPt": "40",
+        "proc": 3.2,
+        "star": 0
+      },
+      "sustDetail": "LAC +15.7 vs SA -23.4 (gap:39.099999999999994) | LAC 32-25 SA | Q2 12:00 | FanDuel +2.5 (-132)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": false,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_procHeavy": 47.2,
+        "v2_no3pt": 28.7,
+        "v3_flip3ptAcc": 33.8,
+        "v4_procOnly": 41,
+        "v5_balanced": 31,
+        "v9_anti3ptFull": 30.4
+      },
+      "altStructural": {
+        "v6_cushionBoost": 67.6,
+        "v7_marginWeighted": 27.4,
+        "v8_procDiffOnly": 41,
+        "v10_timeDecay": 39.1
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -7.5,
+        "detail": "SA -7.5",
+        "awaySpread": "+7.5",
+        "homeSpread": "-7.5",
+        "awaySpreadOdds": "-115",
+        "homeSpreadOdds": "-105",
+        "awayML": "+225",
+        "homeML": "-278",
+        "openSpread": "+8.5"
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-07T03:13:48.790Z",
+          "spread": 2.5,
+          "score": "32-27",
+          "period": 2,
+          "clock": "11:12"
+        },
+        {
+          "t": "2026-03-07T03:14:53.724Z",
+          "spread": 2.5,
+          "score": "33-30",
+          "period": 2,
+          "clock": "10:41"
+        },
+        {
+          "t": "2026-03-07T03:15:58.672Z",
+          "spread": 2.5,
+          "score": "39-30",
+          "period": 2,
+          "clock": "9:44"
+        },
+        {
+          "t": "2026-03-07T03:16:43.580Z",
+          "spread": 0.5,
+          "score": "39-30",
+          "period": 2,
+          "clock": "9:44"
+        }
+      ],
+      "alertSent": true
     }
   ],
   "resolved": [
