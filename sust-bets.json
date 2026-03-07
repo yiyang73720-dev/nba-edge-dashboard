@@ -155,6 +155,27 @@
           "score": "23-38",
           "period": 1,
           "clock": "4:39"
+        },
+        {
+          "t": "2026-03-07T17:36:57.577Z",
+          "spread": -21.5,
+          "score": "23-38",
+          "period": 1,
+          "clock": "4:14"
+        },
+        {
+          "t": "2026-03-07T17:37:15.223Z",
+          "spread": -21.5,
+          "score": "23-38",
+          "period": 1,
+          "clock": "3:47"
+        },
+        {
+          "t": "2026-03-07T17:38:21.398Z",
+          "spread": -21.5,
+          "score": "23-38",
+          "period": 1,
+          "clock": "3:47"
         }
       ]
     },
@@ -288,6 +309,27 @@
           "score": "32-28",
           "period": 1,
           "clock": "7:08"
+        },
+        {
+          "t": "2026-03-07T17:36:57.578Z",
+          "spread": -6.5,
+          "score": "32-28",
+          "period": 1,
+          "clock": "7:08"
+        },
+        {
+          "t": "2026-03-07T17:37:15.224Z",
+          "spread": -6.5,
+          "score": "32-28",
+          "period": 1,
+          "clock": "7:08"
+        },
+        {
+          "t": "2026-03-07T17:38:21.399Z",
+          "spread": -6.5,
+          "score": "34-28",
+          "period": 1,
+          "clock": "7:08"
         }
       ]
     },
@@ -406,6 +448,27 @@
           "score": "30-20",
           "period": 1,
           "clock": "3:50"
+        },
+        {
+          "t": "2026-03-07T17:36:57.579Z",
+          "spread": -9.5,
+          "score": "33-20",
+          "period": 1,
+          "clock": "3:22"
+        },
+        {
+          "t": "2026-03-07T17:37:15.225Z",
+          "spread": -9.5,
+          "score": "33-20",
+          "period": 1,
+          "clock": "3:06"
+        },
+        {
+          "t": "2026-03-07T17:38:21.400Z",
+          "spread": -13.5,
+          "score": "36-20",
+          "period": 1,
+          "clock": "2:55"
         }
       ],
       "alertSent": true,
@@ -524,8 +587,146 @@
           "score": "23-32",
           "period": 1,
           "clock": "4:08"
+        },
+        {
+          "t": "2026-03-07T17:36:57.579Z",
+          "spread": -14.5,
+          "score": "26-32",
+          "period": 1,
+          "clock": "3:48"
+        },
+        {
+          "t": "2026-03-07T17:37:15.226Z",
+          "spread": -14.5,
+          "score": "26-32",
+          "period": 1,
+          "clock": "3:48"
+        },
+        {
+          "t": "2026-03-07T17:38:21.401Z",
+          "spread": -14.5,
+          "score": "26-32",
+          "period": 1,
+          "clock": "3:48"
         }
       ]
+    },
+    {
+      "id": 1772904869837,
+      "key": "401828463_sust_DAV",
+      "gameId": "401828463",
+      "team": "DAV",
+      "opponent": "SBU",
+      "matchup": "DAV @ SBU",
+      "side": "SPREAD",
+      "spread": -3.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -120,
+      "impliedP": 54.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-07T17:34:29.837Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "DAV",
+      "homeTeam": "SBU",
+      "awayName": "Davidson Wildcats",
+      "homeName": "St. Bonaventure Bonnies",
+      "awayScore": 35,
+      "homeScore": 28,
+      "period": 1,
+      "clock": "3:25",
+      "periodLabel": "H1",
+      "sustLeader": "DAV",
+      "sustMargin": 5,
+      "betOnLeader": true,
+      "currentMargin": 5,
+      "cushion": 3.5,
+      "sustScore": 37.1,
+      "fragScore": -7.6,
+      "sustGap": 44.7,
+      "sustSignals": [],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "52",
+        "efg": "58",
+        "threePt": "33",
+        "twoPt": "65",
+        "proc": 6.7,
+        "star": 0
+      },
+      "fragStats": {
+        "fg": "43",
+        "efg": "48",
+        "threePt": "29",
+        "twoPt": "54",
+        "proc": 4.8,
+        "star": 49
+      },
+      "sustDetail": "DAV +36.1 vs SBU 9.9 (gap:26.200000000000003) | DAV 31-26 SBU | H1 5:15 | FanDuel -1.5 (-120)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 28,
+        "v2_f1low": 30.6,
+        "v3_f1high": 15.6,
+        "v4_f3boost": 33.8,
+        "v5_noStar": 36.2
+      },
+      "altStructural": {
+        "v6_cushionBoost": 36.7,
+        "v7_marginWeighted": 13.1,
+        "v8_procDiffOnly": 19,
+        "v10_timeDecay": 26.2
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-07T17:35:36.530Z",
+          "spread": -3.5,
+          "score": "33-26",
+          "period": 1,
+          "clock": "4:40"
+        },
+        {
+          "t": "2026-03-07T17:36:57.580Z",
+          "spread": -3.5,
+          "score": "35-28",
+          "period": 1,
+          "clock": "3:25"
+        },
+        {
+          "t": "2026-03-07T17:37:15.226Z",
+          "spread": -3.5,
+          "score": "35-28",
+          "period": 1,
+          "clock": "3:25"
+        },
+        {
+          "t": "2026-03-07T17:38:21.402Z",
+          "spread": -3.5,
+          "score": "35-28",
+          "period": 1,
+          "clock": "3:25"
+        }
+      ],
+      "alertSent": true
     },
     {
       "id": 1772904937211,
@@ -634,6 +835,120 @@
         },
         "contracts": 181,
         "totalCost": 9955
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-07T17:36:57.580Z",
+          "spread": -5.5,
+          "score": "35-25",
+          "period": 1,
+          "clock": "4:10"
+        },
+        {
+          "t": "2026-03-07T17:37:15.227Z",
+          "spread": -5.5,
+          "score": "35-27",
+          "period": 1,
+          "clock": "3:56"
+        },
+        {
+          "t": "2026-03-07T17:38:21.402Z",
+          "spread": -4.5,
+          "score": "35-27",
+          "period": 1,
+          "clock": "3:16"
+        }
+      ]
+    },
+    {
+      "id": 1772905101630,
+      "key": "401827728_sust_OKST",
+      "gameId": "401827728",
+      "team": "OKST",
+      "opponent": "HOU",
+      "matchup": "HOU @ OKST",
+      "side": "SPREAD",
+      "spread": 2.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -106,
+      "impliedP": 51.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-07T17:38:21.630Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "HOU",
+      "homeTeam": "OKST",
+      "awayName": "Houston Cougars",
+      "homeName": "Oklahoma State Cowboys",
+      "awayScore": 21,
+      "homeScore": 32,
+      "period": 1,
+      "clock": "6:06",
+      "periodLabel": "H1",
+      "sustLeader": "OKST",
+      "sustMargin": 11,
+      "betOnLeader": true,
+      "currentMargin": 11,
+      "cushion": 13.5,
+      "sustScore": 17.9,
+      "fragScore": -22.7,
+      "sustGap": 40.599999999999994,
+      "sustSignals": [],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "50",
+        "efg": "63",
+        "threePt": "50",
+        "twoPt": "38",
+        "proc": 6.7,
+        "star": 190
+      },
+      "fragStats": {
+        "fg": "35",
+        "efg": "39",
+        "threePt": "22",
+        "twoPt": "63",
+        "proc": 3.8,
+        "star": 104
+      },
+      "sustDetail": "OKST +17.9 vs HOU -22.7 (gap:40.599999999999994) | HOU 21-32 OKST | H1 6:06 | FanDuel +2.5 (-106)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 48,
+        "v2_f1low": 48.9,
+        "v3_f1high": 16.7,
+        "v4_f3boost": 52.2,
+        "v5_noStar": 50.6
+      },
+      "altStructural": {
+        "v6_cushionBoost": 81.1,
+        "v7_marginWeighted": 44.7,
+        "v8_procDiffOnly": 29,
+        "v10_timeDecay": 40.6
+      },
+      "alertSent": true,
+      "kalshi": {
+        "success": false,
+        "error": "ncaab_disabled"
       }
     }
   ],
