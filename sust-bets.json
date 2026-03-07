@@ -1,5 +1,99 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1772904334281,
+      "key": "401822974_sust_VILL",
+      "gameId": "401822974",
+      "team": "VILL",
+      "opponent": "XAV",
+      "matchup": "XAV @ VILL",
+      "side": "SPREAD",
+      "spread": -17.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -118,
+      "impliedP": 54.1,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-07T17:25:34.281Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "XAV",
+      "homeTeam": "VILL",
+      "awayName": "Xavier Musketeers",
+      "homeName": "Villanova Wildcats",
+      "awayScore": 21,
+      "homeScore": 31,
+      "period": 1,
+      "clock": "9:22",
+      "periodLabel": "H1",
+      "sustLeader": "VILL",
+      "sustMargin": 10,
+      "betOnLeader": true,
+      "currentMargin": 10,
+      "cushion": -7.5,
+      "sustScore": 33.2,
+      "fragScore": -10.3,
+      "sustGap": 43.5,
+      "sustSignals": [],
+      "fragSignals": [
+        "3PT heavy (57% of pts)"
+      ],
+      "sustStats": {
+        "fg": "68",
+        "efg": "79",
+        "threePt": "50",
+        "twoPt": "58",
+        "proc": 6.7,
+        "star": 0
+      },
+      "fragStats": {
+        "fg": "36",
+        "efg": "45",
+        "threePt": "50",
+        "twoPt": "38",
+        "proc": 4.8,
+        "star": 0
+      },
+      "sustDetail": "VILL +33.2 vs XAV -10.3 (gap:43.5) | XAV 21-31 VILL | H1 9:22 | FanDuel -17.5 (-118)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 38,
+        "v2_f1low": 45.5,
+        "v3_f1high": 45.1,
+        "v4_f3boost": 51.1,
+        "v5_noStar": 43.5
+      },
+      "altStructural": {
+        "v6_cushionBoost": 43.5,
+        "v7_marginWeighted": 43.5,
+        "v8_procDiffOnly": 19,
+        "v10_timeDecay": 43.5
+      },
+      "alertSent": true,
+      "kalshi": {
+        "success": false,
+        "error": "no_market"
+      }
+    }
+  ],
   "resolved": [
     {
       "id": 1772500649056,
