@@ -540,6 +540,13 @@
           "score": "57-58",
           "period": 2,
           "clock": "7:06"
+        },
+        {
+          "t": "2026-03-07T21:31:26.807Z",
+          "spread": -2.5,
+          "score": "60-61",
+          "period": 2,
+          "clock": "6:14"
         }
       ],
       "alertSent": true,
@@ -1072,6 +1079,13 @@
           "score": "59-61",
           "period": 2,
           "clock": "5:04"
+        },
+        {
+          "t": "2026-03-07T21:31:26.807Z",
+          "spread": -4.5,
+          "score": "59-63",
+          "period": 2,
+          "clock": "4:34"
         }
       ]
     },
@@ -1508,6 +1522,13 @@
           "score": "59-46",
           "period": 2,
           "clock": "9:08"
+        },
+        {
+          "t": "2026-03-07T21:31:26.808Z",
+          "spread": -10.5,
+          "score": "59-46",
+          "period": 2,
+          "clock": "8:18"
         }
       ],
       "alertSent": true,
@@ -1931,6 +1952,13 @@
           "score": "52-42",
           "period": 2,
           "clock": "7:41"
+        },
+        {
+          "t": "2026-03-07T21:31:26.809Z",
+          "spread": 6.5,
+          "score": "52-47",
+          "period": 2,
+          "clock": "6:34"
         }
       ]
     },
@@ -2333,6 +2361,13 @@
           "score": "62-52",
           "period": 3,
           "clock": "11:10"
+        },
+        {
+          "t": "2026-03-07T21:31:24.599Z",
+          "spread": -3.5,
+          "score": "64-54",
+          "period": 3,
+          "clock": "10:10"
         }
       ],
       "alertSent": true,
@@ -2654,6 +2689,13 @@
           "score": "42-47",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-07T21:31:26.810Z",
+          "spread": -0.5,
+          "score": "42-47",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
     },
@@ -2920,6 +2962,13 @@
           "score": "45-59",
           "period": 2,
           "clock": "7:30"
+        },
+        {
+          "t": "2026-03-07T21:31:26.810Z",
+          "spread": -13.5,
+          "score": "45-59",
+          "period": 2,
+          "clock": "7:30"
         }
       ],
       "alertSent": true,
@@ -3171,6 +3220,13 @@
           "score": "27-34",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-07T21:31:26.811Z",
+          "spread": -6.5,
+          "score": "27-34",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
     },
@@ -3273,6 +3329,121 @@
         "v7_marginWeighted": 14.3,
         "v8_procDiffOnly": 31,
         "v10_timeDecay": 71.3
+      },
+      "alertSent": true,
+      "kalshi": {
+        "success": false,
+        "error": "ncaab_disabled"
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-07T21:31:26.811Z",
+          "spread": -5.5,
+          "score": "23-23",
+          "period": 1,
+          "clock": "9:24"
+        }
+      ]
+    },
+    {
+      "id": 1772919088511,
+      "key": "401804966_sust_NMSU",
+      "gameId": "401804966",
+      "team": "NMSU",
+      "opponent": "KENN",
+      "matchup": "KENN @ NMSU",
+      "side": "SPREAD",
+      "spread": 2.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -110,
+      "impliedP": 52.4,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-07T21:31:28.511Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "KENN",
+      "homeTeam": "NMSU",
+      "awayName": "Kennesaw State Owls",
+      "homeName": "New Mexico State Aggies",
+      "awayScore": 25,
+      "homeScore": 22,
+      "period": 1,
+      "clock": "7:56",
+      "periodLabel": "H1",
+      "sustLeader": "KENN",
+      "sustMargin": 3,
+      "betOnLeader": false,
+      "currentMargin": -3,
+      "cushion": -0.5,
+      "sustScore": 54.7,
+      "fragScore": -19.6,
+      "sustGap": 74.30000000000001,
+      "sustSignals": [
+        "Low 3PT reliance (14%)",
+        "Strong process (7.4/10)"
+      ],
+      "fragSignals": [
+        "3PT heavy (55% of pts)"
+      ],
+      "sustStats": {
+        "fg": "42",
+        "efg": "45",
+        "threePt": "14",
+        "twoPt": "64",
+        "proc": 7.4,
+        "star": 112,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "32",
+        "efg": "42",
+        "threePt": "33",
+        "twoPt": "18",
+        "proc": 4.3,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "NMSU +54.7 vs KENN -19.6 (gap:74.30000000000001) | KENN 25-22 NMSU | H1 7:56 | FanDuel +2.5 (-110)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 62,
+        "v2_f1low": 76.4,
+        "v3_f1high": 82.3,
+        "v4_f3boost": 86.7,
+        "v5_noStar": 74.3
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -19.6,
+        "hScore": 54.7,
+        "gap": 74.3,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 74.3,
+        "v7_marginWeighted": 22.3,
+        "v8_procDiffOnly": 31,
+        "v10_timeDecay": 74.3
       },
       "alertSent": true,
       "kalshi": {
