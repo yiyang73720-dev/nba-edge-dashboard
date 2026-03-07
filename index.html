@@ -4577,17 +4577,32 @@ async function fetchESPNScoreboard() {
 
         let html = '';
 
-        // Section 1: Team Score Blocks with Sustainability Badges
+        // Section 1: Team Score Blocks with Sustainability Badges + Numeric Score
+        const _aSustScore = aw.sustainability.score || 0;
+        const _hSustScore = hm.sustainability.score || 0;
+        const _sustGap = Math.abs(_aSustScore - _hSustScore);
+        const _sustScoreColor = (s) => s >= 8 ? '#10b981' : s <= -8 ? '#ef4444' : '#f59e0b';
+        const _sustScoreStr = (s) => (s > 0 ? '+' : '') + s.toFixed(1);
+        const _gapColor = _sustGap >= 40 ? '#10b981' : _sustGap >= 30 ? '#f59e0b' : 'var(--text-muted)';
+        const _hasDivergence = (aw.sustainability.cls === 'sustainable' && hm.sustainability.cls === 'unsustainable') ||
+                               (aw.sustainability.cls === 'unsustainable' && hm.sustainability.cls === 'sustainable');
         html += `<div class="xray-team-blocks">
           <div class="xray-team-box">
             <div class="xray-team-name">${teamLogoImg(aLogo, 18)}${teamDisplayShort(aA, aFull)}</div>
             <div class="xray-team-score">${aS}</div>
             <span class="sustainability-badge ${aw.sustainability.cls}">${aw.sustainability.label}</span>
+            <div style="font-size:18px;font-weight:800;color:${_sustScoreColor(_aSustScore)};margin-top:4px;font-variant-numeric:tabular-nums;">${_sustScoreStr(_aSustScore)}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 4px;">
+            <div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Gap</div>
+            <div style="font-size:22px;font-weight:900;color:${_gapColor};font-variant-numeric:tabular-nums;">${_sustGap.toFixed(0)}</div>
+            ${_hasDivergence && _sustGap >= 30 ? '<div style="font-size:9px;font-weight:700;color:#10b981;margin-top:2px;">SIGNAL</div>' : ''}
           </div>
           <div class="xray-team-box">
             <div class="xray-team-name">${teamLogoImg(hLogo, 18)}${teamDisplayShort(hA, hFull)}</div>
             <div class="xray-team-score">${hS}</div>
             <span class="sustainability-badge ${hm.sustainability.cls}">${hm.sustainability.label}</span>
+            <div style="font-size:18px;font-weight:800;color:${_sustScoreColor(_hSustScore)};margin-top:4px;font-variant-numeric:tabular-nums;">${_sustScoreStr(_hSustScore)}</div>
           </div>
         </div>`;
 
