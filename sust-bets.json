@@ -1168,6 +1168,20 @@
           "score": "53-86",
           "period": 2,
           "clock": "9:59"
+        },
+        {
+          "t": "2026-03-08T01:42:20.015Z",
+          "spread": -34.5,
+          "score": "53-88",
+          "period": 2,
+          "clock": "9:17"
+        },
+        {
+          "t": "2026-03-08T01:42:20.052Z",
+          "spread": -34.5,
+          "score": "53-88",
+          "period": 2,
+          "clock": "9:17"
         }
       ],
       "alertSent": true,
@@ -1657,6 +1671,20 @@
           "score": "46-50",
           "period": 2,
           "clock": "7:21"
+        },
+        {
+          "t": "2026-03-08T01:42:20.016Z",
+          "spread": -3.5,
+          "score": "49-50",
+          "period": 2,
+          "clock": "6:53"
+        },
+        {
+          "t": "2026-03-08T01:42:20.053Z",
+          "spread": -3.5,
+          "score": "49-50",
+          "period": 2,
+          "clock": "6:53"
         }
       ]
     },
@@ -2016,6 +2044,20 @@
           "score": "35-52",
           "period": 2,
           "clock": "15:53"
+        },
+        {
+          "t": "2026-03-08T01:42:20.016Z",
+          "spread": -15.5,
+          "score": "35-52",
+          "period": 2,
+          "clock": "15:26"
+        },
+        {
+          "t": "2026-03-08T01:42:20.053Z",
+          "spread": -15.5,
+          "score": "35-52",
+          "period": 2,
+          "clock": "15:26"
         }
       ]
     },
@@ -2356,6 +2398,20 @@
           "score": "47-40",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T01:42:20.017Z",
+          "spread": 3.5,
+          "score": "47-40",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T01:42:20.054Z",
+          "spread": 3.5,
+          "score": "47-40",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
     },
@@ -2467,6 +2523,122 @@
         "awayML": "-305",
         "homeML": "+245",
         "openSpread": "-6.5"
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T01:42:17.833Z",
+          "spread": -4.5,
+          "score": "23-41",
+          "period": 2,
+          "clock": "11:35"
+        },
+        {
+          "t": "2026-03-08T01:42:18.367Z",
+          "spread": -4.5,
+          "score": "23-41",
+          "period": 2,
+          "clock": "11:35"
+        }
+      ]
+    },
+    {
+      "id": 1772934140956,
+      "key": "401822976_sust_GTWN",
+      "gameId": "401822976",
+      "team": "GTWN",
+      "opponent": "PROV",
+      "matchup": "PROV @ GTWN",
+      "side": "SPREAD",
+      "spread": -6.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -108,
+      "impliedP": 51.9,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T01:42:20.956Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "PROV",
+      "homeTeam": "GTWN",
+      "awayName": "Providence Friars",
+      "homeName": "Georgetown Hoyas",
+      "awayScore": 21,
+      "homeScore": 30,
+      "period": 1,
+      "clock": "5:48",
+      "periodLabel": "H1",
+      "sustLeader": "GTWN",
+      "sustMargin": 9,
+      "betOnLeader": true,
+      "currentMargin": 9,
+      "cushion": 2.5,
+      "sustScore": 59.8,
+      "fragScore": 12.2,
+      "sustGap": 47.599999999999994,
+      "sustSignals": [
+        "Low 3PT reliance (10%)",
+        "Strong process (7.6/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "50",
+        "efg": "52",
+        "threePt": "14",
+        "twoPt": "67",
+        "proc": 7.6,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "37",
+        "efg": "42",
+        "threePt": "20",
+        "twoPt": "48",
+        "proc": 5,
+        "star": 47,
+        "scq": 0
+      },
+      "sustDetail": "GTWN +59.8 vs PROV 12.2 (gap:47.599999999999994) | PROV 21-30 GTWN | H1 5:48 | FanDuel -6.5 (-108)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 42,
+        "v2_f1low": 50.9,
+        "v3_f1high": 46.5,
+        "v4_f3boost": 58,
+        "v5_noStar": 57.6
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 12.2,
+        "hScore": 59.8,
+        "gap": 47.6,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 55.1,
+        "v7_marginWeighted": 42.8,
+        "v8_procDiffOnly": 26,
+        "v10_timeDecay": 47.6
       },
       "alertSent": true
     }
