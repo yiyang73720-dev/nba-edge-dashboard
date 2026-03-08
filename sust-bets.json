@@ -910,6 +910,13 @@
           "score": "84-63",
           "period": 2,
           "clock": "3:28"
+        },
+        {
+          "t": "2026-03-08T04:07:49.839Z",
+          "spread": -19.5,
+          "score": "84-63",
+          "period": 2,
+          "clock": "3:26"
         }
       ]
     },
@@ -2658,6 +2665,13 @@
           "t": "2026-03-08T04:07:47.773Z",
           "spread": -16.5,
           "score": "76-58",
+          "period": 2,
+          "clock": "7:31"
+        },
+        {
+          "t": "2026-03-08T04:07:49.840Z",
+          "spread": -16.5,
+          "score": "78-58",
           "period": 2,
           "clock": "7:31"
         }
@@ -8842,11 +8856,11 @@
     }
   ],
   "meta": {
-    "brierScore": 0.2525,
+    "brierScore": 0.248,
     "brierBaseline": 0.25,
-    "brierSkill": -0.01,
-    "brierN": 10,
-    "winRate": 50,
-    "totalPL": -420.53
+    "brierSkill": 0.008,
+    "brierN": 11,
+    "winRate": 54.5,
+    "totalPL": 25.9
   }
 }
