@@ -114,6 +114,34 @@
           "score": "43-32",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T23:02:33.797Z",
+          "spread": 6.5,
+          "score": "43-32",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T23:02:34.430Z",
+          "spread": 6.5,
+          "score": "43-32",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T23:03:40.560Z",
+          "spread": 6.5,
+          "score": "43-32",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T23:03:40.686Z",
+          "spread": 6.5,
+          "score": "43-32",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
     },
@@ -230,8 +258,179 @@
           "score": "28-41",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T23:02:33.798Z",
+          "spread": -12.5,
+          "score": "28-41",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T23:02:34.430Z",
+          "spread": -12.5,
+          "score": "28-41",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T23:03:40.560Z",
+          "spread": -12.5,
+          "score": "28-41",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T23:03:40.686Z",
+          "spread": -12.5,
+          "score": "28-41",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
+    },
+    {
+      "id": 1773010821903,
+      "key": "401851602_sust_HCU",
+      "gameId": "401851602",
+      "team": "HCU",
+      "opponent": "UNO",
+      "matchup": "HCU @ UNO",
+      "side": "SPREAD",
+      "spread": 2.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -110,
+      "impliedP": 52.4,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T23:00:21.903Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "HCU",
+      "homeTeam": "UNO",
+      "awayName": "Houston Christian Huskies",
+      "homeName": "New Orleans Privateers",
+      "awayScore": 33,
+      "homeScore": 34,
+      "period": 1,
+      "clock": "0:00",
+      "periodLabel": "H1",
+      "sustLeader": "UNO",
+      "sustMargin": 1,
+      "betOnLeader": false,
+      "currentMargin": -1,
+      "cushion": 1.5,
+      "sustScore": 45.1,
+      "fragScore": -2.9,
+      "sustGap": 48,
+      "sustSignals": [
+        "Low 3PT reliance (27%)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "50",
+        "efg": "56",
+        "threePt": "50",
+        "twoPt": "55",
+        "proc": 6.8,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "47",
+        "efg": "52",
+        "threePt": "43",
+        "twoPt": "65",
+        "proc": 5.1,
+        "star": 86,
+        "scq": 0
+      },
+      "sustDetail": "HCU +38.6 vs UNO 4.9 (gap:33.7) | HCU 33-34 UNO | H1 0:00 | FanDuel +2.5 (-110)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": true,
+        "g7_earlyGame": false,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 34,
+        "v2_f1low": 37.2,
+        "v3_f1high": 26.6,
+        "v4_f3boost": 40.6,
+        "v5_noStar": 33.8
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 38.6,
+        "hScore": 4.9,
+        "gap": 33.7,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 38.2,
+        "v7_marginWeighted": 3.4,
+        "v8_procDiffOnly": 17,
+        "v10_timeDecay": 33.7
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T23:01:28.115Z",
+          "spread": 2.5,
+          "score": "33-34",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T23:01:28.759Z",
+          "spread": 2.5,
+          "score": "33-34",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T23:02:33.798Z",
+          "spread": 2.5,
+          "score": "33-34",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T23:02:34.430Z",
+          "spread": 2.5,
+          "score": "33-34",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T23:03:40.560Z",
+          "spread": 2.5,
+          "score": "33-34",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T23:03:40.687Z",
+          "spread": 2.5,
+          "score": "33-34",
+          "period": 1,
+          "clock": "0:00"
+        }
+      ],
+      "alertSent": true
     },
     {
       "id": 1773010822114,
@@ -342,6 +541,34 @@
         },
         {
           "t": "2026-03-08T23:01:28.760Z",
+          "spread": -2.5,
+          "score": "28-30",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T23:02:33.798Z",
+          "spread": -2.5,
+          "score": "28-30",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T23:02:34.431Z",
+          "spread": -2.5,
+          "score": "28-30",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T23:03:40.561Z",
+          "spread": -2.5,
+          "score": "28-30",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T23:03:40.687Z",
           "spread": -2.5,
           "score": "28-30",
           "period": 1,
@@ -467,6 +694,34 @@
           "score": "34-51",
           "period": 2,
           "clock": "4:40"
+        },
+        {
+          "t": "2026-03-08T23:02:31.153Z",
+          "spread": -9.5,
+          "score": "34-54",
+          "period": 2,
+          "clock": "4:27"
+        },
+        {
+          "t": "2026-03-08T23:02:32.117Z",
+          "spread": -9.5,
+          "score": "34-54",
+          "period": 2,
+          "clock": "4:27"
+        },
+        {
+          "t": "2026-03-08T23:03:37.404Z",
+          "spread": -14.5,
+          "score": "34-57",
+          "period": 2,
+          "clock": "4:01"
+        },
+        {
+          "t": "2026-03-08T23:03:38.618Z",
+          "spread": -14.5,
+          "score": "34-57",
+          "period": 2,
+          "clock": "4:01"
         }
       ]
     },
@@ -580,7 +835,37 @@
         "homeML": "-395",
         "openSpread": "+9.5"
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T23:02:31.153Z",
+          "spread": -14.5,
+          "score": "37-50",
+          "period": 2,
+          "clock": "3:39"
+        },
+        {
+          "t": "2026-03-08T23:02:32.117Z",
+          "spread": -14.5,
+          "score": "37-50",
+          "period": 2,
+          "clock": "3:39"
+        },
+        {
+          "t": "2026-03-08T23:03:37.404Z",
+          "spread": -14.5,
+          "score": "37-52",
+          "period": 2,
+          "clock": "2:58"
+        },
+        {
+          "t": "2026-03-08T23:03:38.618Z",
+          "spread": -14.5,
+          "score": "37-52",
+          "period": 2,
+          "clock": "2:58"
+        }
+      ]
     }
   ],
   "resolved": []
