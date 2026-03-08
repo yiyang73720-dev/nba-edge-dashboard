@@ -668,6 +668,20 @@
           "score": "35-46",
           "period": 2,
           "clock": "13:14"
+        },
+        {
+          "t": "2026-03-08T22:34:14.082Z",
+          "spread": -10.5,
+          "score": "35-46",
+          "period": 2,
+          "clock": "12:39"
+        },
+        {
+          "t": "2026-03-08T22:34:14.397Z",
+          "spread": -10.5,
+          "score": "35-46",
+          "period": 2,
+          "clock": "12:39"
         }
       ]
     },
@@ -1102,8 +1116,122 @@
           "score": "68-73",
           "period": 2,
           "clock": "4:17"
+        },
+        {
+          "t": "2026-03-08T22:34:14.083Z",
+          "spread": 6.5,
+          "score": "70-76",
+          "period": 2,
+          "clock": "3:27"
+        },
+        {
+          "t": "2026-03-08T22:34:14.397Z",
+          "spread": 6.5,
+          "score": "70-76",
+          "period": 2,
+          "clock": "3:27"
         }
       ],
+      "alertSent": true
+    },
+    {
+      "id": 1773009256090,
+      "key": "401851602_sust_HCU",
+      "gameId": "401851602",
+      "team": "HCU",
+      "opponent": "UNO",
+      "matchup": "HCU @ UNO",
+      "side": "SPREAD",
+      "spread": 1.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -114,
+      "impliedP": 53.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T22:34:16.090Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "HCU",
+      "homeTeam": "UNO",
+      "awayName": "Houston Christian Huskies",
+      "homeName": "New Orleans Privateers",
+      "awayScore": 22,
+      "homeScore": 21,
+      "period": 1,
+      "clock": "6:13",
+      "periodLabel": "H1",
+      "sustLeader": "HCU",
+      "sustMargin": 1,
+      "betOnLeader": true,
+      "currentMargin": 1,
+      "cushion": 2.5,
+      "sustScore": 64.6,
+      "fragScore": -13.8,
+      "sustGap": 78.39999999999999,
+      "sustSignals": [
+        "Low 3PT reliance (27%)",
+        "Strong process (8.1/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "50",
+        "efg": "56",
+        "threePt": "40",
+        "twoPt": "55",
+        "proc": 8.1,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "45",
+        "efg": "50",
+        "threePt": "50",
+        "twoPt": "67",
+        "proc": 4.2,
+        "star": 89,
+        "scq": 0
+      },
+      "sustDetail": "HCU +64.6 vs UNO -13.8 (gap:78.39999999999999) | HCU 22-21 UNO | H1 6:13 | FanDuel +1.5 (-114)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 78,
+        "v2_f1low": 86.1,
+        "v3_f1high": 63.4,
+        "v4_f3boost": 94,
+        "v5_noStar": 78.4
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 64.6,
+        "hScore": -13.8,
+        "gap": 78.4,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 85.9,
+        "v7_marginWeighted": 7.8,
+        "v8_procDiffOnly": 39,
+        "v10_timeDecay": 78.4
+      },
       "alertSent": true
     }
   ],
