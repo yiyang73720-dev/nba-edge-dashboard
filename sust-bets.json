@@ -142,6 +142,20 @@
           "score": "38-24",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T20:51:24.337Z",
+          "spread": -8.5,
+          "score": "38-24",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T20:51:24.346Z",
+          "spread": -8.5,
+          "score": "38-24",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
     },
@@ -240,7 +254,23 @@
         "v8_procDiffOnly": 21,
         "v10_timeDecay": 36.3
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T20:51:24.337Z",
+          "spread": -16.5,
+          "score": "60-43",
+          "period": 2,
+          "clock": "11:41"
+        },
+        {
+          "t": "2026-03-08T20:51:24.346Z",
+          "spread": -16.5,
+          "score": "60-43",
+          "period": 2,
+          "clock": "11:41"
+        }
+      ]
     }
   ],
   "resolved": []
