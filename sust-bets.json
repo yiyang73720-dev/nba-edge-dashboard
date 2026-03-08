@@ -95,6 +95,152 @@
         "v8_procDiffOnly": 29,
         "v10_timeDecay": 43.3
       },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T05:19:31.341Z",
+          "spread": -11.5,
+          "score": "36-53",
+          "period": 2,
+          "clock": "16:04"
+        },
+        {
+          "t": "2026-03-08T05:19:34.052Z",
+          "spread": -11.5,
+          "score": "37-53",
+          "period": 2,
+          "clock": "16:04"
+        },
+        {
+          "t": "2026-03-08T05:20:35.143Z",
+          "spread": -11.5,
+          "score": "37-55",
+          "period": 2,
+          "clock": "15:20"
+        },
+        {
+          "t": "2026-03-08T05:20:36.765Z",
+          "spread": -11.5,
+          "score": "37-55",
+          "period": 2,
+          "clock": "15:20"
+        },
+        {
+          "t": "2026-03-08T05:21:39.478Z",
+          "spread": -13.5,
+          "score": "40-55",
+          "period": 2,
+          "clock": "14:23"
+        },
+        {
+          "t": "2026-03-08T05:21:39.554Z",
+          "spread": -13.5,
+          "score": "40-55",
+          "period": 2,
+          "clock": "14:23"
+        }
+      ]
+    },
+    {
+      "id": 1772947299929,
+      "key": "401827725_sust_ARIZ",
+      "gameId": "401827725",
+      "team": "ARIZ",
+      "opponent": "COLO",
+      "matchup": "ARIZ @ COLO",
+      "side": "SPREAD",
+      "spread": -6.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -110,
+      "impliedP": 52.4,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T05:21:39.929Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "ARIZ",
+      "homeTeam": "COLO",
+      "awayName": "Arizona Wildcats",
+      "homeName": "Colorado Buffaloes",
+      "awayScore": 46,
+      "homeScore": 46,
+      "period": 2,
+      "clock": "17:01",
+      "periodLabel": "H2",
+      "sustLeader": "TIE",
+      "sustMargin": 0,
+      "betOnLeader": false,
+      "currentMargin": 0,
+      "cushion": -6.5,
+      "sustScore": 66.8,
+      "fragScore": -28.9,
+      "sustGap": 95.69999999999999,
+      "sustSignals": [
+        "Low 3PT reliance (7%)",
+        "Strong process (7.9/10)"
+      ],
+      "fragSignals": [
+        "Star erupting (178% pace)"
+      ],
+      "sustStats": {
+        "fg": "49",
+        "efg": "50",
+        "threePt": "14",
+        "twoPt": "74",
+        "proc": 7.9,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "39",
+        "efg": "47",
+        "threePt": "40",
+        "twoPt": "39",
+        "proc": 4.1,
+        "star": 178,
+        "scq": 0
+      },
+      "sustDetail": "ARIZ +66.8 vs COLO -28.9 (gap:95.69999999999999) | ARIZ 46-46 COLO | H2 17:01 | FanDuel -6.5 (-110)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": false,
+        "g7_earlyGame": false,
+        "g8_highProc": true,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 86,
+        "v2_f1low": 100.1,
+        "v3_f1high": 96.9,
+        "v4_f3boost": 111,
+        "v5_noStar": 85.8
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 66.8,
+        "hScore": -28.9,
+        "gap": 95.7,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 95.7,
+        "v7_marginWeighted": 9.6,
+        "v8_procDiffOnly": 38,
+        "v10_timeDecay": 95.7
+      },
       "alertSent": true
     }
   ],
