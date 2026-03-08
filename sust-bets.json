@@ -99,6 +99,147 @@
         "v8_procDiffOnly": 48,
         "v10_timeDecay": 98.9
       },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T20:48:09.723Z",
+          "spread": -9.5,
+          "score": "38-24",
+          "period": 1,
+          "clock": "0:56"
+        },
+        {
+          "t": "2026-03-08T20:48:10.251Z",
+          "spread": -9.5,
+          "score": "38-24",
+          "period": 1,
+          "clock": "0:56"
+        },
+        {
+          "t": "2026-03-08T20:49:14.921Z",
+          "spread": -8.5,
+          "score": "38-24",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T20:49:14.940Z",
+          "spread": -8.5,
+          "score": "38-24",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T20:50:19.863Z",
+          "spread": -8.5,
+          "score": "38-24",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T20:50:19.872Z",
+          "spread": -8.5,
+          "score": "38-24",
+          "period": 1,
+          "clock": "0:00"
+        }
+      ]
+    },
+    {
+      "id": 1773003020101,
+      "key": "401851431_sust_NKU",
+      "gameId": "401851431",
+      "team": "NKU",
+      "opponent": "GB",
+      "matchup": "NKU @ GB",
+      "side": "SPREAD",
+      "spread": -15.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -120,
+      "impliedP": 54.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "DraftKings",
+      "timestamp": "2026-03-08T20:50:20.101Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "NKU",
+      "homeTeam": "GB",
+      "awayName": "Northern Kentucky Norse",
+      "homeName": "Green Bay Phoenix",
+      "awayScore": 60,
+      "homeScore": 43,
+      "period": 2,
+      "clock": "11:41",
+      "periodLabel": "H2",
+      "sustLeader": "NKU",
+      "sustMargin": 17,
+      "betOnLeader": true,
+      "currentMargin": 17,
+      "cushion": 1.5,
+      "sustScore": 34.8,
+      "fragScore": -1.5,
+      "sustGap": 36.3,
+      "sustSignals": [],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "47",
+        "efg": "55",
+        "threePt": "42",
+        "twoPt": "47",
+        "proc": 6.8,
+        "star": 91,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "44",
+        "efg": "49",
+        "threePt": "30",
+        "twoPt": "56",
+        "proc": 4.7,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "NKU +34.8 vs GB -1.5 (gap:36.3) | NKU 60-43 GB | H2 11:41 | DraftKings -15.5 (-120)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": false,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 42,
+        "v2_f1low": 42.4,
+        "v3_f1high": 18.3,
+        "v4_f3boost": 44.7,
+        "v5_noStar": 36.3
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 34.8,
+        "hScore": -1.5,
+        "gap": 36.3,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 40.8,
+        "v7_marginWeighted": 61.7,
+        "v8_procDiffOnly": 21,
+        "v10_timeDecay": 36.3
+      },
       "alertSent": true
     }
   ],
