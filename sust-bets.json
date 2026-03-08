@@ -98,7 +98,23 @@
         "v8_procDiffOnly": 47,
         "v10_timeDecay": 82.6
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T02:38:53.140Z",
+          "spread": -19.5,
+          "score": "31-50",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T02:38:56.298Z",
+          "spread": -19.5,
+          "score": "31-50",
+          "period": 1,
+          "clock": "0:00"
+        }
+      ]
     },
     {
       "id": 1772937462523,
@@ -197,7 +213,23 @@
         "v8_procDiffOnly": 53,
         "v10_timeDecay": 100.7
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T02:38:53.141Z",
+          "spread": -17.5,
+          "score": "35-52",
+          "period": 2,
+          "clock": "11:55"
+        },
+        {
+          "t": "2026-03-08T02:38:56.299Z",
+          "spread": -17.5,
+          "score": "35-52",
+          "period": 2,
+          "clock": "11:55"
+        }
+      ]
     },
     {
       "id": 1772937463280,
@@ -299,7 +331,23 @@
         "v8_procDiffOnly": 22,
         "v10_timeDecay": 55.2
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T02:38:53.142Z",
+          "spread": 5.5,
+          "score": "62-57",
+          "period": 2,
+          "clock": "10:58"
+        },
+        {
+          "t": "2026-03-08T02:38:56.299Z",
+          "spread": 5.5,
+          "score": "62-59",
+          "period": 2,
+          "clock": "10:44"
+        }
+      ]
     },
     {
       "id": 1772937463827,
@@ -399,7 +447,23 @@
         "v8_procDiffOnly": 50,
         "v10_timeDecay": 95.3
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T02:38:53.145Z",
+          "spread": -6.5,
+          "score": "26-31",
+          "period": 1,
+          "clock": "1:52"
+        },
+        {
+          "t": "2026-03-08T02:38:56.300Z",
+          "spread": -6.5,
+          "score": "26-31",
+          "period": 1,
+          "clock": "1:52"
+        }
+      ]
     },
     {
       "id": 1772937465031,
@@ -498,7 +562,23 @@
         "v8_procDiffOnly": 18,
         "v10_timeDecay": 41.7
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T02:38:53.146Z",
+          "spread": -13.5,
+          "score": "21-35",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T02:38:56.301Z",
+          "spread": -13.5,
+          "score": "21-35",
+          "period": 1,
+          "clock": "0:00"
+        }
+      ]
     },
     {
       "id": 1772937465878,
@@ -599,7 +679,146 @@
         "v8_procDiffOnly": 35,
         "v10_timeDecay": 83
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T02:38:53.149Z",
+          "spread": 1.5,
+          "score": "26-27",
+          "period": 1,
+          "clock": "3:07"
+        },
+        {
+          "t": "2026-03-08T02:38:56.302Z",
+          "spread": 1.5,
+          "score": "26-27",
+          "period": 1,
+          "clock": "2:44"
+        }
+      ]
+    },
+    {
+      "id": 1772937530134,
+      "key": "401810773_sust_LAC",
+      "gameId": "401810773",
+      "team": "LAC",
+      "opponent": "MEM",
+      "matchup": "LAC @ MEM",
+      "side": "SPREAD",
+      "spread": -6.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -130,
+      "impliedP": 56.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T02:38:50.134Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "LAC",
+      "homeTeam": "MEM",
+      "awayName": "LA Clippers",
+      "homeName": "Memphis Grizzlies",
+      "awayScore": 71,
+      "homeScore": 69,
+      "period": 3,
+      "clock": "7:27",
+      "periodLabel": "Q3",
+      "sustLeader": "LAC",
+      "sustMargin": 2,
+      "betOnLeader": true,
+      "currentMargin": 2,
+      "cushion": -4.5,
+      "sustScore": 61.5,
+      "fragScore": -22.9,
+      "sustGap": 84.4,
+      "sustSignals": [
+        "Low 3PT reliance (4%)",
+        "Strong process (7.6/10)"
+      ],
+      "fragSignals": [
+        "3PT heavy (52% of pts)"
+      ],
+      "sustStats": {
+        "fg": "47",
+        "efg": "48",
+        "threePt": "9",
+        "twoPt": "69",
+        "proc": 7.6,
+        "star": 148,
+        "scq": 13
+      },
+      "fragStats": {
+        "fg": "44",
+        "efg": "56",
+        "threePt": "41",
+        "twoPt": "29",
+        "proc": 4.1,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "LAC +61.5 vs MEM -22.9 (gap:84.4) | LAC 71-69 MEM | Q3 7:27 | FanDuel -6.5 (-130)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": false,
+        "g8_highProc": true,
+        "g9_homeTeam": false,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 70,
+        "v2_f1low": 86.6,
+        "v3_f1high": 94.3,
+        "v4_f3boost": 98.4,
+        "v5_noStar": 84.4
+      },
+      "v7": {
+        "aScq": 13.2,
+        "hScq": 0,
+        "aScore": 66.8,
+        "hScore": -22.9,
+        "gap": 89.7,
+        "f5contrib": 5.3
+      },
+      "altStructural": {
+        "v6_cushionBoost": 84.4,
+        "v7_marginWeighted": 16.9,
+        "v8_procDiffOnly": 35,
+        "v10_timeDecay": 109.7
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": 7.5,
+        "detail": "LAC -7.5",
+        "awaySpread": "-7.5",
+        "homeSpread": "+7.5",
+        "awaySpreadOdds": "-112",
+        "homeSpreadOdds": "-108",
+        "awayML": "-305",
+        "homeML": "+245",
+        "openSpread": "-6.5"
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T02:38:50.372Z",
+          "spread": -6.5,
+          "score": "71-69",
+          "period": 3,
+          "clock": "7:27"
+        }
+      ]
     }
   ],
   "resolved": []
