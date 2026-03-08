@@ -207,6 +207,34 @@
           "score": "56-37",
           "period": 3,
           "clock": "11:25"
+        },
+        {
+          "t": "2026-03-08T18:33:58.311Z",
+          "spread": 11.5,
+          "score": "56-40",
+          "period": 3,
+          "clock": "10:54"
+        },
+        {
+          "t": "2026-03-08T18:33:59.624Z",
+          "spread": 11.5,
+          "score": "56-40",
+          "period": 3,
+          "clock": "10:54"
+        },
+        {
+          "t": "2026-03-08T18:35:02.547Z",
+          "spread": 9.5,
+          "score": "58-43",
+          "period": 3,
+          "clock": "9:41"
+        },
+        {
+          "t": "2026-03-08T18:35:02.796Z",
+          "spread": 9.5,
+          "score": "58-43",
+          "period": 3,
+          "clock": "9:41"
         }
       ],
       "alertSent": true
@@ -358,8 +386,128 @@
           "score": "23-20",
           "period": 1,
           "clock": "7:40"
+        },
+        {
+          "t": "2026-03-08T18:34:00.826Z",
+          "spread": 1.5,
+          "score": "23-20",
+          "period": 1,
+          "clock": "7:40"
+        },
+        {
+          "t": "2026-03-08T18:34:00.860Z",
+          "spread": 1.5,
+          "score": "23-20",
+          "period": 1,
+          "clock": "7:40"
+        },
+        {
+          "t": "2026-03-08T18:35:04.820Z",
+          "spread": 1.5,
+          "score": "23-20",
+          "period": 1,
+          "clock": "7:40"
         }
       ]
+    },
+    {
+      "id": 1772994905079,
+      "key": "401851548_sust_NAVY",
+      "gameId": "401851548",
+      "team": "NAVY",
+      "opponent": "BU",
+      "matchup": "BU @ NAVY",
+      "side": "SPREAD",
+      "spread": -7.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -122,
+      "impliedP": 55,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T18:35:05.079Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "BU",
+      "homeTeam": "NAVY",
+      "awayName": "Boston University Terriers",
+      "homeName": "Navy Midshipmen",
+      "awayScore": 20,
+      "homeScore": 21,
+      "period": 1,
+      "clock": "7:23",
+      "periodLabel": "H1",
+      "sustLeader": "NAVY",
+      "sustMargin": 1,
+      "betOnLeader": true,
+      "currentMargin": 1,
+      "cushion": -6.5,
+      "sustScore": 44.5,
+      "fragScore": 0.3,
+      "sustGap": 44.2,
+      "sustSignals": [
+        "Low 3PT reliance (14%)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "45",
+        "efg": "48",
+        "threePt": "20",
+        "twoPt": "76",
+        "proc": 6.9,
+        "star": 88,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "53",
+        "efg": "56",
+        "threePt": "17",
+        "twoPt": "80",
+        "proc": 4.7,
+        "star": 150,
+        "scq": 0
+      },
+      "sustDetail": "NAVY +44.5 vs BU 0.3 (gap:44.2) | BU 20-21 NAVY | H1 7:23 | FanDuel -7.5 (-122)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 44,
+        "v2_f1low": 48.5,
+        "v3_f1high": 35.8,
+        "v4_f3boost": 53,
+        "v5_noStar": 44.2
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 0.3,
+        "hScore": 44.5,
+        "gap": 44.2,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 44.2,
+        "v7_marginWeighted": 4.4,
+        "v8_procDiffOnly": 22,
+        "v10_timeDecay": 44.2
+      },
+      "alertSent": true
     }
   ],
   "resolved": []
