@@ -289,6 +289,34 @@
           "score": "43-35",
           "period": 1,
           "clock": "0:44"
+        },
+        {
+          "t": "2026-03-08T04:27:54.058Z",
+          "spread": 4.5,
+          "score": "46-38",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T04:28:56.616Z",
+          "spread": 3.5,
+          "score": "46-38",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T04:29:59.000Z",
+          "spread": 3.5,
+          "score": "46-38",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T04:29:59.315Z",
+          "spread": 3.5,
+          "score": "46-38",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
     },
@@ -530,8 +558,136 @@
           "score": "26-30",
           "period": 1,
           "clock": "2:16"
+        },
+        {
+          "t": "2026-03-08T04:27:54.059Z",
+          "spread": -10.5,
+          "score": "26-31",
+          "period": 1,
+          "clock": "1:51"
+        },
+        {
+          "t": "2026-03-08T04:28:56.617Z",
+          "spread": -10.5,
+          "score": "28-34",
+          "period": 1,
+          "clock": "1:08"
+        },
+        {
+          "t": "2026-03-08T04:29:59.001Z",
+          "spread": -10.5,
+          "score": "28-34",
+          "period": 1,
+          "clock": "0:04"
+        },
+        {
+          "t": "2026-03-08T04:29:59.315Z",
+          "spread": -10.5,
+          "score": "28-34",
+          "period": 1,
+          "clock": "0:04"
         }
       ]
+    },
+    {
+      "id": 1772944199649,
+      "key": "401820576_sust_NEV",
+      "gameId": "401820576",
+      "team": "NEV",
+      "opponent": "AF",
+      "matchup": "AF @ NEV",
+      "side": "SPREAD",
+      "spread": -22.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -110,
+      "impliedP": 52.4,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T04:29:59.649Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "AF",
+      "homeTeam": "NEV",
+      "awayName": "Air Force Falcons",
+      "homeName": "Nevada Wolf Pack",
+      "awayScore": 32,
+      "homeScore": 48,
+      "period": 2,
+      "clock": "12:51",
+      "periodLabel": "H2",
+      "sustLeader": "NEV",
+      "sustMargin": 16,
+      "betOnLeader": true,
+      "currentMargin": 16,
+      "cushion": -6.5,
+      "sustScore": 53.2,
+      "fragScore": -14,
+      "sustGap": 67.2,
+      "sustSignals": [
+        "Low 3PT reliance (19%)",
+        "Strong process (7.4/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "47",
+        "efg": "51",
+        "threePt": "25",
+        "twoPt": "58",
+        "proc": 7.4,
+        "star": 104,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "40",
+        "efg": "41",
+        "threePt": "10",
+        "twoPt": "81",
+        "proc": 3.9,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "NEV +53.2 vs AF -14 (gap:67.2) | AF 32-48 NEV | H2 12:51 | FanDuel -22.5 (-110)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": false,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 70,
+        "v2_f1low": 75.1,
+        "v3_f1high": 48.5,
+        "v4_f3boost": 81.2,
+        "v5_noStar": 67.2
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -14,
+        "hScore": 53.2,
+        "gap": 67.2,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 67.2,
+        "v7_marginWeighted": 107.5,
+        "v8_procDiffOnly": 35,
+        "v10_timeDecay": 67.2
+      },
+      "alertSent": true
     }
   ],
   "resolved": [
