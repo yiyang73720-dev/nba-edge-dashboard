@@ -225,6 +225,13 @@
           "score": "31-50",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T02:49:09.186Z",
+          "spread": -18.5,
+          "score": "31-50",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
     },
@@ -448,6 +455,13 @@
         },
         {
           "t": "2026-03-08T02:48:00.739Z",
+          "spread": -20.5,
+          "score": "37-58",
+          "period": 2,
+          "clock": "7:41"
+        },
+        {
+          "t": "2026-03-08T02:49:09.187Z",
           "spread": -20.5,
           "score": "37-58",
           "period": 2,
@@ -682,6 +696,13 @@
           "score": "70-68",
           "period": 2,
           "clock": "6:37"
+        },
+        {
+          "t": "2026-03-08T02:49:09.187Z",
+          "spread": 1.5,
+          "score": "70-68",
+          "period": 2,
+          "clock": "6:37"
         }
       ]
     },
@@ -906,6 +927,13 @@
         },
         {
           "t": "2026-03-08T02:48:00.740Z",
+          "spread": -5.5,
+          "score": "31-35",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T02:49:09.188Z",
           "spread": -5.5,
           "score": "31-35",
           "period": 1,
@@ -1136,6 +1164,13 @@
           "score": "45-47",
           "period": 2,
           "clock": "14:17"
+        },
+        {
+          "t": "2026-03-08T02:49:09.188Z",
+          "spread": -4.5,
+          "score": "45-48",
+          "period": 2,
+          "clock": "13:46"
         }
       ],
       "alertSent": true
@@ -1364,6 +1399,13 @@
           "score": "21-40",
           "period": 2,
           "clock": "19:19"
+        },
+        {
+          "t": "2026-03-08T02:49:09.189Z",
+          "spread": -15.5,
+          "score": "24-40",
+          "period": 2,
+          "clock": "18:12"
         }
       ]
     },
@@ -1588,6 +1630,13 @@
           "score": "33-22",
           "period": 1,
           "clock": "5:29"
+        },
+        {
+          "t": "2026-03-08T02:49:09.189Z",
+          "spread": -11.5,
+          "score": "33-22",
+          "period": 1,
+          "clock": "5:00"
         }
       ],
       "alertSent": true
@@ -1814,6 +1863,13 @@
         },
         {
           "t": "2026-03-08T02:48:00.743Z",
+          "spread": -1.5,
+          "score": "31-29",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T02:49:09.189Z",
           "spread": -1.5,
           "score": "31-29",
           "period": 1,
@@ -2053,6 +2109,20 @@
           "score": "75-75",
           "period": 3,
           "clock": "5:38"
+        },
+        {
+          "t": "2026-03-08T02:49:06.126Z",
+          "spread": -4.5,
+          "score": "77-77",
+          "period": 3,
+          "clock": "4:40"
+        },
+        {
+          "t": "2026-03-08T02:49:07.110Z",
+          "spread": -4.5,
+          "score": "77-77",
+          "period": 3,
+          "clock": "4:40"
         }
       ]
     },
@@ -2279,6 +2349,20 @@
           "score": "54-67",
           "period": 2,
           "clock": "0.0"
+        },
+        {
+          "t": "2026-03-08T02:49:06.126Z",
+          "spread": -15.5,
+          "score": "54-67",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-08T02:49:07.110Z",
+          "spread": -15.5,
+          "score": "54-67",
+          "period": 2,
+          "clock": "0.0"
         }
       ],
       "alertSent": true
@@ -2449,6 +2533,13 @@
           "score": "28-45",
           "period": 1,
           "clock": "3:29"
+        },
+        {
+          "t": "2026-03-08T02:49:09.190Z",
+          "spread": -14.5,
+          "score": "30-45",
+          "period": 1,
+          "clock": "3:18"
         }
       ]
     },
@@ -2592,6 +2683,13 @@
           "score": "55-46",
           "period": 2,
           "clock": "12:15"
+        },
+        {
+          "t": "2026-03-08T02:49:09.191Z",
+          "spread": 9.5,
+          "score": "55-46",
+          "period": 2,
+          "clock": "12:15"
         }
       ]
     },
@@ -2692,7 +2790,16 @@
         "v8_procDiffOnly": 18,
         "v10_timeDecay": 44.2
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T02:49:09.191Z",
+          "spread": 1.5,
+          "score": "45-43",
+          "period": 2,
+          "clock": "17:35"
+        }
+      ]
     },
     {
       "id": 1772938083967,
@@ -2792,6 +2899,115 @@
         "v7_marginWeighted": 150.4,
         "v8_procDiffOnly": 61,
         "v10_timeDecay": 125.3
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T02:49:09.192Z",
+          "spread": -12.5,
+          "score": "23-35",
+          "period": 1,
+          "clock": "2:28"
+        }
+      ]
+    },
+    {
+      "id": 1772938152113,
+      "key": "401851703_sust_GASO",
+      "gameId": "401851703",
+      "team": "GASO",
+      "opponent": "CCU",
+      "matchup": "GASO @ CCU",
+      "side": "SPREAD",
+      "spread": -7.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -118,
+      "impliedP": 54.1,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T02:49:12.113Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "GASO",
+      "homeTeam": "CCU",
+      "awayName": "Georgia Southern Eagles",
+      "homeName": "Coastal Carolina Chanticleers",
+      "awayScore": 30,
+      "homeScore": 21,
+      "period": 1,
+      "clock": "9:29",
+      "periodLabel": "H1",
+      "sustLeader": "GASO",
+      "sustMargin": 9,
+      "betOnLeader": true,
+      "currentMargin": 9,
+      "cushion": 1.5,
+      "sustScore": 24.8,
+      "fragScore": -48.3,
+      "sustGap": 73.1,
+      "sustSignals": [],
+      "fragSignals": [
+        "3PT heavy (57% of pts)",
+        "Star erupting (261% pace)"
+      ],
+      "sustStats": {
+        "fg": "69",
+        "efg": "88",
+        "threePt": "67",
+        "twoPt": "33",
+        "proc": 6.6,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "36",
+        "efg": "50",
+        "threePt": "40",
+        "twoPt": "10",
+        "proc": 3.4,
+        "star": 261,
+        "scq": 0
+      },
+      "sustDetail": "GASO +24.8 vs CCU -48.3 (gap:73.1) | GASO 30-21 CCU | H1 9:29 | FanDuel -7.5 (-118)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 74,
+        "v2_f1low": 79.8,
+        "v3_f1high": 58.9,
+        "v4_f3boost": 85.9,
+        "v5_noStar": 63.1
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 24.8,
+        "hScore": -48.3,
+        "gap": 73.1,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 77.6,
+        "v7_marginWeighted": 65.8,
+        "v8_procDiffOnly": 32,
+        "v10_timeDecay": 73.1
       },
       "alertSent": true
     }
