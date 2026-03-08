@@ -109,7 +109,23 @@
         "homeML": "-440",
         "openSpread": "+9.5"
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T01:52:26.374Z",
+          "spread": -9.5,
+          "score": "29-33",
+          "period": 2,
+          "clock": "8:07"
+        },
+        {
+          "t": "2026-03-08T01:52:28.369Z",
+          "spread": -9.5,
+          "score": "29-33",
+          "period": 2,
+          "clock": "8:07"
+        }
+      ]
     },
     {
       "id": 1772934681887,
@@ -212,6 +228,20 @@
       "spreadHistory": [
         {
           "t": "2026-03-08T01:51:22.472Z",
+          "spread": -19.5,
+          "score": "37-58",
+          "period": 2,
+          "clock": "12:38"
+        },
+        {
+          "t": "2026-03-08T01:52:29.594Z",
+          "spread": -19.5,
+          "score": "37-58",
+          "period": 2,
+          "clock": "12:38"
+        },
+        {
+          "t": "2026-03-08T01:52:31.024Z",
           "spread": -19.5,
           "score": "37-58",
           "period": 2,
@@ -320,7 +350,23 @@
         "v8_procDiffOnly": 32,
         "v10_timeDecay": 84
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T01:52:29.594Z",
+          "spread": 0.5,
+          "score": "52-48",
+          "period": 2,
+          "clock": "16:25"
+        },
+        {
+          "t": "2026-03-08T01:52:31.025Z",
+          "spread": 0.5,
+          "score": "52-48",
+          "period": 2,
+          "clock": "16:25"
+        }
+      ]
     },
     {
       "id": 1772934683637,
@@ -422,7 +468,23 @@
         "v8_procDiffOnly": 23,
         "v10_timeDecay": 55.7
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T01:52:29.595Z",
+          "spread": -3.5,
+          "score": "28-30",
+          "period": 1,
+          "clock": "2:36"
+        },
+        {
+          "t": "2026-03-08T01:52:31.026Z",
+          "spread": -3.5,
+          "score": "28-30",
+          "period": 1,
+          "clock": "2:36"
+        }
+      ]
     },
     {
       "id": 1772934684178,
@@ -522,7 +584,131 @@
         "v8_procDiffOnly": 27,
         "v10_timeDecay": 48.7
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T01:52:29.596Z",
+          "spread": -9.5,
+          "score": "29-39",
+          "period": 1,
+          "clock": "2:44"
+        },
+        {
+          "t": "2026-03-08T01:52:31.027Z",
+          "spread": -9.5,
+          "score": "29-39",
+          "period": 1,
+          "clock": "2:44"
+        }
+      ]
+    },
+    {
+      "id": 1772934750643,
+      "key": "401851626_sust_NDSU",
+      "gameId": "401851626",
+      "team": "NDSU",
+      "opponent": "OMA",
+      "matchup": "OMA @ NDSU",
+      "side": "SPREAD",
+      "spread": -16.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -110,
+      "impliedP": 52.4,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T01:52:30.643Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "OMA",
+      "homeTeam": "NDSU",
+      "awayName": "Omaha Mavericks",
+      "homeName": "North Dakota State Bison",
+      "awayScore": 20,
+      "homeScore": 35,
+      "period": 1,
+      "clock": "3:00",
+      "periodLabel": "H1",
+      "sustLeader": "NDSU",
+      "sustMargin": 15,
+      "betOnLeader": true,
+      "currentMargin": 15,
+      "cushion": -1.5,
+      "sustScore": 66.5,
+      "fragScore": -17.2,
+      "sustGap": 83.7,
+      "sustSignals": [
+        "Strong process (8.3/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "48",
+        "efg": "56",
+        "threePt": "31",
+        "twoPt": "51",
+        "proc": 8.3,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "36",
+        "efg": "36",
+        "threePt": "0",
+        "twoPt": "80",
+        "proc": 3.6,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "NDSU +66.5 vs OMA -17.2 (gap:83.7) | OMA 20-35 NDSU | H1 3:00 | FanDuel -16.5 (-110)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 94,
+        "v2_f1low": 96.5,
+        "v3_f1high": 47.8,
+        "v4_f3boost": 102.5,
+        "v5_noStar": 83.7
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -17.2,
+        "hScore": 66.5,
+        "gap": 83.7,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 83.7,
+        "v7_marginWeighted": 125.6,
+        "v8_procDiffOnly": 47,
+        "v10_timeDecay": 83.7
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T01:52:31.029Z",
+          "spread": -16.5,
+          "score": "20-35",
+          "period": 1,
+          "clock": "3:00"
+        }
+      ]
     }
   ],
   "resolved": []
