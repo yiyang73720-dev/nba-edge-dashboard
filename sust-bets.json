@@ -543,6 +543,20 @@
           "score": "104-93",
           "period": 4,
           "clock": "2:47"
+        },
+        {
+          "t": "2026-03-08T19:27:54.626Z",
+          "spread": 9.5,
+          "score": "107-95",
+          "period": 4,
+          "clock": "1:59"
+        },
+        {
+          "t": "2026-03-08T19:27:55.499Z",
+          "spread": 9.5,
+          "score": "107-95",
+          "period": 4,
+          "clock": "1:59"
         }
       ],
       "alertSent": true
@@ -1039,6 +1053,20 @@
           "score": "46-47",
           "period": 2,
           "clock": "13:02"
+        },
+        {
+          "t": "2026-03-08T19:27:56.236Z",
+          "spread": -4.5,
+          "score": "46-47",
+          "period": 2,
+          "clock": "12:26"
+        },
+        {
+          "t": "2026-03-08T19:27:56.646Z",
+          "spread": -4.5,
+          "score": "46-47",
+          "period": 2,
+          "clock": "12:26"
         }
       ]
     },
@@ -1527,6 +1555,20 @@
           "score": "46-42",
           "period": 2,
           "clock": "13:27"
+        },
+        {
+          "t": "2026-03-08T19:27:56.237Z",
+          "spread": 2.5,
+          "score": "46-43",
+          "period": 2,
+          "clock": "13:01"
+        },
+        {
+          "t": "2026-03-08T19:27:56.646Z",
+          "spread": 2.5,
+          "score": "46-43",
+          "period": 2,
+          "clock": "13:01"
         }
       ]
     },
@@ -2012,6 +2054,20 @@
           "score": "44-44",
           "period": 2,
           "clock": "15:21"
+        },
+        {
+          "t": "2026-03-08T19:27:56.237Z",
+          "spread": 1.5,
+          "score": "44-44",
+          "period": 2,
+          "clock": "15:21"
+        },
+        {
+          "t": "2026-03-08T19:27:56.647Z",
+          "spread": 1.5,
+          "score": "44-44",
+          "period": 2,
+          "clock": "15:21"
         }
       ],
       "alertSent": true
@@ -2273,8 +2329,122 @@
           "score": "41-58",
           "period": 2,
           "clock": "12:19"
+        },
+        {
+          "t": "2026-03-08T19:27:56.237Z",
+          "spread": -19.5,
+          "score": "41-58",
+          "period": 2,
+          "clock": "11:51"
+        },
+        {
+          "t": "2026-03-08T19:27:56.647Z",
+          "spread": -19.5,
+          "score": "41-58",
+          "period": 2,
+          "clock": "11:51"
         }
       ]
+    },
+    {
+      "id": 1772998078741,
+      "key": "401828262_sust_UAB",
+      "gameId": "401828262",
+      "team": "UAB",
+      "opponent": "ECU",
+      "matchup": "ECU @ UAB",
+      "side": "SPREAD",
+      "spread": -9.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -114,
+      "impliedP": 53.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T19:27:58.741Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "ECU",
+      "homeTeam": "UAB",
+      "awayName": "East Carolina Pirates",
+      "homeName": "UAB Blazers",
+      "awayScore": 26,
+      "homeScore": 28,
+      "period": 1,
+      "clock": "7:21",
+      "periodLabel": "H1",
+      "sustLeader": "UAB",
+      "sustMargin": 2,
+      "betOnLeader": true,
+      "currentMargin": 2,
+      "cushion": -7.5,
+      "sustScore": 53.6,
+      "fragScore": 15.9,
+      "sustGap": 37.7,
+      "sustSignals": [
+        "Low 3PT reliance (11%)",
+        "Strong process (7.3/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "52",
+        "efg": "54",
+        "threePt": "50",
+        "twoPt": "79",
+        "proc": 7.3,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "42",
+        "efg": "46",
+        "threePt": "25",
+        "twoPt": "62",
+        "proc": 5.1,
+        "star": 26,
+        "scq": 0
+      },
+      "sustDetail": "UAB +53.6 vs ECU 15.9 (gap:37.7) | ECU 26-28 UAB | H1 7:21 | FanDuel -9.5 (-114)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 34,
+        "v2_f1low": 40.9,
+        "v3_f1high": 35.1,
+        "v4_f3boost": 46.5,
+        "v5_noStar": 47.7
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 15.9,
+        "hScore": 53.6,
+        "gap": 37.7,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 37.7,
+        "v7_marginWeighted": 7.5,
+        "v8_procDiffOnly": 22,
+        "v10_timeDecay": 37.7
+      },
+      "alertSent": true
     }
   ],
   "resolved": []
