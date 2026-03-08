@@ -1,6 +1,147 @@
 {
   "bets": [
     {
+      "id": 1772995947058,
+      "key": "401810776_sust_CLE",
+      "gameId": "401810776",
+      "team": "CLE",
+      "opponent": "BOS",
+      "matchup": "BOS @ CLE",
+      "side": "SPREAD",
+      "spread": 18.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -102,
+      "impliedP": 50.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T18:52:27.058Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "BOS",
+      "homeTeam": "CLE",
+      "awayName": "Boston Celtics",
+      "homeName": "Cleveland Cavaliers",
+      "awayScore": 81,
+      "homeScore": 58,
+      "period": 3,
+      "clock": "3:16",
+      "periodLabel": "Q3",
+      "sustLeader": "BOS",
+      "sustMargin": 26,
+      "betOnLeader": false,
+      "currentMargin": -26,
+      "cushion": -4.5,
+      "sustScore": 27.5,
+      "fragScore": -11.4,
+      "sustGap": 38.9,
+      "sustSignals": [
+        "Low 3PT reliance (27%)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "33",
+        "efg": "37",
+        "threePt": "17",
+        "twoPt": "55",
+        "proc": 6.2,
+        "star": 0,
+        "scq": 5
+      },
+      "fragStats": {
+        "fg": "46",
+        "efg": "55",
+        "threePt": "44",
+        "twoPt": "40",
+        "proc": 4.7,
+        "star": 135,
+        "scq": -20
+      },
+      "sustDetail": "CLE +26.6 vs BOS -7.4 (gap:34) | BOS 81-55 CLE | Q3 3:53 | FanDuel +18.5 (-102)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": false,
+        "g7_earlyGame": false,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": true,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 30,
+        "v2_f1low": 35.7,
+        "v3_f1high": 34.8,
+        "v4_f3boost": 40,
+        "v5_noStar": 34
+      },
+      "v7": {
+        "aScq": -20.3,
+        "hScq": 4.9,
+        "aScore": -15.5,
+        "hScore": 28.6,
+        "gap": 44.1,
+        "f5contrib": 10.1
+      },
+      "altStructural": {
+        "v6_cushionBoost": 34,
+        "v7_marginWeighted": 88.4,
+        "v8_procDiffOnly": 15,
+        "v10_timeDecay": 44.2
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -1.5,
+        "detail": "CLE -1.5",
+        "awaySpread": "+1.5",
+        "homeSpread": "-1.5",
+        "awaySpreadOdds": "-112",
+        "homeSpreadOdds": "-108",
+        "awayML": "EVEN",
+        "homeML": "-120",
+        "openSpread": "-1.5"
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T18:53:30.151Z",
+          "spread": 18.5,
+          "score": "81-55",
+          "period": 3,
+          "clock": "3:53"
+        },
+        {
+          "t": "2026-03-08T18:53:31.266Z",
+          "spread": 18.5,
+          "score": "81-55",
+          "period": 3,
+          "clock": "3:53"
+        },
+        {
+          "t": "2026-03-08T18:54:34.539Z",
+          "spread": 18.5,
+          "score": "81-58",
+          "period": 3,
+          "clock": "3:16"
+        },
+        {
+          "t": "2026-03-08T18:54:36.010Z",
+          "spread": 18.5,
+          "score": "81-61",
+          "period": 3,
+          "clock": "2:59"
+        }
+      ],
+      "alertSent": true
+    },
+    {
       "id": 1772995948235,
       "key": "401851548_sust_NAVY",
       "gameId": "401851548",
@@ -121,6 +262,20 @@
           "score": "33-35",
           "period": 1,
           "clock": "1:10"
+        },
+        {
+          "t": "2026-03-08T18:54:37.282Z",
+          "spread": -3.5,
+          "score": "36-35",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T18:54:37.418Z",
+          "spread": -3.5,
+          "score": "36-35",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
     },
@@ -234,6 +389,20 @@
         },
         {
           "t": "2026-03-08T18:53:32.488Z",
+          "spread": -3.5,
+          "score": "30-34",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T18:54:37.282Z",
+          "spread": -3.5,
+          "score": "30-34",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T18:54:37.418Z",
           "spread": -3.5,
           "score": "30-34",
           "period": 1,
@@ -352,6 +521,20 @@
           "score": "27-35",
           "period": 1,
           "clock": "2:08"
+        },
+        {
+          "t": "2026-03-08T18:54:37.283Z",
+          "spread": -4.5,
+          "score": "29-40",
+          "period": 1,
+          "clock": "1:02"
+        },
+        {
+          "t": "2026-03-08T18:54:37.418Z",
+          "spread": -4.5,
+          "score": "29-40",
+          "period": 1,
+          "clock": "1:02"
         }
       ],
       "alertSent": true
