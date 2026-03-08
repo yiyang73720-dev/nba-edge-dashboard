@@ -235,6 +235,48 @@
           "score": "58-43",
           "period": 3,
           "clock": "9:41"
+        },
+        {
+          "t": "2026-03-08T18:36:08.593Z",
+          "spread": 9.5,
+          "score": "60-46",
+          "period": 3,
+          "clock": "8:34"
+        },
+        {
+          "t": "2026-03-08T18:36:08.743Z",
+          "spread": 9.5,
+          "score": "60-46",
+          "period": 3,
+          "clock": "8:34"
+        },
+        {
+          "t": "2026-03-08T18:37:14.483Z",
+          "spread": 9.5,
+          "score": "62-48",
+          "period": 3,
+          "clock": "7:53"
+        },
+        {
+          "t": "2026-03-08T18:37:14.999Z",
+          "spread": 9.5,
+          "score": "62-48",
+          "period": 3,
+          "clock": "7:53"
+        },
+        {
+          "t": "2026-03-08T18:38:18.341Z",
+          "spread": 9.5,
+          "score": "62-50",
+          "period": 3,
+          "clock": "7:35"
+        },
+        {
+          "t": "2026-03-08T18:38:18.348Z",
+          "spread": 9.5,
+          "score": "62-50",
+          "period": 3,
+          "clock": "7:35"
         }
       ],
       "alertSent": true
@@ -407,6 +449,41 @@
           "score": "23-20",
           "period": 1,
           "clock": "7:40"
+        },
+        {
+          "t": "2026-03-08T18:36:11.102Z",
+          "spread": 2.5,
+          "score": "23-20",
+          "period": 1,
+          "clock": "7:40"
+        },
+        {
+          "t": "2026-03-08T18:37:16.405Z",
+          "spread": 2.5,
+          "score": "25-20",
+          "period": 1,
+          "clock": "7:10"
+        },
+        {
+          "t": "2026-03-08T18:37:16.422Z",
+          "spread": 2.5,
+          "score": "25-20",
+          "period": 1,
+          "clock": "7:10"
+        },
+        {
+          "t": "2026-03-08T18:38:20.487Z",
+          "spread": 2.5,
+          "score": "25-22",
+          "period": 1,
+          "clock": "6:19"
+        },
+        {
+          "t": "2026-03-08T18:38:20.696Z",
+          "spread": 2.5,
+          "score": "25-22",
+          "period": 1,
+          "clock": "6:19"
         }
       ]
     },
@@ -506,6 +583,142 @@
         "v7_marginWeighted": 4.4,
         "v8_procDiffOnly": 22,
         "v10_timeDecay": 44.2
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T18:36:11.102Z",
+          "spread": -7.5,
+          "score": "20-21",
+          "period": 1,
+          "clock": "6:25"
+        },
+        {
+          "t": "2026-03-08T18:37:16.407Z",
+          "spread": -7.5,
+          "score": "20-21",
+          "period": 1,
+          "clock": "6:25"
+        },
+        {
+          "t": "2026-03-08T18:37:16.423Z",
+          "spread": -7.5,
+          "score": "20-21",
+          "period": 1,
+          "clock": "6:25"
+        },
+        {
+          "t": "2026-03-08T18:38:20.487Z",
+          "spread": -7.5,
+          "score": "20-21",
+          "period": 1,
+          "clock": "6:25"
+        },
+        {
+          "t": "2026-03-08T18:38:20.697Z",
+          "spread": -7.5,
+          "score": "20-21",
+          "period": 1,
+          "clock": "6:25"
+        }
+      ]
+    },
+    {
+      "id": 1772995101803,
+      "key": "401828263_sust_USF",
+      "gameId": "401828263",
+      "team": "USF",
+      "opponent": "CLT",
+      "matchup": "CLT @ USF",
+      "side": "SPREAD",
+      "spread": -12.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -114,
+      "impliedP": 53.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T18:38:21.803Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "CLT",
+      "homeTeam": "USF",
+      "awayName": "Charlotte 49ers",
+      "homeName": "South Florida Bulls",
+      "awayScore": 23,
+      "homeScore": 30,
+      "period": 1,
+      "clock": "5:50",
+      "periodLabel": "H1",
+      "sustLeader": "USF",
+      "sustMargin": 7,
+      "betOnLeader": true,
+      "currentMargin": 7,
+      "cushion": -5.5,
+      "sustScore": 26.8,
+      "fragScore": -14.9,
+      "sustGap": 41.7,
+      "sustSignals": [],
+      "fragSignals": [
+        "3PT heavy (52% of pts)"
+      ],
+      "sustStats": {
+        "fg": "42",
+        "efg": "48",
+        "threePt": "33",
+        "twoPt": "52",
+        "proc": 6.8,
+        "star": 155,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "56",
+        "efg": "69",
+        "threePt": "57",
+        "twoPt": "43",
+        "proc": 4.5,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "USF +26.8 vs CLT -14.9 (gap:41.7) | CLT 23-30 USF | H1 5:50 | FanDuel -12.5 (-114)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 36,
+        "v2_f1low": 44.4,
+        "v3_f1high": 41.9,
+        "v4_f3boost": 50.9,
+        "v5_noStar": 51.7
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -14.9,
+        "hScore": 26.8,
+        "gap": 41.7,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 41.7,
+        "v7_marginWeighted": 29.2,
+        "v8_procDiffOnly": 23,
+        "v10_timeDecay": 41.7
       },
       "alertSent": true
     }
