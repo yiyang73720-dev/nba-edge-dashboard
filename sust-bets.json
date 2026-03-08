@@ -142,6 +142,20 @@
           "score": "43-32",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T23:04:47.266Z",
+          "spread": 6.5,
+          "score": "43-32",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T23:04:47.654Z",
+          "spread": 6.5,
+          "score": "43-32",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
     },
@@ -282,6 +296,20 @@
         },
         {
           "t": "2026-03-08T23:03:40.686Z",
+          "spread": -12.5,
+          "score": "28-41",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T23:04:47.267Z",
+          "spread": -12.5,
+          "score": "28-41",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T23:04:47.655Z",
           "spread": -12.5,
           "score": "28-41",
           "period": 1,
@@ -428,6 +456,20 @@
           "score": "33-34",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T23:04:47.267Z",
+          "spread": 5.5,
+          "score": "33-34",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T23:04:47.655Z",
+          "spread": 5.5,
+          "score": "33-34",
+          "period": 1,
+          "clock": "0:00"
         }
       ],
       "alertSent": true
@@ -569,6 +611,20 @@
         },
         {
           "t": "2026-03-08T23:03:40.687Z",
+          "spread": -2.5,
+          "score": "28-30",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T23:04:47.267Z",
+          "spread": -2.5,
+          "score": "28-30",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T23:04:47.655Z",
           "spread": -2.5,
           "score": "28-30",
           "period": 1,
@@ -722,6 +778,20 @@
           "score": "34-57",
           "period": 2,
           "clock": "4:01"
+        },
+        {
+          "t": "2026-03-08T23:04:44.747Z",
+          "spread": -14.5,
+          "score": "34-57",
+          "period": 2,
+          "clock": "4:01"
+        },
+        {
+          "t": "2026-03-08T23:04:45.785Z",
+          "spread": -14.5,
+          "score": "34-57",
+          "period": 2,
+          "clock": "4:01"
         }
       ]
     },
@@ -864,8 +934,122 @@
           "score": "37-52",
           "period": 2,
           "clock": "2:58"
+        },
+        {
+          "t": "2026-03-08T23:04:44.747Z",
+          "spread": -16.5,
+          "score": "37-52",
+          "period": 2,
+          "clock": "2:25"
+        },
+        {
+          "t": "2026-03-08T23:04:45.785Z",
+          "spread": -16.5,
+          "score": "37-52",
+          "period": 2,
+          "clock": "2:25"
         }
       ]
+    },
+    {
+      "id": 1773011088555,
+      "key": "401851591_sust_UNCG",
+      "gameId": "401851591",
+      "team": "UNCG",
+      "opponent": "FUR",
+      "matchup": "UNCG @ FUR",
+      "side": "SPREAD",
+      "spread": 3.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -118,
+      "impliedP": 54.1,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T23:04:48.555Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "UNCG",
+      "homeTeam": "FUR",
+      "awayName": "UNC Greensboro Spartans",
+      "homeName": "Furman Paladins",
+      "awayScore": 22,
+      "homeScore": 20,
+      "period": 1,
+      "clock": "7:52",
+      "periodLabel": "H1",
+      "sustLeader": "UNCG",
+      "sustMargin": 2,
+      "betOnLeader": true,
+      "currentMargin": 2,
+      "cushion": 5.5,
+      "sustScore": 50.8,
+      "fragScore": 0.3,
+      "sustGap": 50.5,
+      "sustSignals": [
+        "Low 3PT reliance (0%)",
+        "Strong process (7.0/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "50",
+        "efg": "50",
+        "threePt": "0",
+        "twoPt": "73",
+        "proc": 7,
+        "star": 150,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "39",
+        "efg": "42",
+        "threePt": "17",
+        "twoPt": "60",
+        "proc": 4.7,
+        "star": 76,
+        "scq": 0
+      },
+      "sustDetail": "UNCG +50.8 vs FUR 0.3 (gap:50.5) | UNCG 22-20 FUR | H1 7:52 | FanDuel +3.5 (-118)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 46,
+        "v2_f1low": 53.6,
+        "v3_f1high": 48.8,
+        "v4_f3boost": 59.7,
+        "v5_noStar": 50.5
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 50.8,
+        "hScore": 0.3,
+        "gap": 50.5,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 67,
+        "v7_marginWeighted": 10.1,
+        "v8_procDiffOnly": 23,
+        "v10_timeDecay": 50.5
+      },
+      "alertSent": true
     }
   ],
   "resolved": []
