@@ -1,4 +1,113 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1772994586021,
+      "key": "401851251_sust_CARK",
+      "gameId": "401851251",
+      "team": "CARK",
+      "opponent": "QUC",
+      "matchup": "QUC @ CARK",
+      "side": "SPREAD",
+      "spread": 1.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -122,
+      "impliedP": 55,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T18:29:46.021Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "QUC",
+      "homeTeam": "CARK",
+      "awayName": "Queens University Royals",
+      "homeName": "Central Arkansas Bears",
+      "awayScore": 23,
+      "homeScore": 20,
+      "period": 1,
+      "clock": "9:23",
+      "periodLabel": "H1",
+      "sustLeader": "QUC",
+      "sustMargin": 3,
+      "betOnLeader": false,
+      "currentMargin": -3,
+      "cushion": -1.5,
+      "sustScore": 24.8,
+      "fragScore": -12.8,
+      "sustGap": 37.6,
+      "sustSignals": [],
+      "fragSignals": [
+        "3PT heavy (65% of pts)"
+      ],
+      "sustStats": {
+        "fg": "53",
+        "efg": "67",
+        "threePt": "44",
+        "twoPt": "40",
+        "proc": 6.6,
+        "star": 75,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "62",
+        "efg": "81",
+        "threePt": "56",
+        "twoPt": "26",
+        "proc": 4.8,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "CARK +24.8 vs QUC -12.8 (gap:37.6) | QUC 23-20 CARK | H1 9:23 | FanDuel +1.5 (-122)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 36,
+        "v2_f1low": 40.6,
+        "v3_f1high": 33,
+        "v4_f3boost": 44.8,
+        "v5_noStar": 37.6
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -12.8,
+        "hScore": 24.8,
+        "gap": 37.6,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 37.6,
+        "v7_marginWeighted": 11.3,
+        "v8_procDiffOnly": 18,
+        "v10_timeDecay": 37.6
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T18:29:46.065Z",
+          "spread": 1.5,
+          "score": "23-20",
+          "period": 1,
+          "clock": "9:23"
+        }
+      ]
+    }
+  ],
   "resolved": []
 }
