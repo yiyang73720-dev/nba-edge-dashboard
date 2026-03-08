@@ -97,6 +97,236 @@
         "v8_procDiffOnly": 20,
         "v10_timeDecay": 45.3
       },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T20:26:32.141Z",
+          "spread": 3.5,
+          "score": "53-54",
+          "period": 2,
+          "clock": "10:01"
+        },
+        {
+          "t": "2026-03-08T20:26:32.145Z",
+          "spread": 3.5,
+          "score": "53-54",
+          "period": 2,
+          "clock": "10:01"
+        }
+      ]
+    },
+    {
+      "id": 1773001590158,
+      "key": "401810777_sust_NY",
+      "gameId": "401810777",
+      "team": "NY",
+      "opponent": "LAL",
+      "matchup": "NY @ LAL",
+      "side": "SPREAD",
+      "spread": -2.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -102,
+      "impliedP": 50.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T20:26:30.158Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "NY",
+      "homeTeam": "LAL",
+      "awayName": "New York Knicks",
+      "homeName": "Los Angeles Lakers",
+      "awayScore": 30,
+      "homeScore": 35,
+      "period": 2,
+      "clock": "9:24",
+      "periodLabel": "Q2",
+      "sustLeader": "LAL",
+      "sustMargin": 5,
+      "betOnLeader": false,
+      "currentMargin": -5,
+      "cushion": -7.5,
+      "sustScore": 37.8,
+      "fragScore": -3.5,
+      "sustGap": 41.3,
+      "sustSignals": [
+        "Low 3PT reliance (10%)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "37",
+        "efg": "39",
+        "threePt": "9",
+        "twoPt": "60",
+        "proc": 6.5,
+        "star": 107,
+        "scq": 11
+      },
+      "fragStats": {
+        "fg": "50",
+        "efg": "59",
+        "threePt": "40",
+        "twoPt": "40",
+        "proc": 4.8,
+        "star": 131,
+        "scq": -32
+      },
+      "sustDetail": "NY +37.8 vs LAL -3.5 (gap:41.3) | NY 30-35 LAL | Q2 9:24 | FanDuel -2.5 (-102)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 34,
+        "v2_f1low": 42.3,
+        "v3_f1high": 46.6,
+        "v4_f3boost": 48.1,
+        "v5_noStar": 41.3
+      },
+      "v7": {
+        "aScq": 11.1,
+        "hScq": -31.8,
+        "aScore": 42.2,
+        "hScore": -16.2,
+        "gap": 58.5,
+        "f5contrib": 17.2
+      },
+      "altStructural": {
+        "v6_cushionBoost": 41.3,
+        "v7_marginWeighted": 20.7,
+        "v8_procDiffOnly": 17,
+        "v10_timeDecay": 41.3
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": 5.5,
+        "detail": "NY -5.5",
+        "awaySpread": "-5.5",
+        "homeSpread": "+5.5",
+        "awaySpreadOdds": "-108",
+        "homeSpreadOdds": "-112",
+        "awayML": "-198",
+        "homeML": "+164",
+        "openSpread": "-3.5"
+      },
+      "alertSent": true
+    },
+    {
+      "id": 1773001592554,
+      "key": "401825567_sust_ILL",
+      "gameId": "401825567",
+      "team": "ILL",
+      "opponent": "MD",
+      "matchup": "ILL @ MD",
+      "side": "SPREAD",
+      "spread": -7.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -130,
+      "impliedP": 56.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T20:26:32.554Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "ILL",
+      "homeTeam": "MD",
+      "awayName": "Illinois Fighting Illini",
+      "homeName": "Maryland Terrapins",
+      "awayScore": 51,
+      "homeScore": 48,
+      "period": 2,
+      "clock": "13:23",
+      "periodLabel": "H2",
+      "sustLeader": "ILL",
+      "sustMargin": 3,
+      "betOnLeader": true,
+      "currentMargin": 3,
+      "cushion": -4.5,
+      "sustScore": 55.7,
+      "fragScore": -38.1,
+      "sustGap": 93.80000000000001,
+      "sustSignals": [
+        "Low 3PT reliance (24%)",
+        "Strong process (7.1/10)",
+        "Star cold (42% pace)"
+      ],
+      "fragSignals": [
+        "3PT heavy (56% of pts)"
+      ],
+      "sustStats": {
+        "fg": "50",
+        "efg": "55",
+        "threePt": "22",
+        "twoPt": "59",
+        "proc": 7.1,
+        "star": 42,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "50",
+        "efg": "63",
+        "threePt": "43",
+        "twoPt": "38",
+        "proc": 3.4,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "ILL +55.7 vs MD -38.1 (gap:93.80000000000001) | ILL 51-48 MD | H2 13:23 | FanDuel -7.5 (-130)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": false,
+        "g8_highProc": true,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 84,
+        "v2_f1low": 97.9,
+        "v3_f1high": 95.4,
+        "v4_f3boost": 108.6,
+        "v5_noStar": 83.8
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 55.7,
+        "hScore": -38.1,
+        "gap": 93.8,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 93.8,
+        "v7_marginWeighted": 28.1,
+        "v8_procDiffOnly": 37,
+        "v10_timeDecay": 93.8
+      },
       "alertSent": true
     }
   ],
