@@ -682,6 +682,34 @@
           "score": "35-46",
           "period": 2,
           "clock": "12:39"
+        },
+        {
+          "t": "2026-03-08T22:35:20.187Z",
+          "spread": -10.5,
+          "score": "38-46",
+          "period": 2,
+          "clock": "12:03"
+        },
+        {
+          "t": "2026-03-08T22:35:20.209Z",
+          "spread": -10.5,
+          "score": "38-46",
+          "period": 2,
+          "clock": "12:03"
+        },
+        {
+          "t": "2026-03-08T22:36:23.368Z",
+          "spread": -9.5,
+          "score": "38-46",
+          "period": 2,
+          "clock": "12:03"
+        },
+        {
+          "t": "2026-03-08T22:36:23.378Z",
+          "spread": -9.5,
+          "score": "38-46",
+          "period": 2,
+          "clock": "12:03"
         }
       ]
     },
@@ -1130,6 +1158,178 @@
           "score": "70-76",
           "period": 2,
           "clock": "3:27"
+        },
+        {
+          "t": "2026-03-08T22:35:20.187Z",
+          "spread": 6.5,
+          "score": "70-76",
+          "period": 2,
+          "clock": "3:27"
+        },
+        {
+          "t": "2026-03-08T22:35:20.209Z",
+          "spread": 6.5,
+          "score": "70-76",
+          "period": 2,
+          "clock": "3:27"
+        },
+        {
+          "t": "2026-03-08T22:36:23.368Z",
+          "spread": 6.5,
+          "score": "70-76",
+          "period": 2,
+          "clock": "3:27"
+        },
+        {
+          "t": "2026-03-08T22:36:23.378Z",
+          "spread": 6.5,
+          "score": "70-76",
+          "period": 2,
+          "clock": "3:27"
+        }
+      ],
+      "alertSent": true
+    },
+    {
+      "id": 1773009190561,
+      "key": "401851704_sust_TROY",
+      "gameId": "401851704",
+      "team": "TROY",
+      "opponent": "USM",
+      "matchup": "USM @ TROY",
+      "side": "SPREAD",
+      "spread": -6.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -114,
+      "impliedP": 53.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T22:33:10.561Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "USM",
+      "homeTeam": "TROY",
+      "awayName": "Southern Miss Golden Eagles",
+      "homeName": "Troy Trojans",
+      "awayScore": 22,
+      "homeScore": 27,
+      "period": 1,
+      "clock": "5:16",
+      "periodLabel": "H1",
+      "sustLeader": "TROY",
+      "sustMargin": 5,
+      "betOnLeader": true,
+      "currentMargin": 5,
+      "cushion": -1.5,
+      "sustScore": 67.5,
+      "fragScore": 2.7,
+      "sustGap": 64.8,
+      "sustSignals": [
+        "Low 3PT reliance (12%)",
+        "Strong process (7.1/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "64",
+        "efg": "68",
+        "threePt": "20",
+        "twoPt": "64",
+        "proc": 7.1,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "38",
+        "efg": "40",
+        "threePt": "20",
+        "twoPt": "70",
+        "proc": 5.4,
+        "star": 80,
+        "scq": 0
+      },
+      "sustDetail": "TROY +49.2 vs USM 14.3 (gap:34.900000000000006) | USM 20-25 TROY | H1 7:22 | FanDuel -8.5 (-114)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 34,
+        "v2_f1low": 38,
+        "v3_f1high": 29.6,
+        "v4_f3boost": 41.7,
+        "v5_noStar": 34.9
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 14.3,
+        "hScore": 49.2,
+        "gap": 34.9,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 34.9,
+        "v7_marginWeighted": 17.5,
+        "v8_procDiffOnly": 17,
+        "v10_timeDecay": 34.9
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T22:34:14.083Z",
+          "spread": -6.5,
+          "score": "22-25",
+          "period": 1,
+          "clock": "6:27"
+        },
+        {
+          "t": "2026-03-08T22:34:14.398Z",
+          "spread": -6.5,
+          "score": "22-25",
+          "period": 1,
+          "clock": "6:27"
+        },
+        {
+          "t": "2026-03-08T22:35:20.187Z",
+          "spread": -6.5,
+          "score": "22-27",
+          "period": 1,
+          "clock": "6:02"
+        },
+        {
+          "t": "2026-03-08T22:35:20.209Z",
+          "spread": -6.5,
+          "score": "22-27",
+          "period": 1,
+          "clock": "6:02"
+        },
+        {
+          "t": "2026-03-08T22:36:23.368Z",
+          "spread": -6.5,
+          "score": "22-27",
+          "period": 1,
+          "clock": "5:16"
+        },
+        {
+          "t": "2026-03-08T22:36:23.380Z",
+          "spread": -6.5,
+          "score": "22-27",
+          "period": 1,
+          "clock": "5:16"
         }
       ],
       "alertSent": true
@@ -1232,7 +1432,37 @@
         "v8_procDiffOnly": 39,
         "v10_timeDecay": 78.4
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T22:35:20.187Z",
+          "spread": 1.5,
+          "score": "22-21",
+          "period": 1,
+          "clock": "5:29"
+        },
+        {
+          "t": "2026-03-08T22:35:20.210Z",
+          "spread": 1.5,
+          "score": "22-21",
+          "period": 1,
+          "clock": "5:29"
+        },
+        {
+          "t": "2026-03-08T22:36:23.368Z",
+          "spread": 1.5,
+          "score": "22-23",
+          "period": 1,
+          "clock": "5:11"
+        },
+        {
+          "t": "2026-03-08T22:36:23.380Z",
+          "spread": 1.5,
+          "score": "22-23",
+          "period": 1,
+          "clock": "5:11"
+        }
+      ]
     }
   ],
   "resolved": []
