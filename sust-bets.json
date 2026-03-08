@@ -119,8 +119,137 @@
           "score": "30-23",
           "period": 1,
           "clock": "7:49"
+        },
+        {
+          "t": "2026-03-08T16:35:07.147Z",
+          "spread": -6.5,
+          "score": "30-23",
+          "period": 1,
+          "clock": "7:49"
+        },
+        {
+          "t": "2026-03-08T16:35:07.768Z",
+          "spread": -6.5,
+          "score": "30-23",
+          "period": 1,
+          "clock": "7:49"
         }
       ]
+    },
+    {
+      "id": 1772987645155,
+      "key": "401851547_sust_LEH",
+      "gameId": "401851547",
+      "team": "LEH",
+      "opponent": "COLG",
+      "matchup": "COLG @ LEH",
+      "side": "SPREAD",
+      "spread": -3.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -120,
+      "impliedP": 54.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T16:34:05.155Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "COLG",
+      "homeTeam": "LEH",
+      "awayName": "Colgate Raiders",
+      "homeName": "Lehigh Mountain Hawks",
+      "awayScore": 21,
+      "homeScore": 27,
+      "period": 1,
+      "clock": "5:12",
+      "periodLabel": "H1",
+      "sustLeader": "LEH",
+      "sustMargin": 1,
+      "betOnLeader": true,
+      "currentMargin": 1,
+      "cushion": 2.5,
+      "sustScore": 46.1,
+      "fragScore": -5.8,
+      "sustGap": 51.9,
+      "sustSignals": [
+        "Low 3PT reliance (14%)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "45",
+        "efg": "48",
+        "threePt": "20",
+        "twoPt": "82",
+        "proc": 6.3,
+        "star": 67,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "35",
+        "efg": "39",
+        "threePt": "20",
+        "twoPt": "57",
+        "proc": 5,
+        "star": 111,
+        "scq": 0
+      },
+      "sustDetail": "LEH +32.7 vs COLG 2.2 (gap:30.500000000000004) | COLG 21-22 LEH | H1 5:42 | FanDuel +2.5 (-120)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 26,
+        "v2_f1low": 31.6,
+        "v3_f1high": 32.7,
+        "v4_f3boost": 35.7,
+        "v5_noStar": 30.5
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 2.2,
+        "hScore": 32.7,
+        "gap": 30.5,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 41,
+        "v7_marginWeighted": 3.1,
+        "v8_procDiffOnly": 13,
+        "v10_timeDecay": 30.5
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T16:35:07.147Z",
+          "spread": -3.5,
+          "score": "21-27",
+          "period": 1,
+          "clock": "5:12"
+        },
+        {
+          "t": "2026-03-08T16:35:07.768Z",
+          "spread": -3.5,
+          "score": "21-27",
+          "period": 1,
+          "clock": "5:12"
+        }
+      ],
+      "alertSent": true
     }
   ],
   "resolved": []
