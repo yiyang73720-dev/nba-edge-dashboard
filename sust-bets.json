@@ -787,6 +787,20 @@
           "score": "47-54",
           "period": 2,
           "clock": "9:36"
+        },
+        {
+          "t": "2026-03-08T22:44:00.076Z",
+          "spread": -8.5,
+          "score": "47-54",
+          "period": 2,
+          "clock": "9:36"
+        },
+        {
+          "t": "2026-03-08T22:44:00.895Z",
+          "spread": -8.5,
+          "score": "47-54",
+          "period": 2,
+          "clock": "9:36"
         }
       ]
     },
@@ -1340,6 +1354,20 @@
           "score": "72-79",
           "period": 2,
           "clock": "2:21"
+        },
+        {
+          "t": "2026-03-08T22:44:00.076Z",
+          "spread": 8.5,
+          "score": "72-79",
+          "period": 2,
+          "clock": "2:02"
+        },
+        {
+          "t": "2026-03-08T22:44:00.896Z",
+          "spread": 8.5,
+          "score": "72-79",
+          "period": 2,
+          "clock": "2:02"
         }
       ],
       "alertSent": true
@@ -1561,6 +1589,20 @@
           "score": "22-31",
           "period": 1,
           "clock": "3:10"
+        },
+        {
+          "t": "2026-03-08T22:44:00.076Z",
+          "spread": -10.5,
+          "score": "22-31",
+          "period": 1,
+          "clock": "2:49"
+        },
+        {
+          "t": "2026-03-08T22:44:00.897Z",
+          "spread": -10.5,
+          "score": "22-31",
+          "period": 1,
+          "clock": "2:49"
         }
       ],
       "alertSent": true
@@ -1769,6 +1811,20 @@
           "score": "27-30",
           "period": 1,
           "clock": "1:58"
+        },
+        {
+          "t": "2026-03-08T22:44:00.077Z",
+          "spread": 4.5,
+          "score": "27-32",
+          "period": 1,
+          "clock": "1:40"
+        },
+        {
+          "t": "2026-03-08T22:44:00.897Z",
+          "spread": 4.5,
+          "score": "27-32",
+          "period": 1,
+          "clock": "1:40"
         }
       ]
     },
@@ -1928,6 +1984,20 @@
           "score": "36-25",
           "period": 1,
           "clock": "3:01"
+        },
+        {
+          "t": "2026-03-08T22:44:00.078Z",
+          "spread": 5.5,
+          "score": "36-25",
+          "period": 1,
+          "clock": "3:01"
+        },
+        {
+          "t": "2026-03-08T22:44:00.897Z",
+          "spread": 5.5,
+          "score": "36-25",
+          "period": 1,
+          "clock": "3:01"
         }
       ]
     },
@@ -2041,7 +2111,23 @@
         "homeML": "-395",
         "openSpread": "+9.5"
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T22:43:55.744Z",
+          "spread": -10.5,
+          "score": "32-36",
+          "period": 2,
+          "clock": "11:02"
+        },
+        {
+          "t": "2026-03-08T22:43:55.842Z",
+          "spread": -10.5,
+          "score": "32-36",
+          "period": 2,
+          "clock": "11:02"
+        }
+      ]
     },
     {
       "id": 1773009773385,
@@ -2140,6 +2226,134 @@
         "v7_marginWeighted": 30.7,
         "v8_procDiffOnly": 32,
         "v10_timeDecay": 61.4
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T22:44:00.078Z",
+          "spread": -4.5,
+          "score": "21-26",
+          "period": 1,
+          "clock": "2:54"
+        },
+        {
+          "t": "2026-03-08T22:44:00.897Z",
+          "spread": -4.5,
+          "score": "21-26",
+          "period": 1,
+          "clock": "2:54"
+        }
+      ]
+    },
+    {
+      "id": 1773009837415,
+      "key": "401810778_sust_MIA",
+      "gameId": "401810778",
+      "team": "MIA",
+      "opponent": "DET",
+      "matchup": "DET @ MIA",
+      "side": "SPREAD",
+      "spread": -9.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -104,
+      "impliedP": 51,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T22:43:57.415Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "DET",
+      "homeTeam": "MIA",
+      "awayName": "Detroit Pistons",
+      "homeName": "Miami Heat",
+      "awayScore": 21,
+      "homeScore": 36,
+      "period": 2,
+      "clock": "10:42",
+      "periodLabel": "Q2",
+      "sustLeader": "MIA",
+      "sustMargin": 15,
+      "betOnLeader": true,
+      "currentMargin": 15,
+      "cushion": 5.5,
+      "sustScore": 73.8,
+      "fragScore": -21.8,
+      "sustGap": 95.6,
+      "sustSignals": [
+        "Low 3PT reliance (17%)",
+        "Strong process (8.4/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "56",
+        "efg": "60",
+        "threePt": "25",
+        "twoPt": "67",
+        "proc": 8.4,
+        "star": 0,
+        "scq": 36
+      },
+      "fragStats": {
+        "fg": "32",
+        "efg": "36",
+        "threePt": "18",
+        "twoPt": "57",
+        "proc": 3.8,
+        "star": 115,
+        "scq": 0
+      },
+      "sustDetail": "MIA +73.8 vs DET -21.8 (gap:95.6) | DET 21-36 MIA | Q2 10:42 | FanDuel -9.5 (-104)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 92,
+        "v2_f1low": 103.6,
+        "v3_f1high": 83.1,
+        "v4_f3boost": 114,
+        "v5_noStar": 95.6
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 36,
+        "aScore": -21.8,
+        "hScore": 88.2,
+        "gap": 110,
+        "f5contrib": 14.4
+      },
+      "altStructural": {
+        "v6_cushionBoost": 112.1,
+        "v7_marginWeighted": 143.4,
+        "v8_procDiffOnly": 46,
+        "v10_timeDecay": 95.6
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": 1.5,
+        "detail": "DET -1.5",
+        "awaySpread": "-1.5",
+        "homeSpread": "+1.5",
+        "awaySpreadOdds": "-102",
+        "homeSpreadOdds": "-118",
+        "awayML": "-115",
+        "homeML": "-105",
+        "openSpread": "-1.5"
       },
       "alertSent": true
     }
