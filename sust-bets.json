@@ -1,4 +1,216 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1772995948235,
+      "key": "401851548_sust_NAVY",
+      "gameId": "401851548",
+      "team": "NAVY",
+      "opponent": "BU",
+      "matchup": "BU @ NAVY",
+      "side": "SPREAD",
+      "spread": -6.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -118,
+      "impliedP": 54.1,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T18:52:28.235Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "BU",
+      "homeTeam": "NAVY",
+      "awayName": "Boston University Terriers",
+      "homeName": "Navy Midshipmen",
+      "awayScore": 33,
+      "homeScore": 33,
+      "period": 1,
+      "clock": "1:10",
+      "periodLabel": "H1",
+      "sustLeader": "TIE",
+      "sustMargin": 0,
+      "betOnLeader": false,
+      "currentMargin": 0,
+      "cushion": -6.5,
+      "sustScore": 46.1,
+      "fragScore": -16.1,
+      "sustGap": 62.2,
+      "sustSignals": [
+        "Low 3PT reliance (9%)"
+      ],
+      "fragSignals": [
+        "Star erupting (176% pace)"
+      ],
+      "sustStats": {
+        "fg": "43",
+        "efg": "45",
+        "threePt": "17",
+        "twoPt": "67",
+        "proc": 6.9,
+        "star": 83,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "59",
+        "efg": "68",
+        "threePt": "44",
+        "twoPt": "55",
+        "proc": 4.7,
+        "star": 176,
+        "scq": 0
+      },
+      "sustDetail": "NAVY +46.1 vs BU -16.1 (gap:62.2) | BU 33-33 NAVY | H1 1:10 | FanDuel -6.5 (-118)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 54,
+        "v2_f1low": 63.9,
+        "v3_f1high": 67,
+        "v4_f3boost": 71,
+        "v5_noStar": 52.2
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -16.1,
+        "hScore": 46.1,
+        "gap": 62.2,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 62.2,
+        "v7_marginWeighted": 6.2,
+        "v8_procDiffOnly": 22,
+        "v10_timeDecay": 62.2
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T18:52:28.438Z",
+          "spread": -6.5,
+          "score": "33-33",
+          "period": 1,
+          "clock": "1:10"
+        }
+      ]
+    },
+    {
+      "id": 1772995948466,
+      "key": "401851251_sust_CARK",
+      "gameId": "401851251",
+      "team": "CARK",
+      "opponent": "QUC",
+      "matchup": "QUC @ CARK",
+      "side": "SPREAD",
+      "spread": -3.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -114,
+      "impliedP": 53.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T18:52:28.466Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "QUC",
+      "homeTeam": "CARK",
+      "awayName": "Queens University Royals",
+      "homeName": "Central Arkansas Bears",
+      "awayScore": 30,
+      "homeScore": 34,
+      "period": 1,
+      "clock": "0:00",
+      "periodLabel": "H1",
+      "sustLeader": "CARK",
+      "sustMargin": 4,
+      "betOnLeader": true,
+      "currentMargin": 4,
+      "cushion": 0.5,
+      "sustScore": 41.6,
+      "fragScore": -27.2,
+      "sustGap": 68.8,
+      "sustSignals": [
+        "Strong process (7.2/10)"
+      ],
+      "fragSignals": [
+        "3PT heavy (60% of pts)"
+      ],
+      "sustStats": {
+        "fg": "43",
+        "efg": "52",
+        "threePt": "33",
+        "twoPt": "47",
+        "proc": 7.2,
+        "star": 79,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "38",
+        "efg": "50",
+        "threePt": "35",
+        "twoPt": "27",
+        "proc": 4,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "CARK +41.6 vs QUC -27.2 (gap:68.8) | QUC 30-34 CARK | H1 0:00 | FanDuel -3.5 (-114)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": false,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 64,
+        "v2_f1low": 73.6,
+        "v3_f1high": 63.9,
+        "v4_f3boost": 81.6,
+        "v5_noStar": 68.8
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -27.2,
+        "hScore": 41.6,
+        "gap": 68.8,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 70.3,
+        "v7_marginWeighted": 27.5,
+        "v8_procDiffOnly": 32,
+        "v10_timeDecay": 68.8
+      },
+      "alertSent": true
+    }
+  ],
   "resolved": []
 }
