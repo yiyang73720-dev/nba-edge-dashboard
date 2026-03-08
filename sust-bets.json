@@ -125,6 +125,145 @@
           "score": "53-40",
           "period": 2,
           "clock": "13:35"
+        },
+        {
+          "t": "2026-03-08T21:21:28.241Z",
+          "spread": -6.5,
+          "score": "53-42",
+          "period": 2,
+          "clock": "13:34"
+        },
+        {
+          "t": "2026-03-08T21:21:30.739Z",
+          "spread": -6.5,
+          "score": "53-42",
+          "period": 2,
+          "clock": "13:34"
+        }
+      ],
+      "alertSent": true
+    },
+    {
+      "id": 1773004823192,
+      "key": "401810777_sust_LAL",
+      "gameId": "401810777",
+      "team": "LAL",
+      "opponent": "NY",
+      "matchup": "NY @ LAL",
+      "side": "SPREAD",
+      "spread": -2.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -152,
+      "impliedP": 60.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T21:20:23.192Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "NY",
+      "homeTeam": "LAL",
+      "awayName": "New York Knicks",
+      "homeName": "Los Angeles Lakers",
+      "awayScore": 59,
+      "homeScore": 68,
+      "period": 3,
+      "clock": "7:50",
+      "periodLabel": "Q3",
+      "sustLeader": "LAL",
+      "sustMargin": 9,
+      "betOnLeader": true,
+      "currentMargin": 9,
+      "cushion": 6.5,
+      "sustScore": 32.2,
+      "fragScore": -3.6,
+      "sustGap": 35.800000000000004,
+      "sustSignals": [],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "49",
+        "efg": "57",
+        "threePt": "33",
+        "twoPt": "43",
+        "proc": 6.4,
+        "star": 111,
+        "scq": -26
+      },
+      "fragStats": {
+        "fg": "43",
+        "efg": "47",
+        "threePt": "22",
+        "twoPt": "61",
+        "proc": 4.9,
+        "star": 115,
+        "scq": 6
+      },
+      "sustDetail": "LAL +29.1 vs NY 2.4 (gap:26.700000000000003) | NY 56-65 LAL | Q3 8:41 | FanDuel -2.5 (-152)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": false,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 30,
+        "v2_f1low": 30.8,
+        "v3_f1high": 15.3,
+        "v4_f3boost": 32.7,
+        "v5_noStar": 26.7
+      },
+      "v7": {
+        "aScq": 6.1,
+        "hScq": -25.6,
+        "aScore": 4.8,
+        "hScore": 18.9,
+        "gap": 14,
+        "f5contrib": 12.7
+      },
+      "altStructural": {
+        "v6_cushionBoost": 46.2,
+        "v7_marginWeighted": 24,
+        "v8_procDiffOnly": 15,
+        "v10_timeDecay": 34.7
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": 5.5,
+        "detail": "NY -5.5",
+        "awaySpread": "-5.5",
+        "homeSpread": "+5.5",
+        "awaySpreadOdds": "-108",
+        "homeSpreadOdds": "-112",
+        "awayML": "-198",
+        "homeML": "+164",
+        "openSpread": "-3.5"
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T21:21:25.713Z",
+          "spread": -2.5,
+          "score": "59-68",
+          "period": 3,
+          "clock": "7:50"
+        },
+        {
+          "t": "2026-03-08T21:21:26.825Z",
+          "spread": -2.5,
+          "score": "59-68",
+          "period": 3,
+          "clock": "7:50"
         }
       ],
       "alertSent": true
