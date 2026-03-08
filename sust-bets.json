@@ -1,4 +1,529 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1772934676639,
+      "key": "401810774_sust_MIL",
+      "gameId": "401810774",
+      "team": "MIL",
+      "opponent": "UTAH",
+      "matchup": "UTAH @ MIL",
+      "side": "SPREAD",
+      "spread": -9.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -125,
+      "impliedP": 55.6,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T01:51:16.639Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "UTAH",
+      "homeTeam": "MIL",
+      "awayName": "Utah Jazz",
+      "homeName": "Milwaukee Bucks",
+      "awayScore": 29,
+      "homeScore": 31,
+      "period": 2,
+      "clock": "8:45",
+      "periodLabel": "Q2",
+      "sustLeader": "MIL",
+      "sustMargin": 2,
+      "betOnLeader": true,
+      "currentMargin": 2,
+      "cushion": -7.5,
+      "sustScore": 29.2,
+      "fragScore": -16.9,
+      "sustGap": 46.099999999999994,
+      "sustSignals": [],
+      "fragSignals": [
+        "3PT heavy (72% of pts)"
+      ],
+      "sustStats": {
+        "fg": "38",
+        "efg": "46",
+        "threePt": "31",
+        "twoPt": "32",
+        "proc": 6.5,
+        "star": 86,
+        "scq": 17
+      },
+      "fragStats": {
+        "fg": "35",
+        "efg": "47",
+        "threePt": "39",
+        "twoPt": "28",
+        "proc": 4.7,
+        "star": 0,
+        "scq": -10
+      },
+      "sustDetail": "MIL +29.2 vs UTAH -16.9 (gap:46.099999999999994) | UTAH 29-31 MIL | Q2 8:45 | FanDuel -9.5 (-125)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 36,
+        "v2_f1low": 46.3,
+        "v3_f1high": 55.8,
+        "v4_f3boost": 53.3,
+        "v5_noStar": 46.1
+      },
+      "v7": {
+        "aScq": -9.7,
+        "hScq": 16.7,
+        "aScore": -20.8,
+        "hScore": 35.9,
+        "gap": 56.6,
+        "f5contrib": 10.5
+      },
+      "altStructural": {
+        "v6_cushionBoost": 46.1,
+        "v7_marginWeighted": 9.2,
+        "v8_procDiffOnly": 18,
+        "v10_timeDecay": 46.1
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -9.5,
+        "detail": "MIL -9.5",
+        "awaySpread": "+9.5",
+        "homeSpread": "-9.5",
+        "awaySpreadOdds": "-115",
+        "homeSpreadOdds": "-105",
+        "awayML": "+340",
+        "homeML": "-440",
+        "openSpread": "+9.5"
+      },
+      "alertSent": true
+    },
+    {
+      "id": 1772934681887,
+      "key": "401851325_sust_IDST",
+      "gameId": "401851325",
+      "team": "IDST",
+      "opponent": "NAU",
+      "matchup": "NAU @ IDST",
+      "side": "SPREAD",
+      "spread": -19.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -110,
+      "impliedP": 52.4,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T01:51:21.887Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "NAU",
+      "homeTeam": "IDST",
+      "awayName": "Northern Arizona Lumberjacks",
+      "homeName": "Idaho State Bengals",
+      "awayScore": 37,
+      "homeScore": 58,
+      "period": 2,
+      "clock": "12:38",
+      "periodLabel": "H2",
+      "sustLeader": "IDST",
+      "sustMargin": 21,
+      "betOnLeader": true,
+      "currentMargin": 21,
+      "cushion": 1.5,
+      "sustScore": 57.5,
+      "fragScore": -16.5,
+      "sustGap": 74,
+      "sustSignals": [
+        "Strong process (7.8/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "51",
+        "efg": "58",
+        "threePt": "55",
+        "twoPt": "55",
+        "proc": 7.8,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "41",
+        "efg": "45",
+        "threePt": "23",
+        "twoPt": "65",
+        "proc": 4,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "IDST +57.5 vs NAU -16.5 (gap:74) | NAU 37-58 IDST | H2 12:38 | FanDuel -19.5 (-110)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": false,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 76,
+        "v2_f1low": 82.3,
+        "v3_f1high": 55.4,
+        "v4_f3boost": 89.2,
+        "v5_noStar": 74
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -16.5,
+        "hScore": 57.5,
+        "gap": 74,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 78.5,
+        "v7_marginWeighted": 155.4,
+        "v8_procDiffOnly": 38,
+        "v10_timeDecay": 74
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T01:51:22.472Z",
+          "spread": -19.5,
+          "score": "37-58",
+          "period": 2,
+          "clock": "12:38"
+        }
+      ]
+    },
+    {
+      "id": 1772934682919,
+      "key": "401851250_sust_APSU",
+      "gameId": "401851250",
+      "team": "APSU",
+      "opponent": "QUC",
+      "matchup": "QUC @ APSU",
+      "side": "SPREAD",
+      "spread": 0.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -112,
+      "impliedP": 52.8,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T01:51:22.919Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "QUC",
+      "homeTeam": "APSU",
+      "awayName": "Queens University Royals",
+      "homeName": "Austin Peay Governors",
+      "awayScore": 52,
+      "homeScore": 48,
+      "period": 2,
+      "clock": "17:04",
+      "periodLabel": "H2",
+      "sustLeader": "QUC",
+      "sustMargin": 4,
+      "betOnLeader": false,
+      "currentMargin": -4,
+      "cushion": -3.5,
+      "sustScore": 57.2,
+      "fragScore": -26.8,
+      "sustGap": 84,
+      "sustSignals": [
+        "Low 3PT reliance (19%)",
+        "Strong process (7.1/10)",
+        "Star cold (49% pace)"
+      ],
+      "fragSignals": [
+        "3PT heavy (52% of pts)"
+      ],
+      "sustStats": {
+        "fg": "49",
+        "efg": "52",
+        "threePt": "23",
+        "twoPt": "71",
+        "proc": 7.1,
+        "star": 49,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "49",
+        "efg": "59",
+        "threePt": "50",
+        "twoPt": "46",
+        "proc": 3.9,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "APSU +57.2 vs QUC -26.8 (gap:84) | QUC 52-48 APSU | H2 17:04 | FanDuel +0.5 (-112)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": false,
+        "g7_earlyGame": false,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 74,
+        "v2_f1low": 87,
+        "v3_f1high": 87.7,
+        "v4_f3boost": 96.8,
+        "v5_noStar": 74
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -26.8,
+        "hScore": 57.2,
+        "gap": 84,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 84,
+        "v7_marginWeighted": 33.6,
+        "v8_procDiffOnly": 32,
+        "v10_timeDecay": 84
+      },
+      "alertSent": true
+    },
+    {
+      "id": 1772934683637,
+      "key": "401823186_sust_CSUN",
+      "gameId": "401823186",
+      "team": "CSUN",
+      "opponent": "CSUF",
+      "matchup": "CSUF @ CSUN",
+      "side": "SPREAD",
+      "spread": -3.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -120,
+      "impliedP": 54.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T01:51:23.637Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "CSUF",
+      "homeTeam": "CSUN",
+      "awayName": "Cal State Fullerton Titans",
+      "homeName": "Cal State Northridge Matadors",
+      "awayScore": 28,
+      "homeScore": 28,
+      "period": 1,
+      "clock": "3:31",
+      "periodLabel": "H1",
+      "sustLeader": "TIE",
+      "sustMargin": 0,
+      "betOnLeader": false,
+      "currentMargin": 0,
+      "cushion": -3.5,
+      "sustScore": 50.4,
+      "fragScore": -5.3,
+      "sustGap": 55.699999999999996,
+      "sustSignals": [
+        "Low 3PT reliance (21%)",
+        "Strong process (7.3/10)"
+      ],
+      "fragSignals": [
+        "3PT heavy (54% of pts)"
+      ],
+      "sustStats": {
+        "fg": "32",
+        "efg": "36",
+        "threePt": "13",
+        "twoPt": "50",
+        "proc": 7.3,
+        "star": 69,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "34",
+        "efg": "43",
+        "threePt": "26",
+        "twoPt": "36",
+        "proc": 5,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "CSUN +50.4 vs CSUF -5.3 (gap:55.699999999999996) | CSUF 28-28 CSUN | H1 3:31 | FanDuel -3.5 (-120)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 46,
+        "v2_f1low": 57,
+        "v3_f1high": 62.5,
+        "v4_f3boost": 64.8,
+        "v5_noStar": 55.6
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -5.3,
+        "hScore": 50.4,
+        "gap": 55.7,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 55.7,
+        "v7_marginWeighted": 5.6,
+        "v8_procDiffOnly": 23,
+        "v10_timeDecay": 55.7
+      },
+      "alertSent": true
+    },
+    {
+      "id": 1772934684178,
+      "key": "401822976_sust_GTWN",
+      "gameId": "401822976",
+      "team": "GTWN",
+      "opponent": "PROV",
+      "matchup": "PROV @ GTWN",
+      "side": "SPREAD",
+      "spread": -9.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -108,
+      "impliedP": 51.9,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T01:51:24.178Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "PROV",
+      "homeTeam": "GTWN",
+      "awayName": "Providence Friars",
+      "homeName": "Georgetown Hoyas",
+      "awayScore": 28,
+      "homeScore": 39,
+      "period": 1,
+      "clock": "2:44",
+      "periodLabel": "H1",
+      "sustLeader": "GTWN",
+      "sustMargin": 11,
+      "betOnLeader": true,
+      "currentMargin": 11,
+      "cushion": 1.5,
+      "sustScore": 56.2,
+      "fragScore": 7.5,
+      "sustGap": 48.7,
+      "sustSignals": [
+        "Low 3PT reliance (15%)",
+        "Strong process (7.5/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "54",
+        "efg": "58",
+        "threePt": "25",
+        "twoPt": "62",
+        "proc": 7.5,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "39",
+        "efg": "46",
+        "threePt": "25",
+        "twoPt": "41",
+        "proc": 4.8,
+        "star": 39,
+        "scq": 0
+      },
+      "sustDetail": "GTWN +56.2 vs PROV 7.5 (gap:48.7) | PROV 28-39 GTWN | H1 2:44 | FanDuel -9.5 (-108)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 44,
+        "v2_f1low": 52.5,
+        "v3_f1high": 45.7,
+        "v4_f3boost": 59.5,
+        "v5_noStar": 58.7
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 7.5,
+        "hScore": 56.2,
+        "gap": 48.7,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 53.2,
+        "v7_marginWeighted": 53.6,
+        "v8_procDiffOnly": 27,
+        "v10_timeDecay": 48.7
+      },
+      "alertSent": true
+    }
+  ],
   "resolved": []
 }
