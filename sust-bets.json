@@ -1154,6 +1154,20 @@
           "score": "53-86",
           "period": 2,
           "clock": "10:26"
+        },
+        {
+          "t": "2026-03-08T01:41:14.056Z",
+          "spread": -34.5,
+          "score": "53-86",
+          "period": 2,
+          "clock": "9:59"
+        },
+        {
+          "t": "2026-03-08T01:41:14.118Z",
+          "spread": -34.5,
+          "score": "53-86",
+          "period": 2,
+          "clock": "9:59"
         }
       ],
       "alertSent": true,
@@ -1629,6 +1643,20 @@
           "score": "46-50",
           "period": 2,
           "clock": "7:21"
+        },
+        {
+          "t": "2026-03-08T01:41:14.057Z",
+          "spread": -3.5,
+          "score": "46-50",
+          "period": 2,
+          "clock": "7:21"
+        },
+        {
+          "t": "2026-03-08T01:41:14.119Z",
+          "spread": -3.5,
+          "score": "46-50",
+          "period": 2,
+          "clock": "7:21"
         }
       ]
     },
@@ -1974,6 +2002,20 @@
           "score": "35-52",
           "period": 2,
           "clock": "15:53"
+        },
+        {
+          "t": "2026-03-08T01:41:14.057Z",
+          "spread": -15.5,
+          "score": "35-52",
+          "period": 2,
+          "clock": "15:53"
+        },
+        {
+          "t": "2026-03-08T01:41:14.119Z",
+          "spread": -15.5,
+          "score": "35-52",
+          "period": 2,
+          "clock": "15:53"
         }
       ]
     },
@@ -2300,8 +2342,133 @@
           "score": "47-40",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T01:41:14.057Z",
+          "spread": 3.5,
+          "score": "47-40",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T01:41:14.120Z",
+          "spread": 3.5,
+          "score": "47-40",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
+    },
+    {
+      "id": 1772934068395,
+      "key": "401810773_sust_MEM",
+      "gameId": "401810773",
+      "team": "MEM",
+      "opponent": "LAC",
+      "matchup": "LAC @ MEM",
+      "side": "SPREAD",
+      "spread": -4.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -114,
+      "impliedP": 53.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T01:41:08.395Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "LAC",
+      "homeTeam": "MEM",
+      "awayName": "LA Clippers",
+      "homeName": "Memphis Grizzlies",
+      "awayScore": 23,
+      "homeScore": 41,
+      "period": 2,
+      "clock": "12:00",
+      "periodLabel": "Q2",
+      "sustLeader": "MEM",
+      "sustMargin": 18,
+      "betOnLeader": true,
+      "currentMargin": 18,
+      "cushion": 13.5,
+      "sustScore": 30.8,
+      "fragScore": -23.2,
+      "sustGap": 54,
+      "sustSignals": [
+        "Strong process (7.1/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "58",
+        "efg": "79",
+        "threePt": "56",
+        "twoPt": "20",
+        "proc": 7.1,
+        "star": 0,
+        "scq": -12
+      },
+      "fragStats": {
+        "fg": "42",
+        "efg": "42",
+        "threePt": "0",
+        "twoPt": "70",
+        "proc": 3.3,
+        "star": 80,
+        "scq": 21
+      },
+      "sustDetail": "MEM +30.8 vs LAC -23.2 (gap:54) | LAC 23-41 MEM | Q2 12:00 | FanDuel -4.5 (-114)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 76,
+        "v2_f1low": 69,
+        "v3_f1high": 2.3,
+        "v4_f3boost": 69.2,
+        "v5_noStar": 54
+      },
+      "v7": {
+        "aScq": 21.1,
+        "hScq": -12.5,
+        "aScore": -14.8,
+        "hScore": 25.8,
+        "gap": 40.6,
+        "f5contrib": 13.4
+      },
+      "altStructural": {
+        "v6_cushionBoost": 94.5,
+        "v7_marginWeighted": 97.2,
+        "v8_procDiffOnly": 38,
+        "v10_timeDecay": 54
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": 7.5,
+        "detail": "LAC -7.5",
+        "awaySpread": "-7.5",
+        "homeSpread": "+7.5",
+        "awaySpreadOdds": "-112",
+        "homeSpreadOdds": "-108",
+        "awayML": "-305",
+        "homeML": "+245",
+        "openSpread": "-6.5"
+      },
+      "alertSent": true
     }
   ],
   "resolved": [
