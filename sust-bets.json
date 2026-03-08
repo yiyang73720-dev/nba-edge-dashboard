@@ -107,6 +107,20 @@
           "score": "33-33",
           "period": 1,
           "clock": "1:10"
+        },
+        {
+          "t": "2026-03-08T18:53:32.483Z",
+          "spread": -5.5,
+          "score": "33-35",
+          "period": 1,
+          "clock": "1:10"
+        },
+        {
+          "t": "2026-03-08T18:53:32.488Z",
+          "spread": -5.5,
+          "score": "33-35",
+          "period": 1,
+          "clock": "1:10"
         }
       ]
     },
@@ -209,6 +223,137 @@
         "v8_procDiffOnly": 32,
         "v10_timeDecay": 68.8
       },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T18:53:32.483Z",
+          "spread": -3.5,
+          "score": "30-34",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T18:53:32.488Z",
+          "spread": -3.5,
+          "score": "30-34",
+          "period": 1,
+          "clock": "0:00"
+        }
+      ]
+    },
+    {
+      "id": 1772995948704,
+      "key": "401828264_sust_TULN",
+      "gameId": "401828264",
+      "team": "TULN",
+      "opponent": "MEM",
+      "matchup": "MEM @ TULN",
+      "side": "SPREAD",
+      "spread": -4.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -118,
+      "impliedP": 54.1,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T18:52:28.704Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "MEM",
+      "homeTeam": "TULN",
+      "awayName": "Memphis Tigers",
+      "homeName": "Tulane Green Wave",
+      "awayScore": 27,
+      "homeScore": 35,
+      "period": 1,
+      "clock": "2:08",
+      "periodLabel": "H1",
+      "sustLeader": "TULN",
+      "sustMargin": 6,
+      "betOnLeader": true,
+      "currentMargin": 6,
+      "cushion": 3.5,
+      "sustScore": 39.1,
+      "fragScore": 4.1,
+      "sustGap": 35,
+      "sustSignals": [
+        "Low 3PT reliance (27%)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "48",
+        "efg": "54",
+        "threePt": "27",
+        "twoPt": "55",
+        "proc": 6.7,
+        "star": 102,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "36",
+        "efg": "41",
+        "threePt": "22",
+        "twoPt": "44",
+        "proc": 5.1,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "TULN +36.6 vs MEM 6.1 (gap:30.5) | MEM 27-33 TULN | H1 2:36 | FanDuel -3.5 (-118)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 32,
+        "v2_f1low": 34.2,
+        "v3_f1high": 21.6,
+        "v4_f3boost": 36.9,
+        "v5_noStar": 30.5
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 6.1,
+        "hScore": 36.6,
+        "gap": 30.5,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 38,
+        "v7_marginWeighted": 18.3,
+        "v8_procDiffOnly": 16,
+        "v10_timeDecay": 30.5
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T18:53:32.483Z",
+          "spread": -4.5,
+          "score": "27-35",
+          "period": 1,
+          "clock": "2:08"
+        },
+        {
+          "t": "2026-03-08T18:53:32.488Z",
+          "spread": -4.5,
+          "score": "27-35",
+          "period": 1,
+          "clock": "2:08"
+        }
+      ],
       "alertSent": true
     }
   ],
