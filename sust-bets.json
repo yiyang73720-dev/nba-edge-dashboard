@@ -271,6 +271,20 @@
           "score": "40-51",
           "period": 2,
           "clock": "1:37"
+        },
+        {
+          "t": "2026-03-08T02:05:54.873Z",
+          "spread": -12.5,
+          "score": "42-51",
+          "period": 2,
+          "clock": "1:10"
+        },
+        {
+          "t": "2026-03-08T02:05:55.331Z",
+          "spread": -12.5,
+          "score": "42-51",
+          "period": 2,
+          "clock": "1:10"
         }
       ]
     },
@@ -512,6 +526,13 @@
           "score": "46-60",
           "period": 2,
           "clock": "7:45"
+        },
+        {
+          "t": "2026-03-08T02:05:57.699Z",
+          "spread": -13.5,
+          "score": "46-62",
+          "period": 2,
+          "clock": "7:03"
         }
       ]
     },
@@ -750,6 +771,13 @@
           "score": "56-54",
           "period": 2,
           "clock": "12:41"
+        },
+        {
+          "t": "2026-03-08T02:05:57.699Z",
+          "spread": -0.5,
+          "score": "60-54",
+          "period": 2,
+          "clock": "11:55"
         }
       ]
     },
@@ -983,6 +1011,13 @@
         },
         {
           "t": "2026-03-08T02:04:48.797Z",
+          "spread": -1.5,
+          "score": "39-36",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T02:05:57.699Z",
           "spread": -1.5,
           "score": "39-36",
           "period": 1,
@@ -1222,6 +1257,13 @@
           "score": "33-43",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T02:05:57.700Z",
+          "spread": -8.5,
+          "score": "33-43",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
     },
@@ -1449,6 +1491,13 @@
           "score": "25-40",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-08T02:05:57.701Z",
+          "spread": -15.5,
+          "score": "25-40",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
     },
@@ -1648,6 +1697,20 @@
           "score": "49-55",
           "period": 2,
           "clock": "4:05"
+        },
+        {
+          "t": "2026-03-08T02:05:54.873Z",
+          "spread": -4.5,
+          "score": "53-55",
+          "period": 2,
+          "clock": "3:11"
+        },
+        {
+          "t": "2026-03-08T02:05:55.331Z",
+          "spread": -4.5,
+          "score": "53-55",
+          "period": 2,
+          "clock": "3:11"
         }
       ]
     },
@@ -1771,6 +1834,13 @@
           "score": "40-23",
           "period": 1,
           "clock": "3:21"
+        },
+        {
+          "t": "2026-03-08T02:05:57.702Z",
+          "spread": -17.5,
+          "score": "40-23",
+          "period": 1,
+          "clock": "3:21"
         }
       ]
     },
@@ -1871,6 +1941,114 @@
         "v7_marginWeighted": 72.8,
         "v8_procDiffOnly": 51,
         "v10_timeDecay": 104
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-08T02:05:57.703Z",
+          "spread": -5.5,
+          "score": "25-31",
+          "period": 1,
+          "clock": "5:04"
+        }
+      ]
+    },
+    {
+      "id": 1772935559538,
+      "key": "401808287_sust_OU",
+      "gameId": "401808287",
+      "team": "OU",
+      "opponent": "TEX",
+      "matchup": "OU @ TEX",
+      "side": "SPREAD",
+      "spread": 3.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -125,
+      "impliedP": 55.6,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-08T02:05:59.538Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "OU",
+      "homeTeam": "TEX",
+      "awayName": "Oklahoma Sooners",
+      "homeName": "Texas Longhorns",
+      "awayScore": 24,
+      "homeScore": 20,
+      "period": 1,
+      "clock": "7:59",
+      "periodLabel": "H1",
+      "sustLeader": "OU",
+      "sustMargin": 4,
+      "betOnLeader": true,
+      "currentMargin": 4,
+      "cushion": 7.5,
+      "sustScore": 28.8,
+      "fragScore": -14.2,
+      "sustGap": 43,
+      "sustSignals": [
+        "Low 3PT reliance (0%)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "41",
+        "efg": "41",
+        "threePt": "0",
+        "twoPt": "58",
+        "proc": 5.9,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "31",
+        "efg": "38",
+        "threePt": "25",
+        "twoPt": "20",
+        "proc": 3.7,
+        "star": 57,
+        "scq": 0
+      },
+      "sustDetail": "OU +28.8 vs TEX -14.2 (gap:43) | OU 24-20 TEX | H1 7:59 | FanDuel +3.5 (-125)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 34,
+        "v2_f1low": 44.4,
+        "v3_f1high": 49.2,
+        "v4_f3boost": 51.8,
+        "v5_noStar": 53
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 28.8,
+        "hScore": -14.2,
+        "gap": 43,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 65.5,
+        "v7_marginWeighted": 17.2,
+        "v8_procDiffOnly": 22,
+        "v10_timeDecay": 43
       },
       "alertSent": true
     }
