@@ -1,4 +1,105 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1773029989676,
+      "key": "401851757_sust_SCU",
+      "gameId": "401851757",
+      "team": "SCU",
+      "opponent": "PAC",
+      "matchup": "PAC @ SCU",
+      "side": "SPREAD",
+      "spread": -11.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -118,
+      "impliedP": 54.1,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-09T04:19:49.676Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "PAC",
+      "homeTeam": "SCU",
+      "awayName": "Pacific Tigers",
+      "homeName": "Santa Clara Broncos",
+      "awayScore": 38,
+      "homeScore": 45,
+      "period": 2,
+      "clock": "19:29",
+      "periodLabel": "H2",
+      "sustLeader": "SCU",
+      "sustMargin": 7,
+      "betOnLeader": true,
+      "currentMargin": 7,
+      "cushion": -4.5,
+      "sustScore": 22.8,
+      "fragScore": -15.4,
+      "sustGap": 38.2,
+      "sustSignals": [],
+      "fragSignals": [
+        "3PT heavy (47% of pts)",
+        "Star erupting (166% pace)"
+      ],
+      "sustStats": {
+        "fg": "53",
+        "efg": "67",
+        "threePt": "47",
+        "twoPt": "36",
+        "proc": 6.4,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "41",
+        "efg": "49",
+        "threePt": "38",
+        "twoPt": "47",
+        "proc": 4.9,
+        "star": 166,
+        "scq": 0
+      },
+      "sustDetail": "SCU +22.8 vs PAC -15.4 (gap:38.2) | PAC 38-45 SCU | H2 19:29 | FanDuel -11.5 (-118)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": false,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 40,
+        "v2_f1low": 41.8,
+        "v3_f1high": 29.2,
+        "v4_f3boost": 44.2,
+        "v5_noStar": 28.2
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -15.4,
+        "hScore": 22.8,
+        "gap": 38.2,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 38.2,
+        "v7_marginWeighted": 26.7,
+        "v8_procDiffOnly": 15,
+        "v10_timeDecay": 38.2
+      },
+      "alertSent": true
+    }
+  ],
   "resolved": []
 }
