@@ -1,4 +1,106 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1773098766104,
+      "key": "401851593_sust_ETSU",
+      "gameId": "401851593",
+      "team": "ETSU",
+      "opponent": "FUR",
+      "matchup": "FUR @ ETSU",
+      "side": "SPREAD",
+      "spread": 1.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -118,
+      "impliedP": 54.1,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-09T23:26:06.104Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "FUR",
+      "homeTeam": "ETSU",
+      "awayName": "Furman Paladins",
+      "homeName": "East Tennessee State Buccaneers",
+      "awayScore": 23,
+      "homeScore": 22,
+      "period": 1,
+      "clock": "9:52",
+      "periodLabel": "H1",
+      "sustLeader": "FUR",
+      "sustMargin": 1,
+      "betOnLeader": false,
+      "currentMargin": -1,
+      "cushion": 0.5,
+      "sustScore": 42.7,
+      "fragScore": -14.8,
+      "sustGap": 57.5,
+      "sustSignals": [
+        "Low 3PT reliance (14%)"
+      ],
+      "fragSignals": [
+        "3PT heavy (65% of pts)"
+      ],
+      "sustStats": {
+        "fg": "69",
+        "efg": "73",
+        "threePt": "25",
+        "twoPt": "73",
+        "proc": 6.8,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "56",
+        "efg": "72",
+        "threePt": "50",
+        "twoPt": "35",
+        "proc": 4.7,
+        "star": 66,
+        "scq": 0
+      },
+      "sustDetail": "ETSU +42.7 vs FUR -14.8 (gap:57.5) | FUR 23-22 ETSU | H1 9:52 | FanDuel +1.5 (-118)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 42,
+        "v2_f1low": 56.5,
+        "v3_f1high": 74.9,
+        "v4_f3boost": 65.9,
+        "v5_noStar": 57.5
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -14.8,
+        "hScore": 42.7,
+        "gap": 57.5,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 59,
+        "v7_marginWeighted": 5.8,
+        "v8_procDiffOnly": 21,
+        "v10_timeDecay": 57.5
+      },
+      "alertSent": true
+    }
+  ],
   "resolved": []
 }
