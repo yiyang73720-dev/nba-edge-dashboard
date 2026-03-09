@@ -1,7 +1,7 @@
 {
   "bets": [
     {
-      "id": 1773081481523,
+      "id": 1773083752734,
       "key": "401851714_sust_ALST",
       "gameId": "401851714",
       "team": "ALST",
@@ -12,13 +12,13 @@
       "signals": [
         "sust"
       ],
-      "marketOdds": -112,
-      "impliedP": 52.8,
+      "marketOdds": -102,
+      "impliedP": 50.5,
       "estimatedP": 55,
       "kellyPct": 2.5,
       "kellyBet": 500,
       "book": "FanDuel",
-      "timestamp": "2026-03-09T18:38:01.523Z",
+      "timestamp": "2026-03-09T19:15:52.734Z",
       "outcome": null,
       "payout": null,
       "mode": "ncaab",
@@ -26,43 +26,43 @@
       "homeTeam": "ALST",
       "awayName": "Alcorn State Braves",
       "homeName": "Alabama State Hornets",
-      "awayScore": 22,
-      "homeScore": 23,
-      "period": 1,
-      "clock": "5:13",
-      "periodLabel": "H1",
+      "awayScore": 36,
+      "homeScore": 37,
+      "period": 2,
+      "clock": "17:18",
+      "periodLabel": "H2",
       "sustLeader": "ALST",
       "sustMargin": 1,
       "betOnLeader": true,
       "currentMargin": 1,
       "cushion": -5.5,
-      "sustScore": 43,
-      "fragScore": 4.6,
-      "sustGap": 38.4,
+      "sustScore": 51.5,
+      "fragScore": 1.8,
+      "sustGap": 49.7,
       "sustSignals": [
-        "Low 3PT reliance (26%)",
-        "Strong process (7.0/10)"
+        "Low 3PT reliance (24%)",
+        "Strong process (7.4/10)"
       ],
       "fragSignals": [],
       "sustStats": {
-        "fg": "32",
-        "efg": "36",
-        "threePt": "15",
-        "twoPt": "61",
-        "proc": 7,
+        "fg": "35",
+        "efg": "38",
+        "threePt": "16",
+        "twoPt": "65",
+        "proc": 7.4,
         "star": 0,
         "scq": 0
       },
       "fragStats": {
-        "fg": "39",
-        "efg": "44",
-        "threePt": "29",
-        "twoPt": "45",
-        "proc": 5.1,
+        "fg": "37",
+        "efg": "40",
+        "threePt": "22",
+        "twoPt": "50",
+        "proc": 4.8,
         "star": 0,
         "scq": 0
       },
-      "sustDetail": "ALST +43 vs ALCN 4.6 (gap:38.4) | ALCN 22-23 ALST | H1 5:13 | FanDuel -6.5 (-112)",
+      "sustDetail": "ALST +51.5 vs ALCN 1.8 (gap:49.7) | ALCN 36-37 ALST | H2 17:18 | FanDuel -6.5 (-102)",
       "strategies": {
         "g1_bigGap": false,
         "g2_procDriven": true,
@@ -70,7 +70,7 @@
         "g4_starInvolved": false,
         "g5_betOnLeader": true,
         "g6_hasCushion": false,
-        "g7_earlyGame": true,
+        "g7_earlyGame": false,
         "g8_highProc": true,
         "g9_homeTeam": true,
         "g10_ncaa": true,
@@ -78,36 +78,28 @@
         "g12_oppCold3": true
       },
       "altGaps": {
-        "v1_pureProc": 38,
-        "v2_f1low": 42,
-        "v3_f1high": 31.3,
-        "v4_f3boost": 46,
-        "v5_noStar": 38.4
+        "v1_pureProc": 52,
+        "v2_f1low": 55.7,
+        "v3_f1high": 35.5,
+        "v4_f3boost": 60.1,
+        "v5_noStar": 49.7
       },
       "v7": {
         "aScq": 0,
         "hScq": 0,
-        "aScore": 4.6,
-        "hScore": 43,
-        "gap": 38.4,
+        "aScore": 1.8,
+        "hScore": 51.5,
+        "gap": 49.7,
         "f5contrib": 0
       },
       "altStructural": {
-        "v6_cushionBoost": 38.4,
-        "v7_marginWeighted": 3.8,
-        "v8_procDiffOnly": 19,
-        "v10_timeDecay": 38.4
+        "v6_cushionBoost": 49.7,
+        "v7_marginWeighted": 5,
+        "v8_procDiffOnly": 26,
+        "v10_timeDecay": 49.7
       },
       "alertSent": true
     }
   ],
-  "resolved": [],
-  "meta": {
-    "brierScore": 0.3025,
-    "brierBaseline": 0.25,
-    "brierSkill": -0.21,
-    "brierN": 1,
-    "winRate": 0,
-    "totalPL": -500
-  }
+  "resolved": []
 }
