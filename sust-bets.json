@@ -324,6 +324,69 @@
           "score": "37-29",
           "period": 1,
           "clock": "3:20"
+        },
+        {
+          "t": "2026-03-09T23:44:17.496Z",
+          "spread": 4.5,
+          "score": "37-31",
+          "period": 1,
+          "clock": "2:58"
+        },
+        {
+          "t": "2026-03-09T23:44:17.849Z",
+          "spread": 4.5,
+          "score": "37-31",
+          "period": 1,
+          "clock": "2:58"
+        },
+        {
+          "t": "2026-03-09T23:45:24.089Z",
+          "spread": 3.5,
+          "score": "39-31",
+          "period": 1,
+          "clock": "2:17"
+        },
+        {
+          "t": "2026-03-09T23:46:29.208Z",
+          "spread": 5.5,
+          "score": "41-33",
+          "period": 1,
+          "clock": "1:20"
+        },
+        {
+          "t": "2026-03-09T23:46:29.212Z",
+          "spread": 5.5,
+          "score": "41-33",
+          "period": 1,
+          "clock": "1:20"
+        },
+        {
+          "t": "2026-03-09T23:47:33.790Z",
+          "spread": 5.5,
+          "score": "41-34",
+          "period": 1,
+          "clock": "0:46"
+        },
+        {
+          "t": "2026-03-09T23:48:39.731Z",
+          "spread": 4.5,
+          "score": "41-35",
+          "period": 1,
+          "clock": "0:37"
+        },
+        {
+          "t": "2026-03-09T23:49:46.067Z",
+          "spread": 4.5,
+          "score": "41-35",
+          "period": 1,
+          "clock": "0:05"
+        },
+        {
+          "t": "2026-03-09T23:49:46.132Z",
+          "spread": 4.5,
+          "score": "41-35",
+          "period": 1,
+          "clock": "0:05"
         }
       ]
     },
@@ -426,6 +489,182 @@
         "v7_marginWeighted": 78.3,
         "v8_procDiffOnly": 31,
         "v10_timeDecay": 60.2
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-09T23:44:17.497Z",
+          "spread": -12.5,
+          "score": "22-34",
+          "period": 1,
+          "clock": "1:10"
+        },
+        {
+          "t": "2026-03-09T23:44:17.852Z",
+          "spread": -12.5,
+          "score": "22-34",
+          "period": 1,
+          "clock": "1:10"
+        },
+        {
+          "t": "2026-03-09T23:45:24.089Z",
+          "spread": -12.5,
+          "score": "22-36",
+          "period": 1,
+          "clock": "0:53"
+        },
+        {
+          "t": "2026-03-09T23:46:29.208Z",
+          "spread": -12.5,
+          "score": "22-36",
+          "period": 1,
+          "clock": "0:53"
+        },
+        {
+          "t": "2026-03-09T23:46:29.212Z",
+          "spread": -12.5,
+          "score": "22-36",
+          "period": 1,
+          "clock": "0:53"
+        },
+        {
+          "t": "2026-03-09T23:47:33.791Z",
+          "spread": -12.5,
+          "score": "25-36",
+          "period": 1,
+          "clock": "0:34"
+        },
+        {
+          "t": "2026-03-09T23:48:39.732Z",
+          "spread": -10.5,
+          "score": "25-38",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-09T23:49:46.068Z",
+          "spread": -11.5,
+          "score": "25-38",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-09T23:49:46.133Z",
+          "spread": -11.5,
+          "score": "25-38",
+          "period": 1,
+          "clock": "0:00"
+        }
+      ]
+    },
+    {
+      "id": 1773100183922,
+      "key": "401810786_sust_CLE",
+      "gameId": "401810786",
+      "team": "CLE",
+      "opponent": "PHI",
+      "matchup": "PHI @ CLE",
+      "side": "SPREAD",
+      "spread": -14.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -122,
+      "impliedP": 55,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-09T23:49:43.922Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "PHI",
+      "homeTeam": "CLE",
+      "awayName": "Philadelphia 76ers",
+      "homeName": "Cleveland Cavaliers",
+      "awayScore": 25,
+      "homeScore": 32,
+      "period": 2,
+      "clock": "9:54",
+      "periodLabel": "Q2",
+      "sustLeader": "CLE",
+      "sustMargin": 7,
+      "betOnLeader": true,
+      "currentMargin": 7,
+      "cushion": -7.5,
+      "sustScore": 44.4,
+      "fragScore": -22,
+      "sustGap": 66.4,
+      "sustSignals": [
+        "Strong process (7.1/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "38",
+        "efg": "44",
+        "threePt": "21",
+        "twoPt": "38",
+        "proc": 7.1,
+        "star": 0,
+        "scq": -12
+      },
+      "fragStats": {
+        "fg": "39",
+        "efg": "46",
+        "threePt": "27",
+        "twoPt": "48",
+        "proc": 3.9,
+        "star": 0,
+        "scq": -13
+      },
+      "sustDetail": "CLE +44.4 vs PHI -22 (gap:66.4) | PHI 25-32 CLE | Q2 9:54 | FanDuel -14.5 (-122)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 64,
+        "v2_f1low": 72,
+        "v3_f1high": 57.5,
+        "v4_f3boost": 79.2,
+        "v5_noStar": 66.4
+      },
+      "v7": {
+        "aScq": -13,
+        "hScq": -12.5,
+        "aScore": -27.2,
+        "hScore": 39.4,
+        "gap": 66.6,
+        "f5contrib": 0.2
+      },
+      "altStructural": {
+        "v6_cushionBoost": 66.4,
+        "v7_marginWeighted": 46.5,
+        "v8_procDiffOnly": 32,
+        "v10_timeDecay": 66.4
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -14.5,
+        "detail": "CLE -14.5",
+        "awaySpread": "+14.5",
+        "homeSpread": "-14.5",
+        "awaySpreadOdds": "-115",
+        "homeSpreadOdds": "-105",
+        "awayML": "+575",
+        "homeML": "-850",
+        "openSpread": "+10.5"
       },
       "alertSent": true
     }
