@@ -1,447 +1,24 @@
 {
   "bets": [
     {
-      "id": 1773020691081,
-      "key": "401810781_sust_ORL",
-      "gameId": "401810781",
-      "team": "ORL",
-      "opponent": "MIL",
-      "matchup": "ORL @ MIL",
-      "side": "SPREAD",
-      "spread": -29.5,
-      "signals": [
-        "sust"
-      ],
-      "marketOdds": -108,
-      "impliedP": 51.9,
-      "estimatedP": 55,
-      "kellyPct": 2.5,
-      "kellyBet": 500,
-      "book": "FanDuel",
-      "timestamp": "2026-03-09T01:44:51.081Z",
-      "outcome": null,
-      "payout": null,
-      "mode": "nba",
-      "awayTeam": "ORL",
-      "homeTeam": "MIL",
-      "awayName": "Orlando Magic",
-      "homeName": "Milwaukee Bucks",
-      "awayScore": 95,
-      "homeScore": 64,
-      "period": 3,
-      "clock": "2:29",
-      "periodLabel": "Q3",
-      "sustLeader": "ORL",
-      "sustMargin": 31,
-      "betOnLeader": true,
-      "currentMargin": 31,
-      "cushion": 1.5,
-      "sustScore": 83.4,
-      "fragScore": -39.9,
-      "sustGap": 123.30000000000001,
-      "sustSignals": [
-        "Strong process (8.7/10)",
-        "Star cold (11% pace)"
-      ],
-      "fragSignals": [],
-      "sustStats": {
-        "fg": "61",
-        "efg": "71",
-        "threePt": "48",
-        "twoPt": "46",
-        "proc": 8.7,
-        "star": 11,
-        "scq": 2
-      },
-      "fragStats": {
-        "fg": "46",
-        "efg": "54",
-        "threePt": "38",
-        "twoPt": "53",
-        "proc": 3.1,
-        "star": 0,
-        "scq": -14
-      },
-      "sustDetail": "ORL +83.4 vs MIL -39.9 (gap:123.30000000000001) | ORL 95-64 MIL | Q3 2:29 | FanDuel -29.5 (-108)",
-      "strategies": {
-        "g1_bigGap": true,
-        "g2_procDriven": true,
-        "g3_threePtDriven": false,
-        "g4_starInvolved": true,
-        "g5_betOnLeader": true,
-        "g6_hasCushion": true,
-        "g7_earlyGame": false,
-        "g8_highProc": true,
-        "g9_homeTeam": false,
-        "g10_ncaa": false,
-        "g11_bigMargin": true,
-        "g12_oppCold3": false
-      },
-      "altGaps": {
-        "v1_pureProc": 122,
-        "v2_f1low": 134.1,
-        "v3_f1high": 103,
-        "v4_f3boost": 145.7,
-        "v5_noStar": 113.3
-      },
-      "v7": {
-        "aScq": 1.8,
-        "hScq": -14,
-        "aScore": 84.1,
-        "hScore": -45.5,
-        "gap": 129.6,
-        "f5contrib": 6.3
-      },
-      "altStructural": {
-        "v6_cushionBoost": 127.8,
-        "v7_marginWeighted": 382.2,
-        "v8_procDiffOnly": 56,
-        "v10_timeDecay": 160.3
-      },
-      "espnOdds": {
-        "provider": "Draft Kings",
-        "spread": 6.5,
-        "detail": "ORL -6.5",
-        "awaySpread": "-6.5",
-        "homeSpread": "+6.5",
-        "awaySpreadOdds": "-105",
-        "homeSpreadOdds": "-115",
-        "awayML": "-225",
-        "homeML": "+185",
-        "openSpread": "-1.5"
-      },
-      "alertSent": true,
-      "spreadHistory": [
-        {
-          "t": "2026-03-09T01:46:00.516Z",
-          "spread": -29.5,
-          "score": "97-66",
-          "period": 3,
-          "clock": "1:27"
-        },
-        {
-          "t": "2026-03-09T01:46:01.882Z",
-          "spread": -29.5,
-          "score": "97-66",
-          "period": 3,
-          "clock": "1:27"
-        },
-        {
-          "t": "2026-03-09T01:47:07.525Z",
-          "spread": -29.5,
-          "score": "98-66",
-          "period": 3,
-          "clock": "1:23"
-        },
-        {
-          "t": "2026-03-09T01:47:10.014Z",
-          "spread": -29.5,
-          "score": "98-66",
-          "period": 3,
-          "clock": "1:23"
-        },
-        {
-          "t": "2026-03-09T01:48:14.437Z",
-          "spread": -29.5,
-          "score": "98-66",
-          "period": 3,
-          "clock": "1:00"
-        },
-        {
-          "t": "2026-03-09T01:48:14.490Z",
-          "spread": -29.5,
-          "score": "98-66",
-          "period": 3,
-          "clock": "1:00"
-        },
-        {
-          "t": "2026-03-09T01:49:22.645Z",
-          "spread": -29.5,
-          "score": "100-67",
-          "period": 3,
-          "clock": "10.8"
-        },
-        {
-          "t": "2026-03-09T01:49:22.942Z",
-          "spread": -29.5,
-          "score": "100-67",
-          "period": 3,
-          "clock": "10.8"
-        },
-        {
-          "t": "2026-03-09T01:50:31.544Z",
-          "spread": -28.5,
-          "score": "100-70",
-          "period": 3,
-          "clock": "0.0"
-        },
-        {
-          "t": "2026-03-09T01:50:32.308Z",
-          "spread": -28.5,
-          "score": "100-70",
-          "period": 3,
-          "clock": "0.0"
-        },
-        {
-          "t": "2026-03-09T01:51:38.506Z",
-          "spread": -28.5,
-          "score": "100-70",
-          "period": 3,
-          "clock": "0.0"
-        },
-        {
-          "t": "2026-03-09T01:51:38.514Z",
-          "spread": -28.5,
-          "score": "100-70",
-          "period": 3,
-          "clock": "0.0"
-        },
-        {
-          "t": "2026-03-09T01:52:46.597Z",
-          "spread": -28.5,
-          "score": "100-70",
-          "period": 4,
-          "clock": "11:51"
-        },
-        {
-          "t": "2026-03-09T01:52:47.344Z",
-          "spread": -28.5,
-          "score": "100-70",
-          "period": 4,
-          "clock": "11:51"
-        }
-      ]
-    },
-    {
-      "id": 1773020692980,
-      "key": "401810782_sust_SA",
-      "gameId": "401810782",
-      "team": "SA",
-      "opponent": "HOU",
-      "matchup": "HOU @ SA",
-      "side": "SPREAD",
-      "spread": -23.5,
-      "signals": [
-        "sust"
-      ],
-      "marketOdds": 102,
-      "impliedP": 49.5,
-      "estimatedP": 55,
-      "kellyPct": 2.5,
-      "kellyBet": 500,
-      "book": "FanDuel",
-      "timestamp": "2026-03-09T01:44:52.980Z",
-      "outcome": null,
-      "payout": null,
-      "mode": "nba",
-      "awayTeam": "HOU",
-      "homeTeam": "SA",
-      "awayName": "Houston Rockets",
-      "homeName": "San Antonio Spurs",
-      "awayScore": 67,
-      "homeScore": 93,
-      "period": 3,
-      "clock": "6:12",
-      "periodLabel": "Q3",
-      "sustLeader": "SA",
-      "sustMargin": 26,
-      "betOnLeader": true,
-      "currentMargin": 26,
-      "cushion": 2.5,
-      "sustScore": 42.2,
-      "fragScore": -10.6,
-      "sustGap": 52.800000000000004,
-      "sustSignals": [
-        "Strong process (7.1/10)"
-      ],
-      "fragSignals": [],
-      "sustStats": {
-        "fg": "60",
-        "efg": "70",
-        "threePt": "46",
-        "twoPt": "47",
-        "proc": 7.1,
-        "star": 0,
-        "scq": 5
-      },
-      "fragStats": {
-        "fg": "50",
-        "efg": "54",
-        "threePt": "27",
-        "twoPt": "66",
-        "proc": 4.2,
-        "star": 0,
-        "scq": 13
-      },
-      "sustDetail": "SA +42.2 vs HOU -10.6 (gap:52.800000000000004) | HOU 67-93 SA | Q3 6:12 | FanDuel -23.5 (+102)",
-      "strategies": {
-        "g1_bigGap": true,
-        "g2_procDriven": true,
-        "g3_threePtDriven": false,
-        "g4_starInvolved": false,
-        "g5_betOnLeader": true,
-        "g6_hasCushion": true,
-        "g7_earlyGame": false,
-        "g8_highProc": true,
-        "g9_homeTeam": true,
-        "g10_ncaa": false,
-        "g11_bigMargin": true,
-        "g12_oppCold3": true
-      },
-      "altGaps": {
-        "v1_pureProc": 58,
-        "v2_f1low": 60.3,
-        "v3_f1high": 32.3,
-        "v4_f3boost": 64.3,
-        "v5_noStar": 52.7
-      },
-      "v7": {
-        "aScq": 13.5,
-        "hScq": 5.5,
-        "aScore": -5.2,
-        "hScore": 44.4,
-        "gap": 49.6,
-        "f5contrib": 3.2
-      },
-      "altStructural": {
-        "v6_cushionBoost": 60.3,
-        "v7_marginWeighted": 137.3,
-        "v8_procDiffOnly": 29,
-        "v10_timeDecay": 68.6
-      },
-      "espnOdds": {
-        "provider": "Draft Kings",
-        "spread": -5.5,
-        "detail": "SA -5.5",
-        "awaySpread": "+5.5",
-        "homeSpread": "-5.5",
-        "awaySpreadOdds": "-102",
-        "homeSpreadOdds": "-118",
-        "awayML": "+190",
-        "homeML": "-230",
-        "openSpread": "+4.5"
-      },
-      "alertSent": true,
-      "spreadHistory": [
-        {
-          "t": "2026-03-09T01:46:00.516Z",
-          "spread": -23.5,
-          "score": "67-93",
-          "period": 3,
-          "clock": "6:12"
-        },
-        {
-          "t": "2026-03-09T01:46:01.882Z",
-          "spread": -23.5,
-          "score": "67-93",
-          "period": 3,
-          "clock": "6:12"
-        },
-        {
-          "t": "2026-03-09T01:47:07.525Z",
-          "spread": -23.5,
-          "score": "67-93",
-          "period": 3,
-          "clock": "6:12"
-        },
-        {
-          "t": "2026-03-09T01:47:10.014Z",
-          "spread": -23.5,
-          "score": "67-93",
-          "period": 3,
-          "clock": "6:12"
-        },
-        {
-          "t": "2026-03-09T01:48:14.437Z",
-          "spread": -23.5,
-          "score": "68-93",
-          "period": 3,
-          "clock": "6:02"
-        },
-        {
-          "t": "2026-03-09T01:48:14.490Z",
-          "spread": -23.5,
-          "score": "68-93",
-          "period": 3,
-          "clock": "6:02"
-        },
-        {
-          "t": "2026-03-09T01:49:22.645Z",
-          "spread": -23.5,
-          "score": "71-96",
-          "period": 3,
-          "clock": "5:26"
-        },
-        {
-          "t": "2026-03-09T01:49:22.942Z",
-          "spread": -23.5,
-          "score": "71-96",
-          "period": 3,
-          "clock": "5:26"
-        },
-        {
-          "t": "2026-03-09T01:50:31.544Z",
-          "spread": -21.5,
-          "score": "73-96",
-          "period": 3,
-          "clock": "4:56"
-        },
-        {
-          "t": "2026-03-09T01:50:32.308Z",
-          "spread": -21.5,
-          "score": "73-96",
-          "period": 3,
-          "clock": "4:56"
-        },
-        {
-          "t": "2026-03-09T01:51:38.506Z",
-          "spread": -21.5,
-          "score": "73-96",
-          "period": 3,
-          "clock": "4:39"
-        },
-        {
-          "t": "2026-03-09T01:51:38.514Z",
-          "spread": -21.5,
-          "score": "73-96",
-          "period": 3,
-          "clock": "4:39"
-        },
-        {
-          "t": "2026-03-09T01:52:46.597Z",
-          "spread": -19.5,
-          "score": "75-96",
-          "period": 3,
-          "clock": "4:39"
-        },
-        {
-          "t": "2026-03-09T01:52:47.344Z",
-          "spread": -19.5,
-          "score": "75-96",
-          "period": 3,
-          "clock": "4:39"
-        }
-      ]
-    },
-    {
-      "id": 1773020695325,
+      "id": 1773021566484,
       "key": "401810785_sust_SAC",
       "gameId": "401810785",
       "team": "SAC",
       "opponent": "CHI",
       "matchup": "CHI @ SAC",
       "side": "SPREAD",
-      "spread": 1.5,
+      "spread": -5.5,
       "signals": [
         "sust"
       ],
-      "marketOdds": -122,
-      "impliedP": 55,
+      "marketOdds": -110,
+      "impliedP": 52.4,
       "estimatedP": 55,
       "kellyPct": 2.5,
       "kellyBet": 500,
       "book": "FanDuel",
-      "timestamp": "2026-03-09T01:44:55.325Z",
+      "timestamp": "2026-03-09T01:59:26.484Z",
       "outcome": null,
       "payout": null,
       "mode": "nba",
@@ -449,44 +26,45 @@
       "homeTeam": "SAC",
       "awayName": "Chicago Bulls",
       "homeName": "Sacramento Kings",
-      "awayScore": 33,
-      "homeScore": 38,
+      "awayScore": 44,
+      "homeScore": 54,
       "period": 2,
-      "clock": "9:49",
+      "clock": "4:50",
       "periodLabel": "Q2",
       "sustLeader": "SAC",
-      "sustMargin": 5,
+      "sustMargin": 10,
       "betOnLeader": true,
-      "currentMargin": 5,
-      "cushion": 6.5,
-      "sustScore": 53.3,
-      "fragScore": -29.6,
-      "sustGap": 82.9,
+      "currentMargin": 10,
+      "cushion": 4.5,
+      "sustScore": 60.5,
+      "fragScore": -34.6,
+      "sustGap": 95.1,
       "sustSignals": [
-        "Strong process (7.6/10)"
+        "Low 3PT reliance (28%)",
+        "Strong process (7.9/10)"
       ],
       "fragSignals": [
-        "3PT heavy (55% of pts)"
+        "3PT heavy (51% of pts)"
       ],
       "sustStats": {
-        "fg": "52",
+        "fg": "53",
         "efg": "59",
-        "threePt": "40",
-        "twoPt": "58",
-        "proc": 7.6,
+        "threePt": "36",
+        "twoPt": "59",
+        "proc": 7.9,
         "star": 0,
-        "scq": 23
+        "scq": 18
       },
       "fragStats": {
-        "fg": "43",
-        "efg": "57",
-        "threePt": "50",
-        "twoPt": "24",
-        "proc": 3.8,
+        "fg": "37",
+        "efg": "48",
+        "threePt": "44",
+        "twoPt": "20",
+        "proc": 3.5,
         "star": 0,
-        "scq": 0
+        "scq": 3
       },
-      "sustDetail": "SAC +53.3 vs CHI -29.6 (gap:82.9) | CHI 33-38 SAC | Q2 9:49 | FanDuel +1.5 (-122)",
+      "sustDetail": "SAC +60.5 vs CHI -34.6 (gap:95.1) | CHI 44-54 SAC | Q2 4:50 | FanDuel -5.5 (-110)",
       "strategies": {
         "g1_bigGap": true,
         "g2_procDriven": true,
@@ -498,29 +76,29 @@
         "g8_highProc": true,
         "g9_homeTeam": true,
         "g10_ncaa": false,
-        "g11_bigMargin": false,
+        "g11_bigMargin": true,
         "g12_oppCold3": false
       },
       "altGaps": {
-        "v1_pureProc": 76,
-        "v2_f1low": 88.2,
-        "v3_f1high": 79.2,
-        "v4_f3boost": 98.1,
-        "v5_noStar": 82.9
+        "v1_pureProc": 88,
+        "v2_f1low": 101.5,
+        "v3_f1high": 89.2,
+        "v4_f3boost": 112.6,
+        "v5_noStar": 95
       },
       "v7": {
-        "aScq": 0,
-        "hScq": 23.3,
-        "aScore": -29.6,
-        "hScore": 62.6,
-        "gap": 92.2,
-        "f5contrib": 9.3
+        "aScq": 3.2,
+        "hScq": 17.5,
+        "aScore": -33.3,
+        "hScore": 67.5,
+        "gap": 100.8,
+        "f5contrib": 5.7
       },
       "altStructural": {
-        "v6_cushionBoost": 102.4,
-        "v7_marginWeighted": 41.5,
-        "v8_procDiffOnly": 38,
-        "v10_timeDecay": 82.9
+        "v6_cushionBoost": 108.6,
+        "v7_marginWeighted": 95.1,
+        "v8_procDiffOnly": 44,
+        "v10_timeDecay": 95.1
       },
       "espnOdds": {
         "provider": "Draft Kings",
@@ -534,529 +112,27 @@
         "homeML": "+170",
         "openSpread": "-3.5"
       },
-      "alertSent": true,
-      "spreadHistory": [
-        {
-          "t": "2026-03-09T01:46:00.516Z",
-          "spread": 1.5,
-          "score": "36-41",
-          "period": 2,
-          "clock": "9:00"
-        },
-        {
-          "t": "2026-03-09T01:46:01.882Z",
-          "spread": 1.5,
-          "score": "36-41",
-          "period": 2,
-          "clock": "9:00"
-        },
-        {
-          "t": "2026-03-09T01:47:07.525Z",
-          "spread": 1.5,
-          "score": "38-43",
-          "period": 2,
-          "clock": "9:00"
-        },
-        {
-          "t": "2026-03-09T01:47:10.014Z",
-          "spread": 1.5,
-          "score": "38-43",
-          "period": 2,
-          "clock": "9:00"
-        },
-        {
-          "t": "2026-03-09T01:48:14.438Z",
-          "spread": -1.5,
-          "score": "38-45",
-          "period": 2,
-          "clock": "7:55"
-        },
-        {
-          "t": "2026-03-09T01:48:14.490Z",
-          "spread": -1.5,
-          "score": "38-45",
-          "period": 2,
-          "clock": "7:55"
-        },
-        {
-          "t": "2026-03-09T01:49:22.645Z",
-          "spread": -1.5,
-          "score": "39-45",
-          "period": 2,
-          "clock": "7:55"
-        },
-        {
-          "t": "2026-03-09T01:49:22.942Z",
-          "spread": -1.5,
-          "score": "39-45",
-          "period": 2,
-          "clock": "7:55"
-        },
-        {
-          "t": "2026-03-09T01:50:31.544Z",
-          "spread": -1.5,
-          "score": "39-47",
-          "period": 2,
-          "clock": "7:40"
-        },
-        {
-          "t": "2026-03-09T01:50:32.308Z",
-          "spread": -1.5,
-          "score": "39-47",
-          "period": 2,
-          "clock": "7:40"
-        },
-        {
-          "t": "2026-03-09T01:51:38.506Z",
-          "spread": -1.5,
-          "score": "39-49",
-          "period": 2,
-          "clock": "7:19"
-        },
-        {
-          "t": "2026-03-09T01:51:38.514Z",
-          "spread": -1.5,
-          "score": "39-49",
-          "period": 2,
-          "clock": "7:19"
-        },
-        {
-          "t": "2026-03-09T01:52:46.597Z",
-          "spread": -3.5,
-          "score": "39-49",
-          "period": 2,
-          "clock": "6:47"
-        },
-        {
-          "t": "2026-03-09T01:52:47.344Z",
-          "spread": -3.5,
-          "score": "39-49",
-          "period": 2,
-          "clock": "6:47"
-        }
-      ]
+      "alertSent": true
     },
     {
-      "id": 1773020697566,
-      "key": "401851756_sust_SF",
-      "gameId": "401851756",
-      "team": "SF",
-      "opponent": "ORST",
-      "matchup": "SF @ ORST",
-      "side": "SPREAD",
-      "spread": -4.5,
-      "signals": [
-        "sust"
-      ],
-      "marketOdds": -125,
-      "impliedP": 55.6,
-      "estimatedP": 55,
-      "kellyPct": 2.5,
-      "kellyBet": 500,
-      "book": "FanDuel",
-      "timestamp": "2026-03-09T01:44:57.566Z",
-      "outcome": null,
-      "payout": null,
-      "mode": "ncaab",
-      "awayTeam": "SF",
-      "homeTeam": "ORST",
-      "awayName": "San Francisco Dons",
-      "homeName": "Oregon State Beavers",
-      "awayScore": 44,
-      "homeScore": 41,
-      "period": 2,
-      "clock": "15:24",
-      "periodLabel": "H2",
-      "sustLeader": "SF",
-      "sustMargin": 3,
-      "betOnLeader": true,
-      "currentMargin": 3,
-      "cushion": -1.5,
-      "sustScore": 56.5,
-      "fragScore": -36.8,
-      "sustGap": 93.3,
-      "sustSignals": [
-        "Strong process (8.0/10)"
-      ],
-      "fragSignals": [
-        "3PT heavy (59% of pts)"
-      ],
-      "sustStats": {
-        "fg": "46",
-        "efg": "56",
-        "threePt": "41",
-        "twoPt": "41",
-        "proc": 8,
-        "star": 0,
-        "scq": 0
-      },
-      "fragStats": {
-        "fg": "43",
-        "efg": "54",
-        "threePt": "47",
-        "twoPt": "34",
-        "proc": 3.5,
-        "star": 0,
-        "scq": 0
-      },
-      "sustDetail": "SF +56.5 vs ORST -36.8 (gap:93.3) | SF 44-41 ORST | H2 15:24 | FanDuel -4.5 (-125)",
-      "strategies": {
-        "g1_bigGap": true,
-        "g2_procDriven": true,
-        "g3_threePtDriven": false,
-        "g4_starInvolved": false,
-        "g5_betOnLeader": true,
-        "g6_hasCushion": false,
-        "g7_earlyGame": false,
-        "g8_highProc": true,
-        "g9_homeTeam": false,
-        "g10_ncaa": true,
-        "g11_bigMargin": false,
-        "g12_oppCold3": false
-      },
-      "altGaps": {
-        "v1_pureProc": 90,
-        "v2_f1low": 101.2,
-        "v3_f1high": 80.6,
-        "v4_f3boost": 111.2,
-        "v5_noStar": 93.2
-      },
-      "v7": {
-        "aScq": 0,
-        "hScq": 0,
-        "aScore": 56.5,
-        "hScore": -36.8,
-        "gap": 93.3,
-        "f5contrib": 0
-      },
-      "altStructural": {
-        "v6_cushionBoost": 93.3,
-        "v7_marginWeighted": 28,
-        "v8_procDiffOnly": 45,
-        "v10_timeDecay": 93.3
-      },
-      "alertSent": true,
-      "spreadHistory": [
-        {
-          "t": "2026-03-09T01:46:05.207Z",
-          "spread": -4.5,
-          "score": "44-41",
-          "period": 2,
-          "clock": "15:24"
-        },
-        {
-          "t": "2026-03-09T01:46:07.286Z",
-          "spread": -4.5,
-          "score": "44-41",
-          "period": 2,
-          "clock": "15:24"
-        },
-        {
-          "t": "2026-03-09T01:47:11.779Z",
-          "spread": -4.5,
-          "score": "44-41",
-          "period": 2,
-          "clock": "14:44"
-        },
-        {
-          "t": "2026-03-09T01:47:12.255Z",
-          "spread": -4.5,
-          "score": "44-41",
-          "period": 2,
-          "clock": "14:44"
-        },
-        {
-          "t": "2026-03-09T01:48:19.723Z",
-          "spread": -4.5,
-          "score": "44-42",
-          "period": 2,
-          "clock": "14:26"
-        },
-        {
-          "t": "2026-03-09T01:48:19.740Z",
-          "spread": -4.5,
-          "score": "44-42",
-          "period": 2,
-          "clock": "14:26"
-        },
-        {
-          "t": "2026-03-09T01:49:28.585Z",
-          "spread": -1.5,
-          "score": "44-42",
-          "period": 2,
-          "clock": "14:11"
-        },
-        {
-          "t": "2026-03-09T01:49:28.593Z",
-          "spread": -1.5,
-          "score": "44-42",
-          "period": 2,
-          "clock": "14:11"
-        },
-        {
-          "t": "2026-03-09T01:50:35.357Z",
-          "spread": -1.5,
-          "score": "44-45",
-          "period": 2,
-          "clock": "13:24"
-        },
-        {
-          "t": "2026-03-09T01:50:35.366Z",
-          "spread": -1.5,
-          "score": "44-45",
-          "period": 2,
-          "clock": "13:24"
-        },
-        {
-          "t": "2026-03-09T01:51:43.949Z",
-          "spread": 1.5,
-          "score": "44-45",
-          "period": 2,
-          "clock": "12:53"
-        },
-        {
-          "t": "2026-03-09T01:51:43.962Z",
-          "spread": 1.5,
-          "score": "44-45",
-          "period": 2,
-          "clock": "12:53"
-        },
-        {
-          "t": "2026-03-09T01:52:50.101Z",
-          "spread": 1.5,
-          "score": "44-45",
-          "period": 2,
-          "clock": "12:53"
-        },
-        {
-          "t": "2026-03-09T01:52:50.521Z",
-          "spread": 1.5,
-          "score": "44-45",
-          "period": 2,
-          "clock": "12:53"
-        }
-      ]
-    },
-    {
-      "id": 1773020698266,
-      "key": "401851705_sust_GASO",
-      "gameId": "401851705",
-      "team": "GASO",
-      "opponent": "MRSH",
-      "matchup": "GASO @ MRSH",
-      "side": "SPREAD",
-      "spread": -2.5,
-      "signals": [
-        "sust"
-      ],
-      "marketOdds": -122,
-      "impliedP": 55,
-      "estimatedP": 55,
-      "kellyPct": 2.5,
-      "kellyBet": 500,
-      "book": "FanDuel",
-      "timestamp": "2026-03-09T01:44:58.266Z",
-      "outcome": null,
-      "payout": null,
-      "mode": "ncaab",
-      "awayTeam": "GASO",
-      "homeTeam": "MRSH",
-      "awayName": "Georgia Southern Eagles",
-      "homeName": "Marshall Thundering Herd",
-      "awayScore": 30,
-      "homeScore": 25,
-      "period": 1,
-      "clock": "4:52",
-      "periodLabel": "H1",
-      "sustLeader": "GASO",
-      "sustMargin": 5,
-      "betOnLeader": true,
-      "currentMargin": 5,
-      "cushion": 2.5,
-      "sustScore": 35.8,
-      "fragScore": -21.6,
-      "sustGap": 57.4,
-      "sustSignals": [
-        "Strong process (7.0/10)"
-      ],
-      "fragSignals": [
-        "3PT heavy (48% of pts)"
-      ],
-      "sustStats": {
-        "fg": "43",
-        "efg": "52",
-        "threePt": "31",
-        "twoPt": "47",
-        "proc": 7,
-        "star": 81,
-        "scq": 0
-      },
-      "fragStats": {
-        "fg": "39",
-        "efg": "50",
-        "threePt": "44",
-        "twoPt": "24",
-        "proc": 4.1,
-        "star": 0,
-        "scq": 0
-      },
-      "sustDetail": "GASO +35.8 vs MRSH -21.6 (gap:57.4) | GASO 30-25 MRSH | H1 4:52 | FanDuel -2.5 (-122)",
-      "strategies": {
-        "g1_bigGap": true,
-        "g2_procDriven": true,
-        "g3_threePtDriven": false,
-        "g4_starInvolved": true,
-        "g5_betOnLeader": true,
-        "g6_hasCushion": true,
-        "g7_earlyGame": true,
-        "g8_highProc": true,
-        "g9_homeTeam": false,
-        "g10_ncaa": true,
-        "g11_bigMargin": false,
-        "g12_oppCold3": false
-      },
-      "altGaps": {
-        "v1_pureProc": 58,
-        "v2_f1low": 63.4,
-        "v3_f1high": 44.8,
-        "v4_f3boost": 69,
-        "v5_noStar": 57.4
-      },
-      "v7": {
-        "aScq": 0,
-        "hScq": 0,
-        "aScore": 35.8,
-        "hScore": -21.6,
-        "gap": 57.4,
-        "f5contrib": 0
-      },
-      "altStructural": {
-        "v6_cushionBoost": 64.9,
-        "v7_marginWeighted": 28.7,
-        "v8_procDiffOnly": 29,
-        "v10_timeDecay": 57.4
-      },
-      "alertSent": true,
-      "spreadHistory": [
-        {
-          "t": "2026-03-09T01:46:05.208Z",
-          "spread": -1.5,
-          "score": "30-27",
-          "period": 1,
-          "clock": "4:06"
-        },
-        {
-          "t": "2026-03-09T01:46:07.286Z",
-          "spread": -1.5,
-          "score": "30-27",
-          "period": 1,
-          "clock": "4:06"
-        },
-        {
-          "t": "2026-03-09T01:47:11.779Z",
-          "spread": -1.5,
-          "score": "31-27",
-          "period": 1,
-          "clock": "3:51"
-        },
-        {
-          "t": "2026-03-09T01:47:12.255Z",
-          "spread": -1.5,
-          "score": "31-27",
-          "period": 1,
-          "clock": "3:51"
-        },
-        {
-          "t": "2026-03-09T01:48:19.724Z",
-          "spread": -1.5,
-          "score": "31-27",
-          "period": 1,
-          "clock": "3:51"
-        },
-        {
-          "t": "2026-03-09T01:48:19.741Z",
-          "spread": -1.5,
-          "score": "31-27",
-          "period": 1,
-          "clock": "3:51"
-        },
-        {
-          "t": "2026-03-09T01:49:28.586Z",
-          "spread": -2.5,
-          "score": "31-27",
-          "period": 1,
-          "clock": "3:51"
-        },
-        {
-          "t": "2026-03-09T01:49:28.594Z",
-          "spread": -2.5,
-          "score": "31-27",
-          "period": 1,
-          "clock": "3:51"
-        },
-        {
-          "t": "2026-03-09T01:50:35.357Z",
-          "spread": -2.5,
-          "score": "33-27",
-          "period": 1,
-          "clock": "3:31"
-        },
-        {
-          "t": "2026-03-09T01:50:35.369Z",
-          "spread": -2.5,
-          "score": "33-27",
-          "period": 1,
-          "clock": "3:31"
-        },
-        {
-          "t": "2026-03-09T01:51:43.950Z",
-          "spread": -2.5,
-          "score": "33-27",
-          "period": 1,
-          "clock": "3:09"
-        },
-        {
-          "t": "2026-03-09T01:51:43.962Z",
-          "spread": -2.5,
-          "score": "33-27",
-          "period": 1,
-          "clock": "3:09"
-        },
-        {
-          "t": "2026-03-09T01:52:50.101Z",
-          "spread": -2.5,
-          "score": "33-28",
-          "period": 1,
-          "clock": "2:38"
-        },
-        {
-          "t": "2026-03-09T01:52:50.524Z",
-          "spread": -2.5,
-          "score": "33-28",
-          "period": 1,
-          "clock": "2:38"
-        }
-      ]
-    },
-    {
-      "id": 1773020969234,
+      "id": 1773021567650,
       "key": "401851604_sust_NICH",
       "gameId": "401851604",
       "team": "NICH",
       "opponent": "NWST",
       "matchup": "NWST @ NICH",
       "side": "SPREAD",
-      "spread": -5.5,
+      "spread": -7.5,
       "signals": [
         "sust"
       ],
-      "marketOdds": -122,
-      "impliedP": 55,
+      "marketOdds": -102,
+      "impliedP": 50.5,
       "estimatedP": 55,
       "kellyPct": 2.5,
       "kellyBet": 500,
       "book": "FanDuel",
-      "timestamp": "2026-03-09T01:49:29.234Z",
+      "timestamp": "2026-03-09T01:59:27.650Z",
       "outcome": null,
       "payout": null,
       "mode": "ncaab",
@@ -1064,46 +140,46 @@
       "homeTeam": "NICH",
       "awayName": "Northwestern State Demons",
       "homeName": "Nicholls Colonels",
-      "awayScore": 31,
-      "homeScore": 37,
+      "awayScore": 34,
+      "homeScore": 42,
       "period": 2,
-      "clock": "15:02",
+      "clock": "11:36",
       "periodLabel": "H2",
       "sustLeader": "NICH",
-      "sustMargin": 6,
+      "sustMargin": 8,
       "betOnLeader": true,
-      "currentMargin": 6,
+      "currentMargin": 8,
       "cushion": 0.5,
-      "sustScore": 43.1,
-      "fragScore": -3.7,
-      "sustGap": 46.800000000000004,
+      "sustScore": 50.2,
+      "fragScore": -1.1,
+      "sustGap": 51.300000000000004,
       "sustSignals": [
-        "Strong process (7.1/10)"
+        "Strong process (7.4/10)"
       ],
       "fragSignals": [
-        "3PT heavy (48% of pts)"
+        "3PT heavy (53% of pts)"
       ],
       "sustStats": {
-        "fg": "41",
-        "efg": "46",
+        "fg": "43",
+        "efg": "48",
         "threePt": "29",
-        "twoPt": "59",
-        "proc": 7.1,
+        "twoPt": "62",
+        "proc": 7.4,
         "star": 0,
         "scq": 0
       },
       "fragStats": {
-        "fg": "31",
-        "efg": "40",
-        "threePt": "45",
-        "twoPt": "26",
-        "proc": 4.5,
-        "star": 19,
+        "fg": "29",
+        "efg": "37",
+        "threePt": "38",
+        "twoPt": "24",
+        "proc": 4.7,
+        "star": 16,
         "scq": 0
       },
-      "sustDetail": "NICH +43.1 vs NWST -3.7 (gap:46.800000000000004) | NWST 31-37 NICH | H2 15:02 | FanDuel -5.5 (-122)",
+      "sustDetail": "NICH +50.2 vs NWST -1.1 (gap:51.300000000000004) | NWST 34-42 NICH | H2 11:36 | FanDuel -7.5 (-102)",
       "strategies": {
-        "g1_bigGap": false,
+        "g1_bigGap": true,
         "g2_procDriven": true,
         "g3_threePtDriven": false,
         "g4_starInvolved": true,
@@ -1117,198 +193,36 @@
         "g12_oppCold3": false
       },
       "altGaps": {
-        "v1_pureProc": 42,
-        "v2_f1low": 50.4,
-        "v3_f1high": 44.4,
-        "v4_f3boost": 57.2,
-        "v5_noStar": 56.8
+        "v1_pureProc": 44,
+        "v2_f1low": 54.3,
+        "v3_f1high": 52.7,
+        "v4_f3boost": 62.1,
+        "v5_noStar": 61.3
       },
       "v7": {
         "aScq": 0,
         "hScq": 0,
-        "aScore": -3.7,
-        "hScore": 43.1,
-        "gap": 46.8,
+        "aScore": -1.1,
+        "hScore": 50.2,
+        "gap": 51.3,
         "f5contrib": 0
       },
       "altStructural": {
-        "v6_cushionBoost": 48.3,
-        "v7_marginWeighted": 28.1,
-        "v8_procDiffOnly": 26,
-        "v10_timeDecay": 46.8
+        "v6_cushionBoost": 52.8,
+        "v7_marginWeighted": 41,
+        "v8_procDiffOnly": 27,
+        "v10_timeDecay": 51.3
       },
       "alertSent": true,
       "spreadHistory": [
         {
-          "t": "2026-03-09T01:50:35.357Z",
-          "spread": -6.5,
-          "score": "31-39",
-          "period": 2,
-          "clock": "14:09"
-        },
-        {
-          "t": "2026-03-09T01:50:35.369Z",
-          "spread": -6.5,
-          "score": "31-39",
-          "period": 2,
-          "clock": "14:09"
-        },
-        {
-          "t": "2026-03-09T01:51:43.950Z",
+          "t": "2026-03-09T01:59:28.048Z",
           "spread": -7.5,
-          "score": "31-39",
+          "score": "34-42",
           "period": 2,
-          "clock": "14:09"
-        },
-        {
-          "t": "2026-03-09T01:51:43.963Z",
-          "spread": -7.5,
-          "score": "31-39",
-          "period": 2,
-          "clock": "14:09"
-        },
-        {
-          "t": "2026-03-09T01:52:50.102Z",
-          "spread": -7.5,
-          "score": "31-39",
-          "period": 2,
-          "clock": "14:09"
-        },
-        {
-          "t": "2026-03-09T01:52:50.524Z",
-          "spread": -7.5,
-          "score": "31-39",
-          "period": 2,
-          "clock": "14:09"
+          "clock": "11:36"
         }
       ]
-    },
-    {
-      "id": 1773021101871,
-      "key": "401810784_sust_IND",
-      "gameId": "401810784",
-      "team": "IND",
-      "opponent": "POR",
-      "matchup": "IND @ POR",
-      "side": "SPREAD",
-      "spread": 5.5,
-      "signals": [
-        "sust"
-      ],
-      "marketOdds": -140,
-      "impliedP": 58.3,
-      "estimatedP": 55,
-      "kellyPct": 2.5,
-      "kellyBet": 500,
-      "book": "FanDuel",
-      "timestamp": "2026-03-09T01:51:41.871Z",
-      "outcome": null,
-      "payout": null,
-      "mode": "nba",
-      "awayTeam": "IND",
-      "homeTeam": "POR",
-      "awayName": "Indiana Pacers",
-      "homeName": "Portland Trail Blazers",
-      "awayScore": 38,
-      "homeScore": 37,
-      "period": 2,
-      "clock": "7:47",
-      "periodLabel": "Q2",
-      "sustLeader": "IND",
-      "sustMargin": 1,
-      "betOnLeader": true,
-      "currentMargin": 1,
-      "cushion": 6.5,
-      "sustScore": 35.7,
-      "fragScore": -5.4,
-      "sustGap": 41.1,
-      "sustSignals": [
-        "Low 3PT reliance (25%)"
-      ],
-      "fragSignals": [],
-      "sustStats": {
-        "fg": "42",
-        "efg": "47",
-        "threePt": "20",
-        "twoPt": "61",
-        "proc": 6.3,
-        "star": 0,
-        "scq": -12
-      },
-      "fragStats": {
-        "fg": "41",
-        "efg": "50",
-        "threePt": "31",
-        "twoPt": "38",
-        "proc": 4.9,
-        "star": 0,
-        "scq": 0
-      },
-      "sustDetail": "IND +29.3 vs POR -3.4 (gap:32.7) | IND 38-37 POR | Q2 7:59 | FanDuel +9.5 (-140)",
-      "strategies": {
-        "g1_bigGap": false,
-        "g2_procDriven": true,
-        "g3_threePtDriven": false,
-        "g4_starInvolved": false,
-        "g5_betOnLeader": true,
-        "g6_hasCushion": true,
-        "g7_earlyGame": true,
-        "g8_highProc": false,
-        "g9_homeTeam": false,
-        "g10_ncaa": false,
-        "g11_bigMargin": false,
-        "g12_oppCold3": false
-      },
-      "altGaps": {
-        "v1_pureProc": 28,
-        "v2_f1low": 33.9,
-        "v3_f1high": 34.8,
-        "v4_f3boost": 38.3,
-        "v5_noStar": 32.7
-      },
-      "v7": {
-        "aScq": -11.8,
-        "hScq": 0,
-        "aScore": 24.6,
-        "hScore": -3.4,
-        "gap": 28,
-        "f5contrib": 4.7
-      },
-      "altStructural": {
-        "v6_cushionBoost": 64.2,
-        "v7_marginWeighted": 3.3,
-        "v8_procDiffOnly": 14,
-        "v10_timeDecay": 32.7
-      },
-      "espnOdds": {
-        "provider": "Draft Kings",
-        "spread": -9.5,
-        "detail": "POR -9.5",
-        "awaySpread": "+9.5",
-        "homeSpread": "-9.5",
-        "awaySpreadOdds": "-118",
-        "homeSpreadOdds": "-102",
-        "awayML": "+320",
-        "homeML": "-410",
-        "openSpread": "+7.5"
-      },
-      "spreadHistory": [
-        {
-          "t": "2026-03-09T01:52:46.597Z",
-          "spread": 5.5,
-          "score": "38-37",
-          "period": 2,
-          "clock": "7:47"
-        },
-        {
-          "t": "2026-03-09T01:52:47.344Z",
-          "spread": 5.5,
-          "score": "38-37",
-          "period": 2,
-          "clock": "7:47"
-        }
-      ],
-      "alertSent": true
     }
   ],
   "resolved": []
