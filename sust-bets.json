@@ -1,5 +1,106 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1773081481523,
+      "key": "401851714_sust_ALST",
+      "gameId": "401851714",
+      "team": "ALST",
+      "opponent": "ALCN",
+      "matchup": "ALCN @ ALST",
+      "side": "SPREAD",
+      "spread": -6.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -112,
+      "impliedP": 52.8,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-09T18:38:01.523Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "ALCN",
+      "homeTeam": "ALST",
+      "awayName": "Alcorn State Braves",
+      "homeName": "Alabama State Hornets",
+      "awayScore": 22,
+      "homeScore": 23,
+      "period": 1,
+      "clock": "5:13",
+      "periodLabel": "H1",
+      "sustLeader": "ALST",
+      "sustMargin": 1,
+      "betOnLeader": true,
+      "currentMargin": 1,
+      "cushion": -5.5,
+      "sustScore": 43,
+      "fragScore": 4.6,
+      "sustGap": 38.4,
+      "sustSignals": [
+        "Low 3PT reliance (26%)",
+        "Strong process (7.0/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "32",
+        "efg": "36",
+        "threePt": "15",
+        "twoPt": "61",
+        "proc": 7,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "39",
+        "efg": "44",
+        "threePt": "29",
+        "twoPt": "45",
+        "proc": 5.1,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "ALST +43 vs ALCN 4.6 (gap:38.4) | ALCN 22-23 ALST | H1 5:13 | FanDuel -6.5 (-112)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 38,
+        "v2_f1low": 42,
+        "v3_f1high": 31.3,
+        "v4_f3boost": 46,
+        "v5_noStar": 38.4
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 4.6,
+        "hScore": 43,
+        "gap": 38.4,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 38.4,
+        "v7_marginWeighted": 3.8,
+        "v8_procDiffOnly": 19,
+        "v10_timeDecay": 38.4
+      },
+      "alertSent": true
+    }
+  ],
   "resolved": [],
   "meta": {
     "brierScore": 0.3025,
