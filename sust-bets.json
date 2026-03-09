@@ -115,6 +115,48 @@
           "score": "52-69",
           "period": 2,
           "clock": "0.0"
+        },
+        {
+          "t": "2026-03-09T02:17:08.454Z",
+          "spread": -16.5,
+          "score": "52-69",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-09T02:17:08.838Z",
+          "spread": -16.5,
+          "score": "52-69",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-09T02:18:13.348Z",
+          "spread": -16.5,
+          "score": "52-69",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-09T02:18:13.362Z",
+          "spread": -16.5,
+          "score": "52-69",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-09T02:19:20.246Z",
+          "spread": -16.5,
+          "score": "52-69",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-09T02:19:20.520Z",
+          "spread": -16.5,
+          "score": "52-69",
+          "period": 2,
+          "clock": "0.0"
         }
       ]
     },
@@ -230,6 +272,198 @@
         "homeML": "+170",
         "openSpread": "-3.5"
       },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-09T02:17:08.454Z",
+          "spread": -7.5,
+          "score": "51-65",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-09T02:17:08.838Z",
+          "spread": -7.5,
+          "score": "51-65",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-09T02:18:13.348Z",
+          "spread": -7.5,
+          "score": "51-65",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-09T02:18:13.362Z",
+          "spread": -7.5,
+          "score": "51-65",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-09T02:19:20.246Z",
+          "spread": -7.5,
+          "score": "51-65",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-09T02:19:20.520Z",
+          "spread": -7.5,
+          "score": "51-65",
+          "period": 2,
+          "clock": "0.0"
+        }
+      ]
+    },
+    {
+      "id": 1773022564141,
+      "key": "401851705_sust_GASO",
+      "gameId": "401851705",
+      "team": "GASO",
+      "opponent": "MRSH",
+      "matchup": "GASO @ MRSH",
+      "side": "SPREAD",
+      "spread": -5.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -120,
+      "impliedP": 54.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-09T02:16:04.141Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "GASO",
+      "homeTeam": "MRSH",
+      "awayName": "Georgia Southern Eagles",
+      "homeName": "Marshall Thundering Herd",
+      "awayScore": 44,
+      "homeScore": 35,
+      "period": 2,
+      "clock": "18:51",
+      "periodLabel": "H1",
+      "sustLeader": "GASO",
+      "sustMargin": 7,
+      "betOnLeader": true,
+      "currentMargin": 7,
+      "cushion": 3.5,
+      "sustScore": 42.6,
+      "fragScore": -14.1,
+      "sustGap": 56.7,
+      "sustSignals": [],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "38",
+        "efg": "45",
+        "threePt": "28",
+        "twoPt": "43",
+        "proc": 6.2,
+        "star": 61,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "40",
+        "efg": "50",
+        "threePt": "36",
+        "twoPt": "29",
+        "proc": 4.9,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "GASO +24.1 vs MRSH -4.1 (gap:28.200000000000003) | GASO 42-35 MRSH | H1 0:00 | FanDuel -3.5 (-120)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": false,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 26,
+        "v2_f1low": 30,
+        "v3_f1high": 26.5,
+        "v4_f3boost": 33.3,
+        "v5_noStar": 28.1
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 24.1,
+        "hScore": -4.1,
+        "gap": 28.2,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 38.7,
+        "v7_marginWeighted": 19.7,
+        "v8_procDiffOnly": 13,
+        "v10_timeDecay": 28.2
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-09T02:16:05.972Z",
+          "spread": -3.5,
+          "score": "42-35",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-09T02:17:11.347Z",
+          "spread": -3.5,
+          "score": "42-35",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-09T02:17:11.400Z",
+          "spread": -3.5,
+          "score": "42-35",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-09T02:18:18.458Z",
+          "spread": -3.5,
+          "score": "42-35",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-09T02:18:18.460Z",
+          "spread": -3.5,
+          "score": "42-35",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-09T02:19:23.513Z",
+          "spread": -5.5,
+          "score": "44-35",
+          "period": 2,
+          "clock": "18:51"
+        },
+        {
+          "t": "2026-03-09T02:19:23.527Z",
+          "spread": -5.5,
+          "score": "44-35",
+          "period": 2,
+          "clock": "18:51"
+        }
+      ],
       "alertSent": true
     }
   ],
