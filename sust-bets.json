@@ -139,6 +139,20 @@
           "score": "91-65",
           "period": 3,
           "clock": "3:10"
+        },
+        {
+          "t": "2026-03-09T01:41:29.458Z",
+          "spread": -24.5,
+          "score": "95-65",
+          "period": 3,
+          "clock": "2:38"
+        },
+        {
+          "t": "2026-03-09T01:41:30.271Z",
+          "spread": -24.5,
+          "score": "95-65",
+          "period": 3,
+          "clock": "2:38"
         }
       ]
     },
@@ -278,6 +292,20 @@
           "score": "63-88",
           "period": 3,
           "clock": "8:02"
+        },
+        {
+          "t": "2026-03-09T01:41:29.458Z",
+          "spread": -21.5,
+          "score": "65-88",
+          "period": 3,
+          "clock": "7:27"
+        },
+        {
+          "t": "2026-03-09T01:41:30.271Z",
+          "spread": -21.5,
+          "score": "65-88",
+          "period": 3,
+          "clock": "7:27"
         }
       ]
     },
@@ -421,6 +449,20 @@
           "score": "28-35",
           "period": 2,
           "clock": "11:09"
+        },
+        {
+          "t": "2026-03-09T01:41:29.458Z",
+          "spread": -1.5,
+          "score": "28-35",
+          "period": 2,
+          "clock": "11:09"
+        },
+        {
+          "t": "2026-03-09T01:41:30.271Z",
+          "spread": -1.5,
+          "score": "28-35",
+          "period": 2,
+          "clock": "11:09"
         }
       ]
     },
@@ -552,8 +594,123 @@
           "score": "41-38",
           "period": 2,
           "clock": "16:54"
+        },
+        {
+          "t": "2026-03-09T01:41:33.362Z",
+          "spread": -4.5,
+          "score": "41-38",
+          "period": 2,
+          "clock": "16:25"
+        },
+        {
+          "t": "2026-03-09T01:41:33.371Z",
+          "spread": -4.5,
+          "score": "41-38",
+          "period": 2,
+          "clock": "16:25"
         }
       ]
+    },
+    {
+      "id": 1773020494484,
+      "key": "401851705_sust_GASO",
+      "gameId": "401851705",
+      "team": "GASO",
+      "opponent": "MRSH",
+      "matchup": "GASO @ MRSH",
+      "side": "SPREAD",
+      "spread": -3.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -114,
+      "impliedP": 53.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-09T01:41:34.484Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "GASO",
+      "homeTeam": "MRSH",
+      "awayName": "Georgia Southern Eagles",
+      "homeName": "Marshall Thundering Herd",
+      "awayScore": 27,
+      "homeScore": 20,
+      "period": 1,
+      "clock": "6:22",
+      "periodLabel": "H1",
+      "sustLeader": "GASO",
+      "sustMargin": 7,
+      "betOnLeader": true,
+      "currentMargin": 7,
+      "cushion": 3.5,
+      "sustScore": 41.5,
+      "fragScore": -32.7,
+      "sustGap": 74.2,
+      "sustSignals": [
+        "Strong process (7.2/10)"
+      ],
+      "fragSignals": [
+        "3PT heavy (45% of pts)"
+      ],
+      "sustStats": {
+        "fg": "42",
+        "efg": "50",
+        "threePt": "29",
+        "twoPt": "52",
+        "proc": 7.2,
+        "star": 89,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "33",
+        "efg": "43",
+        "threePt": "38",
+        "twoPt": "20",
+        "proc": 3.5,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "GASO +41.5 vs MRSH -32.7 (gap:74.2) | GASO 27-20 MRSH | H1 6:22 | FanDuel -3.5 (-114)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 74,
+        "v2_f1low": 81.5,
+        "v3_f1high": 59.6,
+        "v4_f3boost": 89,
+        "v5_noStar": 74.2
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 41.5,
+        "hScore": -32.7,
+        "gap": 74.2,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 84.7,
+        "v7_marginWeighted": 51.9,
+        "v8_procDiffOnly": 37,
+        "v10_timeDecay": 74.2
+      },
+      "alertSent": true
     }
   ],
   "resolved": []
