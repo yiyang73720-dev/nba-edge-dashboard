@@ -1,5 +1,105 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1773181870783,
+      "key": "401851202_sust_UMBC",
+      "gameId": "401851202",
+      "team": "UMBC",
+      "opponent": "UML",
+      "matchup": "UML @ UMBC",
+      "side": "SPREAD",
+      "spread": -15.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -125,
+      "impliedP": 55.6,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-10T22:31:10.783Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "UML",
+      "homeTeam": "UMBC",
+      "awayName": "UMass Lowell River Hawks",
+      "homeName": "UMBC Retrievers",
+      "awayScore": 21,
+      "homeScore": 35,
+      "period": 1,
+      "clock": "5:59",
+      "periodLabel": "H1",
+      "sustLeader": "UMBC",
+      "sustMargin": 14,
+      "betOnLeader": true,
+      "currentMargin": 14,
+      "cushion": -1.5,
+      "sustScore": 29.4,
+      "fragScore": -36.3,
+      "sustGap": 65.69999999999999,
+      "sustSignals": [],
+      "fragSignals": [
+        "3PT heavy (57% of pts)"
+      ],
+      "sustStats": {
+        "fg": "55",
+        "efg": "70",
+        "threePt": "60",
+        "twoPt": "29",
+        "proc": 6.7,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "26",
+        "efg": "33",
+        "threePt": "40",
+        "twoPt": "29",
+        "proc": 3.5,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "UMBC +29.4 vs UML -36.3 (gap:65.69999999999999) | UML 21-35 UMBC | H1 5:59 | FanDuel -15.5 (-125)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 64,
+        "v2_f1low": 71.5,
+        "v3_f1high": 55.8,
+        "v4_f3boost": 78.5,
+        "v5_noStar": 65.7
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -36.3,
+        "hScore": 29.4,
+        "gap": 65.7,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 65.7,
+        "v7_marginWeighted": 92,
+        "v8_procDiffOnly": 32,
+        "v10_timeDecay": 65.7
+      },
+      "alertSent": true
+    }
+  ],
   "resolved": [
     {
       "id": 1773164398979,
