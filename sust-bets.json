@@ -1,6 +1,132 @@
 {
   "bets": [
     {
+      "id": 1773167937633,
+      "key": "401851170_sust_PITT",
+      "gameId": "401851170",
+      "team": "PITT",
+      "opponent": "STAN",
+      "matchup": "PITT @ STAN",
+      "side": "SPREAD",
+      "spread": -1.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -108,
+      "impliedP": 51.9,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-10T18:38:57.633Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "PITT",
+      "homeTeam": "STAN",
+      "awayName": "Pittsburgh Panthers",
+      "homeName": "Stanford Cardinal",
+      "awayScore": 23,
+      "homeScore": 21,
+      "period": 1,
+      "clock": "5:16",
+      "periodLabel": "H1",
+      "sustLeader": "PITT",
+      "sustMargin": 2,
+      "betOnLeader": true,
+      "currentMargin": 2,
+      "cushion": 0.5,
+      "sustScore": 41,
+      "fragScore": -22.6,
+      "sustGap": 63.6,
+      "sustSignals": [
+        "Low 3PT reliance (26%)"
+      ],
+      "fragSignals": [
+        "3PT heavy (71% of pts)"
+      ],
+      "sustStats": {
+        "fg": "36",
+        "efg": "41",
+        "threePt": "29",
+        "twoPt": "52",
+        "proc": 6.9,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "38",
+        "efg": "50",
+        "threePt": "56",
+        "twoPt": "29",
+        "proc": 3.9,
+        "star": 23,
+        "scq": 0
+      },
+      "sustDetail": "PITT +41 vs STAN -22.6 (gap:63.6) | PITT 23-21 STAN | H1 5:16 | FanDuel -1.5 (-108)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 50,
+        "v2_f1low": 65.1,
+        "v3_f1high": 74.3,
+        "v4_f3boost": 75.6,
+        "v5_noStar": 73.6
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 41,
+        "hScore": -22.6,
+        "gap": 63.6,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 65.1,
+        "v7_marginWeighted": 12.7,
+        "v8_procDiffOnly": 30,
+        "v10_timeDecay": 63.6
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-10T18:39:59.673Z",
+          "spread": 3.5,
+          "score": "23-23",
+          "period": 1,
+          "clock": "3:47"
+        },
+        {
+          "t": "2026-03-10T18:40:00.576Z",
+          "spread": 3.5,
+          "score": "23-23",
+          "period": 1,
+          "clock": "3:47"
+        },
+        {
+          "t": "2026-03-10T18:41:01.375Z",
+          "spread": 3.5,
+          "score": "25-23",
+          "period": 1,
+          "clock": "2:58"
+        }
+      ]
+    }
+  ],
+  "resolved": [
+    {
       "id": 1773164398979,
       "key": "401851282_sust_ASU",
       "gameId": "401851282",
@@ -19,8 +145,8 @@
       "kellyBet": 500,
       "book": "FanDuel",
       "timestamp": "2026-03-10T17:39:58.979Z",
-      "outcome": null,
-      "payout": null,
+      "outcome": "L",
+      "payout": -500,
       "mode": "ncaab",
       "awayTeam": "BAY",
       "homeTeam": "ASU",
@@ -851,111 +977,35 @@
           "score": "79-83",
           "period": 2,
           "clock": "0:01"
+        },
+        {
+          "t": "2026-03-10T18:39:59.673Z",
+          "spread": -7.5,
+          "score": "79-83",
+          "period": 2,
+          "clock": "0:01"
+        },
+        {
+          "t": "2026-03-10T18:40:00.575Z",
+          "spread": -7.5,
+          "score": "79-83",
+          "period": 2,
+          "clock": "0:01"
         }
       ],
-      "alertSent": true
-    },
-    {
-      "id": 1773167937633,
-      "key": "401851170_sust_PITT",
-      "gameId": "401851170",
-      "team": "PITT",
-      "opponent": "STAN",
-      "matchup": "PITT @ STAN",
-      "side": "SPREAD",
-      "spread": -1.5,
-      "signals": [
-        "sust"
-      ],
-      "marketOdds": -108,
-      "impliedP": 51.9,
-      "estimatedP": 55,
-      "kellyPct": 2.5,
-      "kellyBet": 500,
-      "book": "FanDuel",
-      "timestamp": "2026-03-10T18:38:57.633Z",
-      "outcome": null,
-      "payout": null,
-      "mode": "ncaab",
-      "awayTeam": "PITT",
-      "homeTeam": "STAN",
-      "awayName": "Pittsburgh Panthers",
-      "homeName": "Stanford Cardinal",
-      "awayScore": 23,
-      "homeScore": 21,
-      "period": 1,
-      "clock": "5:16",
-      "periodLabel": "H1",
-      "sustLeader": "PITT",
-      "sustMargin": 2,
-      "betOnLeader": true,
-      "currentMargin": 2,
-      "cushion": 0.5,
-      "sustScore": 41,
-      "fragScore": -22.6,
-      "sustGap": 63.6,
-      "sustSignals": [
-        "Low 3PT reliance (26%)"
-      ],
-      "fragSignals": [
-        "3PT heavy (71% of pts)"
-      ],
-      "sustStats": {
-        "fg": "36",
-        "efg": "41",
-        "threePt": "29",
-        "twoPt": "52",
-        "proc": 6.9,
-        "star": 0,
-        "scq": 0
-      },
-      "fragStats": {
-        "fg": "38",
-        "efg": "50",
-        "threePt": "56",
-        "twoPt": "29",
-        "proc": 3.9,
-        "star": 23,
-        "scq": 0
-      },
-      "sustDetail": "PITT +41 vs STAN -22.6 (gap:63.6) | PITT 23-21 STAN | H1 5:16 | FanDuel -1.5 (-108)",
-      "strategies": {
-        "g1_bigGap": true,
-        "g2_procDriven": true,
-        "g3_threePtDriven": false,
-        "g4_starInvolved": true,
-        "g5_betOnLeader": true,
-        "g6_hasCushion": true,
-        "g7_earlyGame": true,
-        "g8_highProc": false,
-        "g9_homeTeam": false,
-        "g10_ncaa": true,
-        "g11_bigMargin": false,
-        "g12_oppCold3": false
-      },
-      "altGaps": {
-        "v1_pureProc": 50,
-        "v2_f1low": 65.1,
-        "v3_f1high": 74.3,
-        "v4_f3boost": 75.6,
-        "v5_noStar": 73.6
-      },
-      "v7": {
-        "aScq": 0,
-        "hScq": 0,
-        "aScore": 41,
-        "hScore": -22.6,
-        "gap": 63.6,
-        "f5contrib": 0
-      },
-      "altStructural": {
-        "v6_cushionBoost": 65.1,
-        "v7_marginWeighted": 12.7,
-        "v8_procDiffOnly": 30,
-        "v10_timeDecay": 63.6
-      },
-      "alertSent": true
+      "alertSent": true,
+      "resolvedAt": "2026-03-10T18:41:01.622Z",
+      "finalScore": "BAY 79 - 83 ASU",
+      "closingSpread": -7.5,
+      "clv": 0
     }
   ],
-  "resolved": []
+  "meta": {
+    "brierScore": 0.3025,
+    "brierBaseline": 0.25,
+    "brierSkill": -0.21,
+    "brierN": 1,
+    "winRate": 0,
+    "totalPL": -500
+  }
 }
