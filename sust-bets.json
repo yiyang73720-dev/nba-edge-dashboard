@@ -1,5 +1,121 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1773162199865,
+      "key": "401851282_sust_BAY",
+      "gameId": "401851282",
+      "team": "BAY",
+      "opponent": "ASU",
+      "matchup": "BAY @ ASU",
+      "side": "SPREAD",
+      "spread": 0.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -118,
+      "impliedP": 54.1,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-10T17:03:19.865Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "BAY",
+      "homeTeam": "ASU",
+      "awayName": "Baylor Bears",
+      "homeName": "Arizona State Sun Devils",
+      "awayScore": 23,
+      "homeScore": 29,
+      "period": 1,
+      "clock": "6:01",
+      "periodLabel": "H1",
+      "sustLeader": "ASU",
+      "sustMargin": 8,
+      "betOnLeader": false,
+      "currentMargin": -8,
+      "cushion": -5.5,
+      "sustScore": 43,
+      "fragScore": -6.7,
+      "sustGap": 49.7,
+      "sustSignals": [],
+      "fragSignals": [
+        "3PT heavy (52% of pts)"
+      ],
+      "sustStats": {
+        "fg": "38",
+        "efg": "43",
+        "threePt": "22",
+        "twoPt": "57",
+        "proc": 6.5,
+        "star": 140,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "67",
+        "efg": "81",
+        "threePt": "56",
+        "twoPt": "48",
+        "proc": 5.3,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "BAY +32.2 vs ASU 1.3 (gap:30.900000000000002) | BAY 21-29 ASU | H1 6:28 | FanDuel +2.5 (-118)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 24,
+        "v2_f1low": 31,
+        "v3_f1high": 37.7,
+        "v4_f3boost": 35.7,
+        "v5_noStar": 30.9
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 32.2,
+        "hScore": 1.3,
+        "gap": 30.9,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 30.9,
+        "v7_marginWeighted": 24.7,
+        "v8_procDiffOnly": 12,
+        "v10_timeDecay": 30.9
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-10T17:04:21.415Z",
+          "spread": 0.5,
+          "score": "23-29",
+          "period": 1,
+          "clock": "6:01"
+        },
+        {
+          "t": "2026-03-10T17:04:21.811Z",
+          "spread": 0.5,
+          "score": "23-29",
+          "period": 1,
+          "clock": "6:01"
+        }
+      ],
+      "alertSent": true
+    }
+  ],
   "resolved": [
     {
       "id": 1773111857145,
