@@ -1,5 +1,108 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1773177671133,
+      "key": "401851171_sust_SMU",
+      "gameId": "401851171",
+      "team": "SMU",
+      "opponent": "SYR",
+      "matchup": "SYR @ SMU",
+      "side": "SPREAD",
+      "spread": -3.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -114,
+      "impliedP": 53.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-10T21:21:11.133Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "SYR",
+      "homeTeam": "SMU",
+      "awayName": "Syracuse Orange",
+      "homeName": "SMU Mustangs",
+      "awayScore": 38,
+      "homeScore": 39,
+      "period": 1,
+      "clock": "0:00",
+      "periodLabel": "H1",
+      "sustLeader": "SMU",
+      "sustMargin": 1,
+      "betOnLeader": true,
+      "currentMargin": 1,
+      "cushion": -2.5,
+      "sustScore": 45.9,
+      "fragScore": 4.6,
+      "sustGap": 41.3,
+      "sustSignals": [
+        "Low 3PT reliance (23%)",
+        "Star cold (46% pace)"
+      ],
+      "fragSignals": [
+        "3PT heavy (47% of pts)"
+      ],
+      "sustStats": {
+        "fg": "43",
+        "efg": "46",
+        "threePt": "19",
+        "twoPt": "77",
+        "proc": 6.6,
+        "star": 46,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "45",
+        "efg": "55",
+        "threePt": "32",
+        "twoPt": "47",
+        "proc": 5.4,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "SMU +45.9 vs SYR 4.6 (gap:41.3) | SYR 38-39 SMU | H1 0:00 | FanDuel -3.5 (-114)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": false,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 34,
+        "v2_f1low": 41.3,
+        "v3_f1high": 48.6,
+        "v4_f3boost": 46.1,
+        "v5_noStar": 31.3
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 4.6,
+        "hScore": 45.9,
+        "gap": 41.3,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 41.3,
+        "v7_marginWeighted": 4.1,
+        "v8_procDiffOnly": 12,
+        "v10_timeDecay": 41.3
+      },
+      "alertSent": true
+    }
+  ],
   "resolved": [
     {
       "id": 1773164398979,
