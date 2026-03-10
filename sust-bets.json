@@ -877,6 +877,20 @@
           "score": "56-46",
           "period": 2,
           "clock": "11:48"
+        },
+        {
+          "t": "2026-03-10T00:29:26.413Z",
+          "spread": 8.5,
+          "score": "56-46",
+          "period": 2,
+          "clock": "11:48"
+        },
+        {
+          "t": "2026-03-10T00:29:26.510Z",
+          "spread": 8.5,
+          "score": "56-46",
+          "period": 2,
+          "clock": "11:48"
         }
       ]
     },
@@ -1682,6 +1696,20 @@
           "score": "58-62",
           "period": 2,
           "clock": "12:42"
+        },
+        {
+          "t": "2026-03-10T00:29:26.413Z",
+          "spread": -4.5,
+          "score": "58-62",
+          "period": 2,
+          "clock": "12:42"
+        },
+        {
+          "t": "2026-03-10T00:29:26.511Z",
+          "spread": -4.5,
+          "score": "58-62",
+          "period": 2,
+          "clock": "12:42"
         }
       ],
       "alertSent": true
@@ -2340,6 +2368,20 @@
           "score": "39-49",
           "period": 2,
           "clock": "11:56"
+        },
+        {
+          "t": "2026-03-10T00:29:26.414Z",
+          "spread": -9.5,
+          "score": "39-49",
+          "period": 2,
+          "clock": "11:56"
+        },
+        {
+          "t": "2026-03-10T00:29:26.511Z",
+          "spread": -9.5,
+          "score": "39-49",
+          "period": 2,
+          "clock": "11:56"
         }
       ]
     },
@@ -2943,6 +2985,20 @@
           "score": "44-56",
           "period": 2,
           "clock": "0.0"
+        },
+        {
+          "t": "2026-03-10T00:29:21.290Z",
+          "spread": -17.5,
+          "score": "44-56",
+          "period": 3,
+          "clock": "12:00"
+        },
+        {
+          "t": "2026-03-10T00:29:23.204Z",
+          "spread": -17.5,
+          "score": "44-56",
+          "period": 3,
+          "clock": "12:00"
         }
       ]
     },
@@ -3429,8 +3485,147 @@
           "score": "32-49",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-10T00:29:26.416Z",
+          "spread": -10.5,
+          "score": "32-49",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-10T00:29:26.511Z",
+          "spread": -10.5,
+          "score": "32-49",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
+    },
+    {
+      "id": 1773102497901,
+      "key": "401810788_sust_OKC",
+      "gameId": "401810788",
+      "team": "OKC",
+      "opponent": "DEN",
+      "matchup": "DEN @ OKC",
+      "side": "SPREAD",
+      "spread": -3.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -128,
+      "impliedP": 56.1,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-10T00:28:17.901Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "DEN",
+      "homeTeam": "OKC",
+      "awayName": "Denver Nuggets",
+      "homeName": "Oklahoma City Thunder",
+      "awayScore": 46,
+      "homeScore": 51,
+      "period": 2,
+      "clock": "6:15",
+      "periodLabel": "Q2",
+      "sustLeader": "OKC",
+      "sustMargin": 5,
+      "betOnLeader": true,
+      "currentMargin": 5,
+      "cushion": 1.5,
+      "sustScore": 30.4,
+      "fragScore": -17,
+      "sustGap": 47.4,
+      "sustSignals": [],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "53",
+        "efg": "63",
+        "threePt": "37",
+        "twoPt": "48",
+        "proc": 6,
+        "star": 121,
+        "scq": -19
+      },
+      "fragStats": {
+        "fg": "53",
+        "efg": "61",
+        "threePt": "50",
+        "twoPt": "52",
+        "proc": 4.6,
+        "star": 0,
+        "scq": 6
+      },
+      "sustDetail": "OKC +18.2 vs DEN -7 (gap:25.2) | DEN 46-51 OKC | Q2 7:17 | FanDuel -1.5 (-128)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 28,
+        "v2_f1low": 28.9,
+        "v3_f1high": 14.9,
+        "v4_f3boost": 30.8,
+        "v5_noStar": 25.2
+      },
+      "v7": {
+        "aScq": 6.1,
+        "hScq": -19.4,
+        "aScore": -4.6,
+        "hScore": 10.4,
+        "gap": 15,
+        "f5contrib": 10.2
+      },
+      "altStructural": {
+        "v6_cushionBoost": 35.7,
+        "v7_marginWeighted": 12.6,
+        "v8_procDiffOnly": 14,
+        "v10_timeDecay": 25.2
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -3.5,
+        "detail": "OKC -3.5",
+        "awaySpread": "+3.5",
+        "homeSpread": "-3.5",
+        "awaySpreadOdds": "-108",
+        "homeSpreadOdds": "-112",
+        "awayML": "+130",
+        "homeML": "-155",
+        "openSpread": "+7.5"
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-10T00:29:21.290Z",
+          "spread": -3.5,
+          "score": "46-51",
+          "period": 2,
+          "clock": "6:15"
+        },
+        {
+          "t": "2026-03-10T00:29:23.204Z",
+          "spread": -3.5,
+          "score": "46-51",
+          "period": 2,
+          "clock": "6:15"
+        }
+      ],
+      "alertSent": true
     }
   ],
   "resolved": [],
