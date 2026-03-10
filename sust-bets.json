@@ -2473,8 +2473,121 @@
           "score": "28-27",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-10T01:38:15.507Z",
+          "spread": 1.5,
+          "score": "28-27",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
+    },
+    {
+      "id": 1773106695153,
+      "key": "401851608_sust_RGV",
+      "gameId": "401851608",
+      "team": "RGV",
+      "opponent": "NICH",
+      "matchup": "NICH @ RGV",
+      "side": "SPREAD",
+      "spread": -10.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -130,
+      "impliedP": 56.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-10T01:38:15.153Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "NICH",
+      "homeTeam": "RGV",
+      "awayName": "Nicholls Colonels",
+      "homeName": "UT Rio Grande Valley Vaqueros",
+      "awayScore": 28,
+      "homeScore": 39,
+      "period": 1,
+      "clock": "2:10",
+      "periodLabel": "H1",
+      "sustLeader": "RGV",
+      "sustMargin": 11,
+      "betOnLeader": true,
+      "currentMargin": 11,
+      "cushion": 0.5,
+      "sustScore": 39.3,
+      "fragScore": -1.6,
+      "sustGap": 40.9,
+      "sustSignals": [],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "50",
+        "efg": "62",
+        "threePt": "40",
+        "twoPt": "36",
+        "proc": 6.9,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "50",
+        "efg": "55",
+        "threePt": "33",
+        "twoPt": "57",
+        "proc": 4.8,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "RGV +35 vs NICH 0.4 (gap:34.6) | NICH 28-39 RGV | H1 2:10 | FanDuel -10.5 (-130)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 42,
+        "v2_f1low": 41.3,
+        "v3_f1high": 13.8,
+        "v4_f3boost": 43,
+        "v5_noStar": 34.6
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 0.4,
+        "hScore": 35,
+        "gap": 34.6,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 36.1,
+        "v7_marginWeighted": 38.1,
+        "v8_procDiffOnly": 21,
+        "v10_timeDecay": 34.6
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-10T01:38:15.507Z",
+          "spread": -10.5,
+          "score": "28-39",
+          "period": 1,
+          "clock": "2:10"
+        }
+      ],
+      "alertSent": true
     }
   ],
   "resolved": [
