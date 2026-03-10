@@ -693,8 +693,157 @@
           "score": "51-67",
           "period": 2,
           "clock": "11:09"
+        },
+        {
+          "t": "2026-03-10T23:21:47.734Z",
+          "spread": -16.5,
+          "score": "51-67",
+          "period": 2,
+          "clock": "11:09"
+        },
+        {
+          "t": "2026-03-10T23:22:52.763Z",
+          "spread": -16.5,
+          "score": "51-68",
+          "period": 2,
+          "clock": "11:07"
+        },
+        {
+          "t": "2026-03-10T23:23:56.608Z",
+          "spread": -14.5,
+          "score": "56-70",
+          "period": 2,
+          "clock": "9:46"
+        },
+        {
+          "t": "2026-03-10T23:23:56.631Z",
+          "spread": -14.5,
+          "score": "56-70",
+          "period": 2,
+          "clock": "9:46"
+        },
+        {
+          "t": "2026-03-10T23:25:02.820Z",
+          "spread": -14.5,
+          "score": "56-70",
+          "period": 2,
+          "clock": "9:19"
+        },
+        {
+          "t": "2026-03-10T23:26:05.545Z",
+          "spread": -13.5,
+          "score": "56-70",
+          "period": 2,
+          "clock": "8:27"
+        },
+        {
+          "t": "2026-03-10T23:26:05.558Z",
+          "spread": -13.5,
+          "score": "56-70",
+          "period": 2,
+          "clock": "8:27"
         }
       ]
+    },
+    {
+      "id": 1773185166818,
+      "key": "401851521_sust_LIU",
+      "gameId": "401851521",
+      "team": "LIU",
+      "opponent": "MERC",
+      "matchup": "MERC @ LIU",
+      "side": "SPREAD",
+      "spread": -7.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -108,
+      "impliedP": 51.9,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-10T23:26:06.818Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "MERC",
+      "homeTeam": "LIU",
+      "awayName": "Mercyhurst Lakers",
+      "homeName": "Long Island University Sharks",
+      "awayScore": 20,
+      "homeScore": 25,
+      "period": 1,
+      "clock": "9:07",
+      "periodLabel": "H1",
+      "sustLeader": "LIU",
+      "sustMargin": 5,
+      "betOnLeader": true,
+      "currentMargin": 5,
+      "cushion": -2.5,
+      "sustScore": 45.6,
+      "fragScore": 1.8,
+      "sustGap": 43.800000000000004,
+      "sustSignals": [
+        "Low 3PT reliance (24%)",
+        "Strong process (7.1/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "59",
+        "efg": "65",
+        "threePt": "50",
+        "twoPt": "64",
+        "proc": 7.1,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "47",
+        "efg": "53",
+        "threePt": "50",
+        "twoPt": "60",
+        "proc": 5,
+        "star": 106,
+        "scq": 0
+      },
+      "sustDetail": "LIU +45.6 vs MERC 1.8 (gap:43.800000000000004) | MERC 20-25 LIU | H1 9:07 | FanDuel -7.5 (-108)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 42,
+        "v2_f1low": 47.4,
+        "v3_f1high": 38.4,
+        "v4_f3boost": 52.2,
+        "v5_noStar": 43.8
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 1.8,
+        "hScore": 45.6,
+        "gap": 43.8,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 43.8,
+        "v7_marginWeighted": 21.9,
+        "v8_procDiffOnly": 21,
+        "v10_timeDecay": 43.8
+      },
+      "alertSent": true
     }
   ],
   "resolved": [
