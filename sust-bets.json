@@ -1,5 +1,106 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1773245376390,
+      "key": "401851258_sust_SBU",
+      "gameId": "401851258",
+      "team": "SBU",
+      "opponent": "LAS",
+      "matchup": "SBU @ LAS",
+      "side": "SPREAD",
+      "spread": -11.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -110,
+      "impliedP": 52.4,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-11T16:09:36.390Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "SBU",
+      "homeTeam": "LAS",
+      "awayName": "St. Bonaventure Bonnies",
+      "homeName": "La Salle Explorers",
+      "awayScore": 36,
+      "homeScore": 27,
+      "period": 1,
+      "clock": "5:03",
+      "periodLabel": "H1",
+      "sustLeader": "SBU",
+      "sustMargin": 9,
+      "betOnLeader": true,
+      "currentMargin": 9,
+      "cushion": -2.5,
+      "sustScore": 52.8,
+      "fragScore": 17.5,
+      "sustGap": 35.3,
+      "sustSignals": [
+        "Strong process (7.1/10)",
+        "Star cold (33% pace)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "56",
+        "efg": "64",
+        "threePt": "44",
+        "twoPt": "56",
+        "proc": 7.1,
+        "star": 33,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "48",
+        "efg": "50",
+        "threePt": "20",
+        "twoPt": "74",
+        "proc": 5.5,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "SBU +52.8 vs LAS 17.5 (gap:35.3) | SBU 36-27 LAS | H1 5:03 | FanDuel -11.5 (-110)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 42,
+        "v2_f1low": 40.8,
+        "v3_f1high": 17.8,
+        "v4_f3boost": 41.7,
+        "v5_noStar": 25.3
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 52.8,
+        "hScore": 17.5,
+        "gap": 35.3,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 35.3,
+        "v7_marginWeighted": 31.8,
+        "v8_procDiffOnly": 16,
+        "v10_timeDecay": 35.3
+      },
+      "alertSent": true
+    }
+  ],
   "resolved": [
     {
       "id": 1773204297997,
