@@ -1,4 +1,121 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1773257250441,
+      "key": "401851718_sust_BCU",
+      "gameId": "401851718",
+      "team": "BCU",
+      "opponent": "PV",
+      "matchup": "PV @ BCU",
+      "side": "SPREAD",
+      "spread": -3.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -122,
+      "impliedP": 55,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-11T19:27:30.441Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "PV",
+      "homeTeam": "BCU",
+      "awayName": "Prairie View A&M Panthers",
+      "homeName": "Bethune-Cookman Wildcats",
+      "awayScore": 47,
+      "homeScore": 46,
+      "period": 2,
+      "clock": "11:56",
+      "periodLabel": "H2",
+      "sustLeader": "BCU",
+      "sustMargin": 1,
+      "betOnLeader": true,
+      "currentMargin": 1,
+      "cushion": -4.5,
+      "sustScore": 44.9,
+      "fragScore": 7.3,
+      "sustGap": 37.6,
+      "sustSignals": [
+        "Low 3PT reliance (13%)",
+        "Star cold (24% pace)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "45",
+        "efg": "47",
+        "threePt": "25",
+        "twoPt": "65",
+        "proc": 6.1,
+        "star": 24,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "43",
+        "efg": "51",
+        "threePt": "60",
+        "twoPt": "44",
+        "proc": 5.2,
+        "star": 15,
+        "scq": 0
+      },
+      "sustDetail": "BCU +38.9 vs PV 12.8 (gap:26.099999999999998) | PV 45-46 BCU | H2 12:37 | FanDuel -2.5 (-122)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": false,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 18,
+        "v2_f1low": 25.2,
+        "v3_f1high": 36,
+        "v4_f3boost": 29.7,
+        "v5_noStar": 26.1
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 12.8,
+        "hScore": 38.9,
+        "gap": 26.1,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 26.1,
+        "v7_marginWeighted": 2.6,
+        "v8_procDiffOnly": 9,
+        "v10_timeDecay": 26.1
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-11T19:28:32.938Z",
+          "spread": -3.5,
+          "score": "47-46",
+          "period": 2,
+          "clock": "11:56"
+        },
+        {
+          "t": "2026-03-11T19:28:32.952Z",
+          "spread": -3.5,
+          "score": "47-46",
+          "period": 2,
+          "clock": "11:56"
+        }
+      ],
+      "alertSent": true
+    }
+  ],
   "resolved": []
 }
