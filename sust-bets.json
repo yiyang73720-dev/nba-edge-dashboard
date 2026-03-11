@@ -1,5 +1,106 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1773254488089,
+      "key": "401851718_sust_PV",
+      "gameId": "401851718",
+      "team": "PV",
+      "opponent": "BCU",
+      "matchup": "PV @ BCU",
+      "side": "SPREAD",
+      "spread": 0.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -112,
+      "impliedP": 52.8,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-11T18:41:28.089Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "PV",
+      "homeTeam": "BCU",
+      "awayName": "Prairie View A&M Panthers",
+      "homeName": "Bethune-Cookman Wildcats",
+      "awayScore": 25,
+      "homeScore": 21,
+      "period": 1,
+      "clock": "4:14",
+      "periodLabel": "H1",
+      "sustLeader": "PV",
+      "sustMargin": 4,
+      "betOnLeader": true,
+      "currentMargin": 4,
+      "cushion": 4.5,
+      "sustScore": 53.2,
+      "fragScore": 2.5,
+      "sustGap": 50.7,
+      "sustSignals": [
+        "Low 3PT reliance (12%)",
+        "Star cold (26% pace)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "43",
+        "efg": "45",
+        "threePt": "33",
+        "twoPt": "64",
+        "proc": 6.8,
+        "star": 26,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "43",
+        "efg": "45",
+        "threePt": "25",
+        "twoPt": "76",
+        "proc": 4.8,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "PV +53.2 vs BCU 2.5 (gap:50.7) | PV 25-21 BCU | H1 4:14 | FanDuel +0.5 (-112)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 50,
+        "v2_f1low": 54.5,
+        "v3_f1high": 43.8,
+        "v4_f3boost": 58.7,
+        "v5_noStar": 40.7
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 53.2,
+        "hScore": 2.5,
+        "gap": 50.7,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 64.2,
+        "v7_marginWeighted": 20.3,
+        "v8_procDiffOnly": 20,
+        "v10_timeDecay": 50.7
+      },
+      "alertSent": true
+    }
+  ],
   "resolved": [
     {
       "id": 1773252610673,
