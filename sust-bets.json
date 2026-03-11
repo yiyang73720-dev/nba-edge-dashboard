@@ -336,6 +336,20 @@
           "score": "78-81",
           "period": 3,
           "clock": "2:51"
+        },
+        {
+          "t": "2026-03-11T03:46:16.254Z",
+          "spread": 5.5,
+          "score": "81-81",
+          "period": 3,
+          "clock": "2:18"
+        },
+        {
+          "t": "2026-03-11T03:46:16.846Z",
+          "spread": 5.5,
+          "score": "81-81",
+          "period": 3,
+          "clock": "2:18"
         }
       ]
     },
@@ -668,8 +682,261 @@
           "score": "72-75",
           "period": 3,
           "clock": "1:44"
+        },
+        {
+          "t": "2026-03-11T03:46:16.254Z",
+          "spread": -2.5,
+          "score": "74-77",
+          "period": 3,
+          "clock": "1:27"
+        },
+        {
+          "t": "2026-03-11T03:46:16.846Z",
+          "spread": -2.5,
+          "score": "74-77",
+          "period": 3,
+          "clock": "1:27"
         }
       ]
+    },
+    {
+      "id": 1773200713394,
+      "key": "401810800_sust_SAC",
+      "gameId": "401810800",
+      "team": "SAC",
+      "opponent": "IND",
+      "matchup": "IND @ SAC",
+      "side": "SPREAD",
+      "spread": 10.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -132,
+      "impliedP": 56.9,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-11T03:45:13.394Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "IND",
+      "homeTeam": "SAC",
+      "awayName": "Indiana Pacers",
+      "homeName": "Sacramento Kings",
+      "awayScore": 80,
+      "homeScore": 67,
+      "period": 3,
+      "clock": "2:16",
+      "periodLabel": "Q3",
+      "sustLeader": "IND",
+      "sustMargin": 15,
+      "betOnLeader": false,
+      "currentMargin": -15,
+      "cushion": -2.5,
+      "sustScore": 42.8,
+      "fragScore": 4.7,
+      "sustGap": 38.099999999999994,
+      "sustSignals": [
+        "Low 3PT reliance (14%)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "38",
+        "efg": "40",
+        "threePt": "21",
+        "twoPt": "65",
+        "proc": 6.6,
+        "star": 0,
+        "scq": 10
+      },
+      "fragStats": {
+        "fg": "44",
+        "efg": "52",
+        "threePt": "36",
+        "twoPt": "45",
+        "proc": 5.2,
+        "star": 0,
+        "scq": -7
+      },
+      "sustDetail": "SAC +38.6 vs IND 4.7 (gap:33.9) | IND 80-65 SAC | Q3 3:04 | FanDuel +11.5 (-132)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": false,
+        "g7_earlyGame": false,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": true,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 28,
+        "v2_f1low": 34.8,
+        "v3_f1high": 38.3,
+        "v4_f3boost": 39.6,
+        "v5_noStar": 34
+      },
+      "v7": {
+        "aScq": -6.6,
+        "hScq": 9.5,
+        "aScore": 2.1,
+        "hScore": 42.4,
+        "gap": 40.3,
+        "f5contrib": 6.4
+      },
+      "altStructural": {
+        "v6_cushionBoost": 33.9,
+        "v7_marginWeighted": 50.9,
+        "v8_procDiffOnly": 14,
+        "v10_timeDecay": 44.1
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -3.5,
+        "detail": "SAC -3.5",
+        "awaySpread": "+3.5",
+        "homeSpread": "-3.5",
+        "awaySpreadOdds": "-115",
+        "homeSpreadOdds": "-105",
+        "awayML": "+136",
+        "homeML": "-162",
+        "openSpread": "+3.5"
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-11T03:46:16.254Z",
+          "spread": 10.5,
+          "score": "80-67",
+          "period": 3,
+          "clock": "2:16"
+        },
+        {
+          "t": "2026-03-11T03:46:16.846Z",
+          "spread": 10.5,
+          "score": "80-67",
+          "period": 3,
+          "clock": "2:16"
+        }
+      ],
+      "alertSent": true
+    },
+    {
+      "id": 1773200780302,
+      "key": "401810801_sust_MIN",
+      "gameId": "401810801",
+      "team": "MIN",
+      "opponent": "LAL",
+      "matchup": "MIN @ LAL",
+      "side": "SPREAD",
+      "spread": -5.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": 100,
+      "impliedP": 50,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-11T03:46:20.302Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "MIN",
+      "homeTeam": "LAL",
+      "awayName": "Minnesota Timberwolves",
+      "homeName": "Los Angeles Lakers",
+      "awayScore": 25,
+      "homeScore": 20,
+      "period": 2,
+      "clock": "10:05",
+      "periodLabel": "Q2",
+      "sustLeader": "MIN",
+      "sustMargin": 5,
+      "betOnLeader": true,
+      "currentMargin": 5,
+      "cushion": -0.5,
+      "sustScore": 51.6,
+      "fragScore": 4.8,
+      "sustGap": 46.800000000000004,
+      "sustSignals": [
+        "Low 3PT reliance (24%)",
+        "Star cold (41% pace)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "36",
+        "efg": "40",
+        "threePt": "14",
+        "twoPt": "56",
+        "proc": 6.9,
+        "star": 41,
+        "scq": -28
+      },
+      "fragStats": {
+        "fg": "28",
+        "efg": "28",
+        "threePt": "0",
+        "twoPt": "90",
+        "proc": 4.7,
+        "star": 0,
+        "scq": -25
+      },
+      "sustDetail": "MIN +51.6 vs LAL 4.8 (gap:46.800000000000004) | MIN 25-20 LAL | Q2 10:05 | FanDuel -5.5 (+100)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 54,
+        "v2_f1low": 53.6,
+        "v3_f1high": 26,
+        "v4_f3boost": 55.6,
+        "v5_noStar": 36.8
+      },
+      "v7": {
+        "aScq": -28,
+        "hScq": -25,
+        "aScore": 40.4,
+        "hScore": -5.2,
+        "gap": 45.6,
+        "f5contrib": 1.2
+      },
+      "altStructural": {
+        "v6_cushionBoost": 46.8,
+        "v7_marginWeighted": 23.4,
+        "v8_procDiffOnly": 22,
+        "v10_timeDecay": 46.8
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": 2.5,
+        "detail": "MIN -2.5",
+        "awaySpread": "-2.5",
+        "homeSpread": "+2.5",
+        "awaySpreadOdds": "-115",
+        "homeSpreadOdds": "-105",
+        "awayML": "-142",
+        "homeML": "+120",
+        "openSpread": "-1.5"
+      },
+      "alertSent": true
     }
   ],
   "resolved": []
