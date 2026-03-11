@@ -1043,8 +1043,114 @@
           "score": "74-55",
           "period": 2,
           "clock": "2:35"
+        },
+        {
+          "t": "2026-03-11T23:02:23.892Z",
+          "spread": -17.5,
+          "score": "74-57",
+          "period": 2,
+          "clock": "2:12"
         }
       ]
+    },
+    {
+      "id": 1773270144343,
+      "key": "401851369_sust_IU",
+      "gameId": "401851369",
+      "team": "IU",
+      "opponent": "NU",
+      "matchup": "NU @ IU",
+      "side": "SPREAD",
+      "spread": -10.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -114,
+      "impliedP": 53.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-11T23:02:24.343Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "NU",
+      "homeTeam": "IU",
+      "awayName": "Northwestern Wildcats",
+      "homeName": "Indiana Hoosiers",
+      "awayScore": 21,
+      "homeScore": 28,
+      "period": 1,
+      "clock": "6:54",
+      "periodLabel": "H1",
+      "sustLeader": "IU",
+      "sustMargin": 7,
+      "betOnLeader": true,
+      "currentMargin": 7,
+      "cushion": -3.5,
+      "sustScore": 51.9,
+      "fragScore": -11.5,
+      "sustGap": 63.4,
+      "sustSignals": [
+        "Strong process (7.7/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "61",
+        "efg": "72",
+        "threePt": "50",
+        "twoPt": "50",
+        "proc": 7.7,
+        "star": 116,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "56",
+        "efg": "58",
+        "threePt": "100",
+        "twoPt": "86",
+        "proc": 4.1,
+        "star": 80,
+        "scq": 0
+      },
+      "sustDetail": "IU +51.9 vs NU -11.5 (gap:63.4) | NU 21-28 IU | H1 6:54 | FanDuel -10.5 (-114)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 72,
+        "v2_f1low": 73.5,
+        "v3_f1high": 34.7,
+        "v4_f3boost": 77.8,
+        "v5_noStar": 63.4
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -11.5,
+        "hScore": 51.9,
+        "gap": 63.4,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 63.4,
+        "v7_marginWeighted": 44.4,
+        "v8_procDiffOnly": 36,
+        "v10_timeDecay": 63.4
+      },
+      "alertSent": true
     }
   ],
   "resolved": [
