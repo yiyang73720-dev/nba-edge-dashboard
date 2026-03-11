@@ -1,5 +1,6 @@
 {
-  "bets": [
+  "bets": [],
+  "resolved": [
     {
       "id": 1773252610673,
       "key": "401851289_sust_ISU",
@@ -19,8 +20,8 @@
       "kellyBet": 500,
       "book": "FanDuel",
       "timestamp": "2026-03-11T18:10:10.673Z",
-      "outcome": null,
-      "payout": null,
+      "outcome": "W",
+      "payout": 462.96,
       "mode": "ncaab",
       "awayTeam": "ASU",
       "homeTeam": "ISU",
@@ -350,9 +351,118 @@
           "score": "40-83",
           "period": 2,
           "clock": "3:46"
+        },
+        {
+          "t": "2026-03-11T18:30:53.481Z",
+          "spread": -42.5,
+          "score": "40-83",
+          "period": 2,
+          "clock": "3:39"
+        },
+        {
+          "t": "2026-03-11T18:30:54.334Z",
+          "spread": -42.5,
+          "score": "40-83",
+          "period": 2,
+          "clock": "3:39"
+        },
+        {
+          "t": "2026-03-11T18:31:55.256Z",
+          "spread": -43.5,
+          "score": "40-84",
+          "period": 2,
+          "clock": "3:36"
+        },
+        {
+          "t": "2026-03-11T18:31:57.044Z",
+          "spread": -43.5,
+          "score": "40-84",
+          "period": 2,
+          "clock": "3:36"
+        },
+        {
+          "t": "2026-03-11T18:32:57.127Z",
+          "spread": -46.5,
+          "score": "40-87",
+          "period": 2,
+          "clock": "2:45"
+        },
+        {
+          "t": "2026-03-11T18:32:59.914Z",
+          "spread": -46.5,
+          "score": "40-87",
+          "period": 2,
+          "clock": "2:45"
+        },
+        {
+          "t": "2026-03-11T18:33:59.396Z",
+          "spread": -48.5,
+          "score": "40-87",
+          "period": 2,
+          "clock": "2:12"
+        },
+        {
+          "t": "2026-03-11T18:34:01.539Z",
+          "spread": -48.5,
+          "score": "40-87",
+          "period": 2,
+          "clock": "2:12"
+        },
+        {
+          "t": "2026-03-11T18:35:01.478Z",
+          "spread": -48.5,
+          "score": "40-89",
+          "period": 2,
+          "clock": "1:11"
+        },
+        {
+          "t": "2026-03-11T18:35:03.238Z",
+          "spread": -48.5,
+          "score": "40-89",
+          "period": 2,
+          "clock": "1:11"
+        },
+        {
+          "t": "2026-03-11T18:36:03.538Z",
+          "spread": -48.5,
+          "score": "42-91",
+          "period": 2,
+          "clock": "0:38"
+        },
+        {
+          "t": "2026-03-11T18:36:04.852Z",
+          "spread": -48.5,
+          "score": "42-91",
+          "period": 2,
+          "clock": "0:38"
+        },
+        {
+          "t": "2026-03-11T18:37:06.650Z",
+          "spread": -48.5,
+          "score": "42-91",
+          "period": 2,
+          "clock": "0:22"
+        },
+        {
+          "t": "2026-03-11T18:37:07.536Z",
+          "spread": -48.5,
+          "score": "42-91",
+          "period": 2,
+          "clock": "0:22"
         }
-      ]
+      ],
+      "resolvedAt": "2026-03-11T18:38:10.209Z",
+      "finalScore": "ASU 42 - 91 ISU",
+      "closingSpread": -48.5,
+      "clv": 13
     }
   ],
-  "resolved": []
+  "meta": {
+    "brierScore": 0.2025,
+    "brierBaseline": 0.25,
+    "brierSkill": 0.19,
+    "brierN": 1,
+    "winRate": 100,
+    "totalPL": 462.96
+  }
 }
