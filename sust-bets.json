@@ -1,6 +1,161 @@
 {
   "bets": [
     {
+      "id": 1773204297997,
+      "key": "401810801_sust_LAL",
+      "gameId": "401810801",
+      "team": "LAL",
+      "opponent": "MIN",
+      "matchup": "MIN @ LAL",
+      "side": "SPREAD",
+      "spread": -10.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -152,
+      "impliedP": 60.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-11T04:44:57.997Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "MIN",
+      "homeTeam": "LAL",
+      "awayName": "Minnesota Timberwolves",
+      "homeName": "Los Angeles Lakers",
+      "awayScore": 59,
+      "homeScore": 73,
+      "period": 3,
+      "clock": "3:52",
+      "periodLabel": "Q3",
+      "sustLeader": "LAL",
+      "sustMargin": 13,
+      "betOnLeader": true,
+      "currentMargin": 13,
+      "cushion": 3.5,
+      "sustScore": 38.6,
+      "fragScore": -0.8,
+      "sustGap": 39.4,
+      "sustSignals": [
+        "Low 3PT reliance (18%)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "41",
+        "efg": "44",
+        "threePt": "16",
+        "twoPt": "67",
+        "proc": 6.7,
+        "star": 0,
+        "scq": -11
+      },
+      "fragStats": {
+        "fg": "38",
+        "efg": "42",
+        "threePt": "15",
+        "twoPt": "56",
+        "proc": 4.9,
+        "star": 43,
+        "scq": -25
+      },
+      "sustDetail": "LAL +39.3 vs MIN 12.1 (gap:27.199999999999996) | MIN 54-67 LAL | Q3 5:29 | FanDuel -6.5 (-152)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": false,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 26,
+        "v2_f1low": 30.4,
+        "v3_f1high": 22,
+        "v4_f3boost": 34.4,
+        "v5_noStar": 37.2
+      },
+      "v7": {
+        "aScq": -25.5,
+        "hScq": -10.9,
+        "aScore": 1.9,
+        "hScore": 34.9,
+        "gap": 33,
+        "f5contrib": 5.8
+      },
+      "altStructural": {
+        "v6_cushionBoost": 46.7,
+        "v7_marginWeighted": 35.4,
+        "v8_procDiffOnly": 18,
+        "v10_timeDecay": 35.4
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": 2.5,
+        "detail": "MIN -2.5",
+        "awaySpread": "-2.5",
+        "homeSpread": "+2.5",
+        "awaySpreadOdds": "-115",
+        "homeSpreadOdds": "-105",
+        "awayML": "-142",
+        "homeML": "+120",
+        "openSpread": "-1.5"
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-11T04:46:00.598Z",
+          "spread": -8.5,
+          "score": "55-67",
+          "period": 3,
+          "clock": "4:55"
+        },
+        {
+          "t": "2026-03-11T04:46:01.953Z",
+          "spread": -8.5,
+          "score": "55-67",
+          "period": 3,
+          "clock": "4:55"
+        },
+        {
+          "t": "2026-03-11T04:47:04.877Z",
+          "spread": -10.5,
+          "score": "56-70",
+          "period": 3,
+          "clock": "4:32"
+        },
+        {
+          "t": "2026-03-11T04:47:06.293Z",
+          "spread": -10.5,
+          "score": "56-70",
+          "period": 3,
+          "clock": "4:32"
+        },
+        {
+          "t": "2026-03-11T04:48:08.979Z",
+          "spread": -10.5,
+          "score": "59-73",
+          "period": 3,
+          "clock": "3:52"
+        },
+        {
+          "t": "2026-03-11T04:48:10.329Z",
+          "spread": -10.5,
+          "score": "59-73",
+          "period": 3,
+          "clock": "3:52"
+        }
+      ],
+      "alertSent": true
+    },
+    {
       "id": 1773204298983,
       "key": "401851335_sust_IDHO",
       "gameId": "401851335",
@@ -97,7 +252,51 @@
         "v8_procDiffOnly": 28,
         "v10_timeDecay": 47.4
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-11T04:46:03.033Z",
+          "spread": -5.5,
+          "score": "36-28",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-11T04:46:04.490Z",
+          "spread": -5.5,
+          "score": "36-28",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-11T04:47:07.148Z",
+          "spread": -5.5,
+          "score": "36-28",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-11T04:47:08.575Z",
+          "spread": -5.5,
+          "score": "36-28",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-11T04:48:12.597Z",
+          "spread": -5.5,
+          "score": "36-28",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-11T04:48:12.899Z",
+          "spread": -5.5,
+          "score": "36-28",
+          "period": 1,
+          "clock": "0:00"
+        }
+      ]
     }
   ],
   "resolved": []
