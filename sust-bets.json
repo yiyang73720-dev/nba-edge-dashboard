@@ -1,4 +1,157 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1773262303187,
+      "key": "401851291_sust_UCF",
+      "gameId": "401851291",
+      "team": "UCF",
+      "opponent": "CIN",
+      "matchup": "CIN @ UCF",
+      "side": "SPREAD",
+      "spread": 5.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -106,
+      "impliedP": 51.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-11T20:51:43.187Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "CIN",
+      "homeTeam": "UCF",
+      "awayName": "Cincinnati Bearcats",
+      "homeName": "UCF Knights",
+      "awayScore": 43,
+      "homeScore": 36,
+      "period": 2,
+      "clock": "11:16",
+      "periodLabel": "H2",
+      "sustLeader": "CIN",
+      "sustMargin": 7,
+      "betOnLeader": false,
+      "currentMargin": -7,
+      "cushion": -1.5,
+      "sustScore": 23.3,
+      "fragScore": -13.9,
+      "sustGap": 37.2,
+      "sustSignals": [
+        "Low 3PT reliance (26%)"
+      ],
+      "fragSignals": [
+        "3PT heavy (59% of pts)"
+      ],
+      "sustStats": {
+        "fg": "30",
+        "efg": "34",
+        "threePt": "19",
+        "twoPt": "65",
+        "proc": 5.9,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "34",
+        "efg": "45",
+        "threePt": "53",
+        "twoPt": "24",
+        "proc": 4.9,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "UCF +20.9 vs CIN -8.8 (gap:29.7) | CIN 41-34 UCF | H2 11:58 | FanDuel +5.5 (-106)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": false,
+        "g7_earlyGame": false,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 20,
+        "v2_f1low": 28.4,
+        "v3_f1high": 41.7,
+        "v4_f3boost": 33.6,
+        "v5_noStar": 29.6
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -8.8,
+        "hScore": 20.9,
+        "gap": 29.7,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 29.7,
+        "v7_marginWeighted": 20.8,
+        "v8_procDiffOnly": 10,
+        "v10_timeDecay": 29.7
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-11T20:52:45.023Z",
+          "spread": 5.5,
+          "score": "41-34",
+          "period": 2,
+          "clock": "11:58"
+        },
+        {
+          "t": "2026-03-11T20:52:46.252Z",
+          "spread": 5.5,
+          "score": "41-34",
+          "period": 2,
+          "clock": "11:58"
+        },
+        {
+          "t": "2026-03-11T20:53:47.439Z",
+          "spread": 6.5,
+          "score": "41-34",
+          "period": 2,
+          "clock": "11:58"
+        },
+        {
+          "t": "2026-03-11T20:53:48.529Z",
+          "spread": 6.5,
+          "score": "41-34",
+          "period": 2,
+          "clock": "11:58"
+        },
+        {
+          "t": "2026-03-11T20:54:52.937Z",
+          "spread": 5.5,
+          "score": "41-36",
+          "period": 2,
+          "clock": "11:58"
+        },
+        {
+          "t": "2026-03-11T20:54:56.685Z",
+          "spread": 6.5,
+          "score": "41-36",
+          "period": 2,
+          "clock": "11:58"
+        },
+        {
+          "t": "2026-03-11T20:55:56.028Z",
+          "spread": 5.5,
+          "score": "43-36",
+          "period": 2,
+          "clock": "11:16"
+        }
+      ],
+      "alertSent": true
+    }
+  ],
   "resolved": []
 }
