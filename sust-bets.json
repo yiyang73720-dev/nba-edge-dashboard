@@ -99,7 +99,23 @@
         "v8_procDiffOnly": 16,
         "v10_timeDecay": 47
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-11T23:38:24.932Z",
+          "spread": 3.5,
+          "score": "25-30",
+          "period": 1,
+          "clock": "5:14"
+        },
+        {
+          "t": "2026-03-11T23:38:26.225Z",
+          "spread": 3.5,
+          "score": "25-30",
+          "period": 1,
+          "clock": "5:14"
+        }
+      ]
     },
     {
       "id": 1773272243369,
@@ -196,7 +212,132 @@
         "v8_procDiffOnly": 26,
         "v10_timeDecay": 53.1
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-11T23:38:24.933Z",
+          "spread": -7.5,
+          "score": "22-32",
+          "period": 1,
+          "clock": "4:16"
+        },
+        {
+          "t": "2026-03-11T23:38:26.226Z",
+          "spread": -7.5,
+          "score": "22-32",
+          "period": 1,
+          "clock": "4:16"
+        }
+      ]
+    },
+    {
+      "id": 1773272306066,
+      "key": "401851309_sust_MARQ",
+      "gameId": "401851309",
+      "team": "MARQ",
+      "opponent": "XAV",
+      "matchup": "XAV @ MARQ",
+      "side": "SPREAD",
+      "spread": -3.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -110,
+      "impliedP": 52.4,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-11T23:38:26.066Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "XAV",
+      "homeTeam": "MARQ",
+      "awayName": "Xavier Musketeers",
+      "homeName": "Marquette Golden Eagles",
+      "awayScore": 38,
+      "homeScore": 38,
+      "period": 1,
+      "clock": "0:00",
+      "periodLabel": "H1",
+      "sustLeader": "TIE",
+      "sustMargin": 0,
+      "betOnLeader": false,
+      "currentMargin": 0,
+      "cushion": -3.5,
+      "sustScore": 55,
+      "fragScore": 5,
+      "sustGap": 50,
+      "sustSignals": [
+        "Strong process (7.3/10)",
+        "Star cold (37% pace)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "38",
+        "efg": "45",
+        "threePt": "25",
+        "twoPt": "53",
+        "proc": 7.3,
+        "star": 37,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "41",
+        "efg": "49",
+        "threePt": "36",
+        "twoPt": "47",
+        "proc": 4.8,
+        "star": 44,
+        "scq": 0
+      },
+      "sustDetail": "MARQ +55 vs XAV 5 (gap:50) | XAV 38-38 MARQ | H1 0:00 | FanDuel -3.5 (-110)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": false,
+        "g7_earlyGame": false,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 50,
+        "v2_f1low": 55,
+        "v3_f1high": 40,
+        "v4_f3boost": 60,
+        "v5_noStar": 50
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 5,
+        "hScore": 55,
+        "gap": 50,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 50,
+        "v7_marginWeighted": 5,
+        "v8_procDiffOnly": 25,
+        "v10_timeDecay": 50
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-11T23:38:26.227Z",
+          "spread": -3.5,
+          "score": "38-38",
+          "period": 1,
+          "clock": "0:00"
+        }
+      ]
     }
   ],
   "resolved": []
