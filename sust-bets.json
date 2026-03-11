@@ -95,6 +95,121 @@
         "v8_procDiffOnly": 27,
         "v10_timeDecay": 47.6
       },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-11T16:26:33.596Z",
+          "spread": 3.5,
+          "score": "28-23",
+          "period": 1,
+          "clock": "8:49"
+        },
+        {
+          "t": "2026-03-11T16:26:33.611Z",
+          "spread": 3.5,
+          "score": "28-23",
+          "period": 1,
+          "clock": "8:49"
+        }
+      ]
+    },
+    {
+      "id": 1773246394569,
+      "key": "401851258_sust_SBU",
+      "gameId": "401851258",
+      "team": "SBU",
+      "opponent": "LAS",
+      "matchup": "SBU @ LAS",
+      "side": "SPREAD",
+      "spread": -14.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -128,
+      "impliedP": 56.1,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-11T16:26:34.569Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "SBU",
+      "homeTeam": "LAS",
+      "awayName": "St. Bonaventure Bonnies",
+      "homeName": "La Salle Explorers",
+      "awayScore": 48,
+      "homeScore": 33,
+      "period": 1,
+      "clock": "0:00",
+      "periodLabel": "H1",
+      "sustLeader": "SBU",
+      "sustMargin": 15,
+      "betOnLeader": true,
+      "currentMargin": 15,
+      "cushion": 0.5,
+      "sustScore": 47.4,
+      "fragScore": 6.1,
+      "sustGap": 41.3,
+      "sustSignals": [
+        "Strong process (7.8/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "56",
+        "efg": "63",
+        "threePt": "45",
+        "twoPt": "58",
+        "proc": 7.8,
+        "star": 159,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "45",
+        "efg": "47",
+        "threePt": "17",
+        "twoPt": "79",
+        "proc": 4.9,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "SBU +47.4 vs LAS 6.1 (gap:41.3) | SBU 48-33 LAS | H1 0:00 | FanDuel -14.5 (-128)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": false,
+        "g8_highProc": true,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 48,
+        "v2_f1low": 49.4,
+        "v3_f1high": 18.7,
+        "v4_f3boost": 53,
+        "v5_noStar": 51.4
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 47.4,
+        "hScore": 6.1,
+        "gap": 41.3,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 42.8,
+        "v7_marginWeighted": 62,
+        "v8_procDiffOnly": 29,
+        "v10_timeDecay": 41.3
+      },
       "alertSent": true
     }
   ],
