@@ -281,6 +281,13 @@
           "score": "26-26",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-11T19:55:51.803Z",
+          "spread": -4.5,
+          "score": "26-26",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
     },
@@ -564,6 +571,13 @@
           "score": "56-44",
           "period": 2,
           "clock": "13:28"
+        },
+        {
+          "t": "2026-03-11T19:55:51.803Z",
+          "spread": -9.5,
+          "score": "56-44",
+          "period": 2,
+          "clock": "13:07"
         }
       ]
     },
@@ -762,8 +776,114 @@
           "score": "26-41",
           "period": 1,
           "clock": "0:53"
+        },
+        {
+          "t": "2026-03-11T19:55:51.806Z",
+          "spread": -10.5,
+          "score": "28-41",
+          "period": 1,
+          "clock": "0:53"
         }
       ],
+      "alertSent": true
+    },
+    {
+      "id": 1773258953058,
+      "key": "401851291_sust_UCF",
+      "gameId": "401851291",
+      "team": "UCF",
+      "opponent": "CIN",
+      "matchup": "CIN @ UCF",
+      "side": "SPREAD",
+      "spread": 2.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -110,
+      "impliedP": 52.4,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-11T19:55:53.058Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "CIN",
+      "homeTeam": "UCF",
+      "awayName": "Cincinnati Bearcats",
+      "homeName": "UCF Knights",
+      "awayScore": 21,
+      "homeScore": 20,
+      "period": 1,
+      "clock": "4:37",
+      "periodLabel": "H1",
+      "sustLeader": "CIN",
+      "sustMargin": 1,
+      "betOnLeader": false,
+      "currentMargin": -1,
+      "cushion": 1.5,
+      "sustScore": 35.8,
+      "fragScore": -18.6,
+      "sustGap": 54.4,
+      "sustSignals": [],
+      "fragSignals": [
+        "3PT heavy (71% of pts)"
+      ],
+      "sustStats": {
+        "fg": "31",
+        "efg": "35",
+        "threePt": "22",
+        "twoPt": "60",
+        "proc": 6.7,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "32",
+        "efg": "43",
+        "threePt": "63",
+        "twoPt": "19",
+        "proc": 4.6,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "UCF +35.8 vs CIN -18.6 (gap:54.4) | CIN 21-20 UCF | H1 4:37 | FanDuel +2.5 (-110)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 42,
+        "v2_f1low": 54.5,
+        "v3_f1high": 66.7,
+        "v4_f3boost": 62.8,
+        "v5_noStar": 54.4
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -18.6,
+        "hScore": 35.8,
+        "gap": 54.4,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 58.9,
+        "v7_marginWeighted": 5.4,
+        "v8_procDiffOnly": 21,
+        "v10_timeDecay": 54.4
+      },
       "alertSent": true
     }
   ],
