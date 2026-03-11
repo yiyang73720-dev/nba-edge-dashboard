@@ -1,6 +1,137 @@
 {
   "bets": [
     {
+      "id": 1773265549038,
+      "key": "401851614_sust_MCN",
+      "gameId": "401851614",
+      "team": "MCN",
+      "opponent": "SFA",
+      "matchup": "MCN @ SFA",
+      "side": "SPREAD",
+      "spread": -14.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -112,
+      "impliedP": 52.8,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-11T21:45:49.038Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "MCN",
+      "homeTeam": "SFA",
+      "awayName": "McNeese Cowboys",
+      "homeName": "Stephen F. Austin Lumberjacks",
+      "awayScore": 36,
+      "homeScore": 20,
+      "period": 1,
+      "clock": "4:24",
+      "periodLabel": "H1",
+      "sustLeader": "MCN",
+      "sustMargin": 16,
+      "betOnLeader": true,
+      "currentMargin": 16,
+      "cushion": 1.5,
+      "sustScore": 27.8,
+      "fragScore": -12.2,
+      "sustGap": 40,
+      "sustSignals": [
+        "Star cold (59% pace)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "59",
+        "efg": "73",
+        "threePt": "60",
+        "twoPt": "39",
+        "proc": 6.1,
+        "star": 59,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "30",
+        "efg": "35",
+        "threePt": "20",
+        "twoPt": "40",
+        "proc": 4.3,
+        "star": 98,
+        "scq": 0
+      },
+      "sustDetail": "MCN +27.8 vs SFA -12.2 (gap:40) | MCN 36-20 SFA | H1 4:24 | FanDuel -14.5 (-112)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 46,
+        "v2_f1low": 45.6,
+        "v3_f1high": 22.8,
+        "v4_f3boost": 47.2,
+        "v5_noStar": 30
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 27.8,
+        "hScore": -12.2,
+        "gap": 40,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 44.5,
+        "v7_marginWeighted": 64,
+        "v8_procDiffOnly": 18,
+        "v10_timeDecay": 40
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-11T21:46:50.914Z",
+          "spread": -13.5,
+          "score": "36-20",
+          "period": 1,
+          "clock": "3:37"
+        },
+        {
+          "t": "2026-03-11T21:46:51.507Z",
+          "spread": -13.5,
+          "score": "36-20",
+          "period": 1,
+          "clock": "3:37"
+        },
+        {
+          "t": "2026-03-11T21:47:52.873Z",
+          "spread": -13.5,
+          "score": "36-20",
+          "period": 1,
+          "clock": "3:37"
+        },
+        {
+          "t": "2026-03-11T21:47:52.878Z",
+          "spread": -13.5,
+          "score": "36-20",
+          "period": 1,
+          "clock": "3:37"
+        }
+      ]
+    }
+  ],
+  "resolved": [
+    {
       "id": 1773262303187,
       "key": "401851291_sust_UCF",
       "gameId": "401851291",
@@ -19,8 +150,8 @@
       "kellyBet": 500,
       "book": "FanDuel",
       "timestamp": "2026-03-11T20:51:43.187Z",
-      "outcome": null,
-      "payout": null,
+      "outcome": "W",
+      "payout": 471.7,
       "mode": "ncaab",
       "awayTeam": "CIN",
       "homeTeam": "UCF",
@@ -577,107 +708,19 @@
           "clock": "0:00"
         }
       ],
-      "alertSent": true
-    },
-    {
-      "id": 1773265549038,
-      "key": "401851614_sust_MCN",
-      "gameId": "401851614",
-      "team": "MCN",
-      "opponent": "SFA",
-      "matchup": "MCN @ SFA",
-      "side": "SPREAD",
-      "spread": -14.5,
-      "signals": [
-        "sust"
-      ],
-      "marketOdds": -112,
-      "impliedP": 52.8,
-      "estimatedP": 55,
-      "kellyPct": 2.5,
-      "kellyBet": 500,
-      "book": "FanDuel",
-      "timestamp": "2026-03-11T21:45:49.038Z",
-      "outcome": null,
-      "payout": null,
-      "mode": "ncaab",
-      "awayTeam": "MCN",
-      "homeTeam": "SFA",
-      "awayName": "McNeese Cowboys",
-      "homeName": "Stephen F. Austin Lumberjacks",
-      "awayScore": 36,
-      "homeScore": 20,
-      "period": 1,
-      "clock": "4:24",
-      "periodLabel": "H1",
-      "sustLeader": "MCN",
-      "sustMargin": 16,
-      "betOnLeader": true,
-      "currentMargin": 16,
-      "cushion": 1.5,
-      "sustScore": 27.8,
-      "fragScore": -12.2,
-      "sustGap": 40,
-      "sustSignals": [
-        "Star cold (59% pace)"
-      ],
-      "fragSignals": [],
-      "sustStats": {
-        "fg": "59",
-        "efg": "73",
-        "threePt": "60",
-        "twoPt": "39",
-        "proc": 6.1,
-        "star": 59,
-        "scq": 0
-      },
-      "fragStats": {
-        "fg": "30",
-        "efg": "35",
-        "threePt": "20",
-        "twoPt": "40",
-        "proc": 4.3,
-        "star": 98,
-        "scq": 0
-      },
-      "sustDetail": "MCN +27.8 vs SFA -12.2 (gap:40) | MCN 36-20 SFA | H1 4:24 | FanDuel -14.5 (-112)",
-      "strategies": {
-        "g1_bigGap": false,
-        "g2_procDriven": true,
-        "g3_threePtDriven": false,
-        "g4_starInvolved": true,
-        "g5_betOnLeader": true,
-        "g6_hasCushion": true,
-        "g7_earlyGame": true,
-        "g8_highProc": false,
-        "g9_homeTeam": false,
-        "g10_ncaa": true,
-        "g11_bigMargin": true,
-        "g12_oppCold3": true
-      },
-      "altGaps": {
-        "v1_pureProc": 46,
-        "v2_f1low": 45.6,
-        "v3_f1high": 22.8,
-        "v4_f3boost": 47.2,
-        "v5_noStar": 30
-      },
-      "v7": {
-        "aScq": 0,
-        "hScq": 0,
-        "aScore": 27.8,
-        "hScore": -12.2,
-        "gap": 40,
-        "f5contrib": 0
-      },
-      "altStructural": {
-        "v6_cushionBoost": 44.5,
-        "v7_marginWeighted": 64,
-        "v8_procDiffOnly": 18,
-        "v10_timeDecay": 40
-      },
-      "alertSent": true
+      "alertSent": true,
+      "resolvedAt": "2026-03-11T21:47:53.261Z",
+      "finalScore": "CIN 65 - 66 UCF",
+      "closingSpread": 1.5,
+      "clv": 4
     }
   ],
-  "resolved": []
+  "meta": {
+    "brierScore": 0.2025,
+    "brierBaseline": 0.25,
+    "brierSkill": 0.19,
+    "brierN": 1,
+    "winRate": 100,
+    "totalPL": 471.7
+  }
 }
