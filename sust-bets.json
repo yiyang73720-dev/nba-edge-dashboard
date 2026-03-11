@@ -1083,6 +1083,20 @@
           "score": "104-109",
           "period": 4,
           "clock": "5:13"
+        },
+        {
+          "t": "2026-03-11T01:40:42.481Z",
+          "spread": -8.5,
+          "score": "106-112",
+          "period": 4,
+          "clock": "4:29"
+        },
+        {
+          "t": "2026-03-11T01:40:43.091Z",
+          "spread": -8.5,
+          "score": "106-112",
+          "period": 4,
+          "clock": "4:29"
         }
       ]
     },
@@ -2127,6 +2141,20 @@
           "score": "102-124",
           "period": 4,
           "clock": "9:41"
+        },
+        {
+          "t": "2026-03-11T01:40:42.481Z",
+          "spread": -21.5,
+          "score": "102-124",
+          "period": 4,
+          "clock": "9:41"
+        },
+        {
+          "t": "2026-03-11T01:40:43.091Z",
+          "spread": -21.5,
+          "score": "102-124",
+          "period": 4,
+          "clock": "9:41"
         }
       ]
     },
@@ -3157,6 +3185,20 @@
           "score": "103-68",
           "period": 3,
           "clock": "1:43"
+        },
+        {
+          "t": "2026-03-11T01:40:42.481Z",
+          "spread": -32.5,
+          "score": "105-71",
+          "period": 3,
+          "clock": "33.2"
+        },
+        {
+          "t": "2026-03-11T01:40:43.091Z",
+          "spread": -32.5,
+          "score": "105-71",
+          "period": 3,
+          "clock": "33.2"
         }
       ]
     },
@@ -3989,6 +4031,20 @@
           "score": "65-71",
           "period": 3,
           "clock": "5:19"
+        },
+        {
+          "t": "2026-03-11T01:40:42.481Z",
+          "spread": 7.5,
+          "score": "65-71",
+          "period": 3,
+          "clock": "5:19"
+        },
+        {
+          "t": "2026-03-11T01:40:43.091Z",
+          "spread": 7.5,
+          "score": "65-71",
+          "period": 3,
+          "clock": "5:19"
         }
       ]
     },
@@ -4703,6 +4759,170 @@
           "score": "76-75",
           "period": 3,
           "clock": "6:55"
+        },
+        {
+          "t": "2026-03-11T01:40:42.481Z",
+          "spread": -2.5,
+          "score": "76-75",
+          "period": 3,
+          "clock": "6:55"
+        },
+        {
+          "t": "2026-03-11T01:40:43.091Z",
+          "spread": -2.5,
+          "score": "76-75",
+          "period": 3,
+          "clock": "6:55"
+        }
+      ],
+      "alertSent": true
+    },
+    {
+      "id": 1773192974006,
+      "key": "401851467_sust_SIE",
+      "gameId": "401851467",
+      "team": "SIE",
+      "opponent": "MRMK",
+      "matchup": "SIE @ MRMK",
+      "side": "SPREAD",
+      "spread": -5.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -114,
+      "impliedP": 53.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-11T01:36:14.006Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "SIE",
+      "homeTeam": "MRMK",
+      "awayName": "Siena Saints",
+      "homeName": "Merrimack Warriors",
+      "awayScore": 31,
+      "homeScore": 20,
+      "period": 1,
+      "clock": "3:20",
+      "periodLabel": "H1",
+      "sustLeader": "SIE",
+      "sustMargin": 8,
+      "betOnLeader": true,
+      "currentMargin": 8,
+      "cushion": 5.5,
+      "sustScore": 34.1,
+      "fragScore": -21.2,
+      "sustGap": 55.3,
+      "sustSignals": [],
+      "fragSignals": [
+        "3PT heavy (60% of pts)"
+      ],
+      "sustStats": {
+        "fg": "42",
+        "efg": "48",
+        "threePt": "38",
+        "twoPt": "50",
+        "proc": 6.1,
+        "star": 69,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "33",
+        "efg": "43",
+        "threePt": "33",
+        "twoPt": "30",
+        "proc": 5.1,
+        "star": 66,
+        "scq": 0
+      },
+      "sustDetail": "SIE +23.2 vs MRMK -5.2 (gap:28.4) | SIE 28-20 MRMK | H1 3:42 | FanDuel -6.5 (-114)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 20,
+        "v2_f1low": 27.6,
+        "v3_f1high": 38.3,
+        "v4_f3boost": 32.4,
+        "v5_noStar": 28.4
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 23.2,
+        "hScore": -5.2,
+        "gap": 28.4,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 32.9,
+        "v7_marginWeighted": 22.7,
+        "v8_procDiffOnly": 10,
+        "v10_timeDecay": 28.4
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-11T01:37:21.441Z",
+          "spread": -5.5,
+          "score": "28-20",
+          "period": 1,
+          "clock": "3:41"
+        },
+        {
+          "t": "2026-03-11T01:37:22.802Z",
+          "spread": -5.5,
+          "score": "28-20",
+          "period": 1,
+          "clock": "3:41"
+        },
+        {
+          "t": "2026-03-11T01:38:30.718Z",
+          "spread": -5.5,
+          "score": "28-20",
+          "period": 1,
+          "clock": "3:41"
+        },
+        {
+          "t": "2026-03-11T01:39:39.048Z",
+          "spread": -5.5,
+          "score": "29-20",
+          "period": 1,
+          "clock": "3:41"
+        },
+        {
+          "t": "2026-03-11T01:39:40.170Z",
+          "spread": -5.5,
+          "score": "29-20",
+          "period": 1,
+          "clock": "3:41"
+        },
+        {
+          "t": "2026-03-11T01:40:48.212Z",
+          "spread": -5.5,
+          "score": "31-20",
+          "period": 1,
+          "clock": "3:20"
+        },
+        {
+          "t": "2026-03-11T01:40:49.126Z",
+          "spread": -5.5,
+          "score": "31-20",
+          "period": 1,
+          "clock": "3:20"
         }
       ],
       "alertSent": true
