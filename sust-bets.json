@@ -1,181 +1,100 @@
 {
   "bets": [
     {
-      "id": 1773245886866,
-      "key": "401851258_sust_SBU",
-      "gameId": "401851258",
-      "team": "SBU",
-      "opponent": "LAS",
-      "matchup": "SBU @ LAS",
+      "id": 1773246330986,
+      "key": "401851173_sust_PITT",
+      "gameId": "401851173",
+      "team": "PITT",
+      "opponent": "NCSU",
+      "matchup": "PITT @ NCSU",
       "side": "SPREAD",
-      "spread": -12.5,
+      "spread": 3.5,
       "signals": [
         "sust"
       ],
-      "marketOdds": -118,
-      "impliedP": 54.1,
+      "marketOdds": -104,
+      "impliedP": 51,
       "estimatedP": 55,
       "kellyPct": 2.5,
       "kellyBet": 500,
       "book": "FanDuel",
-      "timestamp": "2026-03-11T16:18:06.866Z",
+      "timestamp": "2026-03-11T16:25:30.986Z",
       "outcome": null,
       "payout": null,
       "mode": "ncaab",
-      "awayTeam": "SBU",
-      "homeTeam": "LAS",
-      "awayName": "St. Bonaventure Bonnies",
-      "homeName": "La Salle Explorers",
-      "awayScore": 46,
-      "homeScore": 33,
+      "awayTeam": "PITT",
+      "homeTeam": "NCSU",
+      "awayName": "Pittsburgh Panthers",
+      "homeName": "NC State Wolfpack",
+      "awayScore": 28,
+      "homeScore": 21,
       "period": 1,
-      "clock": "0:47",
+      "clock": "9:02",
       "periodLabel": "H1",
-      "sustLeader": "SBU",
-      "sustMargin": 13,
+      "sustLeader": "PITT",
+      "sustMargin": 7,
       "betOnLeader": true,
-      "currentMargin": 13,
-      "cushion": 0.5,
-      "sustScore": 45,
-      "fragScore": 8.1,
-      "sustGap": 36.9,
-      "sustSignals": [
-        "Strong process (7.5/10)"
-      ],
+      "currentMargin": 7,
+      "cushion": 10.5,
+      "sustScore": 23.5,
+      "fragScore": -24.1,
+      "sustGap": 47.6,
+      "sustSignals": [],
       "fragSignals": [],
       "sustStats": {
-        "fg": "56",
-        "efg": "64",
-        "threePt": "45",
-        "twoPt": "57",
-        "proc": 7.5,
-        "star": 167,
-        "scq": 0
-      },
-      "fragStats": {
-        "fg": "48",
-        "efg": "50",
-        "threePt": "17",
-        "twoPt": "79",
-        "proc": 5.2,
+        "fg": "63",
+        "efg": "81",
+        "threePt": "60",
+        "twoPt": "29",
+        "proc": 6.6,
         "star": 0,
         "scq": 0
       },
-      "sustDetail": "SBU +41 vs LAS 12.1 (gap:28.9) | SBU 46-33 LAS | H1 0:57 | FanDuel -11.5 (-118)",
+      "fragStats": {
+        "fg": "50",
+        "efg": "59",
+        "threePt": "60",
+        "twoPt": "48",
+        "proc": 3.9,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "PITT +23.5 vs NCSU -24.1 (gap:47.6) | PITT 28-21 NCSU | H1 9:02 | FanDuel +3.5 (-104)",
       "strategies": {
         "g1_bigGap": false,
         "g2_procDriven": true,
         "g3_threePtDriven": false,
-        "g4_starInvolved": true,
+        "g4_starInvolved": false,
         "g5_betOnLeader": true,
         "g6_hasCushion": true,
         "g7_earlyGame": true,
-        "g8_highProc": true,
+        "g8_highProc": false,
         "g9_homeTeam": false,
         "g10_ncaa": true,
-        "g11_bigMargin": true,
-        "g12_oppCold3": true
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
       },
       "altGaps": {
-        "v1_pureProc": 36,
-        "v2_f1low": 35.9,
-        "v3_f1high": 8,
-        "v4_f3boost": 38.1,
-        "v5_noStar": 38.9
+        "v1_pureProc": 54,
+        "v2_f1low": 55.1,
+        "v3_f1high": 26.1,
+        "v4_f3boost": 58.4,
+        "v5_noStar": 47.6
       },
       "v7": {
         "aScq": 0,
         "hScq": 0,
-        "aScore": 41,
-        "hScore": 12.1,
-        "gap": 28.9,
+        "aScore": 23.5,
+        "hScore": -24.1,
+        "gap": 47.6,
         "f5contrib": 0
       },
       "altStructural": {
-        "v6_cushionBoost": 33.4,
-        "v7_marginWeighted": 37.6,
-        "v8_procDiffOnly": 23,
-        "v10_timeDecay": 28.9
+        "v6_cushionBoost": 79.1,
+        "v7_marginWeighted": 33.3,
+        "v8_procDiffOnly": 27,
+        "v10_timeDecay": 47.6
       },
-      "spreadHistory": [
-        {
-          "t": "2026-03-11T16:19:09.274Z",
-          "spread": -12.5,
-          "score": "46-33",
-          "period": 1,
-          "clock": "0:47"
-        },
-        {
-          "t": "2026-03-11T16:19:09.474Z",
-          "spread": -12.5,
-          "score": "46-33",
-          "period": 1,
-          "clock": "0:47"
-        },
-        {
-          "t": "2026-03-11T16:20:12.110Z",
-          "spread": -12.5,
-          "score": "46-33",
-          "period": 1,
-          "clock": "0:38"
-        },
-        {
-          "t": "2026-03-11T16:20:12.253Z",
-          "spread": -12.5,
-          "score": "46-33",
-          "period": 1,
-          "clock": "0:38"
-        },
-        {
-          "t": "2026-03-11T16:21:15.152Z",
-          "spread": -13.5,
-          "score": "46-33",
-          "period": 1,
-          "clock": "0:37"
-        },
-        {
-          "t": "2026-03-11T16:21:15.157Z",
-          "spread": -13.5,
-          "score": "46-33",
-          "period": 1,
-          "clock": "0:37"
-        },
-        {
-          "t": "2026-03-11T16:22:19.774Z",
-          "spread": -14.5,
-          "score": "48-33",
-          "period": 1,
-          "clock": "0:01"
-        },
-        {
-          "t": "2026-03-11T16:23:22.279Z",
-          "spread": -14.5,
-          "score": "48-33",
-          "period": 1,
-          "clock": "0:00"
-        },
-        {
-          "t": "2026-03-11T16:23:24.396Z",
-          "spread": -14.5,
-          "score": "48-33",
-          "period": 1,
-          "clock": "0:00"
-        },
-        {
-          "t": "2026-03-11T16:24:26.762Z",
-          "spread": -14.5,
-          "score": "48-33",
-          "period": 1,
-          "clock": "0:00"
-        },
-        {
-          "t": "2026-03-11T16:24:26.786Z",
-          "spread": -14.5,
-          "score": "48-33",
-          "period": 1,
-          "clock": "0:00"
-        }
-      ],
       "alertSent": true
     }
   ],
