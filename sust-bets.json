@@ -1075,6 +1075,27 @@
           "score": "63-64",
           "period": 2,
           "clock": "1:15"
+        },
+        {
+          "t": "2026-03-11T02:36:11.598Z",
+          "spread": 0.5,
+          "score": "63-64",
+          "period": 2,
+          "clock": "1:15"
+        },
+        {
+          "t": "2026-03-11T02:36:12.335Z",
+          "spread": 0.5,
+          "score": "63-64",
+          "period": 2,
+          "clock": "1:15"
+        },
+        {
+          "t": "2026-03-11T02:37:18.094Z",
+          "spread": 0.5,
+          "score": "63-64",
+          "period": 2,
+          "clock": "1:15"
         }
       ],
       "alertSent": true
@@ -1855,6 +1876,27 @@
           "score": "47-32",
           "period": 2,
           "clock": "8:39"
+        },
+        {
+          "t": "2026-03-11T02:36:11.598Z",
+          "spread": -12.5,
+          "score": "47-32",
+          "period": 2,
+          "clock": "7:55"
+        },
+        {
+          "t": "2026-03-11T02:36:12.336Z",
+          "spread": -12.5,
+          "score": "47-32",
+          "period": 2,
+          "clock": "7:55"
+        },
+        {
+          "t": "2026-03-11T02:37:18.094Z",
+          "spread": -12.5,
+          "score": "47-32",
+          "period": 2,
+          "clock": "7:54"
         }
       ],
       "alertSent": true
@@ -2491,6 +2533,27 @@
           "score": "49-50",
           "period": 2,
           "clock": "13:08"
+        },
+        {
+          "t": "2026-03-11T02:36:11.599Z",
+          "spread": 3.5,
+          "score": "52-50",
+          "period": 2,
+          "clock": "12:06"
+        },
+        {
+          "t": "2026-03-11T02:36:12.338Z",
+          "spread": 3.5,
+          "score": "52-50",
+          "period": 2,
+          "clock": "12:06"
+        },
+        {
+          "t": "2026-03-11T02:37:18.095Z",
+          "spread": 4.5,
+          "score": "52-52",
+          "period": 2,
+          "clock": "10:34"
         }
       ]
     },
@@ -2910,6 +2973,27 @@
           "score": "41-40",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-11T02:36:11.600Z",
+          "spread": -4.5,
+          "score": "41-40",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-11T02:36:12.338Z",
+          "spread": -4.5,
+          "score": "41-40",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-11T02:37:18.095Z",
+          "spread": -4.5,
+          "score": "41-40",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
     },
@@ -3113,8 +3197,140 @@
           "score": "48-42",
           "period": 2,
           "clock": "13:15"
+        },
+        {
+          "t": "2026-03-11T02:36:11.603Z",
+          "spread": 4.5,
+          "score": "48-44",
+          "period": 2,
+          "clock": "13:15"
+        },
+        {
+          "t": "2026-03-11T02:36:12.339Z",
+          "spread": 4.5,
+          "score": "48-44",
+          "period": 2,
+          "clock": "13:15"
+        },
+        {
+          "t": "2026-03-11T02:37:18.096Z",
+          "spread": 3.5,
+          "score": "48-44",
+          "period": 2,
+          "clock": "12:42"
         }
       ],
+      "alertSent": true
+    },
+    {
+      "id": 1773196636114,
+      "key": "401810800_sust_SAC",
+      "gameId": "401810800",
+      "team": "SAC",
+      "opponent": "IND",
+      "matchup": "IND @ SAC",
+      "side": "SPREAD",
+      "spread": -2.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -106,
+      "impliedP": 51.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-11T02:37:16.114Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "IND",
+      "homeTeam": "SAC",
+      "awayName": "Indiana Pacers",
+      "homeName": "Sacramento Kings",
+      "awayScore": 27,
+      "homeScore": 24,
+      "period": 2,
+      "clock": "11:39",
+      "periodLabel": "Q2",
+      "sustLeader": "IND",
+      "sustMargin": 3,
+      "betOnLeader": false,
+      "currentMargin": -3,
+      "cushion": -5.5,
+      "sustScore": 41.3,
+      "fragScore": 2,
+      "sustGap": 39.3,
+      "sustSignals": [
+        "Low 3PT reliance (25%)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "33",
+        "efg": "37",
+        "threePt": "29",
+        "twoPt": "58",
+        "proc": 6.9,
+        "star": 0,
+        "scq": -4
+      },
+      "fragStats": {
+        "fg": "41",
+        "efg": "48",
+        "threePt": "33",
+        "twoPt": "48",
+        "proc": 5.1,
+        "star": 0,
+        "scq": -17
+      },
+      "sustDetail": "SAC +41.3 vs IND 2 (gap:39.3) | IND 27-24 SAC | Q2 11:39 | FanDuel -2.5 (-106)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 36,
+        "v2_f1low": 41.8,
+        "v3_f1high": 37.6,
+        "v4_f3boost": 46.5,
+        "v5_noStar": 39.3
+      },
+      "v7": {
+        "aScq": -17.4,
+        "hScq": -3.6,
+        "aScore": -5,
+        "hScore": 39.9,
+        "gap": 44.8,
+        "f5contrib": 5.5
+      },
+      "altStructural": {
+        "v6_cushionBoost": 39.3,
+        "v7_marginWeighted": 11.8,
+        "v8_procDiffOnly": 18,
+        "v10_timeDecay": 39.3
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -3.5,
+        "detail": "SAC -3.5",
+        "awaySpread": "+3.5",
+        "homeSpread": "-3.5",
+        "awaySpreadOdds": "-115",
+        "homeSpreadOdds": "-105",
+        "awayML": "+136",
+        "homeML": "-162",
+        "openSpread": "+3.5"
+      },
       "alertSent": true
     }
   ],
