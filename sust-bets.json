@@ -309,6 +309,20 @@
           "score": "30-70",
           "period": 2,
           "clock": "6:06"
+        },
+        {
+          "t": "2026-03-11T23:32:03.152Z",
+          "spread": -41.5,
+          "score": "30-70",
+          "period": 2,
+          "clock": "6:06"
+        },
+        {
+          "t": "2026-03-11T23:32:04.228Z",
+          "spread": -41.5,
+          "score": "30-70",
+          "period": 2,
+          "clock": "6:06"
         }
       ]
     },
@@ -620,6 +634,126 @@
           "score": "38-38",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-11T23:32:03.152Z",
+          "spread": -3.5,
+          "score": "38-38",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-11T23:32:04.228Z",
+          "spread": -3.5,
+          "score": "38-38",
+          "period": 1,
+          "clock": "0:00"
+        }
+      ]
+    },
+    {
+      "id": 1773271923596,
+      "key": "401851407_sust_LIB",
+      "gameId": "401851407",
+      "team": "LIB",
+      "opponent": "MOST",
+      "matchup": "MOST @ LIB",
+      "side": "SPREAD",
+      "spread": -9.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -132,
+      "impliedP": 56.9,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-11T23:32:03.596Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "MOST",
+      "homeTeam": "LIB",
+      "awayName": "Missouri State Bears",
+      "homeName": "Liberty Flames",
+      "awayScore": 37,
+      "homeScore": 47,
+      "period": 2,
+      "clock": "16:38",
+      "periodLabel": "H2",
+      "sustLeader": "LIB",
+      "sustMargin": 10,
+      "betOnLeader": true,
+      "currentMargin": 10,
+      "cushion": 0.5,
+      "sustScore": 35.4,
+      "fragScore": -4.9,
+      "sustGap": 40.3,
+      "sustSignals": [],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "57",
+        "efg": "67",
+        "threePt": "47",
+        "twoPt": "55",
+        "proc": 6.9,
+        "star": 91,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "44",
+        "efg": "50",
+        "threePt": "44",
+        "twoPt": "59",
+        "proc": 4.7,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "LIB +35.4 vs MOST -4.9 (gap:40.3) | MOST 37-47 LIB | H2 16:38 | FanDuel -9.5 (-132)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": false,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 44,
+        "v2_f1low": 46,
+        "v3_f1high": 25.4,
+        "v4_f3boost": 49.1,
+        "v5_noStar": 40.3
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -4.9,
+        "hScore": 35.4,
+        "gap": 40.3,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 41.8,
+        "v7_marginWeighted": 40.3,
+        "v8_procDiffOnly": 22,
+        "v10_timeDecay": 40.3
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-11T23:32:04.231Z",
+          "spread": -9.5,
+          "score": "37-47",
+          "period": 2,
+          "clock": "16:38"
         }
       ]
     }
