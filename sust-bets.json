@@ -98,7 +98,30 @@
         "v8_procDiffOnly": 36,
         "v10_timeDecay": 80.7
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-12T00:12:04.454Z",
+          "spread": -2.5,
+          "score": "43-36",
+          "period": 2,
+          "clock": "17:45"
+        },
+        {
+          "t": "2026-03-12T00:12:04.703Z",
+          "spread": -2.5,
+          "score": "43-36",
+          "period": 2,
+          "clock": "17:45"
+        },
+        {
+          "t": "2026-03-12T00:13:10.161Z",
+          "spread": -2.5,
+          "score": "43-36",
+          "period": 2,
+          "clock": "17:45"
+        }
+      ]
     },
     {
       "id": 1773274260385,
@@ -198,6 +221,149 @@
         "v8_procDiffOnly": 25,
         "v10_timeDecay": 51.8
       },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-12T00:12:04.457Z",
+          "spread": -6.5,
+          "score": "36-29",
+          "period": 2,
+          "clock": "15:59"
+        },
+        {
+          "t": "2026-03-12T00:12:04.705Z",
+          "spread": -6.5,
+          "score": "36-29",
+          "period": 2,
+          "clock": "15:59"
+        },
+        {
+          "t": "2026-03-12T00:13:10.162Z",
+          "spread": -6.5,
+          "score": "36-29",
+          "period": 2,
+          "clock": "15:42"
+        }
+      ]
+    },
+    {
+      "id": 1773274260833,
+      "key": "401851175_sust_FSU",
+      "gameId": "401851175",
+      "team": "FSU",
+      "opponent": "CAL",
+      "matchup": "CAL @ FSU",
+      "side": "SPREAD",
+      "spread": -11.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -118,
+      "impliedP": 54.1,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-12T00:11:00.833Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "CAL",
+      "homeTeam": "FSU",
+      "awayName": "California Golden Bears",
+      "homeName": "Florida State Seminoles",
+      "awayScore": 39,
+      "homeScore": 53,
+      "period": 2,
+      "clock": "17:07",
+      "periodLabel": "H2",
+      "sustLeader": "FSU",
+      "sustMargin": 14,
+      "betOnLeader": true,
+      "currentMargin": 14,
+      "cushion": 2.5,
+      "sustScore": 27.2,
+      "fragScore": -8.4,
+      "sustGap": 35.6,
+      "sustSignals": [],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "53",
+        "efg": "63",
+        "threePt": "47",
+        "twoPt": "47",
+        "proc": 6.3,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "42",
+        "efg": "48",
+        "threePt": "31",
+        "twoPt": "49",
+        "proc": 4.6,
+        "star": 105,
+        "scq": 0
+      },
+      "sustDetail": "FSU +22.7 vs CAL -6.9 (gap:29.6) | CAL 37-51 FSU | H2 17:34 | FanDuel -12.5 (-118)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": false,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 34,
+        "v2_f1low": 34.5,
+        "v3_f1high": 15.5,
+        "v4_f3boost": 36.4,
+        "v5_noStar": 29.6
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -6.9,
+        "hScore": 22.7,
+        "gap": 29.6,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 34.1,
+        "v7_marginWeighted": 41.4,
+        "v8_procDiffOnly": 17,
+        "v10_timeDecay": 29.6
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-12T00:12:04.458Z",
+          "spread": -11.5,
+          "score": "39-51",
+          "period": 2,
+          "clock": "17:35"
+        },
+        {
+          "t": "2026-03-12T00:12:04.705Z",
+          "spread": -11.5,
+          "score": "39-51",
+          "period": 2,
+          "clock": "17:35"
+        },
+        {
+          "t": "2026-03-12T00:13:10.163Z",
+          "spread": -11.5,
+          "score": "39-53",
+          "period": 2,
+          "clock": "17:07"
+        }
+      ],
       "alertSent": true
     }
   ],
