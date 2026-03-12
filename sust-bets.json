@@ -1,6 +1,116 @@
 {
   "bets": [
     {
+      "id": 1773334084408,
+      "key": "401851177_sust_NCSU",
+      "gameId": "401851177",
+      "team": "NCSU",
+      "opponent": "UVA",
+      "matchup": "NCSU @ UVA",
+      "side": "SPREAD",
+      "spread": 4.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -120,
+      "impliedP": 54.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-12T16:48:04.408Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "NCSU",
+      "homeTeam": "UVA",
+      "awayName": "NC State Wolfpack",
+      "homeName": "Virginia Cavaliers",
+      "awayScore": 29,
+      "homeScore": 28,
+      "period": 1,
+      "clock": "3:13",
+      "periodLabel": "H1",
+      "sustLeader": "UVA",
+      "sustMargin": 1,
+      "betOnLeader": false,
+      "currentMargin": -1,
+      "cushion": 5.5,
+      "sustScore": 26.6,
+      "fragScore": -9.3,
+      "sustGap": 35.900000000000006,
+      "sustSignals": [
+        "Low 3PT reliance (22%)"
+      ],
+      "fragSignals": [
+        "3PT heavy (54% of pts)"
+      ],
+      "sustStats": {
+        "fg": "43",
+        "efg": "48",
+        "threePt": "40",
+        "twoPt": "52",
+        "proc": 5.9,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "42",
+        "efg": "52",
+        "threePt": "63",
+        "twoPt": "36",
+        "proc": 5.1,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "NCSU +22.1 vs UVA -3.3 (gap:25.400000000000002) | NCSU 27-28 UVA | H1 3:46 | FanDuel +5.5 (-120)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 16,
+        "v2_f1low": 23.9,
+        "v3_f1high": 37.9,
+        "v4_f3boost": 28.6,
+        "v5_noStar": 25.4
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 22.1,
+        "hScore": -3.3,
+        "gap": 25.4,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 38.9,
+        "v7_marginWeighted": 2.5,
+        "v8_procDiffOnly": 8,
+        "v10_timeDecay": 25.4
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-12T16:49:08.845Z",
+          "spread": 4.5,
+          "score": "29-28",
+          "period": 1,
+          "clock": "3:13"
+        }
+      ],
+      "alertSent": true
+    },
+    {
       "id": 1773334085416,
       "key": "401851311_sust_SJU",
       "gameId": "401851311",
@@ -97,7 +207,16 @@
         "v8_procDiffOnly": 43,
         "v10_timeDecay": 65.8
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-12T16:49:08.845Z",
+          "spread": -24.5,
+          "score": "23-44",
+          "period": 1,
+          "clock": "2:58"
+        }
+      ]
     },
     {
       "id": 1773334085642,
@@ -196,7 +315,16 @@
         "v8_procDiffOnly": 40,
         "v10_timeDecay": 63.2
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-12T16:49:08.846Z",
+          "spread": -20.5,
+          "score": "42-21",
+          "period": 2,
+          "clock": "17:08"
+        }
+      ]
     },
     {
       "id": 1773334086060,
@@ -299,7 +427,16 @@
         "v8_procDiffOnly": 28,
         "v10_timeDecay": 76.9
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-12T16:49:08.846Z",
+          "spread": 0.5,
+          "score": "25-27",
+          "period": 1,
+          "clock": "2:07"
+        }
+      ]
     }
   ],
   "resolved": []
