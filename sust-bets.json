@@ -112,7 +112,23 @@
         "homeML": "+650",
         "openSpread": "-12.5"
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-12T03:09:56.727Z",
+          "spread": 7.5,
+          "score": "59-62",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-12T03:10:00.452Z",
+          "spread": 7.5,
+          "score": "59-62",
+          "period": 2,
+          "clock": "0.0"
+        }
+      ]
     },
     {
       "id": 1773284932078,
@@ -217,6 +233,13 @@
       "spreadHistory": [
         {
           "t": "2026-03-12T03:08:54.768Z",
+          "spread": -9.5,
+          "score": "53-61",
+          "period": 2,
+          "clock": "11:29"
+        },
+        {
+          "t": "2026-03-12T03:10:03.211Z",
           "spread": -9.5,
           "score": "53-61",
           "period": 2,
