@@ -256,6 +256,62 @@
           "score": "54-60",
           "period": 2,
           "clock": "10:57"
+        },
+        {
+          "t": "2026-03-12T16:37:26.671Z",
+          "spread": -8.5,
+          "score": "56-66",
+          "period": 2,
+          "clock": "10:04"
+        },
+        {
+          "t": "2026-03-12T16:37:26.995Z",
+          "spread": -8.5,
+          "score": "56-66",
+          "period": 2,
+          "clock": "10:04"
+        },
+        {
+          "t": "2026-03-12T16:38:30.878Z",
+          "spread": -10.5,
+          "score": "56-66",
+          "period": 2,
+          "clock": "10:04"
+        },
+        {
+          "t": "2026-03-12T16:38:30.932Z",
+          "spread": -10.5,
+          "score": "56-66",
+          "period": 2,
+          "clock": "10:04"
+        },
+        {
+          "t": "2026-03-12T16:39:34.535Z",
+          "spread": -10.5,
+          "score": "56-66",
+          "period": 2,
+          "clock": "9:46"
+        },
+        {
+          "t": "2026-03-12T16:39:34.544Z",
+          "spread": -10.5,
+          "score": "56-66",
+          "period": 2,
+          "clock": "9:46"
+        },
+        {
+          "t": "2026-03-12T16:40:37.699Z",
+          "spread": -10.5,
+          "score": "56-66",
+          "period": 2,
+          "clock": "9:08"
+        },
+        {
+          "t": "2026-03-12T16:40:38.144Z",
+          "spread": -10.5,
+          "score": "56-66",
+          "period": 2,
+          "clock": "9:08"
         }
       ],
       "alertSent": true
@@ -438,8 +494,167 @@
           "score": "24-22",
           "period": 1,
           "clock": "7:32"
+        },
+        {
+          "t": "2026-03-12T16:37:26.673Z",
+          "spread": 4.5,
+          "score": "24-25",
+          "period": 1,
+          "clock": "6:58"
+        },
+        {
+          "t": "2026-03-12T16:37:26.996Z",
+          "spread": 4.5,
+          "score": "24-25",
+          "period": 1,
+          "clock": "6:58"
+        },
+        {
+          "t": "2026-03-12T16:38:30.880Z",
+          "spread": 5.5,
+          "score": "24-25",
+          "period": 1,
+          "clock": "6:35"
+        },
+        {
+          "t": "2026-03-12T16:38:30.932Z",
+          "spread": 5.5,
+          "score": "24-25",
+          "period": 1,
+          "clock": "6:35"
+        },
+        {
+          "t": "2026-03-12T16:39:34.537Z",
+          "spread": 4.5,
+          "score": "25-25",
+          "period": 1,
+          "clock": "6:01"
+        },
+        {
+          "t": "2026-03-12T16:39:34.545Z",
+          "spread": 4.5,
+          "score": "25-25",
+          "period": 1,
+          "clock": "6:01"
+        },
+        {
+          "t": "2026-03-12T16:40:37.699Z",
+          "spread": 6.5,
+          "score": "25-28",
+          "period": 1,
+          "clock": "5:33"
+        },
+        {
+          "t": "2026-03-12T16:40:38.144Z",
+          "spread": 6.5,
+          "score": "25-28",
+          "period": 1,
+          "clock": "5:33"
         }
       ]
+    },
+    {
+      "id": 1773333638342,
+      "key": "401851375_sust_OSU",
+      "gameId": "401851375",
+      "team": "OSU",
+      "opponent": "IOWA",
+      "matchup": "IOWA @ OSU",
+      "side": "SPREAD",
+      "spread": -0.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -114,
+      "impliedP": 53.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-12T16:40:38.342Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "IOWA",
+      "homeTeam": "OSU",
+      "awayName": "Iowa Hawkeyes",
+      "homeName": "Ohio State Buckeyes",
+      "awayScore": 20,
+      "homeScore": 21,
+      "period": 1,
+      "clock": "5:10",
+      "periodLabel": "H1",
+      "sustLeader": "OSU",
+      "sustMargin": 1,
+      "betOnLeader": true,
+      "currentMargin": 1,
+      "cushion": 0.5,
+      "sustScore": 68.8,
+      "fragScore": -18.7,
+      "sustGap": 87.5,
+      "sustSignals": [
+        "Low 3PT reliance (0%)",
+        "Strong process (7.4/10)",
+        "Star cold (27% pace)"
+      ],
+      "fragSignals": [
+        "3PT heavy (45% of pts)"
+      ],
+      "sustStats": {
+        "fg": "57",
+        "efg": "57",
+        "threePt": "0",
+        "twoPt": "76",
+        "proc": 7.4,
+        "star": 27,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "41",
+        "efg": "50",
+        "threePt": "38",
+        "twoPt": "40",
+        "proc": 4.2,
+        "star": 94,
+        "scq": 0
+      },
+      "sustDetail": "OSU +68.8 vs IOWA -18.7 (gap:87.5) | IOWA 20-21 OSU | H1 5:10 | FanDuel -0.5 (-114)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 74,
+        "v2_f1low": 89.4,
+        "v3_f1high": 97.2,
+        "v4_f3boost": 100.3,
+        "v5_noStar": 77.5
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -18.7,
+        "hScore": 68.8,
+        "gap": 87.5,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 89,
+        "v7_marginWeighted": 8.8,
+        "v8_procDiffOnly": 32,
+        "v10_timeDecay": 87.5
+      },
+      "alertSent": true
     }
   ],
   "resolved": []
