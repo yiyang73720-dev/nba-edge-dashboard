@@ -777,6 +777,20 @@
           "score": "70-57",
           "period": 2,
           "clock": "7:15"
+        },
+        {
+          "t": "2026-03-12T23:46:30.751Z",
+          "spread": -9.5,
+          "score": "70-57",
+          "period": 2,
+          "clock": "7:15"
+        },
+        {
+          "t": "2026-03-12T23:46:31.543Z",
+          "spread": -9.5,
+          "score": "70-57",
+          "period": 2,
+          "clock": "7:15"
         }
       ]
     },
@@ -1431,6 +1445,20 @@
           "score": "32-41",
           "period": 2,
           "clock": "15:53"
+        },
+        {
+          "t": "2026-03-12T23:46:30.752Z",
+          "spread": -6.5,
+          "score": "32-42",
+          "period": 2,
+          "clock": "15:26"
+        },
+        {
+          "t": "2026-03-12T23:46:31.544Z",
+          "spread": -6.5,
+          "score": "32-42",
+          "period": 2,
+          "clock": "15:26"
         }
       ]
     },
@@ -1854,6 +1882,20 @@
           "score": "33-52",
           "period": 2,
           "clock": "15:35"
+        },
+        {
+          "t": "2026-03-12T23:46:30.753Z",
+          "spread": -26.5,
+          "score": "33-52",
+          "period": 2,
+          "clock": "15:35"
+        },
+        {
+          "t": "2026-03-12T23:46:31.544Z",
+          "spread": -26.5,
+          "score": "33-52",
+          "period": 2,
+          "clock": "15:35"
         }
       ]
     },
@@ -2054,6 +2096,20 @@
           "score": "28-29",
           "period": 1,
           "clock": "3:57"
+        },
+        {
+          "t": "2026-03-12T23:46:30.754Z",
+          "spread": -8.5,
+          "score": "28-29",
+          "period": 1,
+          "clock": "3:54"
+        },
+        {
+          "t": "2026-03-12T23:46:31.545Z",
+          "spread": -8.5,
+          "score": "28-29",
+          "period": 1,
+          "clock": "3:54"
         }
       ]
     },
@@ -2211,8 +2267,133 @@
           "score": "24-44",
           "period": 1,
           "clock": "2:49"
+        },
+        {
+          "t": "2026-03-12T23:46:30.754Z",
+          "spread": -25.5,
+          "score": "26-47",
+          "period": 1,
+          "clock": "1:43"
+        },
+        {
+          "t": "2026-03-12T23:46:31.545Z",
+          "spread": -25.5,
+          "score": "26-47",
+          "period": 1,
+          "clock": "1:43"
         }
       ]
+    },
+    {
+      "id": 1773359187727,
+      "key": "401810808_sust_DET",
+      "gameId": "401810808",
+      "team": "DET",
+      "opponent": "PHI",
+      "matchup": "PHI @ DET",
+      "side": "SPREAD",
+      "spread": -18.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -112,
+      "impliedP": 52.8,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-12T23:46:27.727Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "PHI",
+      "homeTeam": "DET",
+      "awayName": "Philadelphia 76ers",
+      "homeName": "Detroit Pistons",
+      "awayScore": 27,
+      "homeScore": 39,
+      "period": 2,
+      "clock": "11:27",
+      "periodLabel": "Q2",
+      "sustLeader": "DET",
+      "sustMargin": 12,
+      "betOnLeader": true,
+      "currentMargin": 12,
+      "cushion": -6.5,
+      "sustScore": 41.3,
+      "fragScore": 2.1,
+      "sustGap": 39.199999999999996,
+      "sustSignals": [
+        "Strong process (7.0/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "58",
+        "efg": "67",
+        "threePt": "44",
+        "twoPt": "53",
+        "proc": 7,
+        "star": 122,
+        "scq": 29
+      },
+      "fragStats": {
+        "fg": "36",
+        "efg": "40",
+        "threePt": "20",
+        "twoPt": "52",
+        "proc": 4.9,
+        "star": 0,
+        "scq": 16
+      },
+      "sustDetail": "DET +41.3 vs PHI 2.1 (gap:39.199999999999996) | PHI 27-39 DET | Q2 11:27 | FanDuel -18.5 (-112)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 42,
+        "v2_f1low": 44.3,
+        "v3_f1high": 26.1,
+        "v4_f3boost": 47.6,
+        "v5_noStar": 39.2
+      },
+      "v7": {
+        "aScq": 16,
+        "hScq": 29.2,
+        "aScore": 8.5,
+        "hScore": 53,
+        "gap": 44.5,
+        "f5contrib": 5.3
+      },
+      "altStructural": {
+        "v6_cushionBoost": 39.2,
+        "v7_marginWeighted": 47,
+        "v8_procDiffOnly": 21,
+        "v10_timeDecay": 39.2
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -14.5,
+        "detail": "DET -14.5",
+        "awaySpread": "+14.5",
+        "homeSpread": "-14.5",
+        "awaySpreadOdds": "-112",
+        "homeSpreadOdds": "-108",
+        "awayML": "+675",
+        "homeML": "-1050",
+        "openSpread": "+14.5"
+      },
+      "alertSent": true
     }
   ],
   "resolved": []
