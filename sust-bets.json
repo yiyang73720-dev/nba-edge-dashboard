@@ -203,6 +203,34 @@
           "score": "25-37",
           "period": 2,
           "clock": "19:28"
+        },
+        {
+          "t": "2026-03-12T20:16:27.100Z",
+          "spread": -15.5,
+          "score": "27-39",
+          "period": 2,
+          "clock": "18:28"
+        },
+        {
+          "t": "2026-03-12T20:16:27.121Z",
+          "spread": -15.5,
+          "score": "27-39",
+          "period": 2,
+          "clock": "18:28"
+        },
+        {
+          "t": "2026-03-12T20:17:30.157Z",
+          "spread": -13.5,
+          "score": "27-39",
+          "period": 2,
+          "clock": "18:05"
+        },
+        {
+          "t": "2026-03-12T20:17:30.547Z",
+          "spread": -13.5,
+          "score": "27-39",
+          "period": 2,
+          "clock": "18:05"
         }
       ]
     },
@@ -403,8 +431,167 @@
           "score": "30-46",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T20:16:27.100Z",
+          "spread": -21.5,
+          "score": "30-46",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T20:16:27.121Z",
+          "spread": -21.5,
+          "score": "30-46",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T20:17:30.157Z",
+          "spread": -21.5,
+          "score": "30-46",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T20:17:30.547Z",
+          "spread": -21.5,
+          "score": "30-46",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
+    },
+    {
+      "id": 1773346524537,
+      "key": "401851562_sust_TENN",
+      "gameId": "401851562",
+      "team": "TENN",
+      "opponent": "AUB",
+      "matchup": "AUB @ TENN",
+      "side": "SPREAD",
+      "spread": 2.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -128,
+      "impliedP": 56.1,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-12T20:15:24.537Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "AUB",
+      "homeTeam": "TENN",
+      "awayName": "Auburn Tigers",
+      "homeName": "Tennessee Volunteers",
+      "awayScore": 32,
+      "homeScore": 25,
+      "period": 1,
+      "clock": "0:00",
+      "periodLabel": "H1",
+      "sustLeader": "AUB",
+      "sustMargin": 11,
+      "betOnLeader": false,
+      "currentMargin": -11,
+      "cushion": -4.5,
+      "sustScore": 39.6,
+      "fragScore": -3.3,
+      "sustGap": 42.9,
+      "sustSignals": [
+        "Star cold (35% pace)"
+      ],
+      "fragSignals": [
+        "3PT heavy (47% of pts)"
+      ],
+      "sustStats": {
+        "fg": "35",
+        "efg": "38",
+        "threePt": "33",
+        "twoPt": "67",
+        "proc": 5.8,
+        "star": 35,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "39",
+        "efg": "48",
+        "threePt": "36",
+        "twoPt": "38",
+        "proc": 4.8,
+        "star": 31,
+        "scq": 0
+      },
+      "sustDetail": "TENN +28.2 vs AUB 2.7 (gap:25.5) | AUB 32-21 TENN | H1 0:46 | FanDuel +4.5 (-128)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 20,
+        "v2_f1low": 25.7,
+        "v3_f1high": 30.6,
+        "v4_f3boost": 29.5,
+        "v5_noStar": 25.5
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 2.7,
+        "hScore": 28.2,
+        "gap": 25.5,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 25.5,
+        "v7_marginWeighted": 28.1,
+        "v8_procDiffOnly": 10,
+        "v10_timeDecay": 25.5
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-12T20:16:27.101Z",
+          "spread": 2.5,
+          "score": "32-23",
+          "period": 1,
+          "clock": "0:01"
+        },
+        {
+          "t": "2026-03-12T20:16:27.122Z",
+          "spread": 2.5,
+          "score": "32-23",
+          "period": 1,
+          "clock": "0:01"
+        },
+        {
+          "t": "2026-03-12T20:17:30.158Z",
+          "spread": 2.5,
+          "score": "32-25",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T20:17:30.547Z",
+          "spread": 2.5,
+          "score": "32-25",
+          "period": 1,
+          "clock": "0:00"
+        }
+      ],
+      "alertSent": true
     }
   ],
   "resolved": []
