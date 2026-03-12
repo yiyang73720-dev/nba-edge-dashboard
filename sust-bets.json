@@ -110,7 +110,65 @@
         "homeML": "+130",
         "openSpread": "-2.5"
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-12T01:34:35.391Z",
+          "spread": -4.5,
+          "score": "89-96",
+          "period": 3,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-12T01:34:36.536Z",
+          "spread": -4.5,
+          "score": "89-96",
+          "period": 3,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-12T01:35:39.891Z",
+          "spread": -4.5,
+          "score": "89-96",
+          "period": 3,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-12T01:35:40.390Z",
+          "spread": -4.5,
+          "score": "89-96",
+          "period": 3,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-12T01:36:44.731Z",
+          "spread": -4.5,
+          "score": "89-96",
+          "period": 3,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-12T01:36:44.757Z",
+          "spread": -4.5,
+          "score": "89-96",
+          "period": 3,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-12T01:37:49.477Z",
+          "spread": -4.5,
+          "score": "89-96",
+          "period": 3,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-12T01:37:49.480Z",
+          "spread": -4.5,
+          "score": "89-96",
+          "period": 3,
+          "clock": "0.0"
+        }
+      ]
     },
     {
       "id": 1773279213758,
@@ -210,7 +268,58 @@
         "v8_procDiffOnly": 23,
         "v10_timeDecay": 49.1
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-12T01:34:38.264Z",
+          "spread": -14.5,
+          "score": "28-39",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T01:34:38.708Z",
+          "spread": -14.5,
+          "score": "28-39",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T01:35:43.031Z",
+          "spread": -14.5,
+          "score": "25-39",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T01:35:43.047Z",
+          "spread": -14.5,
+          "score": "25-39",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T01:36:47.599Z",
+          "spread": -14.5,
+          "score": "25-39",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T01:36:47.629Z",
+          "spread": -14.5,
+          "score": "25-39",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T01:37:53.264Z",
+          "spread": -12.5,
+          "score": "25-39",
+          "period": 1,
+          "clock": "0:00"
+        }
+      ]
     },
     {
       "id": 1773279213983,
@@ -308,6 +417,157 @@
         "v7_marginWeighted": 4.5,
         "v8_procDiffOnly": 20,
         "v10_timeDecay": 45
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-12T01:34:38.265Z",
+          "spread": -3.5,
+          "score": "34-33",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T01:34:38.709Z",
+          "spread": -3.5,
+          "score": "34-33",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T01:35:43.031Z",
+          "spread": -3.5,
+          "score": "34-33",
+          "period": 2,
+          "clock": "20:00"
+        },
+        {
+          "t": "2026-03-12T01:35:43.048Z",
+          "spread": -3.5,
+          "score": "34-33",
+          "period": 2,
+          "clock": "20:00"
+        },
+        {
+          "t": "2026-03-12T01:36:47.600Z",
+          "spread": -5.5,
+          "score": "34-34",
+          "period": 2,
+          "clock": "19:37"
+        },
+        {
+          "t": "2026-03-12T01:36:47.630Z",
+          "spread": -5.5,
+          "score": "34-34",
+          "period": 2,
+          "clock": "19:37"
+        },
+        {
+          "t": "2026-03-12T01:37:53.265Z",
+          "spread": -4.5,
+          "score": "34-34",
+          "period": 2,
+          "clock": "18:46"
+        }
+      ]
+    },
+    {
+      "id": 1773279473935,
+      "key": "401851370_sust_MINN",
+      "gameId": "401851370",
+      "team": "MINN",
+      "opponent": "RUTG",
+      "matchup": "RUTG @ MINN",
+      "side": "SPREAD",
+      "spread": -4.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -118,
+      "impliedP": 54.1,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-12T01:37:53.935Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "RUTG",
+      "homeTeam": "MINN",
+      "awayName": "Rutgers Scarlet Knights",
+      "homeName": "Minnesota Golden Gophers",
+      "awayScore": 21,
+      "homeScore": 20,
+      "period": 1,
+      "clock": "5:26",
+      "periodLabel": "H1",
+      "sustLeader": "RUTG",
+      "sustMargin": 1,
+      "betOnLeader": false,
+      "currentMargin": -1,
+      "cushion": -5.5,
+      "sustScore": 65.8,
+      "fragScore": -6.1,
+      "sustGap": 71.89999999999999,
+      "sustSignals": [
+        "Strong process (7.7/10)",
+        "Star cold (56% pace)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "47",
+        "efg": "53",
+        "threePt": "33",
+        "twoPt": "60",
+        "proc": 7.7,
+        "star": 56,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "45",
+        "efg": "53",
+        "threePt": "43",
+        "twoPt": "57",
+        "proc": 4.8,
+        "star": 130,
+        "scq": 0
+      },
+      "sustDetail": "MINN +65.8 vs RUTG -6.1 (gap:71.89999999999999) | RUTG 21-20 MINN | H1 5:26 | FanDuel -4.5 (-118)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 68,
+        "v2_f1low": 76.4,
+        "v3_f1high": 66.7,
+        "v4_f3boost": 83.5,
+        "v5_noStar": 61.9
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -6.1,
+        "hScore": 65.8,
+        "gap": 71.9,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 71.9,
+        "v7_marginWeighted": 7.2,
+        "v8_procDiffOnly": 29,
+        "v10_timeDecay": 71.9
       },
       "alertSent": true
     }
