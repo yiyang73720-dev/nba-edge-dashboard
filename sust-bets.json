@@ -1,4 +1,202 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1773341444356,
+      "key": "401858187_sust_BGSU",
+      "gameId": "401858187",
+      "team": "BGSU",
+      "opponent": "TOL",
+      "matchup": "BGSU @ TOL",
+      "side": "SPREAD",
+      "spread": 1.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -102,
+      "impliedP": 50.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-12T18:50:44.356Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "BGSU",
+      "homeTeam": "TOL",
+      "awayName": "Bowling Green Falcons",
+      "homeName": "Toledo Rockets",
+      "awayScore": 47,
+      "homeScore": 48,
+      "period": 2,
+      "clock": "14:19",
+      "periodLabel": "H2",
+      "sustLeader": "TOL",
+      "sustMargin": 1,
+      "betOnLeader": false,
+      "currentMargin": -1,
+      "cushion": 0.5,
+      "sustScore": 47.1,
+      "fragScore": -16.6,
+      "sustGap": 63.7,
+      "sustSignals": [
+        "Low 3PT reliance (19%)",
+        "Strong process (7.1/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "54",
+        "efg": "58",
+        "threePt": "27",
+        "twoPt": "77",
+        "proc": 7.1,
+        "star": 75,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "49",
+        "efg": "55",
+        "threePt": "45",
+        "twoPt": "63",
+        "proc": 4.1,
+        "star": 87,
+        "scq": 0
+      },
+      "sustDetail": "BGSU +47.1 vs TOL -16.6 (gap:63.7) | BGSU 47-48 TOL | H2 14:19 | FanDuel +1.5 (-102)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": true,
+        "g7_earlyGame": false,
+        "g8_highProc": true,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 60,
+        "v2_f1low": 68.4,
+        "v3_f1high": 57.7,
+        "v4_f3boost": 75.6,
+        "v5_noStar": 63.6
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 47.1,
+        "hScore": -16.6,
+        "gap": 63.7,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 65.2,
+        "v7_marginWeighted": 6.4,
+        "v8_procDiffOnly": 30,
+        "v10_timeDecay": 63.7
+      },
+      "alertSent": true
+    },
+    {
+      "id": 1773341444793,
+      "key": "401851264_sust_GMU",
+      "gameId": "401851264",
+      "team": "GMU",
+      "opponent": "SBU",
+      "matchup": "SBU @ GMU",
+      "side": "SPREAD",
+      "spread": -5.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -114,
+      "impliedP": 53.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-12T18:50:44.793Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "SBU",
+      "homeTeam": "GMU",
+      "awayName": "St. Bonaventure Bonnies",
+      "homeName": "George Mason Patriots",
+      "awayScore": 21,
+      "homeScore": 26,
+      "period": 1,
+      "clock": "3:26",
+      "periodLabel": "H1",
+      "sustLeader": "GMU",
+      "sustMargin": 5,
+      "betOnLeader": true,
+      "currentMargin": 5,
+      "cushion": -0.5,
+      "sustScore": 34.4,
+      "fragScore": -5.5,
+      "sustGap": 39.9,
+      "sustSignals": [],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "46",
+        "efg": "52",
+        "threePt": "25",
+        "twoPt": "62",
+        "proc": 6.7,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "40",
+        "efg": "43",
+        "threePt": "17",
+        "twoPt": "67",
+        "proc": 3.9,
+        "star": 59,
+        "scq": 0
+      },
+      "sustDetail": "GMU +34.4 vs SBU -5.5 (gap:39.9) | SBU 21-26 GMU | H1 3:26 | FanDuel -5.5 (-114)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 46,
+        "v2_f1low": 47.5,
+        "v3_f1high": 18.5,
+        "v4_f3boost": 51.1,
+        "v5_noStar": 49.9
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -5.5,
+        "hScore": 34.4,
+        "gap": 39.9,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 39.9,
+        "v7_marginWeighted": 20,
+        "v8_procDiffOnly": 28,
+        "v10_timeDecay": 39.9
+      },
+      "alertSent": true
+    }
+  ],
   "resolved": []
 }
