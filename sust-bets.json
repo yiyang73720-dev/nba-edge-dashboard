@@ -97,6 +97,121 @@
         "v8_procDiffOnly": 47,
         "v10_timeDecay": 79.5
       },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-12T20:01:31.368Z",
+          "spread": -25.5,
+          "score": "21-41",
+          "period": 1,
+          "clock": "2:09"
+        },
+        {
+          "t": "2026-03-12T20:01:32.217Z",
+          "spread": -25.5,
+          "score": "21-41",
+          "period": 1,
+          "clock": "2:09"
+        }
+      ]
+    },
+    {
+      "id": 1773345693869,
+      "key": "401851499_sust_USU",
+      "gameId": "401851499",
+      "team": "USU",
+      "opponent": "UNLV",
+      "matchup": "UNLV @ USU",
+      "side": "SPREAD",
+      "spread": -16.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -110,
+      "impliedP": 52.4,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-12T20:01:33.869Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "UNLV",
+      "homeTeam": "USU",
+      "awayName": "UNLV Rebels",
+      "homeName": "Utah State Aggies",
+      "awayScore": 23,
+      "homeScore": 37,
+      "period": 1,
+      "clock": "0:00",
+      "periodLabel": "H1",
+      "sustLeader": "USU",
+      "sustMargin": 14,
+      "betOnLeader": true,
+      "currentMargin": 14,
+      "cushion": -2.5,
+      "sustScore": 44.6,
+      "fragScore": 5,
+      "sustGap": 39.6,
+      "sustSignals": [
+        "Strong process (7.3/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "56",
+        "efg": "65",
+        "threePt": "50",
+        "twoPt": "54",
+        "proc": 7.3,
+        "star": 125,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "36",
+        "efg": "40",
+        "threePt": "18",
+        "twoPt": "61",
+        "proc": 4.6,
+        "star": 19,
+        "scq": 0
+      },
+      "sustDetail": "USU +44.6 vs UNLV 5 (gap:39.6) | UNLV 23-37 USU | H1 0:00 | FanDuel -16.5 (-110)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": false,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 44,
+        "v2_f1low": 46.5,
+        "v3_f1high": 21.6,
+        "v4_f3boost": 50.5,
+        "v5_noStar": 49.7
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 5,
+        "hScore": 44.6,
+        "gap": 39.6,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 39.6,
+        "v7_marginWeighted": 55.4,
+        "v8_procDiffOnly": 27,
+        "v10_timeDecay": 39.6
+      },
       "alertSent": true
     }
   ],
