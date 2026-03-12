@@ -267,6 +267,20 @@
           "score": "32-33",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T17:02:04.934Z",
+          "spread": 4.5,
+          "score": "32-33",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T17:03:11.518Z",
+          "spread": 4.5,
+          "score": "32-33",
+          "period": 1,
+          "clock": "0:00"
         }
       ],
       "alertSent": true
@@ -533,6 +547,20 @@
         },
         {
           "t": "2026-03-12T17:01:00.380Z",
+          "spread": -23.5,
+          "score": "27-48",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T17:02:04.936Z",
+          "spread": -23.5,
+          "score": "27-48",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T17:03:11.519Z",
           "spread": -23.5,
           "score": "27-48",
           "period": 1,
@@ -806,6 +834,20 @@
           "score": "47-34",
           "period": 2,
           "clock": "12:06"
+        },
+        {
+          "t": "2026-03-12T17:02:04.936Z",
+          "spread": -12.5,
+          "score": "49-36",
+          "period": 2,
+          "clock": "11:48"
+        },
+        {
+          "t": "2026-03-12T17:03:11.522Z",
+          "spread": -13.5,
+          "score": "49-36",
+          "period": 2,
+          "clock": "11:05"
         }
       ]
     },
@@ -1079,6 +1121,20 @@
           "score": "30-34",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T17:02:04.937Z",
+          "spread": -2.5,
+          "score": "30-34",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T17:03:11.523Z",
+          "spread": -2.5,
+          "score": "30-34",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
     },
@@ -1187,8 +1243,123 @@
           "score": "20-21",
           "period": 1,
           "clock": "8:53"
+        },
+        {
+          "t": "2026-03-12T17:02:04.937Z",
+          "spread": -4.5,
+          "score": "22-23",
+          "period": 1,
+          "clock": "8:09"
+        },
+        {
+          "t": "2026-03-12T17:03:11.523Z",
+          "spread": -5.5,
+          "score": "22-23",
+          "period": 1,
+          "clock": "7:28"
         }
       ]
+    },
+    {
+      "id": 1773334993894,
+      "key": "401851561_sust_UK",
+      "gameId": "401851561",
+      "team": "UK",
+      "opponent": "MIZ",
+      "matchup": "UK @ MIZ",
+      "side": "SPREAD",
+      "spread": -2.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -112,
+      "impliedP": 52.8,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-12T17:03:13.894Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "UK",
+      "homeTeam": "MIZ",
+      "awayName": "Kentucky Wildcats",
+      "homeName": "Missouri Tigers",
+      "awayScore": 22,
+      "homeScore": 20,
+      "period": 1,
+      "clock": "8:19",
+      "periodLabel": "H1",
+      "sustLeader": "UK",
+      "sustMargin": 2,
+      "betOnLeader": true,
+      "currentMargin": 2,
+      "cushion": -0.5,
+      "sustScore": 58.7,
+      "fragScore": -1.7,
+      "sustGap": 60.400000000000006,
+      "sustSignals": [
+        "Low 3PT reliance (14%)",
+        "Strong process (7.1/10)",
+        "Star cold (37% pace)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "50",
+        "efg": "53",
+        "threePt": "17",
+        "twoPt": "64",
+        "proc": 7.1,
+        "star": 37,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "50",
+        "efg": "54",
+        "threePt": "33",
+        "twoPt": "60",
+        "proc": 4.6,
+        "star": 134,
+        "scq": 0
+      },
+      "sustDetail": "UK +58.7 vs MIZ -1.7 (gap:60.400000000000006) | UK 22-20 MIZ | H1 8:19 | FanDuel -2.5 (-112)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 60,
+        "v2_f1low": 65.3,
+        "v3_f1high": 51.1,
+        "v4_f3boost": 70.4,
+        "v5_noStar": 50.4
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 58.7,
+        "hScore": -1.7,
+        "gap": 60.4,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 60.4,
+        "v7_marginWeighted": 12.1,
+        "v8_procDiffOnly": 25,
+        "v10_timeDecay": 60.4
+      },
+      "alertSent": true
     }
   ],
   "resolved": []
