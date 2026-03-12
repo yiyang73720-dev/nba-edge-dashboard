@@ -120,6 +120,34 @@
           "score": "43-36",
           "period": 2,
           "clock": "17:45"
+        },
+        {
+          "t": "2026-03-12T00:14:14.268Z",
+          "spread": -2.5,
+          "score": "43-36",
+          "period": 2,
+          "clock": "17:45"
+        },
+        {
+          "t": "2026-03-12T00:14:15.308Z",
+          "spread": -2.5,
+          "score": "43-36",
+          "period": 2,
+          "clock": "17:45"
+        },
+        {
+          "t": "2026-03-12T00:15:21.190Z",
+          "spread": -2.5,
+          "score": "43-36",
+          "period": 2,
+          "clock": "17:45"
+        },
+        {
+          "t": "2026-03-12T00:15:21.213Z",
+          "spread": -2.5,
+          "score": "43-36",
+          "period": 2,
+          "clock": "17:45"
         }
       ]
     },
@@ -243,6 +271,34 @@
           "score": "36-29",
           "period": 2,
           "clock": "15:42"
+        },
+        {
+          "t": "2026-03-12T00:14:14.269Z",
+          "spread": -5.5,
+          "score": "36-29",
+          "period": 2,
+          "clock": "15:42"
+        },
+        {
+          "t": "2026-03-12T00:14:15.310Z",
+          "spread": -5.5,
+          "score": "36-29",
+          "period": 2,
+          "clock": "15:42"
+        },
+        {
+          "t": "2026-03-12T00:15:21.191Z",
+          "spread": -5.5,
+          "score": "36-29",
+          "period": 2,
+          "clock": "15:42"
+        },
+        {
+          "t": "2026-03-12T00:15:21.214Z",
+          "spread": -5.5,
+          "score": "36-29",
+          "period": 2,
+          "clock": "15:42"
         }
       ]
     },
@@ -362,8 +418,150 @@
           "score": "39-53",
           "period": 2,
           "clock": "17:07"
+        },
+        {
+          "t": "2026-03-12T00:14:14.270Z",
+          "spread": -13.5,
+          "score": "39-56",
+          "period": 2,
+          "clock": "16:31"
+        },
+        {
+          "t": "2026-03-12T00:14:15.312Z",
+          "spread": -13.5,
+          "score": "39-56",
+          "period": 2,
+          "clock": "16:31"
+        },
+        {
+          "t": "2026-03-12T00:15:21.193Z",
+          "spread": -13.5,
+          "score": "41-59",
+          "period": 2,
+          "clock": "15:54"
+        },
+        {
+          "t": "2026-03-12T00:15:21.215Z",
+          "spread": -13.5,
+          "score": "41-59",
+          "period": 2,
+          "clock": "15:54"
         }
       ],
+      "alertSent": true
+    },
+    {
+      "id": 1773274519203,
+      "key": "401810802_sust_ORL",
+      "gameId": "401810802",
+      "team": "ORL",
+      "opponent": "CLE",
+      "matchup": "CLE @ ORL",
+      "side": "SPREAD",
+      "spread": 1.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -114,
+      "impliedP": 53.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-12T00:15:19.203Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "CLE",
+      "homeTeam": "ORL",
+      "awayName": "Cleveland Cavaliers",
+      "homeName": "Orlando Magic",
+      "awayScore": 35,
+      "homeScore": 38,
+      "period": 2,
+      "clock": "11:49",
+      "periodLabel": "Q2",
+      "sustLeader": "ORL",
+      "sustMargin": 3,
+      "betOnLeader": true,
+      "currentMargin": 3,
+      "cushion": 4.5,
+      "sustScore": 50.1,
+      "fragScore": -26.6,
+      "sustGap": 76.7,
+      "sustSignals": [
+        "Low 3PT reliance (16%)",
+        "Strong process (7.2/10)"
+      ],
+      "fragSignals": [
+        "3PT heavy (51% of pts)"
+      ],
+      "sustStats": {
+        "fg": "65",
+        "efg": "70",
+        "threePt": "22",
+        "twoPt": "68",
+        "proc": 7.2,
+        "star": 0,
+        "scq": 13
+      },
+      "fragStats": {
+        "fg": "57",
+        "efg": "70",
+        "threePt": "60",
+        "twoPt": "40",
+        "proc": 3.9,
+        "star": 0,
+        "scq": 22
+      },
+      "sustDetail": "ORL +50.1 vs CLE -26.6 (gap:76.7) | CLE 35-38 ORL | Q2 11:49 | FanDuel +1.5 (-114)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 66,
+        "v2_f1low": 79.7,
+        "v3_f1high": 81.3,
+        "v4_f3boost": 89.9,
+        "v5_noStar": 76.7
+      },
+      "v7": {
+        "aScq": 21.7,
+        "hScq": 13,
+        "aScore": -17.9,
+        "hScore": 55.3,
+        "gap": 73.2,
+        "f5contrib": 3.5
+      },
+      "altStructural": {
+        "v6_cushionBoost": 90.2,
+        "v7_marginWeighted": 23,
+        "v8_procDiffOnly": 33,
+        "v10_timeDecay": 76.7
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": 3.5,
+        "detail": "CLE -3.5",
+        "awaySpread": "-3.5",
+        "homeSpread": "+3.5",
+        "awaySpreadOdds": "-105",
+        "homeSpreadOdds": "-115",
+        "awayML": "-155",
+        "homeML": "+130",
+        "openSpread": "-2.5"
+      },
       "alertSent": true
     }
   ],
