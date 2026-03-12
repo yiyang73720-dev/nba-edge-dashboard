@@ -1,882 +1,14 @@
 {
   "bets": [
     {
-      "id": 1773332623523,
-      "key": "401858186_sust_M-OH",
-      "gameId": "401858186",
-      "team": "M-OH",
-      "opponent": "MASS",
-      "matchup": "MASS @ M-OH",
-      "side": "SPREAD",
-      "spread": -8.5,
-      "signals": [
-        "sust"
-      ],
-      "marketOdds": -128,
-      "impliedP": 56.1,
-      "estimatedP": 55,
-      "kellyPct": 2.5,
-      "kellyBet": 500,
-      "book": "FanDuel",
-      "timestamp": "2026-03-12T16:23:43.523Z",
-      "outcome": null,
-      "payout": null,
-      "mode": "ncaab",
-      "awayTeam": "MASS",
-      "homeTeam": "M-OH",
-      "awayName": "Massachusetts Minutemen",
-      "homeName": "Miami (OH) RedHawks",
-      "awayScore": 54,
-      "homeScore": 60,
-      "period": 2,
-      "clock": "10:57",
-      "periodLabel": "H2",
-      "sustLeader": "M-OH",
-      "sustMargin": 10,
-      "betOnLeader": true,
-      "currentMargin": 10,
-      "cushion": -2.5,
-      "sustScore": 31,
-      "fragScore": -6.5,
-      "sustGap": 37.5,
-      "sustSignals": [],
-      "fragSignals": [],
-      "sustStats": {
-        "fg": "48",
-        "efg": "56",
-        "threePt": "33",
-        "twoPt": "50",
-        "proc": 6.8,
-        "star": 0,
-        "scq": 0
-      },
-      "fragStats": {
-        "fg": "46",
-        "efg": "47",
-        "threePt": "13",
-        "twoPt": "81",
-        "proc": 4.5,
-        "star": 56,
-        "scq": 0
-      },
-      "sustDetail": "M-OH +34.7 vs MASS 8.7 (gap:26.000000000000004) | MASS 42-52 M-OH | H2 14:37 | FanDuel -6.5 (-128)",
-      "strategies": {
-        "g1_bigGap": false,
-        "g2_procDriven": true,
-        "g3_threePtDriven": false,
-        "g4_starInvolved": true,
-        "g5_betOnLeader": true,
-        "g6_hasCushion": true,
-        "g7_earlyGame": false,
-        "g8_highProc": false,
-        "g9_homeTeam": true,
-        "g10_ncaa": true,
-        "g11_bigMargin": true,
-        "g12_oppCold3": true
-      },
-      "altGaps": {
-        "v1_pureProc": 36,
-        "v2_f1low": 34,
-        "v3_f1high": 0.2,
-        "v4_f3boost": 35.2,
-        "v5_noStar": 36
-      },
-      "v7": {
-        "aScq": 0,
-        "hScq": 0,
-        "aScore": 8.7,
-        "hScore": 34.7,
-        "gap": 26,
-        "f5contrib": 0
-      },
-      "altStructural": {
-        "v6_cushionBoost": 36.5,
-        "v7_marginWeighted": 26,
-        "v8_procDiffOnly": 23,
-        "v10_timeDecay": 26
-      },
-      "spreadHistory": [
-        {
-          "t": "2026-03-12T16:24:44.924Z",
-          "spread": -10.5,
-          "score": "42-52",
-          "period": 2,
-          "clock": "14:13"
-        },
-        {
-          "t": "2026-03-12T16:24:46.807Z",
-          "spread": -10.5,
-          "score": "42-52",
-          "period": 2,
-          "clock": "14:06"
-        },
-        {
-          "t": "2026-03-12T16:25:47.967Z",
-          "spread": -9.5,
-          "score": "44-52",
-          "period": 2,
-          "clock": "13:35"
-        },
-        {
-          "t": "2026-03-12T16:25:49.130Z",
-          "spread": -9.5,
-          "score": "44-52",
-          "period": 2,
-          "clock": "13:35"
-        },
-        {
-          "t": "2026-03-12T16:26:51.206Z",
-          "spread": -9.5,
-          "score": "44-52",
-          "period": 2,
-          "clock": "13:35"
-        },
-        {
-          "t": "2026-03-12T16:26:52.208Z",
-          "spread": -9.5,
-          "score": "44-52",
-          "period": 2,
-          "clock": "13:35"
-        },
-        {
-          "t": "2026-03-12T16:27:53.638Z",
-          "spread": -9.5,
-          "score": "44-52",
-          "period": 2,
-          "clock": "13:35"
-        },
-        {
-          "t": "2026-03-12T16:27:54.960Z",
-          "spread": -9.5,
-          "score": "44-52",
-          "period": 2,
-          "clock": "13:35"
-        },
-        {
-          "t": "2026-03-12T16:28:57.435Z",
-          "spread": -9.5,
-          "score": "47-54",
-          "period": 2,
-          "clock": "13:14"
-        },
-        {
-          "t": "2026-03-12T16:28:57.461Z",
-          "spread": -9.5,
-          "score": "47-54",
-          "period": 2,
-          "clock": "13:14"
-        },
-        {
-          "t": "2026-03-12T16:30:00.678Z",
-          "spread": -6.5,
-          "score": "49-54",
-          "period": 2,
-          "clock": "12:19"
-        },
-        {
-          "t": "2026-03-12T16:30:00.744Z",
-          "spread": -6.5,
-          "score": "49-54",
-          "period": 2,
-          "clock": "12:19"
-        },
-        {
-          "t": "2026-03-12T16:31:04.616Z",
-          "spread": -8.5,
-          "score": "49-55",
-          "period": 2,
-          "clock": "12:04"
-        },
-        {
-          "t": "2026-03-12T16:31:04.667Z",
-          "spread": -8.5,
-          "score": "49-55",
-          "period": 2,
-          "clock": "12:04"
-        },
-        {
-          "t": "2026-03-12T16:32:08.167Z",
-          "spread": -8.5,
-          "score": "49-56",
-          "period": 2,
-          "clock": "11:51"
-        },
-        {
-          "t": "2026-03-12T16:33:13.935Z",
-          "spread": -8.5,
-          "score": "49-56",
-          "period": 2,
-          "clock": "11:51"
-        },
-        {
-          "t": "2026-03-12T16:33:13.953Z",
-          "spread": -8.5,
-          "score": "49-56",
-          "period": 2,
-          "clock": "11:51"
-        },
-        {
-          "t": "2026-03-12T16:34:17.926Z",
-          "spread": -8.5,
-          "score": "49-56",
-          "period": 2,
-          "clock": "11:51"
-        },
-        {
-          "t": "2026-03-12T16:34:18.029Z",
-          "spread": -8.5,
-          "score": "49-56",
-          "period": 2,
-          "clock": "11:51"
-        },
-        {
-          "t": "2026-03-12T16:35:20.059Z",
-          "spread": -8.5,
-          "score": "52-59",
-          "period": 2,
-          "clock": "10:59"
-        },
-        {
-          "t": "2026-03-12T16:35:20.255Z",
-          "spread": -8.5,
-          "score": "52-59",
-          "period": 2,
-          "clock": "10:59"
-        },
-        {
-          "t": "2026-03-12T16:36:23.475Z",
-          "spread": -8.5,
-          "score": "54-60",
-          "period": 2,
-          "clock": "10:57"
-        },
-        {
-          "t": "2026-03-12T16:36:23.583Z",
-          "spread": -8.5,
-          "score": "54-60",
-          "period": 2,
-          "clock": "10:57"
-        },
-        {
-          "t": "2026-03-12T16:37:26.671Z",
-          "spread": -8.5,
-          "score": "56-66",
-          "period": 2,
-          "clock": "10:04"
-        },
-        {
-          "t": "2026-03-12T16:37:26.995Z",
-          "spread": -8.5,
-          "score": "56-66",
-          "period": 2,
-          "clock": "10:04"
-        },
-        {
-          "t": "2026-03-12T16:38:30.878Z",
-          "spread": -10.5,
-          "score": "56-66",
-          "period": 2,
-          "clock": "10:04"
-        },
-        {
-          "t": "2026-03-12T16:38:30.932Z",
-          "spread": -10.5,
-          "score": "56-66",
-          "period": 2,
-          "clock": "10:04"
-        },
-        {
-          "t": "2026-03-12T16:39:34.535Z",
-          "spread": -10.5,
-          "score": "56-66",
-          "period": 2,
-          "clock": "9:46"
-        },
-        {
-          "t": "2026-03-12T16:39:34.544Z",
-          "spread": -10.5,
-          "score": "56-66",
-          "period": 2,
-          "clock": "9:46"
-        },
-        {
-          "t": "2026-03-12T16:40:37.699Z",
-          "spread": -10.5,
-          "score": "56-66",
-          "period": 2,
-          "clock": "9:08"
-        },
-        {
-          "t": "2026-03-12T16:40:38.144Z",
-          "spread": -10.5,
-          "score": "56-66",
-          "period": 2,
-          "clock": "9:08"
-        },
-        {
-          "t": "2026-03-12T16:41:41.201Z",
-          "spread": -10.5,
-          "score": "58-69",
-          "period": 2,
-          "clock": "8:19"
-        },
-        {
-          "t": "2026-03-12T16:41:41.214Z",
-          "spread": -10.5,
-          "score": "58-69",
-          "period": 2,
-          "clock": "8:19"
-        },
-        {
-          "t": "2026-03-12T16:42:45.421Z",
-          "spread": -10.5,
-          "score": "60-69",
-          "period": 2,
-          "clock": "8:19"
-        },
-        {
-          "t": "2026-03-12T16:42:46.737Z",
-          "spread": -10.5,
-          "score": "60-69",
-          "period": 2,
-          "clock": "8:19"
-        },
-        {
-          "t": "2026-03-12T16:43:49.986Z",
-          "spread": -9.5,
-          "score": "62-69",
-          "period": 2,
-          "clock": "7:38"
-        },
-        {
-          "t": "2026-03-12T16:43:50.233Z",
-          "spread": -9.5,
-          "score": "62-69",
-          "period": 2,
-          "clock": "7:38"
-        },
-        {
-          "t": "2026-03-12T16:44:53.171Z",
-          "spread": -9.5,
-          "score": "62-69",
-          "period": 2,
-          "clock": "7:38"
-        },
-        {
-          "t": "2026-03-12T16:44:54.193Z",
-          "spread": -9.5,
-          "score": "62-69",
-          "period": 2,
-          "clock": "7:38"
-        },
-        {
-          "t": "2026-03-12T16:45:57.393Z",
-          "spread": -9.5,
-          "score": "62-69",
-          "period": 2,
-          "clock": "7:38"
-        },
-        {
-          "t": "2026-03-12T16:45:57.876Z",
-          "spread": -9.5,
-          "score": "62-69",
-          "period": 2,
-          "clock": "7:38"
-        }
-      ],
-      "alertSent": true
-    },
-    {
-      "id": 1773333001181,
-      "key": "401851177_sust_NCSU",
-      "gameId": "401851177",
-      "team": "NCSU",
-      "opponent": "UVA",
-      "matchup": "NCSU @ UVA",
-      "side": "SPREAD",
-      "spread": 2.5,
-      "signals": [
-        "sust"
-      ],
-      "marketOdds": -118,
-      "impliedP": 54.1,
-      "estimatedP": 55,
-      "kellyPct": 2.5,
-      "kellyBet": 500,
-      "book": "FanDuel",
-      "timestamp": "2026-03-12T16:30:01.181Z",
-      "outcome": null,
-      "payout": null,
-      "mode": "ncaab",
-      "awayTeam": "NCSU",
-      "homeTeam": "UVA",
-      "awayName": "NC State Wolfpack",
-      "homeName": "Virginia Cavaliers",
-      "awayScore": 22,
-      "homeScore": 20,
-      "period": 1,
-      "clock": "9:25",
-      "periodLabel": "H1",
-      "sustLeader": "NCSU",
-      "sustMargin": 2,
-      "betOnLeader": true,
-      "currentMargin": 2,
-      "cushion": 4.5,
-      "sustScore": 64.6,
-      "fragScore": -46.2,
-      "sustGap": 110.8,
-      "sustSignals": [
-        "Low 3PT reliance (27%)",
-        "Strong process (8.1/10)"
-      ],
-      "fragSignals": [
-        "3PT heavy (50% of pts)"
-      ],
-      "sustStats": {
-        "fg": "58",
-        "efg": "67",
-        "threePt": "67",
-        "twoPt": "45",
-        "proc": 8.1,
-        "star": 0,
-        "scq": 0
-      },
-      "fragStats": {
-        "fg": "46",
-        "efg": "58",
-        "threePt": "60",
-        "twoPt": "33",
-        "proc": 2.9,
-        "star": 0,
-        "scq": 0
-      },
-      "sustDetail": "NCSU +64.6 vs UVA -46.2 (gap:110.8) | NCSU 22-20 UVA | H1 9:25 | FanDuel +2.5 (-118)",
-      "strategies": {
-        "g1_bigGap": true,
-        "g2_procDriven": true,
-        "g3_threePtDriven": false,
-        "g4_starInvolved": false,
-        "g5_betOnLeader": true,
-        "g6_hasCushion": true,
-        "g7_earlyGame": true,
-        "g8_highProc": true,
-        "g9_homeTeam": false,
-        "g10_ncaa": true,
-        "g11_bigMargin": false,
-        "g12_oppCold3": false
-      },
-      "altGaps": {
-        "v1_pureProc": 104,
-        "v2_f1low": 118.9,
-        "v3_f1high": 101.4,
-        "v4_f3boost": 131.6,
-        "v5_noStar": 110.8
-      },
-      "v7": {
-        "aScq": 0,
-        "hScq": 0,
-        "aScore": 64.6,
-        "hScore": -46.2,
-        "gap": 110.8,
-        "f5contrib": 0
-      },
-      "altStructural": {
-        "v6_cushionBoost": 124.3,
-        "v7_marginWeighted": 22.2,
-        "v8_procDiffOnly": 52,
-        "v10_timeDecay": 110.8
-      },
-      "alertSent": true,
-      "spreadHistory": [
-        {
-          "t": "2026-03-12T16:31:04.616Z",
-          "spread": 4.5,
-          "score": "22-22",
-          "period": 1,
-          "clock": "8:46"
-        },
-        {
-          "t": "2026-03-12T16:31:04.667Z",
-          "spread": 4.5,
-          "score": "22-22",
-          "period": 1,
-          "clock": "8:46"
-        },
-        {
-          "t": "2026-03-12T16:32:08.167Z",
-          "spread": 3.5,
-          "score": "24-22",
-          "period": 1,
-          "clock": "8:01"
-        },
-        {
-          "t": "2026-03-12T16:33:13.936Z",
-          "spread": 3.5,
-          "score": "24-22",
-          "period": 1,
-          "clock": "8:00"
-        },
-        {
-          "t": "2026-03-12T16:33:13.955Z",
-          "spread": 3.5,
-          "score": "24-22",
-          "period": 1,
-          "clock": "8:00"
-        },
-        {
-          "t": "2026-03-12T16:34:17.927Z",
-          "spread": 3.5,
-          "score": "24-22",
-          "period": 1,
-          "clock": "8:00"
-        },
-        {
-          "t": "2026-03-12T16:34:18.029Z",
-          "spread": 3.5,
-          "score": "24-22",
-          "period": 1,
-          "clock": "8:00"
-        },
-        {
-          "t": "2026-03-12T16:35:20.060Z",
-          "spread": 3.5,
-          "score": "24-22",
-          "period": 1,
-          "clock": "8:00"
-        },
-        {
-          "t": "2026-03-12T16:35:20.257Z",
-          "spread": 3.5,
-          "score": "24-22",
-          "period": 1,
-          "clock": "8:00"
-        },
-        {
-          "t": "2026-03-12T16:36:23.476Z",
-          "spread": 4.5,
-          "score": "24-22",
-          "period": 1,
-          "clock": "7:32"
-        },
-        {
-          "t": "2026-03-12T16:36:23.585Z",
-          "spread": 4.5,
-          "score": "24-22",
-          "period": 1,
-          "clock": "7:32"
-        },
-        {
-          "t": "2026-03-12T16:37:26.673Z",
-          "spread": 4.5,
-          "score": "24-25",
-          "period": 1,
-          "clock": "6:58"
-        },
-        {
-          "t": "2026-03-12T16:37:26.996Z",
-          "spread": 4.5,
-          "score": "24-25",
-          "period": 1,
-          "clock": "6:58"
-        },
-        {
-          "t": "2026-03-12T16:38:30.880Z",
-          "spread": 5.5,
-          "score": "24-25",
-          "period": 1,
-          "clock": "6:35"
-        },
-        {
-          "t": "2026-03-12T16:38:30.932Z",
-          "spread": 5.5,
-          "score": "24-25",
-          "period": 1,
-          "clock": "6:35"
-        },
-        {
-          "t": "2026-03-12T16:39:34.537Z",
-          "spread": 4.5,
-          "score": "25-25",
-          "period": 1,
-          "clock": "6:01"
-        },
-        {
-          "t": "2026-03-12T16:39:34.545Z",
-          "spread": 4.5,
-          "score": "25-25",
-          "period": 1,
-          "clock": "6:01"
-        },
-        {
-          "t": "2026-03-12T16:40:37.699Z",
-          "spread": 6.5,
-          "score": "25-28",
-          "period": 1,
-          "clock": "5:33"
-        },
-        {
-          "t": "2026-03-12T16:40:38.144Z",
-          "spread": 6.5,
-          "score": "25-28",
-          "period": 1,
-          "clock": "5:33"
-        },
-        {
-          "t": "2026-03-12T16:41:41.201Z",
-          "spread": 6.5,
-          "score": "25-28",
-          "period": 1,
-          "clock": "5:33"
-        },
-        {
-          "t": "2026-03-12T16:41:41.215Z",
-          "spread": 6.5,
-          "score": "25-28",
-          "period": 1,
-          "clock": "5:33"
-        },
-        {
-          "t": "2026-03-12T16:42:45.421Z",
-          "spread": 6.5,
-          "score": "25-28",
-          "period": 1,
-          "clock": "5:32"
-        },
-        {
-          "t": "2026-03-12T16:42:46.738Z",
-          "spread": 6.5,
-          "score": "25-28",
-          "period": 1,
-          "clock": "5:32"
-        },
-        {
-          "t": "2026-03-12T16:43:49.986Z",
-          "spread": 5.5,
-          "score": "27-28",
-          "period": 1,
-          "clock": "4:49"
-        },
-        {
-          "t": "2026-03-12T16:43:50.234Z",
-          "spread": 5.5,
-          "score": "27-28",
-          "period": 1,
-          "clock": "4:49"
-        },
-        {
-          "t": "2026-03-12T16:44:53.172Z",
-          "spread": 5.5,
-          "score": "27-28",
-          "period": 1,
-          "clock": "3:46"
-        },
-        {
-          "t": "2026-03-12T16:44:54.193Z",
-          "spread": 5.5,
-          "score": "27-28",
-          "period": 1,
-          "clock": "3:46"
-        },
-        {
-          "t": "2026-03-12T16:45:57.393Z",
-          "spread": 5.5,
-          "score": "27-28",
-          "period": 1,
-          "clock": "3:46"
-        },
-        {
-          "t": "2026-03-12T16:45:57.877Z",
-          "spread": 5.5,
-          "score": "27-28",
-          "period": 1,
-          "clock": "3:46"
-        }
-      ]
-    },
-    {
-      "id": 1773333638342,
-      "key": "401851375_sust_OSU",
-      "gameId": "401851375",
-      "team": "OSU",
-      "opponent": "IOWA",
-      "matchup": "IOWA @ OSU",
-      "side": "SPREAD",
-      "spread": -0.5,
-      "signals": [
-        "sust"
-      ],
-      "marketOdds": -114,
-      "impliedP": 53.3,
-      "estimatedP": 55,
-      "kellyPct": 2.5,
-      "kellyBet": 500,
-      "book": "FanDuel",
-      "timestamp": "2026-03-12T16:40:38.342Z",
-      "outcome": null,
-      "payout": null,
-      "mode": "ncaab",
-      "awayTeam": "IOWA",
-      "homeTeam": "OSU",
-      "awayName": "Iowa Hawkeyes",
-      "homeName": "Ohio State Buckeyes",
-      "awayScore": 20,
-      "homeScore": 21,
-      "period": 1,
-      "clock": "5:10",
-      "periodLabel": "H1",
-      "sustLeader": "OSU",
-      "sustMargin": 1,
-      "betOnLeader": true,
-      "currentMargin": 1,
-      "cushion": 0.5,
-      "sustScore": 68.8,
-      "fragScore": -18.7,
-      "sustGap": 87.5,
-      "sustSignals": [
-        "Low 3PT reliance (0%)",
-        "Strong process (7.4/10)",
-        "Star cold (27% pace)"
-      ],
-      "fragSignals": [
-        "3PT heavy (45% of pts)"
-      ],
-      "sustStats": {
-        "fg": "57",
-        "efg": "57",
-        "threePt": "0",
-        "twoPt": "76",
-        "proc": 7.4,
-        "star": 27,
-        "scq": 0
-      },
-      "fragStats": {
-        "fg": "41",
-        "efg": "50",
-        "threePt": "38",
-        "twoPt": "40",
-        "proc": 4.2,
-        "star": 94,
-        "scq": 0
-      },
-      "sustDetail": "OSU +68.8 vs IOWA -18.7 (gap:87.5) | IOWA 20-21 OSU | H1 5:10 | FanDuel -0.5 (-114)",
-      "strategies": {
-        "g1_bigGap": true,
-        "g2_procDriven": true,
-        "g3_threePtDriven": false,
-        "g4_starInvolved": true,
-        "g5_betOnLeader": true,
-        "g6_hasCushion": true,
-        "g7_earlyGame": true,
-        "g8_highProc": true,
-        "g9_homeTeam": true,
-        "g10_ncaa": true,
-        "g11_bigMargin": false,
-        "g12_oppCold3": false
-      },
-      "altGaps": {
-        "v1_pureProc": 74,
-        "v2_f1low": 89.4,
-        "v3_f1high": 97.2,
-        "v4_f3boost": 100.3,
-        "v5_noStar": 77.5
-      },
-      "v7": {
-        "aScq": 0,
-        "hScq": 0,
-        "aScore": -18.7,
-        "hScore": 68.8,
-        "gap": 87.5,
-        "f5contrib": 0
-      },
-      "altStructural": {
-        "v6_cushionBoost": 89,
-        "v7_marginWeighted": 8.8,
-        "v8_procDiffOnly": 32,
-        "v10_timeDecay": 87.5
-      },
-      "alertSent": true,
-      "spreadHistory": [
-        {
-          "t": "2026-03-12T16:41:41.202Z",
-          "spread": -0.5,
-          "score": "20-21",
-          "period": 1,
-          "clock": "4:10"
-        },
-        {
-          "t": "2026-03-12T16:41:41.215Z",
-          "spread": -0.5,
-          "score": "20-21",
-          "period": 1,
-          "clock": "4:10"
-        },
-        {
-          "t": "2026-03-12T16:42:45.421Z",
-          "spread": 1.5,
-          "score": "22-21",
-          "period": 1,
-          "clock": "3:53"
-        },
-        {
-          "t": "2026-03-12T16:42:46.738Z",
-          "spread": 1.5,
-          "score": "22-21",
-          "period": 1,
-          "clock": "3:53"
-        },
-        {
-          "t": "2026-03-12T16:43:49.986Z",
-          "spread": -0.5,
-          "score": "22-24",
-          "period": 1,
-          "clock": "3:15"
-        },
-        {
-          "t": "2026-03-12T16:43:50.234Z",
-          "spread": -0.5,
-          "score": "22-24",
-          "period": 1,
-          "clock": "3:15"
-        },
-        {
-          "t": "2026-03-12T16:44:53.172Z",
-          "spread": -0.5,
-          "score": "22-24",
-          "period": 1,
-          "clock": "3:15"
-        },
-        {
-          "t": "2026-03-12T16:44:54.194Z",
-          "spread": -0.5,
-          "score": "22-24",
-          "period": 1,
-          "clock": "3:15"
-        },
-        {
-          "t": "2026-03-12T16:45:57.394Z",
-          "spread": -0.5,
-          "score": "22-24",
-          "period": 1,
-          "clock": "3:15"
-        },
-        {
-          "t": "2026-03-12T16:45:57.877Z",
-          "spread": -0.5,
-          "score": "22-24",
-          "period": 1,
-          "clock": "3:15"
-        }
-      ]
-    },
-    {
-      "id": 1773333958702,
+      "id": 1773334085416,
       "key": "401851311_sust_SJU",
       "gameId": "401851311",
       "team": "SJU",
       "opponent": "PROV",
       "matchup": "PROV @ SJU",
       "side": "SPREAD",
-      "spread": -21.5,
+      "spread": -22.5,
       "signals": [
         "sust"
       ],
@@ -886,7 +18,7 @@
       "kellyPct": 2.5,
       "kellyBet": 500,
       "book": "FanDuel",
-      "timestamp": "2026-03-12T16:45:58.702Z",
+      "timestamp": "2026-03-12T16:48:05.416Z",
       "outcome": null,
       "payout": null,
       "mode": "ncaab",
@@ -894,42 +26,42 @@
       "homeTeam": "SJU",
       "awayName": "Providence Friars",
       "homeName": "St. John's Red Storm",
-      "awayScore": 21,
-      "homeScore": 39,
+      "awayScore": 23,
+      "homeScore": 44,
       "period": 1,
-      "clock": "4:22",
+      "clock": "2:58",
       "periodLabel": "H1",
       "sustLeader": "SJU",
-      "sustMargin": 18,
+      "sustMargin": 21,
       "betOnLeader": true,
-      "currentMargin": 18,
-      "cushion": -3.5,
-      "sustScore": 45.6,
-      "fragScore": -15.2,
-      "sustGap": 60.8,
+      "currentMargin": 21,
+      "cushion": -1.5,
+      "sustScore": 48.6,
+      "fragScore": -17.2,
+      "sustGap": 65.8,
       "sustSignals": [
-        "Strong process (7.7/10)"
+        "Strong process (7.9/10)"
       ],
       "fragSignals": [],
       "sustStats": {
-        "fg": "48",
-        "efg": "55",
-        "threePt": "40",
-        "twoPt": "56",
-        "proc": 7.7,
-        "star": 192,
+        "fg": "50",
+        "efg": "57",
+        "threePt": "45",
+        "twoPt": "55",
+        "proc": 7.9,
+        "star": 176,
         "scq": 0
       },
       "fragStats": {
-        "fg": "37",
-        "efg": "37",
+        "fg": "36",
+        "efg": "36",
         "threePt": "0",
-        "twoPt": "67",
-        "proc": 3.7,
-        "star": 112,
+        "twoPt": "70",
+        "proc": 3.6,
+        "star": 103,
         "scq": 0
       },
-      "sustDetail": "SJU +45.6 vs PROV -15.2 (gap:60.8) | PROV 21-39 SJU | H1 4:22 | FanDuel -21.5 (-108)",
+      "sustDetail": "SJU +48.6 vs PROV -17.2 (gap:65.8) | PROV 23-44 SJU | H1 2:58 | FanDuel -22.5 (-108)",
       "strategies": {
         "g1_bigGap": true,
         "g2_procDriven": true,
@@ -945,25 +77,227 @@
         "g12_oppCold3": true
       },
       "altGaps": {
-        "v1_pureProc": 70,
-        "v2_f1low": 71.8,
-        "v3_f1high": 29.4,
-        "v4_f3boost": 76.8,
-        "v5_noStar": 70.8
+        "v1_pureProc": 76,
+        "v2_f1low": 77.8,
+        "v3_f1high": 31.5,
+        "v4_f3boost": 83,
+        "v5_noStar": 75.8
       },
       "v7": {
         "aScq": 0,
         "hScq": 0,
-        "aScore": -15.2,
-        "hScore": 45.6,
-        "gap": 60.8,
+        "aScore": -17.2,
+        "hScore": 48.6,
+        "gap": 65.8,
         "f5contrib": 0
       },
       "altStructural": {
-        "v6_cushionBoost": 60.8,
-        "v7_marginWeighted": 109.4,
+        "v6_cushionBoost": 65.8,
+        "v7_marginWeighted": 138.2,
+        "v8_procDiffOnly": 43,
+        "v10_timeDecay": 65.8
+      },
+      "alertSent": true
+    },
+    {
+      "id": 1773334085642,
+      "key": "401851263_sust_GW",
+      "gameId": "401851263",
+      "team": "GW",
+      "opponent": "FOR",
+      "matchup": "GW @ FOR",
+      "side": "SPREAD",
+      "spread": -20.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -125,
+      "impliedP": 55.6,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-12T16:48:05.642Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "GW",
+      "homeTeam": "FOR",
+      "awayName": "George Washington Revolutionaries",
+      "homeName": "Fordham Rams",
+      "awayScore": 41,
+      "homeScore": 21,
+      "period": 2,
+      "clock": "17:24",
+      "periodLabel": "H2",
+      "sustLeader": "GW",
+      "sustMargin": 20,
+      "betOnLeader": true,
+      "currentMargin": 20,
+      "cushion": -0.5,
+      "sustScore": 47.4,
+      "fragScore": -15.8,
+      "sustGap": 63.2,
+      "sustSignals": [
+        "Strong process (7.6/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "45",
+        "efg": "56",
+        "threePt": "35",
+        "twoPt": "34",
+        "proc": 7.6,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "31",
+        "efg": "34",
+        "threePt": "17",
+        "twoPt": "67",
+        "proc": 3.6,
+        "star": 50,
+        "scq": 0
+      },
+      "sustDetail": "GW +47.4 vs FOR -15.8 (gap:63.2) | GW 41-21 FOR | H2 17:24 | FanDuel -20.5 (-125)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": false,
+        "g8_highProc": true,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 70,
+        "v2_f1low": 73.5,
+        "v3_f1high": 35.9,
+        "v4_f3boost": 79.2,
+        "v5_noStar": 73.2
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 47.4,
+        "hScore": -15.8,
+        "gap": 63.2,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 63.2,
+        "v7_marginWeighted": 126.4,
         "v8_procDiffOnly": 40,
-        "v10_timeDecay": 60.8
+        "v10_timeDecay": 63.2
+      },
+      "alertSent": true
+    },
+    {
+      "id": 1773334086060,
+      "key": "401851375_sust_OSU",
+      "gameId": "401851375",
+      "team": "OSU",
+      "opponent": "IOWA",
+      "matchup": "IOWA @ OSU",
+      "side": "SPREAD",
+      "spread": -0.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -118,
+      "impliedP": 54.1,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-12T16:48:06.060Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "IOWA",
+      "homeTeam": "OSU",
+      "awayName": "Iowa Hawkeyes",
+      "homeName": "Ohio State Buckeyes",
+      "awayScore": 25,
+      "homeScore": 26,
+      "period": 1,
+      "clock": "2:28",
+      "periodLabel": "H1",
+      "sustLeader": "OSU",
+      "sustMargin": 1,
+      "betOnLeader": true,
+      "currentMargin": 1,
+      "cushion": 0.5,
+      "sustScore": 57.3,
+      "fragScore": -19.6,
+      "sustGap": 76.9,
+      "sustSignals": [
+        "Low 3PT reliance (12%)",
+        "Strong process (7.0/10)",
+        "Star cold (45% pace)"
+      ],
+      "fragSignals": [
+        "3PT heavy (48% of pts)"
+      ],
+      "sustStats": {
+        "fg": "56",
+        "efg": "58",
+        "threePt": "14",
+        "twoPt": "69",
+        "proc": 7,
+        "star": 45,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "44",
+        "efg": "56",
+        "threePt": "44",
+        "twoPt": "32",
+        "proc": 4.2,
+        "star": 79,
+        "scq": 0
+      },
+      "sustDetail": "OSU +57.3 vs IOWA -19.6 (gap:76.9) | IOWA 25-26 OSU | H1 2:28 | FanDuel -0.5 (-118)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 66,
+        "v2_f1low": 78.9,
+        "v3_f1high": 84,
+        "v4_f3boost": 88.1,
+        "v5_noStar": 66.9
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -19.6,
+        "hScore": 57.3,
+        "gap": 76.9,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 78.4,
+        "v7_marginWeighted": 7.7,
+        "v8_procDiffOnly": 28,
+        "v10_timeDecay": 76.9
       },
       "alertSent": true
     }
