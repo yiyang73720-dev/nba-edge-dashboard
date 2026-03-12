@@ -1234,6 +1234,62 @@
           "score": "67-60",
           "period": 2,
           "clock": "4:56"
+        },
+        {
+          "t": "2026-03-12T18:36:00.167Z",
+          "spread": -3.5,
+          "score": "67-66",
+          "period": 2,
+          "clock": "4:02"
+        },
+        {
+          "t": "2026-03-12T18:36:00.913Z",
+          "spread": -3.5,
+          "score": "67-66",
+          "period": 2,
+          "clock": "4:02"
+        },
+        {
+          "t": "2026-03-12T18:37:02.614Z",
+          "spread": -2.5,
+          "score": "69-68",
+          "period": 2,
+          "clock": "2:59"
+        },
+        {
+          "t": "2026-03-12T18:37:02.630Z",
+          "spread": -2.5,
+          "score": "69-68",
+          "period": 2,
+          "clock": "2:59"
+        },
+        {
+          "t": "2026-03-12T18:38:05.251Z",
+          "spread": -0.5,
+          "score": "69-68",
+          "period": 2,
+          "clock": "2:51"
+        },
+        {
+          "t": "2026-03-12T18:38:05.513Z",
+          "spread": -0.5,
+          "score": "69-68",
+          "period": 2,
+          "clock": "2:51"
+        },
+        {
+          "t": "2026-03-12T18:39:07.381Z",
+          "spread": -0.5,
+          "score": "69-68",
+          "period": 2,
+          "clock": "2:51"
+        },
+        {
+          "t": "2026-03-12T18:39:08.000Z",
+          "spread": -0.5,
+          "score": "69-68",
+          "period": 2,
+          "clock": "2:51"
         }
       ]
     },
@@ -1565,8 +1621,164 @@
           "score": "38-37",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T18:36:00.167Z",
+          "spread": -1.5,
+          "score": "38-37",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T18:36:00.913Z",
+          "spread": -1.5,
+          "score": "38-37",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T18:37:02.614Z",
+          "spread": -1.5,
+          "score": "38-37",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T18:37:02.630Z",
+          "spread": -1.5,
+          "score": "38-37",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T18:38:05.252Z",
+          "spread": -1.5,
+          "score": "38-37",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T18:38:05.514Z",
+          "spread": -1.5,
+          "score": "38-37",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T18:39:07.381Z",
+          "spread": -1.5,
+          "score": "38-37",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-12T18:39:08.001Z",
+          "spread": -1.5,
+          "score": "38-37",
+          "period": 1,
+          "clock": "0:00"
         }
       ],
+      "alertSent": true
+    },
+    {
+      "id": 1773340748006,
+      "key": "401851719_sust_TXSO",
+      "gameId": "401851719",
+      "team": "TXSO",
+      "opponent": "AAMU",
+      "matchup": "AAMU @ TXSO",
+      "side": "SPREAD",
+      "spread": -3.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -104,
+      "impliedP": 51,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-12T18:39:08.006Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "AAMU",
+      "homeTeam": "TXSO",
+      "awayName": "Alabama A&M Bulldogs",
+      "homeName": "Texas Southern Tigers",
+      "awayScore": 21,
+      "homeScore": 27,
+      "period": 1,
+      "clock": "3:17",
+      "periodLabel": "H1",
+      "sustLeader": "TXSO",
+      "sustMargin": 6,
+      "betOnLeader": true,
+      "currentMargin": 6,
+      "cushion": 2.5,
+      "sustScore": 49.5,
+      "fragScore": -2.1,
+      "sustGap": 51.6,
+      "sustSignals": [
+        "Low 3PT reliance (11%)",
+        "Strong process (7.1/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "45",
+        "efg": "48",
+        "threePt": "20",
+        "twoPt": "67",
+        "proc": 7.1,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "32",
+        "efg": "38",
+        "threePt": "25",
+        "twoPt": "48",
+        "proc": 5,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "TXSO +49.5 vs AAMU -2.1 (gap:51.6) | AAMU 21-27 TXSO | H1 3:17 | FanDuel -3.5 (-104)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 42,
+        "v2_f1low": 52.5,
+        "v3_f1high": 59,
+        "v4_f3boost": 59.9,
+        "v5_noStar": 51.5
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -2.1,
+        "hScore": 49.5,
+        "gap": 51.6,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 59.1,
+        "v7_marginWeighted": 31,
+        "v8_procDiffOnly": 21,
+        "v10_timeDecay": 51.6
+      },
       "alertSent": true
     }
   ],
