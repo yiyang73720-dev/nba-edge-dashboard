@@ -1,7 +1,7 @@
 {
   "bets": [
     {
-      "id": 1773355258377,
+      "id": 1773355574313,
       "key": "401851473_sust_SCST",
       "gameId": "401851473",
       "team": "SCST",
@@ -12,13 +12,13 @@
       "signals": [
         "sust"
       ],
-      "marketOdds": -125,
-      "impliedP": 55.6,
+      "marketOdds": -128,
+      "impliedP": 56.1,
       "estimatedP": 55,
       "kellyPct": 2.5,
       "kellyBet": 500,
       "book": "FanDuel",
-      "timestamp": "2026-03-12T22:40:58.377Z",
+      "timestamp": "2026-03-12T22:46:14.313Z",
       "outcome": null,
       "payout": null,
       "mode": "ncaab",
@@ -26,44 +26,44 @@
       "homeTeam": "NORF",
       "awayName": "South Carolina State Bulldogs",
       "homeName": "Norfolk State Spartans",
-      "awayScore": 29,
-      "homeScore": 22,
+      "awayScore": 34,
+      "homeScore": 26,
       "period": 1,
-      "clock": "3:58",
+      "clock": "2:04",
       "periodLabel": "H1",
       "sustLeader": "SCST",
-      "sustMargin": 7,
+      "sustMargin": 8,
       "betOnLeader": true,
-      "currentMargin": 7,
-      "cushion": 10.5,
-      "sustScore": 48.8,
-      "fragScore": -5.3,
-      "sustGap": 54.099999999999994,
+      "currentMargin": 8,
+      "cushion": 11.5,
+      "sustScore": 44.2,
+      "fragScore": -4.7,
+      "sustGap": 48.900000000000006,
       "sustSignals": [
-        "Low 3PT reliance (0%)"
+        "Low 3PT reliance (9%)"
       ],
       "fragSignals": [],
       "sustStats": {
-        "fg": "48",
-        "efg": "48",
-        "threePt": "0",
-        "twoPt": "83",
-        "proc": 6.9,
+        "fg": "50",
+        "efg": "52",
+        "threePt": "11",
+        "twoPt": "76",
+        "proc": 6.8,
         "star": 0,
         "scq": 0
       },
       "fragStats": {
-        "fg": "57",
-        "efg": "61",
+        "fg": "59",
+        "efg": "62",
         "threePt": "33",
-        "twoPt": "64",
+        "twoPt": "69",
         "proc": 4.4,
-        "star": 132,
+        "star": 118,
         "scq": 0
       },
-      "sustDetail": "SCST +48.8 vs NORF -5.3 (gap:54.099999999999994) | SCST 29-22 NORF | H1 3:58 | FanDuel +3.5 (-125)",
+      "sustDetail": "SCST +44.2 vs NORF -4.7 (gap:48.900000000000006) | SCST 34-26 NORF | H1 2:04 | FanDuel +3.5 (-128)",
       "strategies": {
-        "g1_bigGap": true,
+        "g1_bigGap": false,
         "g2_procDriven": true,
         "g3_threePtDriven": false,
         "g4_starInvolved": true,
@@ -77,25 +77,25 @@
         "g12_oppCold3": false
       },
       "altGaps": {
-        "v1_pureProc": 50,
-        "v2_f1low": 57.7,
-        "v3_f1high": 50.9,
-        "v4_f3boost": 64.1,
-        "v5_noStar": 54.1
+        "v1_pureProc": 48,
+        "v2_f1low": 53.3,
+        "v3_f1high": 40.6,
+        "v4_f3boost": 58.4,
+        "v5_noStar": 48.8
       },
       "v7": {
         "aScq": 0,
         "hScq": 0,
-        "aScore": 48.8,
-        "hScore": -5.3,
-        "gap": 54.1,
+        "aScore": 44.2,
+        "hScore": -4.7,
+        "gap": 48.9,
         "f5contrib": 0
       },
       "altStructural": {
-        "v6_cushionBoost": 85.6,
-        "v7_marginWeighted": 37.9,
-        "v8_procDiffOnly": 25,
-        "v10_timeDecay": 54.1
+        "v6_cushionBoost": 83.4,
+        "v7_marginWeighted": 39.1,
+        "v8_procDiffOnly": 24,
+        "v10_timeDecay": 48.9
       },
       "alertSent": true
     }
