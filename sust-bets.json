@@ -1,5 +1,107 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1773418481215,
+      "key": "401851270_sust_GW",
+      "gameId": "401851270",
+      "team": "GW",
+      "opponent": "SLU",
+      "matchup": "GW @ SLU",
+      "side": "SPREAD",
+      "spread": -8.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -106,
+      "impliedP": 51.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-13T16:14:41.215Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "GW",
+      "homeTeam": "SLU",
+      "awayName": "George Washington Revolutionaries",
+      "homeName": "Saint Louis Billikens",
+      "awayScore": 39,
+      "homeScore": 20,
+      "period": 1,
+      "clock": "4:27",
+      "periodLabel": "H1",
+      "sustLeader": "GW",
+      "sustMargin": 19,
+      "betOnLeader": true,
+      "currentMargin": 19,
+      "cushion": 10.5,
+      "sustScore": 36.6,
+      "fragScore": -14.7,
+      "sustGap": 51.3,
+      "sustSignals": [
+        "Strong process (7.1/10)"
+      ],
+      "fragSignals": [
+        "3PT heavy (45% of pts)"
+      ],
+      "sustStats": {
+        "fg": "43",
+        "efg": "55",
+        "threePt": "39",
+        "twoPt": "26",
+        "proc": 7.1,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "33",
+        "efg": "40",
+        "threePt": "20",
+        "twoPt": "50",
+        "proc": 4.4,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "GW +36.6 vs SLU -14.7 (gap:51.3) | GW 39-20 SLU | H1 4:27 | FanDuel -8.5 (-106)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 54,
+        "v2_f1low": 57.6,
+        "v3_f1high": 36.1,
+        "v4_f3boost": 62.1,
+        "v5_noStar": 51.3
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 36.6,
+        "hScore": -14.7,
+        "gap": 51.3,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 82.8,
+        "v7_marginWeighted": 97.5,
+        "v8_procDiffOnly": 27,
+        "v10_timeDecay": 51.3
+      },
+      "alertSent": true
+    }
+  ],
   "resolved": [
     {
       "id": 1773360760011,
