@@ -632,6 +632,20 @@
           "score": "76-78",
           "period": 2,
           "clock": "2:21"
+        },
+        {
+          "t": "2026-03-13T17:35:51.876Z",
+          "spread": 3.5,
+          "score": "78-78",
+          "period": 2,
+          "clock": "1:47"
+        },
+        {
+          "t": "2026-03-13T17:36:54.683Z",
+          "spread": 1.5,
+          "score": "79-78",
+          "period": 2,
+          "clock": "1:24"
         }
       ]
     },
@@ -1010,6 +1024,20 @@
           "score": "52-55",
           "period": 2,
           "clock": "10:59"
+        },
+        {
+          "t": "2026-03-13T17:35:51.877Z",
+          "spread": -6.5,
+          "score": "52-55",
+          "period": 2,
+          "clock": "10:59"
+        },
+        {
+          "t": "2026-03-13T17:36:54.683Z",
+          "spread": -6.5,
+          "score": "52-55",
+          "period": 2,
+          "clock": "10:59"
         }
       ],
       "alertSent": true
@@ -1250,6 +1278,20 @@
           "score": "27-30",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-13T17:35:51.877Z",
+          "spread": 2.5,
+          "score": "27-30",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-13T17:36:54.684Z",
+          "spread": 2.5,
+          "score": "27-30",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
     },
@@ -1357,8 +1399,121 @@
           "score": "20-25",
           "period": 1,
           "clock": "8:18"
+        },
+        {
+          "t": "2026-03-13T17:35:51.879Z",
+          "spread": -12.5,
+          "score": "20-26",
+          "period": 1,
+          "clock": "7:31"
+        },
+        {
+          "t": "2026-03-13T17:36:54.684Z",
+          "spread": -12.5,
+          "score": "20-26",
+          "period": 1,
+          "clock": "7:23"
         }
       ],
+      "alertSent": true
+    },
+    {
+      "id": 1773423416141,
+      "key": "401851225_sust_UAB",
+      "gameId": "401851225",
+      "team": "UAB",
+      "opponent": "CLT",
+      "matchup": "CLT @ UAB",
+      "side": "SPREAD",
+      "spread": -4.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -122,
+      "impliedP": 55,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-13T17:36:56.142Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "CLT",
+      "homeTeam": "UAB",
+      "awayName": "Charlotte 49ers",
+      "homeName": "UAB Blazers",
+      "awayScore": 22,
+      "homeScore": 25,
+      "period": 1,
+      "clock": "5:45",
+      "periodLabel": "H1",
+      "sustLeader": "UAB",
+      "sustMargin": 3,
+      "betOnLeader": true,
+      "currentMargin": 3,
+      "cushion": -1.5,
+      "sustScore": 45.2,
+      "fragScore": -7.5,
+      "sustGap": 52.7,
+      "sustSignals": [
+        "Low 3PT reliance (12%)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "42",
+        "efg": "44",
+        "threePt": "13",
+        "twoPt": "80",
+        "proc": 6.9,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "32",
+        "efg": "39",
+        "threePt": "23",
+        "twoPt": "36",
+        "proc": 4.7,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "UAB +45.2 vs CLT -7.5 (gap:52.7) | CLT 22-25 UAB | H1 5:45 | FanDuel -4.5 (-122)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 44,
+        "v2_f1low": 54.2,
+        "v3_f1high": 58.3,
+        "v4_f3boost": 61.5,
+        "v5_noStar": 52.7
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -7.5,
+        "hScore": 45.2,
+        "gap": 52.7,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 52.7,
+        "v7_marginWeighted": 15.8,
+        "v8_procDiffOnly": 22,
+        "v10_timeDecay": 52.7
+      },
       "alertSent": true
     }
   ],
