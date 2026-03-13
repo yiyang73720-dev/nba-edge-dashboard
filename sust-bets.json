@@ -99,7 +99,16 @@
         "v8_procDiffOnly": 38,
         "v10_timeDecay": 78.4
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-13T00:13:49.466Z",
+          "spread": -20.5,
+          "score": "34-50",
+          "period": 2,
+          "clock": "17:37"
+        }
+      ]
     },
     {
       "id": 1773360760715,
@@ -197,6 +206,225 @@
         "v7_marginWeighted": 15.3,
         "v8_procDiffOnly": 14,
         "v10_timeDecay": 38.3
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-13T00:13:49.467Z",
+          "spread": 4.5,
+          "score": "27-31",
+          "period": 2,
+          "clock": "15:18"
+        }
+      ]
+    },
+    {
+      "id": 1773360827806,
+      "key": "401810812_sust_MIA",
+      "gameId": "401810812",
+      "team": "MIA",
+      "opponent": "MIL",
+      "matchup": "MIL @ MIA",
+      "side": "SPREAD",
+      "spread": -8.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -125,
+      "impliedP": 55.6,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-13T00:13:47.806Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "MIL",
+      "homeTeam": "MIA",
+      "awayName": "Milwaukee Bucks",
+      "homeName": "Miami Heat",
+      "awayScore": 32,
+      "homeScore": 39,
+      "period": 2,
+      "clock": "8:46",
+      "periodLabel": "Q2",
+      "sustLeader": "MIA",
+      "sustMargin": 7,
+      "betOnLeader": true,
+      "currentMargin": 7,
+      "cushion": -1.5,
+      "sustScore": 38.6,
+      "fragScore": -5.6,
+      "sustGap": 44.2,
+      "sustSignals": [
+        "Strong process (7.2/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "48",
+        "efg": "60",
+        "threePt": "41",
+        "twoPt": "41",
+        "proc": 7.2,
+        "star": 0,
+        "scq": 16
+      },
+      "fragStats": {
+        "fg": "50",
+        "efg": "56",
+        "threePt": "43",
+        "twoPt": "63",
+        "proc": 4.6,
+        "star": 95,
+        "scq": 8
+      },
+      "sustDetail": "MIA +38.6 vs MIL -5.6 (gap:44.2) | MIL 32-39 MIA | Q2 8:46 | FanDuel -8.5 (-125)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 52,
+        "v2_f1low": 52.1,
+        "v3_f1high": 21,
+        "v4_f3boost": 54.7,
+        "v5_noStar": 44.3
+      },
+      "v7": {
+        "aScq": 7.7,
+        "hScq": 16.1,
+        "aScore": -2.5,
+        "hScore": 45.1,
+        "gap": 47.6,
+        "f5contrib": 3.4
+      },
+      "altStructural": {
+        "v6_cushionBoost": 44.2,
+        "v7_marginWeighted": 30.9,
+        "v8_procDiffOnly": 26,
+        "v10_timeDecay": 44.2
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -5.5,
+        "detail": "MIA -5.5",
+        "awaySpread": "+5.5",
+        "homeSpread": "-5.5",
+        "awaySpreadOdds": "-112",
+        "homeSpreadOdds": "-108",
+        "awayML": "+180",
+        "homeML": "-218",
+        "openSpread": "+5.5"
+      },
+      "alertSent": true
+    },
+    {
+      "id": 1773360829899,
+      "key": "401851300_sust_HOU",
+      "gameId": "401851300",
+      "team": "HOU",
+      "opponent": "BYU",
+      "matchup": "BYU @ HOU",
+      "side": "SPREAD",
+      "spread": -3.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -125,
+      "impliedP": 55.6,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-13T00:13:49.899Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "BYU",
+      "homeTeam": "HOU",
+      "awayName": "BYU Cougars",
+      "homeName": "Houston Cougars",
+      "awayScore": 41,
+      "homeScore": 37,
+      "period": 1,
+      "clock": "0:00",
+      "periodLabel": "H1",
+      "sustLeader": "BYU",
+      "sustMargin": 4,
+      "betOnLeader": false,
+      "currentMargin": -4,
+      "cushion": -7.5,
+      "sustScore": 42.4,
+      "fragScore": -2.2,
+      "sustGap": 44.6,
+      "sustSignals": [
+        "Low 3PT reliance (8%)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "48",
+        "efg": "50",
+        "threePt": "14",
+        "twoPt": "70",
+        "proc": 6.7,
+        "star": 85,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "52",
+        "efg": "63",
+        "threePt": "63",
+        "twoPt": "34",
+        "proc": 4.9,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "HOU +42.4 vs BYU -2.2 (gap:44.6) | BYU 41-37 HOU | H1 0:00 | FanDuel -3.5 (-125)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": false,
+        "g7_earlyGame": false,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 36,
+        "v2_f1low": 45.3,
+        "v3_f1high": 51.6,
+        "v4_f3boost": 51.7,
+        "v5_noStar": 44.5
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -2.2,
+        "hScore": 42.4,
+        "gap": 44.6,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 44.6,
+        "v7_marginWeighted": 17.8,
+        "v8_procDiffOnly": 18,
+        "v10_timeDecay": 44.6
       },
       "alertSent": true
     }
