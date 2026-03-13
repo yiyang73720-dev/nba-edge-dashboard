@@ -352,8 +352,121 @@
           "score": "50-38",
           "period": 2,
           "clock": "18:57"
+        },
+        {
+          "t": "2026-03-13T16:53:40.595Z",
+          "spread": -0.5,
+          "score": "50-43",
+          "period": 2,
+          "clock": "17:44"
         }
       ]
+    },
+    {
+      "id": 1773420755493,
+      "key": "401851380_sust_MICH",
+      "gameId": "401851380",
+      "team": "MICH",
+      "opponent": "OSU",
+      "matchup": "OSU @ MICH",
+      "side": "SPREAD",
+      "spread": -10.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -102,
+      "impliedP": 50.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-13T16:52:35.493Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "OSU",
+      "homeTeam": "MICH",
+      "awayName": "Ohio State Buckeyes",
+      "homeName": "Michigan Wolverines",
+      "awayScore": 33,
+      "homeScore": 37,
+      "period": 1,
+      "clock": "0:19",
+      "periodLabel": "H1",
+      "sustLeader": "MICH",
+      "sustMargin": 4,
+      "betOnLeader": true,
+      "currentMargin": 4,
+      "cushion": -6.5,
+      "sustScore": 45.1,
+      "fragScore": -0.1,
+      "sustGap": 45.2,
+      "sustSignals": [],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "50",
+        "efg": "57",
+        "threePt": "50",
+        "twoPt": "59",
+        "proc": 6.9,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "38",
+        "efg": "45",
+        "threePt": "33",
+        "twoPt": "42",
+        "proc": 5.3,
+        "star": 112,
+        "scq": 0
+      },
+      "sustDetail": "MICH +39.1 vs OSU 5.9 (gap:33.2) | OSU 33-37 MICH | H1 0:30 | FanDuel -10.5 (-102)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 32,
+        "v2_f1low": 36,
+        "v3_f1high": 28.7,
+        "v4_f3boost": 39.6,
+        "v5_noStar": 33.2
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 5.9,
+        "hScore": 39.1,
+        "gap": 33.2,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 33.2,
+        "v7_marginWeighted": 13.3,
+        "v8_procDiffOnly": 16,
+        "v10_timeDecay": 33.2
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-13T16:53:40.595Z",
+          "spread": -10.5,
+          "score": "33-37",
+          "period": 1,
+          "clock": "0:19"
+        }
+      ],
+      "alertSent": true
     }
   ],
   "resolved": [
