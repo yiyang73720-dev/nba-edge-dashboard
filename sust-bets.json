@@ -591,6 +591,55 @@
           "score": "60-61",
           "period": 2,
           "clock": "4:00"
+        },
+        {
+          "t": "2026-03-13T21:44:21.501Z",
+          "spread": 3.5,
+          "score": "60-62",
+          "period": 2,
+          "clock": "4:00"
+        },
+        {
+          "t": "2026-03-13T21:45:24.610Z",
+          "spread": 4.5,
+          "score": "61-63",
+          "period": 2,
+          "clock": "3:41"
+        },
+        {
+          "t": "2026-03-13T21:46:26.911Z",
+          "spread": 4.5,
+          "score": "62-63",
+          "period": 2,
+          "clock": "3:15"
+        },
+        {
+          "t": "2026-03-13T21:47:29.403Z",
+          "spread": 4.5,
+          "score": "62-65",
+          "period": 2,
+          "clock": "3:15"
+        },
+        {
+          "t": "2026-03-13T21:48:33.099Z",
+          "spread": 4.5,
+          "score": "62-65",
+          "period": 2,
+          "clock": "2:12"
+        },
+        {
+          "t": "2026-03-13T21:49:36.280Z",
+          "spread": 5.5,
+          "score": "62-66",
+          "period": 2,
+          "clock": "2:07"
+        },
+        {
+          "t": "2026-03-13T21:50:38.334Z",
+          "spread": 4.5,
+          "score": "65-69",
+          "period": 2,
+          "clock": "1:15"
         }
       ]
     },
@@ -692,6 +741,156 @@
         "v7_marginWeighted": 4.2,
         "v8_procDiffOnly": 21,
         "v10_timeDecay": 42.2
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-13T21:44:21.501Z",
+          "spread": 2.5,
+          "score": "27-28",
+          "period": 1,
+          "clock": "5:15"
+        },
+        {
+          "t": "2026-03-13T21:45:24.610Z",
+          "spread": 3.5,
+          "score": "29-33",
+          "period": 1,
+          "clock": "4:05"
+        },
+        {
+          "t": "2026-03-13T21:46:26.912Z",
+          "spread": 3.5,
+          "score": "29-33",
+          "period": 1,
+          "clock": "3:16"
+        },
+        {
+          "t": "2026-03-13T21:47:29.403Z",
+          "spread": 4.5,
+          "score": "29-33",
+          "period": 1,
+          "clock": "3:16"
+        },
+        {
+          "t": "2026-03-13T21:48:33.100Z",
+          "spread": 4.5,
+          "score": "29-33",
+          "period": 1,
+          "clock": "3:16"
+        },
+        {
+          "t": "2026-03-13T21:49:36.282Z",
+          "spread": 4.5,
+          "score": "29-33",
+          "period": 1,
+          "clock": "3:16"
+        },
+        {
+          "t": "2026-03-13T21:50:38.335Z",
+          "spread": 4.5,
+          "score": "33-35",
+          "period": 1,
+          "clock": "2:33"
+        }
+      ]
+    },
+    {
+      "id": 1773438639558,
+      "key": "401851273_sust_DUQ",
+      "gameId": "401851273",
+      "team": "DUQ",
+      "opponent": "VCU",
+      "matchup": "DUQ @ VCU",
+      "side": "SPREAD",
+      "spread": 4.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -108,
+      "impliedP": 51.9,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-13T21:50:39.558Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "DUQ",
+      "homeTeam": "VCU",
+      "awayName": "Duquesne Dukes",
+      "homeName": "VCU Rams",
+      "awayScore": 24,
+      "homeScore": 21,
+      "period": 1,
+      "clock": "7:30",
+      "periodLabel": "H1",
+      "sustLeader": "DUQ",
+      "sustMargin": 3,
+      "betOnLeader": true,
+      "currentMargin": 3,
+      "cushion": 7.5,
+      "sustScore": 35.8,
+      "fragScore": -6.1,
+      "sustGap": 41.9,
+      "sustSignals": [
+        "Star cold (57% pace)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "53",
+        "efg": "65",
+        "threePt": "40",
+        "twoPt": "42",
+        "proc": 6.5,
+        "star": 57,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "38",
+        "efg": "44",
+        "threePt": "43",
+        "twoPt": "57",
+        "proc": 4.8,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "DUQ +35.8 vs VCU -6.1 (gap:41.9) | DUQ 24-21 VCU | H1 7:30 | FanDuel +4.5 (-108)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 44,
+        "v2_f1low": 46,
+        "v3_f1high": 31.5,
+        "v4_f3boost": 48.7,
+        "v5_noStar": 31.9
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 35.8,
+        "hScore": -6.1,
+        "gap": 41.9,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 64.4,
+        "v7_marginWeighted": 12.6,
+        "v8_procDiffOnly": 17,
+        "v10_timeDecay": 41.9
       },
       "alertSent": true
     }
