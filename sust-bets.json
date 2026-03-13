@@ -559,6 +559,34 @@
           "score": "36-50",
           "period": 2,
           "clock": "12:06"
+        },
+        {
+          "t": "2026-03-13T18:44:10.632Z",
+          "spread": -15.5,
+          "score": "36-50",
+          "period": 2,
+          "clock": "12:06"
+        },
+        {
+          "t": "2026-03-13T18:45:12.990Z",
+          "spread": -15.5,
+          "score": "36-50",
+          "period": 2,
+          "clock": "12:06"
+        },
+        {
+          "t": "2026-03-13T18:46:14.541Z",
+          "spread": -15.5,
+          "score": "37-50",
+          "period": 2,
+          "clock": "11:49"
+        },
+        {
+          "t": "2026-03-13T18:47:16.600Z",
+          "spread": -14.5,
+          "score": "38-50",
+          "period": 2,
+          "clock": "11:35"
         }
       ],
       "alertSent": true
@@ -1102,8 +1130,137 @@
           "score": "68-62",
           "period": 2,
           "clock": "6:27"
+        },
+        {
+          "t": "2026-03-13T18:44:10.633Z",
+          "spread": 4.5,
+          "score": "70-65",
+          "period": 2,
+          "clock": "5:47"
+        },
+        {
+          "t": "2026-03-13T18:45:12.990Z",
+          "spread": 5.5,
+          "score": "73-65",
+          "period": 2,
+          "clock": "5:18"
+        },
+        {
+          "t": "2026-03-13T18:46:14.541Z",
+          "spread": 5.5,
+          "score": "73-67",
+          "period": 2,
+          "clock": "4:59"
+        },
+        {
+          "t": "2026-03-13T18:47:16.602Z",
+          "spread": 5.5,
+          "score": "76-69",
+          "period": 2,
+          "clock": "3:59"
         }
       ]
+    },
+    {
+      "id": 1773427637747,
+      "key": "401851722_sust_PV",
+      "gameId": "401851722",
+      "team": "PV",
+      "opponent": "AAMU",
+      "matchup": "PV @ AAMU",
+      "side": "SPREAD",
+      "spread": -8.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -118,
+      "impliedP": 54.1,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-13T18:47:17.747Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "PV",
+      "homeTeam": "AAMU",
+      "awayName": "Prairie View A&M Panthers",
+      "homeName": "Alabama A&M Bulldogs",
+      "awayScore": 34,
+      "homeScore": 21,
+      "period": 1,
+      "clock": "0:51",
+      "periodLabel": "H1",
+      "sustLeader": "PV",
+      "sustMargin": 13,
+      "betOnLeader": true,
+      "currentMargin": 13,
+      "cushion": 4.5,
+      "sustScore": 74.9,
+      "fragScore": -19.8,
+      "sustGap": 94.7,
+      "sustSignals": [
+        "Low 3PT reliance (26%)",
+        "Strong process (8.1/10)",
+        "Star cold (44% pace)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "54",
+        "efg": "60",
+        "threePt": "33",
+        "twoPt": "59",
+        "proc": 8.1,
+        "star": 44,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "26",
+        "efg": "30",
+        "threePt": "50",
+        "twoPt": "38",
+        "proc": 3.9,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "PV +74.9 vs AAMU -19.8 (gap:94.7) | PV 34-21 AAMU | H1 0:51 | FanDuel -8.5 (-118)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 94,
+        "v2_f1low": 102.8,
+        "v3_f1high": 78.9,
+        "v4_f3boost": 111.4,
+        "v5_noStar": 84.6
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 74.9,
+        "hScore": -19.8,
+        "gap": 94.7,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 108.2,
+        "v7_marginWeighted": 123.1,
+        "v8_procDiffOnly": 42,
+        "v10_timeDecay": 94.7
+      },
+      "alertSent": true
     }
   ],
   "resolved": [
