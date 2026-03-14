@@ -1,5 +1,117 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1773517338248,
+      "key": "401810825_sust_ATL",
+      "gameId": "401810825",
+      "team": "ATL",
+      "opponent": "MIL",
+      "matchup": "MIL @ ATL",
+      "side": "SPREAD",
+      "spread": -10.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": 100,
+      "impliedP": 50,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-14T19:42:18.248Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "MIL",
+      "homeTeam": "ATL",
+      "awayName": "Milwaukee Bucks",
+      "homeName": "Atlanta Hawks",
+      "awayScore": 32,
+      "homeScore": 35,
+      "period": 2,
+      "clock": "11:01",
+      "periodLabel": "Q2",
+      "sustLeader": "ATL",
+      "sustMargin": 3,
+      "betOnLeader": true,
+      "currentMargin": 3,
+      "cushion": -7.5,
+      "sustScore": 44.5,
+      "fragScore": -14.5,
+      "sustGap": 59,
+      "sustSignals": [
+        "Strong process (7.2/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "54",
+        "efg": "63",
+        "threePt": "44",
+        "twoPt": "51",
+        "proc": 7.2,
+        "star": 0,
+        "scq": 13
+      },
+      "fragStats": {
+        "fg": "60",
+        "efg": "70",
+        "threePt": "40",
+        "twoPt": "50",
+        "proc": 4.3,
+        "star": 0,
+        "scq": -15
+      },
+      "sustDetail": "ATL +44.5 vs MIL -14.5 (gap:59) | MIL 32-35 ATL | Q2 11:01 | FanDuel -10.5 (+100)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 58,
+        "v2_f1low": 64.4,
+        "v3_f1high": 49,
+        "v4_f3boost": 70.6,
+        "v5_noStar": 59
+      },
+      "v7": {
+        "aScq": -15,
+        "hScq": 12.5,
+        "aScore": -20.5,
+        "hScore": 49.5,
+        "gap": 70,
+        "f5contrib": 11
+      },
+      "altStructural": {
+        "v6_cushionBoost": 59,
+        "v7_marginWeighted": 17.7,
+        "v8_procDiffOnly": 29,
+        "v10_timeDecay": 59
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -11.5,
+        "detail": "ATL -11.5",
+        "awaySpread": "+11.5",
+        "homeSpread": "-11.5",
+        "awaySpreadOdds": "-115",
+        "homeSpreadOdds": "-105",
+        "awayML": "+380",
+        "homeML": "-500",
+        "openSpread": "+7.5"
+      },
+      "alertSent": true
+    }
+  ],
   "resolved": [
     {
       "id": 1773360760011,
