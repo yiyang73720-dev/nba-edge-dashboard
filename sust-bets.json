@@ -744,6 +744,13 @@
           "score": "75-77",
           "period": 2,
           "clock": "0:29"
+        },
+        {
+          "t": "2026-03-14T04:22:15.591Z",
+          "spread": 3.5,
+          "score": "77-79",
+          "period": 2,
+          "clock": "0:17"
         }
       ]
     },
@@ -1450,6 +1457,13 @@
           "score": "120-108",
           "period": 4,
           "clock": "3:01"
+        },
+        {
+          "t": "2026-03-14T04:22:13.610Z",
+          "spread": -12.5,
+          "score": "120-108",
+          "period": 4,
+          "clock": "2:46"
         }
       ]
     },
@@ -1941,6 +1955,13 @@
           "score": "85-99",
           "period": 4,
           "clock": "10:16"
+        },
+        {
+          "t": "2026-03-14T04:22:13.610Z",
+          "spread": -15.5,
+          "score": "87-99",
+          "period": 4,
+          "clock": "9:24"
         }
       ]
     },
@@ -2106,6 +2127,13 @@
           "score": "28-29",
           "period": 1,
           "clock": "3:05"
+        },
+        {
+          "t": "2026-03-14T04:22:15.591Z",
+          "spread": 5.5,
+          "score": "30-31",
+          "period": 1,
+          "clock": "2:47"
         }
       ]
     },
@@ -2206,7 +2234,16 @@
         "v8_procDiffOnly": 27,
         "v10_timeDecay": 57.6
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-14T04:22:15.591Z",
+          "spread": -8.5,
+          "score": "21-29",
+          "period": 1,
+          "clock": "0:54"
+        }
+      ]
     }
   ],
   "resolved": [
@@ -45230,11 +45267,11 @@
     }
   ],
   "meta": {
-    "brierScore": 0.2525,
+    "brierScore": 0.2533,
     "brierBaseline": 0.25,
-    "brierSkill": -0.01,
-    "brierN": 64,
-    "winRate": 50,
-    "totalPL": -2274.95
+    "brierSkill": -0.0132,
+    "brierN": 65,
+    "winRate": 49.2,
+    "totalPL": -2774.95
   }
 }
