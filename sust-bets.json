@@ -341,6 +341,13 @@
           "score": "52-60",
           "period": 2,
           "clock": "0.0"
+        },
+        {
+          "t": "2026-03-14T20:19:37.725Z",
+          "spread": -12.5,
+          "score": "52-60",
+          "period": 2,
+          "clock": "0.0"
         }
       ]
     },
@@ -672,6 +679,13 @@
           "score": "36-46",
           "period": 2,
           "clock": "18:25"
+        },
+        {
+          "t": "2026-03-14T20:19:41.204Z",
+          "spread": 12.5,
+          "score": "38-46",
+          "period": 2,
+          "clock": "17:34"
         }
       ],
       "alertSent": true
@@ -831,6 +845,13 @@
           "score": "25-29",
           "period": 1,
           "clock": "5:06"
+        },
+        {
+          "t": "2026-03-14T20:19:41.204Z",
+          "spread": -7.5,
+          "score": "28-29",
+          "period": 1,
+          "clock": "4:29"
         }
       ]
     },
@@ -961,8 +982,123 @@
           "score": "26-40",
           "period": 2,
           "clock": "9:56"
+        },
+        {
+          "t": "2026-03-14T20:19:37.725Z",
+          "spread": -14.5,
+          "score": "26-40",
+          "period": 2,
+          "clock": "8:53"
         }
       ]
+    },
+    {
+      "id": 1773519513700,
+      "key": "401851386_sust_PUR",
+      "gameId": "401851386",
+      "team": "PUR",
+      "opponent": "UCLA",
+      "matchup": "PUR @ UCLA",
+      "side": "SPREAD",
+      "spread": -9.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -128,
+      "impliedP": 56.1,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-14T20:18:33.700Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "PUR",
+      "homeTeam": "UCLA",
+      "awayName": "Purdue Boilermakers",
+      "homeName": "UCLA Bruins",
+      "awayScore": 31,
+      "homeScore": 22,
+      "period": 1,
+      "clock": "1:30",
+      "periodLabel": "H1",
+      "sustLeader": "PUR",
+      "sustMargin": 6,
+      "betOnLeader": true,
+      "currentMargin": 6,
+      "cushion": -0.5,
+      "sustScore": 32.3,
+      "fragScore": -3.5,
+      "sustGap": 35.8,
+      "sustSignals": [],
+      "fragSignals": [
+        "3PT heavy (45% of pts)"
+      ],
+      "sustStats": {
+        "fg": "33",
+        "efg": "42",
+        "threePt": "29",
+        "twoPt": "31",
+        "proc": 6.6,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "33",
+        "efg": "40",
+        "threePt": "43",
+        "twoPt": "50",
+        "proc": 5.1,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "PUR +29 vs UCLA -0.7 (gap:29.7) | PUR 26-20 UCLA | H1 2:16 | FanDuel -9.5 (-128)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 30,
+        "v2_f1low": 32.8,
+        "v3_f1high": 23.1,
+        "v4_f3boost": 35.7,
+        "v5_noStar": 29.7
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 29,
+        "hScore": -0.7,
+        "gap": 29.7,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 29.7,
+        "v7_marginWeighted": 17.8,
+        "v8_procDiffOnly": 15,
+        "v10_timeDecay": 29.7
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-14T20:19:41.204Z",
+          "spread": -9.5,
+          "score": "31-22",
+          "period": 1,
+          "clock": "1:30"
+        }
+      ],
+      "alertSent": true
     }
   ],
   "resolved": [
