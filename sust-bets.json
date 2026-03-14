@@ -581,6 +581,13 @@
           "score": "68-68",
           "period": 2,
           "clock": "3:04"
+        },
+        {
+          "t": "2026-03-14T02:23:02.228Z",
+          "spread": 0.5,
+          "score": "68-68",
+          "period": 2,
+          "clock": "3:04"
         }
       ]
     },
@@ -1138,6 +1145,13 @@
           "score": "45-57",
           "period": 2,
           "clock": "5:08"
+        },
+        {
+          "t": "2026-03-14T02:23:02.229Z",
+          "spread": -12.5,
+          "score": "46-59",
+          "period": 2,
+          "clock": "4:47"
         }
       ]
     },
@@ -1596,6 +1610,13 @@
           "score": "56-67",
           "period": 2,
           "clock": "11:32"
+        },
+        {
+          "t": "2026-03-14T02:23:02.230Z",
+          "spread": -11.5,
+          "score": "56-67",
+          "period": 2,
+          "clock": "11:06"
         }
       ]
     },
@@ -2000,6 +2021,13 @@
           "score": "47-38",
           "period": 2,
           "clock": "17:18"
+        },
+        {
+          "t": "2026-03-14T02:23:02.230Z",
+          "spread": -4.5,
+          "score": "49-38",
+          "period": 2,
+          "clock": "16:23"
         }
       ]
     },
@@ -2360,6 +2388,13 @@
           "score": "36-45",
           "period": 2,
           "clock": "14:21"
+        },
+        {
+          "t": "2026-03-14T02:23:02.230Z",
+          "spread": 10.5,
+          "score": "36-45",
+          "period": 2,
+          "clock": "14:21"
         }
       ]
     },
@@ -2602,6 +2637,13 @@
           "score": "26-32",
           "period": 2,
           "clock": "18:10"
+        },
+        {
+          "t": "2026-03-14T02:23:02.231Z",
+          "spread": -7.5,
+          "score": "26-34",
+          "period": 2,
+          "clock": "17:21"
         }
       ]
     },
@@ -2709,8 +2751,112 @@
           "score": "24-29",
           "period": 1,
           "clock": "4:02"
+        },
+        {
+          "t": "2026-03-14T02:23:02.231Z",
+          "spread": -7.5,
+          "score": "24-31",
+          "period": 1,
+          "clock": "3:35"
         }
       ],
+      "alertSent": true
+    },
+    {
+      "id": 1773454982510,
+      "key": "401851182_sust_DUKE",
+      "gameId": "401851182",
+      "team": "DUKE",
+      "opponent": "CLEM",
+      "matchup": "CLEM @ DUKE",
+      "side": "SPREAD",
+      "spread": -13.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -112,
+      "impliedP": 52.8,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-14T02:23:02.510Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "CLEM",
+      "homeTeam": "DUKE",
+      "awayName": "Clemson Tigers",
+      "homeName": "Duke Blue Devils",
+      "awayScore": 21,
+      "homeScore": 31,
+      "period": 1,
+      "clock": "3:09",
+      "periodLabel": "H1",
+      "sustLeader": "DUKE",
+      "sustMargin": 10,
+      "betOnLeader": true,
+      "currentMargin": 10,
+      "cushion": -3.5,
+      "sustScore": 23.2,
+      "fragScore": -11.8,
+      "sustGap": 35,
+      "sustSignals": [],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "47",
+        "efg": "58",
+        "threePt": "44",
+        "twoPt": "32",
+        "proc": 6.2,
+        "star": 83,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "29",
+        "efg": "33",
+        "threePt": "18",
+        "twoPt": "38",
+        "proc": 4.3,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "DUKE +23.2 vs CLEM -11.8 (gap:35) | CLEM 21-31 DUKE | H1 3:09 | FanDuel -13.5 (-112)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 38,
+        "v2_f1low": 39.8,
+        "v3_f1high": 22.3,
+        "v4_f3boost": 42.6,
+        "v5_noStar": 35
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -11.8,
+        "hScore": 23.2,
+        "gap": 35,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 35,
+        "v7_marginWeighted": 35,
+        "v8_procDiffOnly": 19,
+        "v10_timeDecay": 35
+      },
       "alertSent": true
     }
   ],
