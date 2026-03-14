@@ -257,6 +257,34 @@
           "score": "46-54",
           "period": 2,
           "clock": "3:11"
+        },
+        {
+          "t": "2026-03-14T20:06:16.356Z",
+          "spread": -12.5,
+          "score": "48-56",
+          "period": 2,
+          "clock": "2:20"
+        },
+        {
+          "t": "2026-03-14T20:07:21.096Z",
+          "spread": -12.5,
+          "score": "49-56",
+          "period": 2,
+          "clock": "1:41"
+        },
+        {
+          "t": "2026-03-14T20:08:26.979Z",
+          "spread": -12.5,
+          "score": "51-58",
+          "period": 2,
+          "clock": "57.6"
+        },
+        {
+          "t": "2026-03-14T20:09:31.958Z",
+          "spread": -10.5,
+          "score": "52-58",
+          "period": 2,
+          "clock": "40.7"
         }
       ]
     },
@@ -504,8 +532,136 @@
           "score": "33-40",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-14T20:06:19.416Z",
+          "spread": 13.5,
+          "score": "33-40",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-14T20:07:24.516Z",
+          "spread": 13.5,
+          "score": "33-40",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-14T20:08:29.350Z",
+          "spread": 13.5,
+          "score": "33-40",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-14T20:09:34.248Z",
+          "spread": 13.5,
+          "score": "33-40",
+          "period": 1,
+          "clock": "0:00"
         }
       ],
+      "alertSent": true
+    },
+    {
+      "id": 1773518974487,
+      "key": "401851570_sust_ARK",
+      "gameId": "401851570",
+      "team": "ARK",
+      "opponent": "MISS",
+      "matchup": "MISS @ ARK",
+      "side": "SPREAD",
+      "spread": -10.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -112,
+      "impliedP": 52.8,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-14T20:09:34.487Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "MISS",
+      "homeTeam": "ARK",
+      "awayName": "Ole Miss Rebels",
+      "homeName": "Arkansas Razorbacks",
+      "awayScore": 21,
+      "homeScore": 25,
+      "period": 1,
+      "clock": "7:49",
+      "periodLabel": "H1",
+      "sustLeader": "ARK",
+      "sustMargin": 4,
+      "betOnLeader": true,
+      "currentMargin": 4,
+      "cushion": -6.5,
+      "sustScore": 63.6,
+      "fragScore": -25.8,
+      "sustGap": 89.4,
+      "sustSignals": [
+        "Low 3PT reliance (24%)",
+        "Strong process (8.0/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "55",
+        "efg": "60",
+        "threePt": "33",
+        "twoPt": "72",
+        "proc": 8,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "41",
+        "efg": "45",
+        "threePt": "22",
+        "twoPt": "67",
+        "proc": 3.6,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "ARK +63.6 vs MISS -25.8 (gap:89.4) | MISS 21-25 ARK | H1 7:49 | FanDuel -10.5 (-112)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 88,
+        "v2_f1low": 97.7,
+        "v3_f1high": 74.1,
+        "v4_f3boost": 107,
+        "v5_noStar": 89.4
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -25.8,
+        "hScore": 63.6,
+        "gap": 89.4,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 89.4,
+        "v7_marginWeighted": 35.8,
+        "v8_procDiffOnly": 44,
+        "v10_timeDecay": 89.4
+      },
       "alertSent": true
     }
   ],
