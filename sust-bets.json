@@ -1,5 +1,105 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1773504229578,
+      "key": "401851206_sust_UVM",
+      "gameId": "401851206",
+      "team": "UVM",
+      "opponent": "UMBC",
+      "matchup": "UVM @ UMBC",
+      "side": "SPREAD",
+      "spread": 3.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -114,
+      "impliedP": 53.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-14T16:03:49.578Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "UVM",
+      "homeTeam": "UMBC",
+      "awayName": "Vermont Catamounts",
+      "homeName": "UMBC Retrievers",
+      "awayScore": 28,
+      "homeScore": 30,
+      "period": 1,
+      "clock": "0:00",
+      "periodLabel": "H1",
+      "sustLeader": "UMBC",
+      "sustMargin": 2,
+      "betOnLeader": false,
+      "currentMargin": -2,
+      "cushion": 1.5,
+      "sustScore": 42.4,
+      "fragScore": -31.2,
+      "sustGap": 73.6,
+      "sustSignals": [
+        "Low 3PT reliance (21%)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "44",
+        "efg": "48",
+        "threePt": "15",
+        "twoPt": "71",
+        "proc": 6.9,
+        "star": 123,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "40",
+        "efg": "48",
+        "threePt": "40",
+        "twoPt": "40",
+        "proc": 3.5,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "UVM +42.4 vs UMBC -31.2 (gap:73.6) | UVM 28-30 UMBC | H1 0:00 | FanDuel +3.5 (-114)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": true,
+        "g7_earlyGame": false,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 68,
+        "v2_f1low": 78.5,
+        "v3_f1high": 69.3,
+        "v4_f3boost": 87.2,
+        "v5_noStar": 73.6
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 42.4,
+        "hScore": -31.2,
+        "gap": 73.6,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 78.1,
+        "v7_marginWeighted": 14.7,
+        "v8_procDiffOnly": 34,
+        "v10_timeDecay": 73.6
+      },
+      "alertSent": true
+    }
+  ],
   "resolved": [
     {
       "id": 1773360760011,
