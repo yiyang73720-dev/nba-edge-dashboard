@@ -123,6 +123,20 @@
           "score": "36-27",
           "period": 1,
           "clock": "3:56"
+        },
+        {
+          "t": "2026-03-14T17:47:29.397Z",
+          "spread": -0.5,
+          "score": "39-29",
+          "period": 1,
+          "clock": "2:50"
+        },
+        {
+          "t": "2026-03-14T17:48:36.277Z",
+          "spread": -0.5,
+          "score": "39-29",
+          "period": 1,
+          "clock": "2:46"
         }
       ],
       "alertSent": true
@@ -259,8 +273,135 @@
           "score": "20-34",
           "period": 2,
           "clock": "8:17"
+        },
+        {
+          "t": "2026-03-14T17:47:27.366Z",
+          "spread": -14.5,
+          "score": "20-37",
+          "period": 2,
+          "clock": "7:45"
+        },
+        {
+          "t": "2026-03-14T17:48:34.234Z",
+          "spread": -16.5,
+          "score": "20-37",
+          "period": 2,
+          "clock": "6:59"
         }
       ]
+    },
+    {
+      "id": 1773510382552,
+      "key": "401851477_sust_HOW",
+      "gameId": "401851477",
+      "team": "HOW",
+      "opponent": "NCCU",
+      "matchup": "NCCU @ HOW",
+      "side": "SPREAD",
+      "spread": -11.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -128,
+      "impliedP": 56.1,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-14T17:46:22.552Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "NCCU",
+      "homeTeam": "HOW",
+      "awayName": "North Carolina Central Eagles",
+      "homeName": "Howard Bison",
+      "awayScore": 21,
+      "homeScore": 26,
+      "period": 1,
+      "clock": "0:51",
+      "periodLabel": "H1",
+      "sustLeader": "HOW",
+      "sustMargin": 5,
+      "betOnLeader": true,
+      "currentMargin": 5,
+      "cushion": -6.5,
+      "sustScore": 30.4,
+      "fragScore": -5.8,
+      "sustGap": 36.199999999999996,
+      "sustSignals": [],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "45",
+        "efg": "53",
+        "threePt": "38",
+        "twoPt": "46",
+        "proc": 6.4,
+        "star": 80,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "36",
+        "efg": "41",
+        "threePt": "25",
+        "twoPt": "57",
+        "proc": 4.7,
+        "star": 124,
+        "scq": 0
+      },
+      "sustDetail": "HOW +28.4 vs NCCU -3.8 (gap:32.199999999999996) | NCCU 21-26 HOW | H1 2:37 | FanDuel -10.5 (-128)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 34,
+        "v2_f1low": 36.2,
+        "v3_f1high": 22.4,
+        "v4_f3boost": 39,
+        "v5_noStar": 32.2
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -3.8,
+        "hScore": 28.4,
+        "gap": 32.2,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 32.2,
+        "v7_marginWeighted": 16.1,
+        "v8_procDiffOnly": 17,
+        "v10_timeDecay": 32.2
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-14T17:47:29.397Z",
+          "spread": -11.5,
+          "score": "21-26",
+          "period": 1,
+          "clock": "2:05"
+        },
+        {
+          "t": "2026-03-14T17:48:36.277Z",
+          "spread": -11.5,
+          "score": "21-26",
+          "period": 1,
+          "clock": "0:51"
+        }
+      ],
+      "alertSent": true
     }
   ],
   "resolved": [
