@@ -98,6 +98,121 @@
         "v8_procDiffOnly": 24,
         "v10_timeDecay": 45.4
       },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-14T22:41:04.038Z",
+          "spread": -5.5,
+          "score": "22-27",
+          "period": 1,
+          "clock": "8:14"
+        },
+        {
+          "t": "2026-03-14T22:42:08.952Z",
+          "spread": -5.5,
+          "score": "22-27",
+          "period": 1,
+          "clock": "8:14"
+        }
+      ]
+    },
+    {
+      "id": 1773528129186,
+      "key": "401851306_sust_ARIZ",
+      "gameId": "401851306",
+      "team": "ARIZ",
+      "opponent": "HOU",
+      "matchup": "HOU @ ARIZ",
+      "side": "SPREAD",
+      "spread": -2.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -118,
+      "impliedP": 54.1,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-14T22:42:09.186Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "HOU",
+      "homeTeam": "ARIZ",
+      "awayName": "Houston Cougars",
+      "homeName": "Arizona Wildcats",
+      "awayScore": 20,
+      "homeScore": 22,
+      "period": 1,
+      "clock": "7:59",
+      "periodLabel": "H1",
+      "sustLeader": "ARIZ",
+      "sustMargin": 2,
+      "betOnLeader": true,
+      "currentMargin": 2,
+      "cushion": -0.5,
+      "sustScore": 30.6,
+      "fragScore": -12.2,
+      "sustGap": 42.8,
+      "sustSignals": [
+        "Low 3PT reliance (27%)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "47",
+        "efg": "53",
+        "threePt": "33",
+        "twoPt": "55",
+        "proc": 6.4,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "47",
+        "efg": "53",
+        "threePt": "33",
+        "twoPt": "60",
+        "proc": 3.8,
+        "star": 40,
+        "scq": 0
+      },
+      "sustDetail": "ARIZ +30.6 vs HOU -12.2 (gap:42.8) | HOU 20-22 ARIZ | H1 7:59 | FanDuel -2.5 (-118)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 42,
+        "v2_f1low": 47.7,
+        "v3_f1high": 33.8,
+        "v4_f3boost": 53.2,
+        "v5_noStar": 52.8
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -12.2,
+        "hScore": 30.6,
+        "gap": 42.8,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 42.8,
+        "v7_marginWeighted": 8.6,
+        "v8_procDiffOnly": 26,
+        "v10_timeDecay": 42.8
+      },
       "alertSent": true
     }
   ],
