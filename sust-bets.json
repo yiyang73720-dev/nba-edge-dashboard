@@ -285,6 +285,48 @@
           "score": "52-58",
           "period": 2,
           "clock": "40.7"
+        },
+        {
+          "t": "2026-03-14T20:10:38.362Z",
+          "spread": -10.5,
+          "score": "52-60",
+          "period": 2,
+          "clock": "36.3"
+        },
+        {
+          "t": "2026-03-14T20:11:46.101Z",
+          "spread": -10.5,
+          "score": "52-60",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-14T20:12:53.228Z",
+          "spread": -12.5,
+          "score": "52-60",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-14T20:14:00.506Z",
+          "spread": -12.5,
+          "score": "52-60",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-14T20:15:09.199Z",
+          "spread": -12.5,
+          "score": "52-60",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-14T20:16:14.962Z",
+          "spread": -12.5,
+          "score": "52-60",
+          "period": 2,
+          "clock": "0.0"
         }
       ]
     },
@@ -560,6 +602,48 @@
           "score": "33-40",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-14T20:10:41.051Z",
+          "spread": 13.5,
+          "score": "33-40",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-14T20:11:49.839Z",
+          "spread": 13.5,
+          "score": "33-40",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-14T20:12:56.070Z",
+          "spread": 13.5,
+          "score": "33-40",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-14T20:14:04.501Z",
+          "spread": 13.5,
+          "score": "33-40",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-14T20:15:11.471Z",
+          "spread": 13.5,
+          "score": "33-40",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-14T20:16:18.957Z",
+          "spread": 13.5,
+          "score": "33-40",
+          "period": 1,
+          "clock": "0:00"
         }
       ],
       "alertSent": true
@@ -661,6 +745,164 @@
         "v7_marginWeighted": 35.8,
         "v8_procDiffOnly": 44,
         "v10_timeDecay": 89.4
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-14T20:10:41.051Z",
+          "spread": -9.5,
+          "score": "23-27",
+          "period": 1,
+          "clock": "7:00"
+        },
+        {
+          "t": "2026-03-14T20:11:49.839Z",
+          "spread": -9.5,
+          "score": "23-27",
+          "period": 1,
+          "clock": "7:00"
+        },
+        {
+          "t": "2026-03-14T20:12:56.070Z",
+          "spread": -9.5,
+          "score": "23-27",
+          "period": 1,
+          "clock": "7:00"
+        },
+        {
+          "t": "2026-03-14T20:14:04.501Z",
+          "spread": -9.5,
+          "score": "23-27",
+          "period": 1,
+          "clock": "6:49"
+        },
+        {
+          "t": "2026-03-14T20:15:11.471Z",
+          "spread": -9.5,
+          "score": "23-27",
+          "period": 1,
+          "clock": "6:19"
+        },
+        {
+          "t": "2026-03-14T20:16:18.957Z",
+          "spread": -9.5,
+          "score": "23-27",
+          "period": 1,
+          "clock": "6:19"
+        }
+      ]
+    },
+    {
+      "id": 1773519378168,
+      "key": "401810828_sust_SA",
+      "gameId": "401810828",
+      "team": "SA",
+      "opponent": "CHA",
+      "matchup": "CHA @ SA",
+      "side": "SPREAD",
+      "spread": -7.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -130,
+      "impliedP": 56.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-14T20:16:18.168Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "CHA",
+      "homeTeam": "SA",
+      "awayName": "Charlotte Hornets",
+      "homeName": "San Antonio Spurs",
+      "awayScore": 24,
+      "homeScore": 33,
+      "period": 2,
+      "clock": "11:15",
+      "periodLabel": "Q2",
+      "sustLeader": "SA",
+      "sustMargin": 9,
+      "betOnLeader": true,
+      "currentMargin": 9,
+      "cushion": 1.5,
+      "sustScore": 60.6,
+      "fragScore": -31.7,
+      "sustGap": 92.3,
+      "sustSignals": [
+        "Low 3PT reliance (27%)",
+        "Strong process (7.9/10)"
+      ],
+      "fragSignals": [
+        "3PT heavy (75% of pts)"
+      ],
+      "sustStats": {
+        "fg": "38",
+        "efg": "44",
+        "threePt": "27",
+        "twoPt": "42",
+        "proc": 7.9,
+        "star": 0,
+        "scq": 12
+      },
+      "fragStats": {
+        "fg": "35",
+        "efg": "46",
+        "threePt": "35",
+        "twoPt": "25",
+        "proc": 4,
+        "star": 0,
+        "scq": -11
+      },
+      "sustDetail": "SA +60.6 vs CHA -31.7 (gap:92.3) | CHA 24-33 SA | Q2 11:15 | FanDuel -7.5 (-130)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 78,
+        "v2_f1low": 95.3,
+        "v3_f1high": 100.6,
+        "v4_f3boost": 107.9,
+        "v5_noStar": 92.3
+      },
+      "v7": {
+        "aScq": -11.1,
+        "hScq": 11.5,
+        "aScore": -36.1,
+        "hScore": 65.2,
+        "gap": 101.4,
+        "f5contrib": 9.1
+      },
+      "altStructural": {
+        "v6_cushionBoost": 96.8,
+        "v7_marginWeighted": 83.1,
+        "v8_procDiffOnly": 39,
+        "v10_timeDecay": 92.3
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -6.5,
+        "detail": "SA -6.5",
+        "awaySpread": "+6.5",
+        "homeSpread": "-6.5",
+        "awaySpreadOdds": "-118",
+        "homeSpreadOdds": "-102",
+        "awayML": "+200",
+        "homeML": "-245",
+        "openSpread": "+5.5"
       },
       "alertSent": true
     }
