@@ -468,6 +468,13 @@
           "score": "43-58",
           "period": 2,
           "clock": "8:58"
+        },
+        {
+          "t": "2026-03-14T03:21:10.949Z",
+          "spread": -15.5,
+          "score": "43-60",
+          "period": 2,
+          "clock": "8:13"
         }
       ],
       "alertSent": true
@@ -925,6 +932,13 @@
           "score": "46-60",
           "period": 2,
           "clock": "7:48"
+        },
+        {
+          "t": "2026-03-14T03:21:10.949Z",
+          "spread": -13.5,
+          "score": "46-60",
+          "period": 2,
+          "clock": "7:48"
         }
       ]
     },
@@ -1320,6 +1334,13 @@
           "score": "27-51",
           "period": 2,
           "clock": "11:34"
+        },
+        {
+          "t": "2026-03-14T03:21:10.950Z",
+          "spread": 21.5,
+          "score": "27-51",
+          "period": 2,
+          "clock": "11:34"
         }
       ]
     },
@@ -1682,6 +1703,13 @@
           "score": "39-37",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-14T03:21:10.950Z",
+          "spread": 2.5,
+          "score": "39-37",
+          "period": 2,
+          "clock": "19:41"
         }
       ]
     },
@@ -2003,8 +2031,126 @@
           "score": "69-48",
           "period": 2,
           "clock": "0.0"
+        },
+        {
+          "t": "2026-03-14T03:21:05.530Z",
+          "spread": -19.5,
+          "score": "69-48",
+          "period": 2,
+          "clock": "0.0"
         }
       ]
+    },
+    {
+      "id": 1773458469398,
+      "key": "401810823_sust_LAC",
+      "gameId": "401810823",
+      "team": "LAC",
+      "opponent": "CHI",
+      "matchup": "CHI @ LAC",
+      "side": "SPREAD",
+      "spread": -9.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -144,
+      "impliedP": 59,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-14T03:21:09.398Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "CHI",
+      "homeTeam": "LAC",
+      "awayName": "Chicago Bulls",
+      "homeName": "LA Clippers",
+      "awayScore": 46,
+      "homeScore": 48,
+      "period": 2,
+      "clock": "4:37",
+      "periodLabel": "Q2",
+      "sustLeader": "LAC",
+      "sustMargin": 2,
+      "betOnLeader": true,
+      "currentMargin": 2,
+      "cushion": -7.5,
+      "sustScore": 31.2,
+      "fragScore": -6.9,
+      "sustGap": 38.1,
+      "sustSignals": [],
+      "fragSignals": [
+        "3PT heavy (52% of pts)"
+      ],
+      "sustStats": {
+        "fg": "47",
+        "efg": "54",
+        "threePt": "42",
+        "twoPt": "55",
+        "proc": 6.5,
+        "star": 119,
+        "scq": 13
+      },
+      "fragStats": {
+        "fg": "44",
+        "efg": "54",
+        "threePt": "53",
+        "twoPt": "39",
+        "proc": 4.9,
+        "star": 0,
+        "scq": 45
+      },
+      "sustDetail": "LAC +31.2 vs CHI -6.9 (gap:38.1) | CHI 46-48 LAC | Q2 4:37 | FanDuel -9.5 (-144)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 32,
+        "v2_f1low": 39.3,
+        "v3_f1high": 41.8,
+        "v4_f3boost": 44.5,
+        "v5_noStar": 38.1
+      },
+      "v7": {
+        "aScq": 45,
+        "hScq": 12.8,
+        "aScore": 11.1,
+        "hScore": 36.3,
+        "gap": 25.2,
+        "f5contrib": 12.9
+      },
+      "altStructural": {
+        "v6_cushionBoost": 38.1,
+        "v7_marginWeighted": 7.6,
+        "v8_procDiffOnly": 16,
+        "v10_timeDecay": 38.1
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -13.5,
+        "detail": "LAC -13.5",
+        "awaySpread": "+13.5",
+        "homeSpread": "-13.5",
+        "awaySpreadOdds": "-110",
+        "homeSpreadOdds": "-110",
+        "awayML": "+575",
+        "homeML": "-850",
+        "openSpread": "+11.5"
+      },
+      "alertSent": true
     }
   ],
   "resolved": [
