@@ -109,6 +109,137 @@
         "homeML": "-500",
         "openSpread": "+7.5"
       },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-14T19:43:22.853Z",
+          "spread": -10.5,
+          "score": "35-37",
+          "period": 2,
+          "clock": "10:27"
+        },
+        {
+          "t": "2026-03-14T19:44:27.199Z",
+          "spread": -10.5,
+          "score": "35-37",
+          "period": 2,
+          "clock": "9:52"
+        }
+      ]
+    },
+    {
+      "id": 1773517340029,
+      "key": "401851227_sust_CLT",
+      "gameId": "401851227",
+      "team": "CLT",
+      "opponent": "USF",
+      "matchup": "CLT @ USF",
+      "side": "SPREAD",
+      "spread": 15.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -112,
+      "impliedP": 52.8,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-14T19:42:20.029Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "CLT",
+      "homeTeam": "USF",
+      "awayName": "Charlotte 49ers",
+      "homeName": "South Florida Bulls",
+      "awayScore": 23,
+      "homeScore": 31,
+      "period": 1,
+      "clock": "4:36",
+      "periodLabel": "H1",
+      "sustLeader": "USF",
+      "sustMargin": 2,
+      "betOnLeader": false,
+      "currentMargin": -2,
+      "cushion": 7.5,
+      "sustScore": 32.8,
+      "fragScore": -9.7,
+      "sustGap": 42.5,
+      "sustSignals": [
+        "Low 3PT reliance (0%)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "29",
+        "efg": "29",
+        "threePt": "0",
+        "twoPt": "57",
+        "proc": 6.1,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "28",
+        "efg": "33",
+        "threePt": "30",
+        "twoPt": "43",
+        "proc": 5.3,
+        "star": 120,
+        "scq": 0
+      },
+      "sustDetail": "CLT +32.8 vs USF 5.1 (gap:27.699999999999996) | CLT 21-23 USF | H1 5:50 | FanDuel +12.5 (-112)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 16,
+        "v2_f1low": 25.4,
+        "v3_f1high": 44.1,
+        "v4_f3boost": 30.9,
+        "v5_noStar": 27.7
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 32.8,
+        "hScore": 5.1,
+        "gap": 27.7,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 59.2,
+        "v7_marginWeighted": 5.5,
+        "v8_procDiffOnly": 8,
+        "v10_timeDecay": 27.7
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-14T19:43:25.723Z",
+          "spread": 12.5,
+          "score": "21-24",
+          "period": 1,
+          "clock": "5:50"
+        },
+        {
+          "t": "2026-03-14T19:44:30.003Z",
+          "spread": 15.5,
+          "score": "23-31",
+          "period": 1,
+          "clock": "4:36"
+        }
+      ],
       "alertSent": true
     }
   ],
