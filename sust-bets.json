@@ -574,6 +574,13 @@
           "score": "68-68",
           "period": 2,
           "clock": "3:04"
+        },
+        {
+          "t": "2026-03-14T02:21:55.685Z",
+          "spread": 0.5,
+          "score": "68-68",
+          "period": 2,
+          "clock": "3:04"
         }
       ]
     },
@@ -1124,6 +1131,13 @@
           "score": "44-55",
           "period": 2,
           "clock": "5:33"
+        },
+        {
+          "t": "2026-03-14T02:21:55.686Z",
+          "spread": -13.5,
+          "score": "45-57",
+          "period": 2,
+          "clock": "5:08"
         }
       ]
     },
@@ -1575,6 +1589,13 @@
           "score": "56-67",
           "period": 2,
           "clock": "11:52"
+        },
+        {
+          "t": "2026-03-14T02:21:55.686Z",
+          "spread": -11.5,
+          "score": "56-67",
+          "period": 2,
+          "clock": "11:32"
         }
       ]
     },
@@ -1972,6 +1993,13 @@
           "score": "47-36",
           "period": 2,
           "clock": "18:06"
+        },
+        {
+          "t": "2026-03-14T02:21:55.687Z",
+          "spread": -3.5,
+          "score": "47-38",
+          "period": 2,
+          "clock": "17:18"
         }
       ]
     },
@@ -2325,6 +2353,13 @@
           "score": "36-43",
           "period": 2,
           "clock": "14:55"
+        },
+        {
+          "t": "2026-03-14T02:21:55.687Z",
+          "spread": 10.5,
+          "score": "36-45",
+          "period": 2,
+          "clock": "14:21"
         }
       ]
     },
@@ -2560,8 +2595,123 @@
           "score": "21-32",
           "period": 2,
           "clock": "20:00"
+        },
+        {
+          "t": "2026-03-14T02:21:55.687Z",
+          "spread": -6.5,
+          "score": "26-32",
+          "period": 2,
+          "clock": "18:10"
         }
       ]
+    },
+    {
+      "id": 1773454850671,
+      "key": "401851503_sust_USU",
+      "gameId": "401851503",
+      "team": "USU",
+      "opponent": "NEV",
+      "matchup": "NEV @ USU",
+      "side": "SPREAD",
+      "spread": -9.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -108,
+      "impliedP": 51.9,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-14T02:20:50.671Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "NEV",
+      "homeTeam": "USU",
+      "awayName": "Nevada Wolf Pack",
+      "homeName": "Utah State Aggies",
+      "awayScore": 24,
+      "homeScore": 29,
+      "period": 1,
+      "clock": "4:02",
+      "periodLabel": "H1",
+      "sustLeader": "USU",
+      "sustMargin": 6,
+      "betOnLeader": true,
+      "currentMargin": 6,
+      "cushion": -4.5,
+      "sustScore": 55.7,
+      "fragScore": 9.3,
+      "sustGap": 46.400000000000006,
+      "sustSignals": [
+        "Low 3PT reliance (11%)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "41",
+        "efg": "43",
+        "threePt": "17",
+        "twoPt": "59",
+        "proc": 6.6,
+        "star": 76,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "32",
+        "efg": "34",
+        "threePt": "25",
+        "twoPt": "76",
+        "proc": 5.3,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "USU +39.5 vs NEV 12.5 (gap:27) | NEV 21-27 USU | H1 5:08 | FanDuel -9.5 (-108)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 26,
+        "v2_f1low": 29.2,
+        "v3_f1high": 23.3,
+        "v4_f3boost": 32.2,
+        "v5_noStar": 27
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 12.5,
+        "hScore": 39.5,
+        "gap": 27,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 27,
+        "v7_marginWeighted": 16.2,
+        "v8_procDiffOnly": 13,
+        "v10_timeDecay": 27
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-14T02:21:55.687Z",
+          "spread": -9.5,
+          "score": "24-29",
+          "period": 1,
+          "clock": "4:02"
+        }
+      ],
+      "alertSent": true
     }
   ],
   "resolved": [
