@@ -105,8 +105,135 @@
           "score": "28-30",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-14T16:05:58.840Z",
+          "spread": 4.5,
+          "score": "28-30",
+          "period": 2,
+          "clock": "19:37"
+        },
+        {
+          "t": "2026-03-14T16:07:04.642Z",
+          "spread": 4.5,
+          "score": "28-30",
+          "period": 2,
+          "clock": "18:57"
         }
       ]
+    },
+    {
+      "id": 1773504293860,
+      "key": "401851435_sust_YALE",
+      "gameId": "401851435",
+      "team": "YALE",
+      "opponent": "COR",
+      "matchup": "COR @ YALE",
+      "side": "SPREAD",
+      "spread": -7.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -106,
+      "impliedP": 51.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-14T16:04:53.860Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "COR",
+      "homeTeam": "YALE",
+      "awayName": "Cornell Big Red",
+      "homeName": "Yale Bulldogs",
+      "awayScore": 50,
+      "homeScore": 58,
+      "period": 2,
+      "clock": "16:22",
+      "periodLabel": "H2",
+      "sustLeader": "YALE",
+      "sustMargin": 7,
+      "betOnLeader": true,
+      "currentMargin": 7,
+      "cushion": 0.5,
+      "sustScore": 40.4,
+      "fragScore": -3.6,
+      "sustGap": 44,
+      "sustSignals": [],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "54",
+        "efg": "62",
+        "threePt": "44",
+        "twoPt": "59",
+        "proc": 6.8,
+        "star": 101,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "59",
+        "efg": "69",
+        "threePt": "38",
+        "twoPt": "59",
+        "proc": 4.8,
+        "star": 50,
+        "scq": 0
+      },
+      "sustDetail": "YALE +34.4 vs COR 4.5 (gap:29.9) | COR 44-51 YALE | H2 18:26 | FanDuel -8.5 (-106)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": false,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 30,
+        "v2_f1low": 33.9,
+        "v3_f1high": 21.8,
+        "v4_f3boost": 37.9,
+        "v5_noStar": 39.9
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 4.5,
+        "hScore": 34.4,
+        "gap": 29.9,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 29.9,
+        "v7_marginWeighted": 20.9,
+        "v8_procDiffOnly": 20,
+        "v10_timeDecay": 29.9
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-14T16:05:58.841Z",
+          "spread": -7.5,
+          "score": "47-54",
+          "period": 2,
+          "clock": "17:18"
+        },
+        {
+          "t": "2026-03-14T16:07:04.642Z",
+          "spread": -7.5,
+          "score": "50-58",
+          "period": 2,
+          "clock": "16:22"
+        }
+      ],
+      "alertSent": true
     }
   ],
   "resolved": [
