@@ -1,5 +1,224 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1773510118888,
+      "key": "401851569_sust_VAN",
+      "gameId": "401851569",
+      "team": "VAN",
+      "opponent": "FLA",
+      "matchup": "VAN @ FLA",
+      "side": "SPREAD",
+      "spread": 3.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -114,
+      "impliedP": 53.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-14T17:41:58.888Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "VAN",
+      "homeTeam": "FLA",
+      "awayName": "Vanderbilt Commodores",
+      "homeName": "Florida Gators",
+      "awayScore": 29,
+      "homeScore": 21,
+      "period": 1,
+      "clock": "6:07",
+      "periodLabel": "H1",
+      "sustLeader": "VAN",
+      "sustMargin": 7,
+      "betOnLeader": true,
+      "currentMargin": 7,
+      "cushion": 11.5,
+      "sustScore": 34.4,
+      "fragScore": -11.5,
+      "sustGap": 45.9,
+      "sustSignals": [],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "47",
+        "efg": "58",
+        "threePt": "44",
+        "twoPt": "36",
+        "proc": 6.5,
+        "star": 126,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "32",
+        "efg": "34",
+        "threePt": "17",
+        "twoPt": "57",
+        "proc": 4.5,
+        "star": 105,
+        "scq": 0
+      },
+      "sustDetail": "VAN +27.9 vs FLA -3.5 (gap:31.4) | VAN 28-21 FLA | H1 6:34 | FanDuel +3.5 (-114)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 40,
+        "v2_f1low": 38.3,
+        "v3_f1high": 9.1,
+        "v4_f3boost": 39.4,
+        "v5_noStar": 31.4
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 27.9,
+        "hScore": -3.5,
+        "gap": 31.4,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 62.9,
+        "v7_marginWeighted": 22,
+        "v8_procDiffOnly": 20,
+        "v10_timeDecay": 31.4
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-14T17:43:03.941Z",
+          "spread": 3.5,
+          "score": "29-21",
+          "period": 1,
+          "clock": "6:07"
+        }
+      ],
+      "alertSent": true
+    },
+    {
+      "id": 1773510182773,
+      "key": "401810824_sust_PHI",
+      "gameId": "401810824",
+      "team": "PHI",
+      "opponent": "BKN",
+      "matchup": "BKN @ PHI",
+      "side": "SPREAD",
+      "spread": -16.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": 102,
+      "impliedP": 49.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-14T17:43:02.773Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "BKN",
+      "homeTeam": "PHI",
+      "awayName": "Brooklyn Nets",
+      "homeName": "Philadelphia 76ers",
+      "awayScore": 20,
+      "homeScore": 34,
+      "period": 2,
+      "clock": "10:32",
+      "periodLabel": "Q2",
+      "sustLeader": "PHI",
+      "sustMargin": 14,
+      "betOnLeader": true,
+      "currentMargin": 14,
+      "cushion": -2.5,
+      "sustScore": 75.5,
+      "fragScore": -28.7,
+      "sustGap": 104.2,
+      "sustSignals": [
+        "Low 3PT reliance (18%)",
+        "Strong process (8.5/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "54",
+        "efg": "57",
+        "threePt": "29",
+        "twoPt": "76",
+        "proc": 8.5,
+        "star": 0,
+        "scq": -3
+      },
+      "fragStats": {
+        "fg": "32",
+        "efg": "36",
+        "threePt": "25",
+        "twoPt": "53",
+        "proc": 3.5,
+        "star": 0,
+        "scq": 27
+      },
+      "sustDetail": "PHI +75.5 vs BKN -28.7 (gap:104.2) | BKN 20-34 PHI | Q2 10:32 | FanDuel -16.5 (+102)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 100,
+        "v2_f1low": 112.8,
+        "v3_f1high": 91.1,
+        "v4_f3boost": 124.2,
+        "v5_noStar": 104.2
+      },
+      "v7": {
+        "aScq": 27.3,
+        "hScq": -3.4,
+        "aScore": -17.8,
+        "hScore": 74.1,
+        "gap": 91.9,
+        "f5contrib": 12.3
+      },
+      "altStructural": {
+        "v6_cushionBoost": 104.2,
+        "v7_marginWeighted": 145.9,
+        "v8_procDiffOnly": 50,
+        "v10_timeDecay": 104.2
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -8.5,
+        "detail": "PHI -8.5",
+        "awaySpread": "+8.5",
+        "homeSpread": "-8.5",
+        "awaySpreadOdds": "-110",
+        "homeSpreadOdds": "-110",
+        "awayML": "+300",
+        "homeML": "-380",
+        "openSpread": "+9.5"
+      },
+      "alertSent": true
+    }
+  ],
   "resolved": [
     {
       "id": 1773360760011,
