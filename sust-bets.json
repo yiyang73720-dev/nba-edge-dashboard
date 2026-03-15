@@ -1,5 +1,107 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1773592099294,
+      "key": "401851437_sust_YALE",
+      "gameId": "401851437",
+      "team": "YALE",
+      "opponent": "PENN",
+      "matchup": "PENN @ YALE",
+      "side": "SPREAD",
+      "spread": -9.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -110,
+      "impliedP": 52.4,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-15T16:28:19.294Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "PENN",
+      "homeTeam": "YALE",
+      "awayName": "Pennsylvania Quakers",
+      "homeName": "Yale Bulldogs",
+      "awayScore": 21,
+      "homeScore": 25,
+      "period": 1,
+      "clock": "7:41",
+      "periodLabel": "H1",
+      "sustLeader": "YALE",
+      "sustMargin": 4,
+      "betOnLeader": true,
+      "currentMargin": 4,
+      "cushion": -5.5,
+      "sustScore": 35.2,
+      "fragScore": -14.6,
+      "sustGap": 49.800000000000004,
+      "sustSignals": [
+        "Low 3PT reliance (12%)"
+      ],
+      "fragSignals": [
+        "3PT heavy (71% of pts)"
+      ],
+      "sustStats": {
+        "fg": "48",
+        "efg": "50",
+        "threePt": "20",
+        "twoPt": "72",
+        "proc": 6.9,
+        "star": 178,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "35",
+        "efg": "46",
+        "threePt": "42",
+        "twoPt": "29",
+        "proc": 4.8,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "YALE +35.2 vs PENN -14.6 (gap:49.800000000000004) | PENN 21-25 YALE | H1 7:41 | FanDuel -9.5 (-110)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 32,
+        "v2_f1low": 48.1,
+        "v3_f1high": 71.1,
+        "v4_f3boost": 58.2,
+        "v5_noStar": 59.8
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -14.6,
+        "hScore": 35.2,
+        "gap": 49.8,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 49.8,
+        "v7_marginWeighted": 19.9,
+        "v8_procDiffOnly": 21,
+        "v10_timeDecay": 49.8
+      },
+      "alertSent": true
+    }
+  ],
   "resolved": [
     {
       "id": 1773360760011,
