@@ -1,5 +1,117 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1773605277844,
+      "key": "401810834_sust_IND",
+      "gameId": "401810834",
+      "team": "IND",
+      "opponent": "MIL",
+      "matchup": "IND @ MIL",
+      "side": "SPREAD",
+      "spread": 2.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -114,
+      "impliedP": 53.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-15T20:07:57.844Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "IND",
+      "homeTeam": "MIL",
+      "awayName": "Indiana Pacers",
+      "homeName": "Milwaukee Bucks",
+      "awayScore": 34,
+      "homeScore": 26,
+      "period": 2,
+      "clock": "12:00",
+      "periodLabel": "Q2",
+      "sustLeader": "IND",
+      "sustMargin": 8,
+      "betOnLeader": true,
+      "currentMargin": 8,
+      "cushion": 10.5,
+      "sustScore": 19.6,
+      "fragScore": -18.5,
+      "sustGap": 38.1,
+      "sustSignals": [],
+      "fragSignals": [
+        "3PT heavy (58% of pts)"
+      ],
+      "sustStats": {
+        "fg": "58",
+        "efg": "71",
+        "threePt": "56",
+        "twoPt": "35",
+        "proc": 6.1,
+        "star": 0,
+        "scq": -21
+      },
+      "fragStats": {
+        "fg": "42",
+        "efg": "52",
+        "threePt": "36",
+        "twoPt": "38",
+        "proc": 4.4,
+        "star": 85,
+        "scq": -4
+      },
+      "sustDetail": "IND +19.6 vs MIL -18.5 (gap:38.1) | IND 34-26 MIL | Q2 12:00 | FanDuel +2.5 (-114)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 34,
+        "v2_f1low": 40.1,
+        "v3_f1high": 38.1,
+        "v4_f3boost": 44.9,
+        "v5_noStar": 38.1
+      },
+      "v7": {
+        "aScq": -21.1,
+        "hScq": -4.2,
+        "aScore": 11.2,
+        "hScore": -20.2,
+        "gap": 31.3,
+        "f5contrib": 6.8
+      },
+      "altStructural": {
+        "v6_cushionBoost": 69.6,
+        "v7_marginWeighted": 30.5,
+        "v8_procDiffOnly": 17,
+        "v10_timeDecay": 38.1
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -7.5,
+        "detail": "MIL -7.5",
+        "awaySpread": "+7.5",
+        "homeSpread": "-7.5",
+        "awaySpreadOdds": "-105",
+        "homeSpreadOdds": "-115",
+        "awayML": "+240",
+        "homeML": "-298",
+        "openSpread": "+6.5"
+      },
+      "alertSent": true
+    }
+  ],
   "resolved": [
     {
       "id": 1773360760011,
