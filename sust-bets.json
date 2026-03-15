@@ -109,6 +109,125 @@
         "homeML": "-298",
         "openSpread": "+6.5"
       },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-15T20:09:03.058Z",
+          "spread": 2.5,
+          "score": "36-29",
+          "period": 2,
+          "clock": "11:31"
+        }
+      ]
+    },
+    {
+      "id": 1773605279027,
+      "key": "401851229_sust_USF",
+      "gameId": "401851229",
+      "team": "USF",
+      "opponent": "WICH",
+      "matchup": "WICH @ USF",
+      "side": "SPREAD",
+      "spread": -7.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -110,
+      "impliedP": 52.4,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-15T20:07:59.027Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "WICH",
+      "homeTeam": "USF",
+      "awayName": "Wichita State Shockers",
+      "homeName": "South Florida Bulls",
+      "awayScore": 21,
+      "homeScore": 29,
+      "period": 1,
+      "clock": "1:12",
+      "periodLabel": "H1",
+      "sustLeader": "USF",
+      "sustMargin": 6,
+      "betOnLeader": true,
+      "currentMargin": 6,
+      "cushion": 0.5,
+      "sustScore": 66.6,
+      "fragScore": 22.5,
+      "sustGap": 44.099999999999994,
+      "sustSignals": [
+        "Low 3PT reliance (22%)",
+        "Strong process (7.3/10)",
+        "Star cold (53% pace)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "36",
+        "efg": "39",
+        "threePt": "25",
+        "twoPt": "59",
+        "proc": 7.3,
+        "star": 53,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "35",
+        "efg": "37",
+        "threePt": "11",
+        "twoPt": "67",
+        "proc": 5.6,
+        "star": 23,
+        "scq": 0
+      },
+      "sustDetail": "USF +60.1 vs WICH 28.5 (gap:31.6) | WICH 21-27 USF | H1 2:00 | FanDuel -7.5 (-110)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 34,
+        "v2_f1low": 35.8,
+        "v3_f1high": 20.9,
+        "v4_f3boost": 38.4,
+        "v5_noStar": 31.6
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 28.5,
+        "hScore": 60.1,
+        "gap": 31.6,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 31.6,
+        "v7_marginWeighted": 19,
+        "v8_procDiffOnly": 17,
+        "v10_timeDecay": 31.6
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-15T20:09:06.482Z",
+          "spread": -7.5,
+          "score": "21-29",
+          "period": 1,
+          "clock": "1:12"
+        }
+      ],
       "alertSent": true
     }
   ],
