@@ -1,6 +1,184 @@
 {
   "bets": [
     {
+      "id": 1773604954649,
+      "key": "401851388_sust_PUR",
+      "gameId": "401851388",
+      "team": "PUR",
+      "opponent": "MICH",
+      "matchup": "PUR @ MICH",
+      "side": "SPREAD",
+      "spread": 6.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -112,
+      "impliedP": 52.8,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-15T20:02:34.649Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "PUR",
+      "homeTeam": "MICH",
+      "awayName": "Purdue Boilermakers",
+      "homeName": "Michigan Wolverines",
+      "awayScore": 31,
+      "homeScore": 32,
+      "period": 1,
+      "clock": "2:09",
+      "periodLabel": "H1",
+      "sustLeader": "MICH",
+      "sustMargin": 1,
+      "betOnLeader": false,
+      "currentMargin": -1,
+      "cushion": 5.5,
+      "sustScore": 42.1,
+      "fragScore": -2.4,
+      "sustGap": 44.5,
+      "sustSignals": [],
+      "fragSignals": [
+        "3PT heavy (55% of pts)"
+      ],
+      "sustStats": {
+        "fg": "36",
+        "efg": "41",
+        "threePt": "29",
+        "twoPt": "57",
+        "proc": 6,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "43",
+        "efg": "52",
+        "threePt": "33",
+        "twoPt": "45",
+        "proc": 4.9,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "PUR +22.2 vs MICH -7.6 (gap:29.799999999999997) | PUR 21-22 MICH | H1 6:27 | FanDuel +4.5 (-112)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 22,
+        "v2_f1low": 29.4,
+        "v3_f1high": 38.4,
+        "v4_f3boost": 34.2,
+        "v5_noStar": 29.8
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 22.2,
+        "hScore": -7.6,
+        "gap": 29.8,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 40.3,
+        "v7_marginWeighted": 3,
+        "v8_procDiffOnly": 11,
+        "v10_timeDecay": 29.8
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-15T20:03:38.302Z",
+          "spread": 4.5,
+          "score": "21-24",
+          "period": 1,
+          "clock": "5:54"
+        },
+        {
+          "t": "2026-03-15T20:04:43.942Z",
+          "spread": 4.5,
+          "score": "24-26",
+          "period": 1,
+          "clock": "5:18"
+        },
+        {
+          "t": "2026-03-15T20:05:48.022Z",
+          "spread": 5.5,
+          "score": "24-28",
+          "period": 1,
+          "clock": "5:06"
+        },
+        {
+          "t": "2026-03-15T20:06:52.775Z",
+          "spread": 4.5,
+          "score": "26-28",
+          "period": 1,
+          "clock": "4:11"
+        },
+        {
+          "t": "2026-03-15T20:07:58.582Z",
+          "spread": 4.5,
+          "score": "26-28",
+          "period": 1,
+          "clock": "3:50"
+        },
+        {
+          "t": "2026-03-15T20:09:06.481Z",
+          "spread": 4.5,
+          "score": "26-28",
+          "period": 1,
+          "clock": "3:50"
+        },
+        {
+          "t": "2026-03-15T20:10:13.598Z",
+          "spread": 4.5,
+          "score": "26-28",
+          "period": 1,
+          "clock": "3:50"
+        },
+        {
+          "t": "2026-03-15T20:11:21.480Z",
+          "spread": 5.5,
+          "score": "26-28",
+          "period": 1,
+          "clock": "3:37"
+        },
+        {
+          "t": "2026-03-15T20:12:28.910Z",
+          "spread": 6.5,
+          "score": "26-30",
+          "period": 1,
+          "clock": "3:14"
+        },
+        {
+          "t": "2026-03-15T20:13:34.649Z",
+          "spread": 4.5,
+          "score": "28-32",
+          "period": 1,
+          "clock": "2:54"
+        },
+        {
+          "t": "2026-03-15T20:14:39.899Z",
+          "spread": 6.5,
+          "score": "31-32",
+          "period": 1,
+          "clock": "2:09"
+        }
+      ],
+      "alertSent": true
+    },
+    {
       "id": 1773605277844,
       "key": "401810834_sust_IND",
       "gameId": "401810834",
@@ -117,6 +295,41 @@
           "score": "36-29",
           "period": 2,
           "clock": "11:31"
+        },
+        {
+          "t": "2026-03-15T20:10:09.918Z",
+          "spread": 2.5,
+          "score": "38-29",
+          "period": 2,
+          "clock": "11:16"
+        },
+        {
+          "t": "2026-03-15T20:11:17.396Z",
+          "spread": 2.5,
+          "score": "38-29",
+          "period": 2,
+          "clock": "10:37"
+        },
+        {
+          "t": "2026-03-15T20:12:25.598Z",
+          "spread": 4.5,
+          "score": "40-34",
+          "period": 2,
+          "clock": "10:11"
+        },
+        {
+          "t": "2026-03-15T20:13:30.639Z",
+          "spread": 6.5,
+          "score": "40-37",
+          "period": 2,
+          "clock": "9:52"
+        },
+        {
+          "t": "2026-03-15T20:14:36.750Z",
+          "spread": 3.5,
+          "score": "46-40",
+          "period": 2,
+          "clock": "8:44"
         }
       ]
     },
@@ -226,6 +439,41 @@
           "score": "21-29",
           "period": 1,
           "clock": "1:12"
+        },
+        {
+          "t": "2026-03-15T20:10:13.598Z",
+          "spread": -8.5,
+          "score": "23-31",
+          "period": 1,
+          "clock": "0:40"
+        },
+        {
+          "t": "2026-03-15T20:11:21.480Z",
+          "spread": -8.5,
+          "score": "23-33",
+          "period": 1,
+          "clock": "0:12"
+        },
+        {
+          "t": "2026-03-15T20:12:28.910Z",
+          "spread": -8.5,
+          "score": "26-33",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-15T20:13:34.649Z",
+          "spread": -8.5,
+          "score": "26-33",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-15T20:14:39.899Z",
+          "spread": -8.5,
+          "score": "26-33",
+          "period": 1,
+          "clock": "0:00"
         }
       ],
       "alertSent": true
