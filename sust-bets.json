@@ -1,5 +1,120 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1773614349970,
+      "key": "401810835_sust_PHI",
+      "gameId": "401810835",
+      "team": "PHI",
+      "opponent": "POR",
+      "matchup": "POR @ PHI",
+      "side": "SPREAD",
+      "spread": 6.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -125,
+      "impliedP": 55.6,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-15T22:39:09.970Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "POR",
+      "homeTeam": "PHI",
+      "awayName": "Portland Trail Blazers",
+      "homeName": "Philadelphia 76ers",
+      "awayScore": 27,
+      "homeScore": 30,
+      "period": 2,
+      "clock": "12:00",
+      "periodLabel": "Q2",
+      "sustLeader": "PHI",
+      "sustMargin": 3,
+      "betOnLeader": true,
+      "currentMargin": 3,
+      "cushion": 9.5,
+      "sustScore": 66.8,
+      "fragScore": -25.9,
+      "sustGap": 92.69999999999999,
+      "sustSignals": [
+        "Low 3PT reliance (20%)",
+        "Strong process (8.1/10)"
+      ],
+      "fragSignals": [
+        "3PT heavy (56% of pts)"
+      ],
+      "sustStats": {
+        "fg": "46",
+        "efg": "50",
+        "threePt": "25",
+        "twoPt": "73",
+        "proc": 8.1,
+        "star": 0,
+        "scq": -4
+      },
+      "fragStats": {
+        "fg": "38",
+        "efg": "48",
+        "threePt": "42",
+        "twoPt": "30",
+        "proc": 4,
+        "star": 0,
+        "scq": -4
+      },
+      "sustDetail": "PHI +66.8 vs POR -25.9 (gap:92.69999999999999) | POR 27-30 PHI | Q2 12:00 | FanDuel +6.5 (-125)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 82,
+        "v2_f1low": 97.3,
+        "v3_f1high": 94,
+        "v4_f3boost": 109.1,
+        "v5_noStar": 92.7
+      },
+      "v7": {
+        "aScq": -4.2,
+        "hScq": -3.6,
+        "aScore": -27.6,
+        "hScore": 65.4,
+        "gap": 92.9,
+        "f5contrib": 0.2
+      },
+      "altStructural": {
+        "v6_cushionBoost": 121.2,
+        "v7_marginWeighted": 27.8,
+        "v8_procDiffOnly": 41,
+        "v10_timeDecay": 92.7
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": 8.5,
+        "detail": "POR -8.5",
+        "awaySpread": "-8.5",
+        "homeSpread": "+8.5",
+        "awaySpreadOdds": "-105",
+        "homeSpreadOdds": "-115",
+        "awayML": "-340",
+        "homeML": "+270",
+        "openSpread": "-6.5"
+      },
+      "alertSent": true
+    }
+  ],
   "resolved": [
     {
       "id": 1773360760011,
