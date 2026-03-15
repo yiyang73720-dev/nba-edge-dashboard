@@ -562,8 +562,133 @@
           "score": "61-63",
           "period": 2,
           "clock": "6:57"
+        },
+        {
+          "t": "2026-03-15T17:38:37.794Z",
+          "spread": -5.5,
+          "score": "61-63",
+          "period": 2,
+          "clock": "6:12"
+        },
+        {
+          "t": "2026-03-15T17:39:42.263Z",
+          "spread": -5.5,
+          "score": "63-65",
+          "period": 2,
+          "clock": "5:20"
         }
       ]
+    },
+    {
+      "id": 1773596381358,
+      "key": "401810831_sust_OKC",
+      "gameId": "401810831",
+      "team": "OKC",
+      "opponent": "MIN",
+      "matchup": "MIN @ OKC",
+      "side": "SPREAD",
+      "spread": -8.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -114,
+      "impliedP": 53.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-15T17:39:41.358Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "MIN",
+      "homeTeam": "OKC",
+      "awayName": "Minnesota Timberwolves",
+      "homeName": "Oklahoma City Thunder",
+      "awayScore": 22,
+      "homeScore": 23,
+      "period": 2,
+      "clock": "12:00",
+      "periodLabel": "Q2",
+      "sustLeader": "OKC",
+      "sustMargin": 1,
+      "betOnLeader": true,
+      "currentMargin": 1,
+      "cushion": -7.5,
+      "sustScore": 35,
+      "fragScore": -3.5,
+      "sustGap": 38.5,
+      "sustSignals": [
+        "Low 3PT reliance (26%)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "30",
+        "efg": "33",
+        "threePt": "29",
+        "twoPt": "52",
+        "proc": 6.6,
+        "star": 0,
+        "scq": -15
+      },
+      "fragStats": {
+        "fg": "38",
+        "efg": "45",
+        "threePt": "33",
+        "twoPt": "45",
+        "proc": 4.9,
+        "star": 92,
+        "scq": -33
+      },
+      "sustDetail": "OKC +35 vs MIN -3.5 (gap:38.5) | MIN 22-23 OKC | Q2 12:00 | FanDuel -8.5 (-114)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 34,
+        "v2_f1low": 40.4,
+        "v3_f1high": 39.1,
+        "v4_f3boost": 45.2,
+        "v5_noStar": 38.4
+      },
+      "v7": {
+        "aScq": -33.3,
+        "hScq": -14.8,
+        "aScore": -16.8,
+        "hScore": 29.1,
+        "gap": 45.9,
+        "f5contrib": 7.4
+      },
+      "altStructural": {
+        "v6_cushionBoost": 38.5,
+        "v7_marginWeighted": 3.9,
+        "v8_procDiffOnly": 17,
+        "v10_timeDecay": 38.5
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -8.5,
+        "detail": "OKC -8.5",
+        "awaySpread": "+8.5",
+        "homeSpread": "-8.5",
+        "awaySpreadOdds": "-102",
+        "homeSpreadOdds": "-118",
+        "awayML": "+300",
+        "homeML": "-380",
+        "openSpread": "+8.5"
+      },
+      "alertSent": true
     }
   ],
   "resolved": [
