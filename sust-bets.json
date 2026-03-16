@@ -796,6 +796,131 @@
           "clock": "16.2"
         }
       ]
+    },
+    {
+      "id": 1773628747400,
+      "key": "401810837_sust_UTAH",
+      "gameId": "401810837",
+      "team": "UTAH",
+      "opponent": "SAC",
+      "matchup": "UTAH @ SAC",
+      "side": "SPREAD",
+      "spread": 0.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -118,
+      "impliedP": 54.1,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-16T02:39:07.400Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "UTAH",
+      "homeTeam": "SAC",
+      "awayName": "Utah Jazz",
+      "homeName": "Sacramento Kings",
+      "awayScore": 35,
+      "homeScore": 30,
+      "period": 2,
+      "clock": "8:12",
+      "periodLabel": "Q2",
+      "sustLeader": "UTAH",
+      "sustMargin": 3,
+      "betOnLeader": true,
+      "currentMargin": 3,
+      "cushion": 5.5,
+      "sustScore": 39.1,
+      "fragScore": 1.8,
+      "sustGap": 37.300000000000004,
+      "sustSignals": [],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "43",
+        "efg": "48",
+        "threePt": "33",
+        "twoPt": "65",
+        "proc": 6.8,
+        "star": 0,
+        "scq": 3
+      },
+      "fragStats": {
+        "fg": "41",
+        "efg": "46",
+        "threePt": "25",
+        "twoPt": "57",
+        "proc": 5.1,
+        "star": 0,
+        "scq": -7
+      },
+      "sustDetail": "UTAH +38.1 vs SAC 3.2 (gap:34.9) | UTAH 31-28 SAC | Q2 9:50 | FanDuel +0.5 (-118)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 34,
+        "v2_f1low": 38,
+        "v3_f1high": 29.7,
+        "v4_f3boost": 41.7,
+        "v5_noStar": 34.9
+      },
+      "v7": {
+        "aScq": 3.3,
+        "hScq": -7.4,
+        "aScore": 39.4,
+        "hScore": 0.2,
+        "gap": 39.2,
+        "f5contrib": 4.3
+      },
+      "altStructural": {
+        "v6_cushionBoost": 45.4,
+        "v7_marginWeighted": 10.5,
+        "v8_procDiffOnly": 17,
+        "v10_timeDecay": 34.9
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -3.5,
+        "detail": "SAC -3.5",
+        "awaySpread": "+3.5",
+        "homeSpread": "-3.5",
+        "awaySpreadOdds": "-110",
+        "homeSpreadOdds": "-110",
+        "awayML": "+136",
+        "homeML": "-162",
+        "openSpread": "+2.5"
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-16T02:40:10.867Z",
+          "spread": 0.5,
+          "score": "33-30",
+          "period": 2,
+          "clock": "9:16"
+        },
+        {
+          "t": "2026-03-16T02:41:15.117Z",
+          "spread": 0.5,
+          "score": "35-30",
+          "period": 2,
+          "clock": "8:12"
+        }
+      ],
+      "alertSent": true
     }
   ],
   "resolved": [
