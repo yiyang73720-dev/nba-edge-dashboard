@@ -1,5 +1,117 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1773704627238,
+      "key": "401810839_sust_GS",
+      "gameId": "401810839",
+      "team": "GS",
+      "opponent": "WSH",
+      "matchup": "GS @ WSH",
+      "side": "SPREAD",
+      "spread": -11.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -122,
+      "impliedP": 55,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-16T23:43:47.238Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "GS",
+      "homeTeam": "WSH",
+      "awayName": "Golden State Warriors",
+      "homeName": "Washington Wizards",
+      "awayScore": 39,
+      "homeScore": 23,
+      "period": 2,
+      "clock": "11:13",
+      "periodLabel": "Q2",
+      "sustLeader": "GS",
+      "sustMargin": 16,
+      "betOnLeader": true,
+      "currentMargin": 16,
+      "cushion": 4.5,
+      "sustScore": 66.8,
+      "fragScore": -25,
+      "sustGap": 91.8,
+      "sustSignals": [
+        "Strong process (8.3/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "52",
+        "efg": "59",
+        "threePt": "36",
+        "twoPt": "56",
+        "proc": 8.3,
+        "star": 0,
+        "scq": 32
+      },
+      "fragStats": {
+        "fg": "40",
+        "efg": "45",
+        "threePt": "25",
+        "twoPt": "52",
+        "proc": 3.6,
+        "star": 0,
+        "scq": -20
+      },
+      "sustDetail": "GS +66.8 vs WSH -25 (gap:91.8) | GS 39-23 WSH | Q2 11:13 | FanDuel -11.5 (-122)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": false,
+        "g10_ncaa": false,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 94,
+        "v2_f1low": 102,
+        "v3_f1high": 69.4,
+        "v4_f3boost": 110.6,
+        "v5_noStar": 91.8
+      },
+      "v7": {
+        "aScq": 32.1,
+        "hScq": -20,
+        "aScore": 79.7,
+        "hScore": -33,
+        "gap": 112.7,
+        "f5contrib": 20.9
+      },
+      "altStructural": {
+        "v6_cushionBoost": 105.3,
+        "v7_marginWeighted": 146.9,
+        "v8_procDiffOnly": 47,
+        "v10_timeDecay": 91.8
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": 7.5,
+        "detail": "GS -7.5",
+        "awaySpread": "-7.5",
+        "homeSpread": "+7.5",
+        "awaySpreadOdds": "-110",
+        "homeSpreadOdds": "-110",
+        "awayML": "-310",
+        "homeML": "+250",
+        "openSpread": "-6.5"
+      },
+      "alertSent": true
+    }
+  ],
   "resolved": [
     {
       "id": 1773360760011,
