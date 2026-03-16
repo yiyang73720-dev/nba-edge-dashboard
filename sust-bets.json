@@ -1,5 +1,115 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1773622238264,
+      "key": "401810836_sust_GS",
+      "gameId": "401810836",
+      "team": "GS",
+      "opponent": "NY",
+      "matchup": "GS @ NY",
+      "side": "SPREAD",
+      "spread": 4.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -125,
+      "impliedP": 55.6,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-16T00:50:38.264Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "GS",
+      "homeTeam": "NY",
+      "awayName": "Golden State Warriors",
+      "homeName": "New York Knicks",
+      "awayScore": 35,
+      "homeScore": 21,
+      "period": 2,
+      "clock": "11:46",
+      "periodLabel": "Q2",
+      "sustLeader": "GS",
+      "sustMargin": 14,
+      "betOnLeader": true,
+      "currentMargin": 14,
+      "cushion": 18.5,
+      "sustScore": 32.6,
+      "fragScore": -30.1,
+      "sustGap": 62.7,
+      "sustSignals": [],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "63",
+        "efg": "76",
+        "threePt": "45",
+        "twoPt": "38",
+        "proc": 6.7,
+        "star": 0,
+        "scq": 6
+      },
+      "fragStats": {
+        "fg": "32",
+        "efg": "39",
+        "threePt": "20",
+        "twoPt": "38",
+        "proc": 3.6,
+        "star": 0,
+        "scq": -36
+      },
+      "sustDetail": "GS +32.6 vs NY -30.1 (gap:62.7) | GS 35-21 NY | Q2 11:46 | FanDuel +4.5 (-125)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": false,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 62,
+        "v2_f1low": 68.7,
+        "v3_f1high": 51.5,
+        "v4_f3boost": 75.1,
+        "v5_noStar": 62.7
+      },
+      "v7": {
+        "aScq": 5.6,
+        "hScq": -36.4,
+        "aScore": 34.8,
+        "hScore": -44.6,
+        "gap": 79.5,
+        "f5contrib": 16.8
+      },
+      "altStructural": {
+        "v6_cushionBoost": 118.2,
+        "v7_marginWeighted": 87.8,
+        "v8_procDiffOnly": 31,
+        "v10_timeDecay": 62.7
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -14.5,
+        "detail": "NY -14.5",
+        "awaySpread": "+14.5",
+        "homeSpread": "-14.5",
+        "awaySpreadOdds": "-105",
+        "homeSpreadOdds": "-115",
+        "awayML": "+625",
+        "homeML": "-950",
+        "openSpread": "+13.5"
+      },
+      "alertSent": true
+    }
+  ],
   "resolved": [
     {
       "id": 1773360760011,
