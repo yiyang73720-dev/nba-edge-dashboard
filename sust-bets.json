@@ -1,5 +1,117 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1773715982591,
+      "key": "401810845_sust_SA",
+      "gameId": "401810845",
+      "team": "SA",
+      "opponent": "LAC",
+      "matchup": "SA @ LAC",
+      "side": "SPREAD",
+      "spread": -7.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -110,
+      "impliedP": 52.4,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-17T02:53:02.591Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "SA",
+      "homeTeam": "LAC",
+      "awayName": "San Antonio Spurs",
+      "homeName": "LA Clippers",
+      "awayScore": 37,
+      "homeScore": 37,
+      "period": 2,
+      "clock": "9:18",
+      "periodLabel": "Q2",
+      "sustLeader": "TIE",
+      "sustMargin": 0,
+      "betOnLeader": false,
+      "currentMargin": 0,
+      "cushion": -7.5,
+      "sustScore": 43.9,
+      "fragScore": -11.4,
+      "sustGap": 55.3,
+      "sustSignals": [
+        "Low 3PT reliance (16%)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "41",
+        "efg": "43",
+        "threePt": "13",
+        "twoPt": "70",
+        "proc": 6.9,
+        "star": 0,
+        "scq": 14
+      },
+      "fragStats": {
+        "fg": "55",
+        "efg": "68",
+        "threePt": "56",
+        "twoPt": "32",
+        "proc": 4.5,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "SA +43.9 vs LAC -11.4 (gap:55.3) | SA 37-37 LAC | Q2 9:18 | FanDuel -7.5 (-110)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 48,
+        "v2_f1low": 57.7,
+        "v3_f1high": 57.9,
+        "v4_f3boost": 64.9,
+        "v5_noStar": 55.3
+      },
+      "v7": {
+        "aScq": 13.5,
+        "hScq": 0,
+        "aScore": 49.3,
+        "hScore": -11.4,
+        "gap": 60.7,
+        "f5contrib": 5.4
+      },
+      "altStructural": {
+        "v6_cushionBoost": 55.3,
+        "v7_marginWeighted": 5.5,
+        "v8_procDiffOnly": 24,
+        "v10_timeDecay": 55.3
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": 8.5,
+        "detail": "SA -8.5",
+        "awaySpread": "-8.5",
+        "homeSpread": "+8.5",
+        "awaySpreadOdds": "EVEN",
+        "homeSpreadOdds": "-120",
+        "awayML": "-340",
+        "homeML": "+270",
+        "openSpread": "-6.5"
+      },
+      "alertSent": true
+    }
+  ],
   "resolved": [
     {
       "id": 1773360760011,
