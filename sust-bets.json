@@ -588,6 +588,13 @@
           "score": "67-65",
           "period": 2,
           "clock": "2:03"
+        },
+        {
+          "t": "2026-03-17T23:53:58.269Z",
+          "spread": -1.5,
+          "score": "67-65",
+          "period": 2,
+          "clock": "1:40"
         }
       ]
     },
@@ -999,6 +1006,13 @@
           "score": "41-49",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-17T23:53:58.269Z",
+          "spread": -5.5,
+          "score": "41-49",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
     },
@@ -1197,6 +1211,13 @@
           "score": "45-33",
           "period": 2,
           "clock": "5:32"
+        },
+        {
+          "t": "2026-03-17T23:53:52.910Z",
+          "spread": -14.5,
+          "score": "45-33",
+          "period": 2,
+          "clock": "5:32"
         }
       ]
     },
@@ -1358,6 +1379,131 @@
           "score": "26-32",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-17T23:53:58.269Z",
+          "spread": -7.5,
+          "score": "26-32",
+          "period": 1,
+          "clock": "0:00"
+        }
+      ],
+      "alertSent": true
+    },
+    {
+      "id": 1773791565463,
+      "key": "401810846_sust_MIA",
+      "gameId": "401810846",
+      "team": "MIA",
+      "opponent": "CHA",
+      "matchup": "MIA @ CHA",
+      "side": "SPREAD",
+      "spread": 3.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -125,
+      "impliedP": 55.6,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-17T23:52:45.463Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "MIA",
+      "homeTeam": "CHA",
+      "awayName": "Miami Heat",
+      "homeName": "Charlotte Hornets",
+      "awayScore": 42,
+      "homeScore": 41,
+      "period": 2,
+      "clock": "5:29",
+      "periodLabel": "Q2",
+      "sustLeader": "TIE",
+      "sustMargin": 0,
+      "betOnLeader": false,
+      "currentMargin": 0,
+      "cushion": 4.5,
+      "sustScore": 30.2,
+      "fragScore": -8.4,
+      "sustGap": 38.6,
+      "sustSignals": [],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "38",
+        "efg": "44",
+        "threePt": "29",
+        "twoPt": "54",
+        "proc": 6.2,
+        "star": 0,
+        "scq": 8
+      },
+      "fragStats": {
+        "fg": "41",
+        "efg": "49",
+        "threePt": "33",
+        "twoPt": "49",
+        "proc": 4.9,
+        "star": 0,
+        "scq": -3
+      },
+      "sustDetail": "MIA +26 vs CHA -4.4 (gap:30.4) | MIA 41-41 CHA | Q2 6:06 | FanDuel +3.5 (-125)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 26,
+        "v2_f1low": 31.5,
+        "v3_f1high": 32.5,
+        "v4_f3boost": 35.6,
+        "v5_noStar": 30.4
+      },
+      "v7": {
+        "aScq": 7.7,
+        "hScq": -2.6,
+        "aScore": 29.1,
+        "hScore": -5.4,
+        "gap": 34.5,
+        "f5contrib": 4.1
+      },
+      "altStructural": {
+        "v6_cushionBoost": 40.9,
+        "v7_marginWeighted": 3,
+        "v8_procDiffOnly": 13,
+        "v10_timeDecay": 30.4
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -5.5,
+        "detail": "CHA -5.5",
+        "awaySpread": "+5.5",
+        "homeSpread": "-5.5",
+        "awaySpreadOdds": "-115",
+        "homeSpreadOdds": "-105",
+        "awayML": "+170",
+        "homeML": "-205",
+        "openSpread": "+3.5"
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-17T23:53:52.910Z",
+          "spread": 3.5,
+          "score": "42-41",
+          "period": 2,
+          "clock": "5:29"
         }
       ],
       "alertSent": true
