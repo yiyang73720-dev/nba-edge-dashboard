@@ -467,6 +467,13 @@
           "score": "75-67",
           "period": 3,
           "clock": "8:17"
+        },
+        {
+          "t": "2026-03-17T00:41:16.081Z",
+          "spread": -10.5,
+          "score": "77-67",
+          "period": 3,
+          "clock": "7:53"
         }
       ]
     },
@@ -930,6 +937,13 @@
           "score": "56-80",
           "period": 3,
           "clock": "9:08"
+        },
+        {
+          "t": "2026-03-17T00:41:16.081Z",
+          "spread": 16.5,
+          "score": "56-80",
+          "period": 3,
+          "clock": "9:08"
         }
       ],
       "alertSent": true
@@ -1191,8 +1205,224 @@
           "score": "61-65",
           "period": 2,
           "clock": "0.0"
+        },
+        {
+          "t": "2026-03-17T00:41:16.081Z",
+          "spread": -7.5,
+          "score": "61-65",
+          "period": 2,
+          "clock": "0.0"
         }
       ]
+    },
+    {
+      "id": 1773707140042,
+      "key": "401810840_sust_POR",
+      "gameId": "401810840",
+      "team": "POR",
+      "opponent": "BKN",
+      "matchup": "POR @ BKN",
+      "side": "SPREAD",
+      "spread": -22.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -138,
+      "impliedP": 58,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-17T00:25:40.042Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "POR",
+      "homeTeam": "BKN",
+      "awayName": "Portland Trail Blazers",
+      "homeName": "Brooklyn Nets",
+      "awayScore": 62,
+      "homeScore": 39,
+      "period": 2,
+      "clock": "54.2",
+      "periodLabel": "Q2",
+      "sustLeader": "POR",
+      "sustMargin": 16,
+      "betOnLeader": true,
+      "currentMargin": 16,
+      "cushion": 0.5,
+      "sustScore": 50.6,
+      "fragScore": 8.2,
+      "sustGap": 42.400000000000006,
+      "sustSignals": [],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "41",
+        "efg": "47",
+        "threePt": "42",
+        "twoPt": "45",
+        "proc": 6.6,
+        "star": 0,
+        "scq": 30
+      },
+      "fragStats": {
+        "fg": "29",
+        "efg": "32",
+        "threePt": "20",
+        "twoPt": "43",
+        "proc": 5.1,
+        "star": 0,
+        "scq": 39
+      },
+      "sustDetail": "POR +32.6 vs BKN 6.4 (gap:26.200000000000003) | POR 44-28 BKN | Q2 7:05 | FanDuel -17.5 (-138)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": false,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 30,
+        "v2_f1low": 30.5,
+        "v3_f1high": 13.9,
+        "v4_f3boost": 32.2,
+        "v5_noStar": 26.2
+      },
+      "v7": {
+        "aScq": 29.7,
+        "hScq": 39.3,
+        "aScore": 44.5,
+        "hScore": 22.1,
+        "gap": 22.4,
+        "f5contrib": 3.8
+      },
+      "altStructural": {
+        "v6_cushionBoost": 26.2,
+        "v7_marginWeighted": 41.9,
+        "v8_procDiffOnly": 15,
+        "v10_timeDecay": 26.2
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": 10.5,
+        "detail": "POR -10.5",
+        "awaySpread": "-10.5",
+        "homeSpread": "+10.5",
+        "awaySpreadOdds": "-115",
+        "homeSpreadOdds": "-105",
+        "awayML": "-520",
+        "homeML": "+390",
+        "openSpread": "-10.5"
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-17T00:26:45.303Z",
+          "spread": -17.5,
+          "score": "44-30",
+          "period": 2,
+          "clock": "6:48"
+        },
+        {
+          "t": "2026-03-17T00:27:52.070Z",
+          "spread": -19.5,
+          "score": "49-30",
+          "period": 2,
+          "clock": "6:14"
+        },
+        {
+          "t": "2026-03-17T00:28:57.812Z",
+          "spread": -21.5,
+          "score": "49-30",
+          "period": 2,
+          "clock": "6:14"
+        },
+        {
+          "t": "2026-03-17T00:30:05.071Z",
+          "spread": -21.5,
+          "score": "49-30",
+          "period": 2,
+          "clock": "6:14"
+        },
+        {
+          "t": "2026-03-17T00:31:12.579Z",
+          "spread": -21.5,
+          "score": "49-32",
+          "period": 2,
+          "clock": "5:32"
+        },
+        {
+          "t": "2026-03-17T00:32:21.285Z",
+          "spread": -21.5,
+          "score": "51-32",
+          "period": 2,
+          "clock": "4:53"
+        },
+        {
+          "t": "2026-03-17T00:33:28.885Z",
+          "spread": -19.5,
+          "score": "54-35",
+          "period": 2,
+          "clock": "4:11"
+        },
+        {
+          "t": "2026-03-17T00:34:35.114Z",
+          "spread": -22.5,
+          "score": "56-35",
+          "period": 2,
+          "clock": "3:15"
+        },
+        {
+          "t": "2026-03-17T00:35:40.771Z",
+          "spread": -24.5,
+          "score": "58-35",
+          "period": 2,
+          "clock": "3:06"
+        },
+        {
+          "t": "2026-03-17T00:36:47.972Z",
+          "spread": -24.5,
+          "score": "58-37",
+          "period": 2,
+          "clock": "2:17"
+        },
+        {
+          "t": "2026-03-17T00:37:56.242Z",
+          "spread": -22.5,
+          "score": "60-37",
+          "period": 2,
+          "clock": "1:39"
+        },
+        {
+          "t": "2026-03-17T00:39:01.212Z",
+          "spread": -22.5,
+          "score": "60-39",
+          "period": 2,
+          "clock": "1:23"
+        },
+        {
+          "t": "2026-03-17T00:40:07.492Z",
+          "spread": -22.5,
+          "score": "60-39",
+          "period": 2,
+          "clock": "1:02"
+        },
+        {
+          "t": "2026-03-17T00:41:16.081Z",
+          "spread": -22.5,
+          "score": "62-39",
+          "period": 2,
+          "clock": "54.2"
+        }
+      ],
+      "alertSent": true
     },
     {
       "id": 1773708012162,
@@ -1301,7 +1531,16 @@
         "homeML": "-278",
         "openSpread": "+4.5"
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-17T00:41:16.081Z",
+          "spread": -7.5,
+          "score": "31-31",
+          "period": 2,
+          "clock": "10:46"
+        }
+      ]
     },
     {
       "id": 1773708012844,
@@ -1415,7 +1654,16 @@
         "homeML": "-340",
         "openSpread": "+7.5"
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-17T00:41:16.081Z",
+          "spread": -10.5,
+          "score": "32-36",
+          "period": 2,
+          "clock": "10:00"
+        }
+      ]
     }
   ],
   "resolved": [
