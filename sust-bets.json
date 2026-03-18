@@ -471,6 +471,20 @@
           "score": "48-61",
           "period": 2,
           "clock": "16:21"
+        },
+        {
+          "t": "2026-03-18T00:04:10.993Z",
+          "spread": -9.5,
+          "score": "48-61",
+          "period": 2,
+          "clock": "16:21"
+        },
+        {
+          "t": "2026-03-18T00:05:20.077Z",
+          "spread": -8.5,
+          "score": "51-63",
+          "period": 2,
+          "clock": "15:18"
         }
       ]
     },
@@ -732,6 +746,20 @@
           "score": "49-42",
           "period": 2,
           "clock": "1:26"
+        },
+        {
+          "t": "2026-03-18T00:04:05.406Z",
+          "spread": -10.5,
+          "score": "51-42",
+          "period": 2,
+          "clock": "1:26"
+        },
+        {
+          "t": "2026-03-18T00:05:13.193Z",
+          "spread": -12.5,
+          "score": "51-44",
+          "period": 2,
+          "clock": "1:03"
         }
       ]
     },
@@ -956,6 +984,20 @@
           "score": "26-37",
           "period": 2,
           "clock": "17:15"
+        },
+        {
+          "t": "2026-03-18T00:04:10.994Z",
+          "spread": -11.5,
+          "score": "26-39",
+          "period": 2,
+          "clock": "17:07"
+        },
+        {
+          "t": "2026-03-18T00:05:20.078Z",
+          "spread": -13.5,
+          "score": "26-39",
+          "period": 2,
+          "clock": "16:16"
         }
       ],
       "alertSent": true
@@ -1130,6 +1172,20 @@
           "score": "51-52",
           "period": 2,
           "clock": "2:25"
+        },
+        {
+          "t": "2026-03-18T00:04:05.406Z",
+          "spread": 3.5,
+          "score": "51-52",
+          "period": 2,
+          "clock": "2:15"
+        },
+        {
+          "t": "2026-03-18T00:05:13.193Z",
+          "spread": 3.5,
+          "score": "51-52",
+          "period": 2,
+          "clock": "2:15"
         }
       ],
       "alertSent": true
@@ -1245,6 +1301,135 @@
         "awayML": "-2100",
         "homeML": "+1100",
         "openSpread": "-17.5"
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-18T00:04:05.406Z",
+          "spread": -17.5,
+          "score": "59-52",
+          "period": 2,
+          "clock": "1:53"
+        },
+        {
+          "t": "2026-03-18T00:05:13.193Z",
+          "spread": -15.5,
+          "score": "59-52",
+          "period": 2,
+          "clock": "1:53"
+        }
+      ]
+    },
+    {
+      "id": 1773792318213,
+      "key": "401810849_sust_NY",
+      "gameId": "401810849",
+      "team": "NY",
+      "opponent": "IND",
+      "matchup": "IND @ NY",
+      "side": "SPREAD",
+      "spread": -13.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": 102,
+      "impliedP": 49.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-18T00:05:18.213Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "IND",
+      "homeTeam": "NY",
+      "awayName": "Indiana Pacers",
+      "homeName": "New York Knicks",
+      "awayScore": 34,
+      "homeScore": 41,
+      "period": 2,
+      "clock": "11:46",
+      "periodLabel": "Q2",
+      "sustLeader": "NY",
+      "sustMargin": 7,
+      "betOnLeader": true,
+      "currentMargin": 7,
+      "cushion": -6.5,
+      "sustScore": 36.6,
+      "fragScore": -2.4,
+      "sustGap": 39,
+      "sustSignals": [
+        "Strong process (7.0/10)"
+      ],
+      "fragSignals": [
+        "3PT heavy (44% of pts)"
+      ],
+      "sustStats": {
+        "fg": "67",
+        "efg": "79",
+        "threePt": "67",
+        "twoPt": "53",
+        "proc": 7,
+        "star": 110,
+        "scq": 4
+      },
+      "fragStats": {
+        "fg": "70",
+        "efg": "83",
+        "threePt": "63",
+        "twoPt": "53",
+        "proc": 5,
+        "star": 0,
+        "scq": -15
+      },
+      "sustDetail": "NY +36.6 vs IND -2.4 (gap:39) | IND 34-41 NY | Q2 11:46 | FanDuel -13.5 (+102)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 40,
+        "v2_f1low": 43.3,
+        "v3_f1high": 29.4,
+        "v4_f3boost": 47,
+        "v5_noStar": 39
+      },
+      "v7": {
+        "aScq": -15,
+        "hScq": 4,
+        "aScore": -8.4,
+        "hScore": 38.2,
+        "gap": 46.6,
+        "f5contrib": 7.6
+      },
+      "altStructural": {
+        "v6_cushionBoost": 39,
+        "v7_marginWeighted": 27.3,
+        "v8_procDiffOnly": 20,
+        "v10_timeDecay": 39
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -13.5,
+        "detail": "NY -13.5",
+        "awaySpread": "+13.5",
+        "homeSpread": "-13.5",
+        "awaySpreadOdds": "-108",
+        "homeSpreadOdds": "-112",
+        "awayML": "+550",
+        "homeML": "-800",
+        "openSpread": "+15.5"
       },
       "alertSent": true
     }
