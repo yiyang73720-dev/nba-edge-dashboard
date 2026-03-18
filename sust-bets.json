@@ -299,8 +299,178 @@
           "score": "27-29",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-18T23:44:57.891Z",
+          "spread": -3.5,
+          "score": "27-29",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-18T23:46:02.907Z",
+          "spread": -3.5,
+          "score": "27-29",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-18T23:47:07.712Z",
+          "spread": -3.5,
+          "score": "27-29",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-18T23:48:12.495Z",
+          "spread": -2.5,
+          "score": "29-29",
+          "period": 2,
+          "clock": "19:27"
         }
       ]
+    },
+    {
+      "id": 1773877429577,
+      "key": "401810854_sust_GS",
+      "gameId": "401810854",
+      "team": "GS",
+      "opponent": "BOS",
+      "matchup": "GS @ BOS",
+      "side": "SPREAD",
+      "spread": 15.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -102,
+      "impliedP": 50.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-18T23:43:49.577Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "GS",
+      "homeTeam": "BOS",
+      "awayName": "Golden State Warriors",
+      "homeName": "Boston Celtics",
+      "awayScore": 32,
+      "homeScore": 42,
+      "period": 2,
+      "clock": "7:10",
+      "periodLabel": "Q2",
+      "sustLeader": "BOS",
+      "sustMargin": 10,
+      "betOnLeader": false,
+      "currentMargin": -10,
+      "cushion": 5.5,
+      "sustScore": 21.8,
+      "fragScore": -18.3,
+      "sustGap": 40.1,
+      "sustSignals": [],
+      "fragSignals": [
+        "3PT heavy (54% of pts)",
+        "Star erupting (280% pace)"
+      ],
+      "sustStats": {
+        "fg": "35",
+        "efg": "44",
+        "threePt": "29",
+        "twoPt": "41",
+        "proc": 6.3,
+        "star": 0,
+        "scq": 3
+      },
+      "fragStats": {
+        "fg": "52",
+        "efg": "64",
+        "threePt": "54",
+        "twoPt": "41",
+        "proc": 5.2,
+        "star": 280,
+        "scq": -14
+      },
+      "sustDetail": "GS +21.3 vs BOS -11.4 (gap:32.7) | GS 29-39 BOS | Q2 9:15 | FanDuel +13.5 (-102)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": false,
+        "g11_bigMargin": true,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 32,
+        "v2_f1low": 34.6,
+        "v3_f1high": 29.3,
+        "v4_f3boost": 37,
+        "v5_noStar": 22.6
+      },
+      "v7": {
+        "aScq": 3.1,
+        "hScq": -13.8,
+        "aScore": 22.6,
+        "hScore": -16.9,
+        "gap": 39.5,
+        "f5contrib": 6.8
+      },
+      "altStructural": {
+        "v6_cushionBoost": 43.2,
+        "v7_marginWeighted": 32.7,
+        "v8_procDiffOnly": 11,
+        "v10_timeDecay": 32.7
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -11.5,
+        "detail": "BOS -11.5",
+        "awaySpread": "+11.5",
+        "homeSpread": "-11.5",
+        "awaySpreadOdds": "-108",
+        "homeSpreadOdds": "-112",
+        "awayML": "+455",
+        "homeML": "-625",
+        "openSpread": "+12.5"
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-18T23:44:55.108Z",
+          "spread": 13.5,
+          "score": "29-39",
+          "period": 2,
+          "clock": "8:43"
+        },
+        {
+          "t": "2026-03-18T23:46:00.165Z",
+          "spread": 15.5,
+          "score": "29-42",
+          "period": 2,
+          "clock": "8:04"
+        },
+        {
+          "t": "2026-03-18T23:47:04.914Z",
+          "spread": 15.5,
+          "score": "29-42",
+          "period": 2,
+          "clock": "7:20"
+        },
+        {
+          "t": "2026-03-18T23:48:09.411Z",
+          "spread": 15.5,
+          "score": "32-42",
+          "period": 2,
+          "clock": "7:10"
+        }
+      ],
+      "alertSent": true
     }
   ],
   "resolved": [
