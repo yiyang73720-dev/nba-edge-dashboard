@@ -806,6 +806,27 @@
           "score": "121-116",
           "period": 4,
           "clock": "29.1"
+        },
+        {
+          "t": "2026-03-18T02:33:45.298Z",
+          "spread": -4.5,
+          "score": "121-116",
+          "period": 4,
+          "clock": "29.1"
+        },
+        {
+          "t": "2026-03-18T02:34:49.491Z",
+          "spread": -6.5,
+          "score": "121-116",
+          "period": 4,
+          "clock": "29.1"
+        },
+        {
+          "t": "2026-03-18T02:35:54.260Z",
+          "spread": -6.5,
+          "score": "122-116",
+          "period": 4,
+          "clock": "20.9"
         }
       ]
     },
@@ -1287,8 +1308,140 @@
           "score": "57-49",
           "period": 2,
           "clock": "12:08"
+        },
+        {
+          "t": "2026-03-18T02:33:47.320Z",
+          "spread": 1.5,
+          "score": "57-49",
+          "period": 2,
+          "clock": "12:08"
+        },
+        {
+          "t": "2026-03-18T02:34:51.827Z",
+          "spread": 1.5,
+          "score": "57-49",
+          "period": 2,
+          "clock": "12:08"
+        },
+        {
+          "t": "2026-03-18T02:35:59.479Z",
+          "spread": 4.5,
+          "score": "59-51",
+          "period": 2,
+          "clock": "11:35"
         }
       ]
+    },
+    {
+      "id": 1773801357709,
+      "key": "401810853_sust_SA",
+      "gameId": "401810853",
+      "team": "SA",
+      "opponent": "SAC",
+      "matchup": "SA @ SAC",
+      "side": "SPREAD",
+      "spread": -19.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -136,
+      "impliedP": 57.6,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-18T02:35:57.709Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "SA",
+      "homeTeam": "SAC",
+      "awayName": "San Antonio Spurs",
+      "homeName": "Sacramento Kings",
+      "awayScore": 39,
+      "homeScore": 22,
+      "period": 2,
+      "clock": "11:32",
+      "periodLabel": "Q2",
+      "sustLeader": "SA",
+      "sustMargin": 17,
+      "betOnLeader": true,
+      "currentMargin": 17,
+      "cushion": -2.5,
+      "sustScore": 54.6,
+      "fragScore": -37.4,
+      "sustGap": 92,
+      "sustSignals": [
+        "Strong process (8.0/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "63",
+        "efg": "77",
+        "threePt": "64",
+        "twoPt": "41",
+        "proc": 8,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "39",
+        "efg": "43",
+        "threePt": "33",
+        "twoPt": "64",
+        "proc": 3,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "SA +54.6 vs SAC -37.4 (gap:92) | SA 39-22 SAC | Q2 11:32 | FanDuel -19.5 (-136)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": false,
+        "g10_ncaa": false,
+        "g11_bigMargin": true,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 100,
+        "v2_f1low": 104.7,
+        "v3_f1high": 58.7,
+        "v4_f3boost": 112,
+        "v5_noStar": 92
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 54.6,
+        "hScore": -37.4,
+        "gap": 92,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 92,
+        "v7_marginWeighted": 156.4,
+        "v8_procDiffOnly": 50,
+        "v10_timeDecay": 92
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": 13.5,
+        "detail": "SA -13.5",
+        "awaySpread": "-13.5",
+        "homeSpread": "+13.5",
+        "awaySpreadOdds": "-105",
+        "homeSpreadOdds": "-115",
+        "awayML": "-850",
+        "homeML": "+575",
+        "openSpread": "-14.5"
+      },
+      "alertSent": true
     }
   ],
   "resolved": [
