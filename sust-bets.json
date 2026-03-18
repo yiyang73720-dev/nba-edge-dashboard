@@ -1,660 +1,6 @@
 {
   "bets": [
     {
-      "id": 1773792318213,
-      "key": "401810849_sust_NY",
-      "gameId": "401810849",
-      "team": "NY",
-      "opponent": "IND",
-      "matchup": "IND @ NY",
-      "side": "SPREAD",
-      "spread": -13.5,
-      "signals": [
-        "sust"
-      ],
-      "marketOdds": 102,
-      "impliedP": 49.5,
-      "estimatedP": 55,
-      "kellyPct": 2.5,
-      "kellyBet": 500,
-      "book": "FanDuel",
-      "timestamp": "2026-03-18T00:05:18.213Z",
-      "outcome": null,
-      "payout": null,
-      "mode": "nba",
-      "awayTeam": "IND",
-      "homeTeam": "NY",
-      "awayName": "Indiana Pacers",
-      "homeName": "New York Knicks",
-      "awayScore": 34,
-      "homeScore": 41,
-      "period": 2,
-      "clock": "11:46",
-      "periodLabel": "Q2",
-      "sustLeader": "NY",
-      "sustMargin": 7,
-      "betOnLeader": true,
-      "currentMargin": 7,
-      "cushion": -6.5,
-      "sustScore": 36.6,
-      "fragScore": -2.4,
-      "sustGap": 39,
-      "sustSignals": [
-        "Strong process (7.0/10)"
-      ],
-      "fragSignals": [
-        "3PT heavy (44% of pts)"
-      ],
-      "sustStats": {
-        "fg": "67",
-        "efg": "79",
-        "threePt": "67",
-        "twoPt": "53",
-        "proc": 7,
-        "star": 110,
-        "scq": 4
-      },
-      "fragStats": {
-        "fg": "70",
-        "efg": "83",
-        "threePt": "63",
-        "twoPt": "53",
-        "proc": 5,
-        "star": 0,
-        "scq": -15
-      },
-      "sustDetail": "NY +36.6 vs IND -2.4 (gap:39) | IND 34-41 NY | Q2 11:46 | FanDuel -13.5 (+102)",
-      "strategies": {
-        "g1_bigGap": false,
-        "g2_procDriven": true,
-        "g3_threePtDriven": false,
-        "g4_starInvolved": true,
-        "g5_betOnLeader": true,
-        "g6_hasCushion": false,
-        "g7_earlyGame": true,
-        "g8_highProc": true,
-        "g9_homeTeam": true,
-        "g10_ncaa": false,
-        "g11_bigMargin": false,
-        "g12_oppCold3": false
-      },
-      "altGaps": {
-        "v1_pureProc": 40,
-        "v2_f1low": 43.3,
-        "v3_f1high": 29.4,
-        "v4_f3boost": 47,
-        "v5_noStar": 39
-      },
-      "v7": {
-        "aScq": -15,
-        "hScq": 4,
-        "aScore": -8.4,
-        "hScore": 38.2,
-        "gap": 46.6,
-        "f5contrib": 7.6
-      },
-      "altStructural": {
-        "v6_cushionBoost": 39,
-        "v7_marginWeighted": 27.3,
-        "v8_procDiffOnly": 20,
-        "v10_timeDecay": 39
-      },
-      "espnOdds": {
-        "provider": "Draft Kings",
-        "spread": -13.5,
-        "detail": "NY -13.5",
-        "awaySpread": "+13.5",
-        "homeSpread": "-13.5",
-        "awaySpreadOdds": "-108",
-        "homeSpreadOdds": "-112",
-        "awayML": "+550",
-        "homeML": "-800",
-        "openSpread": "+15.5"
-      },
-      "alertSent": true,
-      "spreadHistory": [
-        {
-          "t": "2026-03-18T00:06:25.402Z",
-          "spread": -13.5,
-          "score": "36-41",
-          "period": 2,
-          "clock": "10:56"
-        },
-        {
-          "t": "2026-03-18T00:07:36.833Z",
-          "spread": -13.5,
-          "score": "39-43",
-          "period": 2,
-          "clock": "10:31"
-        },
-        {
-          "t": "2026-03-18T00:08:49.168Z",
-          "spread": -11.5,
-          "score": "42-43",
-          "period": 2,
-          "clock": "9:51"
-        },
-        {
-          "t": "2026-03-18T00:10:00.298Z",
-          "spread": -11.5,
-          "score": "42-43",
-          "period": 2,
-          "clock": "9:51"
-        },
-        {
-          "t": "2026-03-18T00:11:08.420Z",
-          "spread": -11.5,
-          "score": "42-43",
-          "period": 2,
-          "clock": "9:51"
-        },
-        {
-          "t": "2026-03-18T00:12:18.624Z",
-          "spread": -11.5,
-          "score": "41-43",
-          "period": 2,
-          "clock": "8:57"
-        },
-        {
-          "t": "2026-03-18T00:13:24.767Z",
-          "spread": -11.5,
-          "score": "44-43",
-          "period": 2,
-          "clock": "8:45"
-        },
-        {
-          "t": "2026-03-18T00:14:33.566Z",
-          "spread": -9.5,
-          "score": "44-47",
-          "period": 2,
-          "clock": "7:50"
-        },
-        {
-          "t": "2026-03-18T00:15:45.393Z",
-          "spread": -9.5,
-          "score": "50-49",
-          "period": 2,
-          "clock": "6:50"
-        },
-        {
-          "t": "2026-03-18T00:16:56.031Z",
-          "spread": -9.5,
-          "score": "50-49",
-          "period": 2,
-          "clock": "6:33"
-        },
-        {
-          "t": "2026-03-18T00:18:04.155Z",
-          "spread": -9.5,
-          "score": "50-49",
-          "period": 2,
-          "clock": "6:33"
-        },
-        {
-          "t": "2026-03-18T00:19:16.183Z",
-          "spread": -9.5,
-          "score": "50-49",
-          "period": 2,
-          "clock": "6:33"
-        },
-        {
-          "t": "2026-03-18T00:20:27.275Z",
-          "spread": -9.5,
-          "score": "52-51",
-          "period": 2,
-          "clock": "5:51"
-        },
-        {
-          "t": "2026-03-18T00:21:35.425Z",
-          "spread": -9.5,
-          "score": "57-51",
-          "period": 2,
-          "clock": "4:49"
-        },
-        {
-          "t": "2026-03-18T00:22:44.305Z",
-          "spread": -6.5,
-          "score": "57-53",
-          "period": 2,
-          "clock": "4:39"
-        },
-        {
-          "t": "2026-03-18T00:23:53.069Z",
-          "spread": -8.5,
-          "score": "60-57",
-          "period": 2,
-          "clock": "3:50"
-        },
-        {
-          "t": "2026-03-18T00:25:00.296Z",
-          "spread": -8.5,
-          "score": "60-57",
-          "period": 2,
-          "clock": "3:11"
-        },
-        {
-          "t": "2026-03-18T00:26:08.866Z",
-          "spread": -8.5,
-          "score": "62-60",
-          "period": 2,
-          "clock": "2:46"
-        },
-        {
-          "t": "2026-03-18T00:27:18.147Z",
-          "spread": -8.5,
-          "score": "62-61",
-          "period": 2,
-          "clock": "2:24"
-        },
-        {
-          "t": "2026-03-18T00:28:27.200Z",
-          "spread": -10.5,
-          "score": "62-61",
-          "period": 2,
-          "clock": "2:24"
-        },
-        {
-          "t": "2026-03-18T00:29:35.197Z",
-          "spread": -10.5,
-          "score": "62-63",
-          "period": 2,
-          "clock": "1:56"
-        },
-        {
-          "t": "2026-03-18T00:30:43.046Z",
-          "spread": -10.5,
-          "score": "62-66",
-          "period": 2,
-          "clock": "1:13"
-        },
-        {
-          "t": "2026-03-18T00:31:48.778Z",
-          "spread": -12.5,
-          "score": "64-69",
-          "period": 2,
-          "clock": "31.5"
-        },
-        {
-          "t": "2026-03-18T00:32:57.772Z",
-          "spread": -14.5,
-          "score": "64-72",
-          "period": 2,
-          "clock": "0.0"
-        },
-        {
-          "t": "2026-03-18T00:34:05.981Z",
-          "spread": -14.5,
-          "score": "64-72",
-          "period": 2,
-          "clock": "0.0"
-        },
-        {
-          "t": "2026-03-18T00:35:15.048Z",
-          "spread": -14.5,
-          "score": "64-72",
-          "period": 2,
-          "clock": "0.0"
-        },
-        {
-          "t": "2026-03-18T00:36:23.776Z",
-          "spread": -14.5,
-          "score": "64-72",
-          "period": 2,
-          "clock": "0.0"
-        },
-        {
-          "t": "2026-03-18T00:37:32.592Z",
-          "spread": -14.5,
-          "score": "64-72",
-          "period": 2,
-          "clock": "0.0"
-        },
-        {
-          "t": "2026-03-18T00:38:37.920Z",
-          "spread": -14.5,
-          "score": "64-72",
-          "period": 2,
-          "clock": "0.0"
-        },
-        {
-          "t": "2026-03-18T00:39:44.749Z",
-          "spread": -14.5,
-          "score": "64-72",
-          "period": 2,
-          "clock": "0.0"
-        },
-        {
-          "t": "2026-03-18T00:40:51.868Z",
-          "spread": -14.5,
-          "score": "64-72",
-          "period": 2,
-          "clock": "0.0"
-        },
-        {
-          "t": "2026-03-18T00:42:03.888Z",
-          "spread": -14.5,
-          "score": "64-72",
-          "period": 2,
-          "clock": "0.0"
-        },
-        {
-          "t": "2026-03-18T00:43:14.518Z",
-          "spread": -14.5,
-          "score": "64-72",
-          "period": 2,
-          "clock": "0.0"
-        },
-        {
-          "t": "2026-03-18T00:44:25.207Z",
-          "spread": -14.5,
-          "score": "64-72",
-          "period": 2,
-          "clock": "0.0"
-        },
-        {
-          "t": "2026-03-18T00:45:33.358Z",
-          "spread": -14.5,
-          "score": "64-72",
-          "period": 2,
-          "clock": "0.0"
-        },
-        {
-          "t": "2026-03-18T00:46:46.149Z",
-          "spread": -14.5,
-          "score": "64-72",
-          "period": 2,
-          "clock": "0.0"
-        },
-        {
-          "t": "2026-03-18T00:48:00.232Z",
-          "spread": -14.5,
-          "score": "64-75",
-          "period": 3,
-          "clock": "11:40"
-        },
-        {
-          "t": "2026-03-18T00:49:13.632Z",
-          "spread": -14.5,
-          "score": "69-75",
-          "period": 3,
-          "clock": "10:57"
-        },
-        {
-          "t": "2026-03-18T00:50:22.166Z",
-          "spread": -12.5,
-          "score": "69-75",
-          "period": 3,
-          "clock": "10:57"
-        },
-        {
-          "t": "2026-03-18T00:51:32.497Z",
-          "spread": -12.5,
-          "score": "69-75",
-          "period": 3,
-          "clock": "10:57"
-        },
-        {
-          "t": "2026-03-18T00:52:41.629Z",
-          "spread": -12.5,
-          "score": "69-80",
-          "period": 3,
-          "clock": "10:03"
-        },
-        {
-          "t": "2026-03-18T00:53:50.362Z",
-          "spread": -15.5,
-          "score": "71-80",
-          "period": 3,
-          "clock": "9:48"
-        },
-        {
-          "t": "2026-03-18T00:55:00.783Z",
-          "spread": -15.5,
-          "score": "71-85",
-          "period": 3,
-          "clock": "9:11"
-        },
-        {
-          "t": "2026-03-18T00:56:09.782Z",
-          "spread": -17.5,
-          "score": "71-85",
-          "period": 3,
-          "clock": "9:11"
-        },
-        {
-          "t": "2026-03-18T00:57:19.604Z",
-          "spread": -17.5,
-          "score": "71-85",
-          "period": 3,
-          "clock": "9:11"
-        },
-        {
-          "t": "2026-03-18T00:58:28.292Z",
-          "spread": -17.5,
-          "score": "73-89",
-          "period": 3,
-          "clock": "8:04"
-        },
-        {
-          "t": "2026-03-18T00:59:37.703Z",
-          "spread": -17.5,
-          "score": "77-91",
-          "period": 3,
-          "clock": "7:18"
-        },
-        {
-          "t": "2026-03-18T01:00:46.784Z",
-          "spread": -17.5,
-          "score": "77-91",
-          "period": 3,
-          "clock": "7:18"
-        },
-        {
-          "t": "2026-03-18T01:01:58.510Z",
-          "spread": -17.5,
-          "score": "77-94",
-          "period": 3,
-          "clock": "6:29"
-        },
-        {
-          "t": "2026-03-18T01:03:07.840Z",
-          "spread": -19.5,
-          "score": "77-94",
-          "period": 3,
-          "clock": "6:07"
-        },
-        {
-          "t": "2026-03-18T01:04:16.498Z",
-          "spread": -19.5,
-          "score": "79-94",
-          "period": 3,
-          "clock": "5:13"
-        },
-        {
-          "t": "2026-03-18T01:05:25.129Z",
-          "spread": -18.5,
-          "score": "81-94",
-          "period": 3,
-          "clock": "4:30"
-        },
-        {
-          "t": "2026-03-18T01:06:33.558Z",
-          "spread": -16.5,
-          "score": "81-94",
-          "period": 3,
-          "clock": "4:30"
-        },
-        {
-          "t": "2026-03-18T01:07:42.790Z",
-          "spread": -16.5,
-          "score": "84-96",
-          "period": 3,
-          "clock": "3:55"
-        },
-        {
-          "t": "2026-03-18T01:08:52.117Z",
-          "spread": -14.5,
-          "score": "84-98",
-          "period": 3,
-          "clock": "3:45"
-        },
-        {
-          "t": "2026-03-18T01:09:59.494Z",
-          "spread": -16.5,
-          "score": "87-99",
-          "period": 3,
-          "clock": "3:25"
-        },
-        {
-          "t": "2026-03-18T01:11:08.068Z",
-          "spread": -12.5,
-          "score": "89-99",
-          "period": 3,
-          "clock": "2:32"
-        },
-        {
-          "t": "2026-03-18T01:12:14.973Z",
-          "spread": -14.5,
-          "score": "89-101",
-          "period": 3,
-          "clock": "2:15"
-        },
-        {
-          "t": "2026-03-18T01:13:22.224Z",
-          "spread": -14.5,
-          "score": "89-101",
-          "period": 3,
-          "clock": "1:34"
-        },
-        {
-          "t": "2026-03-18T01:14:29.702Z",
-          "spread": -15.5,
-          "score": "89-103",
-          "period": 3,
-          "clock": "59.8"
-        },
-        {
-          "t": "2026-03-18T01:15:37.077Z",
-          "spread": -16.5,
-          "score": "89-104",
-          "period": 3,
-          "clock": "44.6"
-        },
-        {
-          "t": "2026-03-18T01:16:47.166Z",
-          "spread": -16.5,
-          "score": "91-105",
-          "period": 3,
-          "clock": "0.0"
-        },
-        {
-          "t": "2026-03-18T01:17:53.353Z",
-          "spread": -16.5,
-          "score": "91-105",
-          "period": 3,
-          "clock": "0.0"
-        },
-        {
-          "t": "2026-03-18T01:19:00.543Z",
-          "spread": -16.5,
-          "score": "91-105",
-          "period": 3,
-          "clock": "0.0"
-        },
-        {
-          "t": "2026-03-18T01:20:08.333Z",
-          "spread": -16.5,
-          "score": "91-105",
-          "period": 4,
-          "clock": "11:44"
-        },
-        {
-          "t": "2026-03-18T01:21:15.388Z",
-          "spread": -16.5,
-          "score": "94-107",
-          "period": 4,
-          "clock": "10:53"
-        },
-        {
-          "t": "2026-03-18T01:22:23.338Z",
-          "spread": -14.5,
-          "score": "94-107",
-          "period": 4,
-          "clock": "10:24"
-        },
-        {
-          "t": "2026-03-18T01:23:30.137Z",
-          "spread": -14.5,
-          "score": "94-109",
-          "period": 4,
-          "clock": "9:52"
-        },
-        {
-          "t": "2026-03-18T01:24:35.033Z",
-          "spread": -16.5,
-          "score": "95-111",
-          "period": 4,
-          "clock": "9:14"
-        },
-        {
-          "t": "2026-03-18T01:25:40.601Z",
-          "spread": -16.5,
-          "score": "96-111",
-          "period": 4,
-          "clock": "9:14"
-        },
-        {
-          "t": "2026-03-18T01:26:46.352Z",
-          "spread": -18.5,
-          "score": "98-115",
-          "period": 4,
-          "clock": "7:56"
-        },
-        {
-          "t": "2026-03-18T01:27:54.779Z",
-          "spread": -19.5,
-          "score": "98-117",
-          "period": 4,
-          "clock": "7:37"
-        },
-        {
-          "t": "2026-03-18T01:29:02.955Z",
-          "spread": -19.5,
-          "score": "98-117",
-          "period": 4,
-          "clock": "7:07"
-        },
-        {
-          "t": "2026-03-18T01:30:12.461Z",
-          "spread": -19.5,
-          "score": "98-120",
-          "period": 4,
-          "clock": "6:06"
-        },
-        {
-          "t": "2026-03-18T01:31:18.068Z",
-          "spread": -22.5,
-          "score": "98-120",
-          "period": 4,
-          "clock": "5:45"
-        },
-        {
-          "t": "2026-03-18T01:32:25.078Z",
-          "spread": -22.5,
-          "score": "98-120",
-          "period": 4,
-          "clock": "5:45"
-        },
-        {
-          "t": "2026-03-18T01:33:29.887Z",
-          "spread": -22.5,
-          "score": "98-120",
-          "period": 4,
-          "clock": "5:45"
-        }
-      ]
-    },
-    {
       "id": 1773794189878,
       "key": "401858339_sust_DAV",
       "gameId": "401858339",
@@ -1102,6 +448,83 @@
           "score": "62-61",
           "period": 2,
           "clock": "10:29"
+        },
+        {
+          "t": "2026-03-18T01:34:38.620Z",
+          "spread": 1.5,
+          "score": "62-61",
+          "period": 2,
+          "clock": "9:58"
+        },
+        {
+          "t": "2026-03-18T01:35:43.771Z",
+          "spread": 5.5,
+          "score": "62-66",
+          "period": 2,
+          "clock": "9:07"
+        },
+        {
+          "t": "2026-03-18T01:36:49.335Z",
+          "spread": 5.5,
+          "score": "62-66",
+          "period": 2,
+          "clock": "8:44"
+        },
+        {
+          "t": "2026-03-18T01:37:56.330Z",
+          "spread": 3.5,
+          "score": "65-66",
+          "period": 2,
+          "clock": "8:27"
+        },
+        {
+          "t": "2026-03-18T01:39:01.377Z",
+          "spread": 3.5,
+          "score": "68-66",
+          "period": 2,
+          "clock": "7:40"
+        },
+        {
+          "t": "2026-03-18T01:40:07.152Z",
+          "spread": 1.5,
+          "score": "68-66",
+          "period": 2,
+          "clock": "7:07"
+        },
+        {
+          "t": "2026-03-18T01:41:11.959Z",
+          "spread": 1.5,
+          "score": "68-66",
+          "period": 2,
+          "clock": "7:07"
+        },
+        {
+          "t": "2026-03-18T01:42:18.965Z",
+          "spread": 1.5,
+          "score": "68-66",
+          "period": 2,
+          "clock": "7:07"
+        },
+        {
+          "t": "2026-03-18T01:43:23.961Z",
+          "spread": 1.5,
+          "score": "68-68",
+          "period": 2,
+          "clock": "6:51"
+        },
+        {
+          "t": "2026-03-18T01:44:29.682Z",
+          "spread": 3.5,
+          "score": "68-68",
+          "period": 2,
+          "clock": "5:24"
+        },
+        {
+          "t": "2026-03-18T01:45:34.675Z",
+          "spread": 1.5,
+          "score": "68-68",
+          "period": 2,
+          "clock": "5:12"
         }
       ]
     },
@@ -1533,6 +956,83 @@
           "score": "70-68",
           "period": 3,
           "clock": "6:04"
+        },
+        {
+          "t": "2026-03-18T01:34:35.688Z",
+          "spread": -9.5,
+          "score": "70-68",
+          "period": 3,
+          "clock": "6:04"
+        },
+        {
+          "t": "2026-03-18T01:35:40.287Z",
+          "spread": -9.5,
+          "score": "71-68",
+          "period": 3,
+          "clock": "6:04"
+        },
+        {
+          "t": "2026-03-18T01:36:45.380Z",
+          "spread": -9.5,
+          "score": "75-68",
+          "period": 3,
+          "clock": "5:16"
+        },
+        {
+          "t": "2026-03-18T01:37:51.059Z",
+          "spread": -9.5,
+          "score": "77-71",
+          "period": 3,
+          "clock": "4:26"
+        },
+        {
+          "t": "2026-03-18T01:38:58.119Z",
+          "spread": -9.5,
+          "score": "77-74",
+          "period": 3,
+          "clock": "3:52"
+        },
+        {
+          "t": "2026-03-18T01:40:03.788Z",
+          "spread": -7.5,
+          "score": "77-76",
+          "period": 3,
+          "clock": "3:28"
+        },
+        {
+          "t": "2026-03-18T01:41:08.561Z",
+          "spread": -7.5,
+          "score": "77-76",
+          "period": 3,
+          "clock": "3:28"
+        },
+        {
+          "t": "2026-03-18T01:42:13.546Z",
+          "spread": -6.5,
+          "score": "77-76",
+          "period": 3,
+          "clock": "3:28"
+        },
+        {
+          "t": "2026-03-18T01:43:20.305Z",
+          "spread": -6.5,
+          "score": "77-76",
+          "period": 3,
+          "clock": "3:14"
+        },
+        {
+          "t": "2026-03-18T01:44:25.652Z",
+          "spread": -6.5,
+          "score": "79-76",
+          "period": 3,
+          "clock": "2:59"
+        },
+        {
+          "t": "2026-03-18T01:45:31.518Z",
+          "spread": -6.5,
+          "score": "79-80",
+          "period": 3,
+          "clock": "2:26"
         }
       ]
     },
@@ -1951,6 +1451,83 @@
           "score": "71-75",
           "period": 3,
           "clock": "6:42"
+        },
+        {
+          "t": "2026-03-18T01:34:35.688Z",
+          "spread": 4.5,
+          "score": "71-75",
+          "period": 3,
+          "clock": "6:31"
+        },
+        {
+          "t": "2026-03-18T01:35:40.287Z",
+          "spread": 4.5,
+          "score": "73-75",
+          "period": 3,
+          "clock": "5:46"
+        },
+        {
+          "t": "2026-03-18T01:36:45.380Z",
+          "spread": 4.5,
+          "score": "73-75",
+          "period": 3,
+          "clock": "5:17"
+        },
+        {
+          "t": "2026-03-18T01:37:51.059Z",
+          "spread": 2.5,
+          "score": "76-77",
+          "period": 3,
+          "clock": "4:53"
+        },
+        {
+          "t": "2026-03-18T01:38:58.119Z",
+          "spread": 2.5,
+          "score": "76-77",
+          "period": 3,
+          "clock": "4:53"
+        },
+        {
+          "t": "2026-03-18T01:40:03.788Z",
+          "spread": 2.5,
+          "score": "76-77",
+          "period": 3,
+          "clock": "4:53"
+        },
+        {
+          "t": "2026-03-18T01:41:08.561Z",
+          "spread": 2.5,
+          "score": "76-78",
+          "period": 3,
+          "clock": "4:53"
+        },
+        {
+          "t": "2026-03-18T01:42:13.546Z",
+          "spread": 3.5,
+          "score": "76-78",
+          "period": 3,
+          "clock": "4:28"
+        },
+        {
+          "t": "2026-03-18T01:43:20.305Z",
+          "spread": 3.5,
+          "score": "77-80",
+          "period": 3,
+          "clock": "4:10"
+        },
+        {
+          "t": "2026-03-18T01:44:25.652Z",
+          "spread": 3.5,
+          "score": "80-83",
+          "period": 3,
+          "clock": "2:36"
+        },
+        {
+          "t": "2026-03-18T01:45:31.518Z",
+          "spread": 3.5,
+          "score": "81-83",
+          "period": 3,
+          "clock": "2:36"
         }
       ],
       "alertSent": true
@@ -2054,7 +1631,86 @@
         "v8_procDiffOnly": 30,
         "v10_timeDecay": 67.9
       },
-      "alertSent": true
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-18T01:34:38.620Z",
+          "spread": -3.5,
+          "score": "24-25",
+          "period": 1,
+          "clock": "6:20"
+        },
+        {
+          "t": "2026-03-18T01:35:43.772Z",
+          "spread": -4.5,
+          "score": "24-25",
+          "period": 1,
+          "clock": "6:20"
+        },
+        {
+          "t": "2026-03-18T01:36:49.335Z",
+          "spread": -4.5,
+          "score": "24-25",
+          "period": 1,
+          "clock": "6:20"
+        },
+        {
+          "t": "2026-03-18T01:37:56.330Z",
+          "spread": -4.5,
+          "score": "24-25",
+          "period": 1,
+          "clock": "6:20"
+        },
+        {
+          "t": "2026-03-18T01:39:01.378Z",
+          "spread": -4.5,
+          "score": "24-26",
+          "period": 1,
+          "clock": "6:00"
+        },
+        {
+          "t": "2026-03-18T01:40:07.152Z",
+          "spread": -3.5,
+          "score": "26-26",
+          "period": 1,
+          "clock": "4:55"
+        },
+        {
+          "t": "2026-03-18T01:41:11.960Z",
+          "spread": -4.5,
+          "score": "28-28",
+          "period": 1,
+          "clock": "4:32"
+        },
+        {
+          "t": "2026-03-18T01:42:18.965Z",
+          "spread": -3.5,
+          "score": "30-30",
+          "period": 1,
+          "clock": "3:36"
+        },
+        {
+          "t": "2026-03-18T01:43:23.962Z",
+          "spread": -3.5,
+          "score": "32-32",
+          "period": 1,
+          "clock": "2:29"
+        },
+        {
+          "t": "2026-03-18T01:44:29.682Z",
+          "spread": -2.5,
+          "score": "32-32",
+          "period": 1,
+          "clock": "2:29"
+        },
+        {
+          "t": "2026-03-18T01:45:34.675Z",
+          "spread": -2.5,
+          "score": "32-32",
+          "period": 1,
+          "clock": "2:29"
+        }
+      ]
     }
   ],
   "resolved": [
@@ -84875,14 +84531,742 @@
       "finalScore": "MIA 106 - 136 CHA",
       "closingSpread": 27.5,
       "clv": -24
+    },
+    {
+      "id": 1773792318213,
+      "key": "401810849_sust_NY",
+      "gameId": "401810849",
+      "team": "NY",
+      "opponent": "IND",
+      "matchup": "IND @ NY",
+      "side": "SPREAD",
+      "spread": -13.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": 102,
+      "impliedP": 49.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-18T00:05:18.213Z",
+      "outcome": "W",
+      "payout": 510,
+      "mode": "nba",
+      "awayTeam": "IND",
+      "homeTeam": "NY",
+      "awayName": "Indiana Pacers",
+      "homeName": "New York Knicks",
+      "awayScore": 34,
+      "homeScore": 41,
+      "period": 2,
+      "clock": "11:46",
+      "periodLabel": "Q2",
+      "sustLeader": "NY",
+      "sustMargin": 7,
+      "betOnLeader": true,
+      "currentMargin": 7,
+      "cushion": -6.5,
+      "sustScore": 36.6,
+      "fragScore": -2.4,
+      "sustGap": 39,
+      "sustSignals": [
+        "Strong process (7.0/10)"
+      ],
+      "fragSignals": [
+        "3PT heavy (44% of pts)"
+      ],
+      "sustStats": {
+        "fg": "67",
+        "efg": "79",
+        "threePt": "67",
+        "twoPt": "53",
+        "proc": 7,
+        "star": 110,
+        "scq": 4
+      },
+      "fragStats": {
+        "fg": "70",
+        "efg": "83",
+        "threePt": "63",
+        "twoPt": "53",
+        "proc": 5,
+        "star": 0,
+        "scq": -15
+      },
+      "sustDetail": "NY +36.6 vs IND -2.4 (gap:39) | IND 34-41 NY | Q2 11:46 | FanDuel -13.5 (+102)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 40,
+        "v2_f1low": 43.3,
+        "v3_f1high": 29.4,
+        "v4_f3boost": 47,
+        "v5_noStar": 39
+      },
+      "v7": {
+        "aScq": -15,
+        "hScq": 4,
+        "aScore": -8.4,
+        "hScore": 38.2,
+        "gap": 46.6,
+        "f5contrib": 7.6
+      },
+      "altStructural": {
+        "v6_cushionBoost": 39,
+        "v7_marginWeighted": 27.3,
+        "v8_procDiffOnly": 20,
+        "v10_timeDecay": 39
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -13.5,
+        "detail": "NY -13.5",
+        "awaySpread": "+13.5",
+        "homeSpread": "-13.5",
+        "awaySpreadOdds": "-108",
+        "homeSpreadOdds": "-112",
+        "awayML": "+550",
+        "homeML": "-800",
+        "openSpread": "+15.5"
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-18T00:06:25.402Z",
+          "spread": -13.5,
+          "score": "36-41",
+          "period": 2,
+          "clock": "10:56"
+        },
+        {
+          "t": "2026-03-18T00:07:36.833Z",
+          "spread": -13.5,
+          "score": "39-43",
+          "period": 2,
+          "clock": "10:31"
+        },
+        {
+          "t": "2026-03-18T00:08:49.168Z",
+          "spread": -11.5,
+          "score": "42-43",
+          "period": 2,
+          "clock": "9:51"
+        },
+        {
+          "t": "2026-03-18T00:10:00.298Z",
+          "spread": -11.5,
+          "score": "42-43",
+          "period": 2,
+          "clock": "9:51"
+        },
+        {
+          "t": "2026-03-18T00:11:08.420Z",
+          "spread": -11.5,
+          "score": "42-43",
+          "period": 2,
+          "clock": "9:51"
+        },
+        {
+          "t": "2026-03-18T00:12:18.624Z",
+          "spread": -11.5,
+          "score": "41-43",
+          "period": 2,
+          "clock": "8:57"
+        },
+        {
+          "t": "2026-03-18T00:13:24.767Z",
+          "spread": -11.5,
+          "score": "44-43",
+          "period": 2,
+          "clock": "8:45"
+        },
+        {
+          "t": "2026-03-18T00:14:33.566Z",
+          "spread": -9.5,
+          "score": "44-47",
+          "period": 2,
+          "clock": "7:50"
+        },
+        {
+          "t": "2026-03-18T00:15:45.393Z",
+          "spread": -9.5,
+          "score": "50-49",
+          "period": 2,
+          "clock": "6:50"
+        },
+        {
+          "t": "2026-03-18T00:16:56.031Z",
+          "spread": -9.5,
+          "score": "50-49",
+          "period": 2,
+          "clock": "6:33"
+        },
+        {
+          "t": "2026-03-18T00:18:04.155Z",
+          "spread": -9.5,
+          "score": "50-49",
+          "period": 2,
+          "clock": "6:33"
+        },
+        {
+          "t": "2026-03-18T00:19:16.183Z",
+          "spread": -9.5,
+          "score": "50-49",
+          "period": 2,
+          "clock": "6:33"
+        },
+        {
+          "t": "2026-03-18T00:20:27.275Z",
+          "spread": -9.5,
+          "score": "52-51",
+          "period": 2,
+          "clock": "5:51"
+        },
+        {
+          "t": "2026-03-18T00:21:35.425Z",
+          "spread": -9.5,
+          "score": "57-51",
+          "period": 2,
+          "clock": "4:49"
+        },
+        {
+          "t": "2026-03-18T00:22:44.305Z",
+          "spread": -6.5,
+          "score": "57-53",
+          "period": 2,
+          "clock": "4:39"
+        },
+        {
+          "t": "2026-03-18T00:23:53.069Z",
+          "spread": -8.5,
+          "score": "60-57",
+          "period": 2,
+          "clock": "3:50"
+        },
+        {
+          "t": "2026-03-18T00:25:00.296Z",
+          "spread": -8.5,
+          "score": "60-57",
+          "period": 2,
+          "clock": "3:11"
+        },
+        {
+          "t": "2026-03-18T00:26:08.866Z",
+          "spread": -8.5,
+          "score": "62-60",
+          "period": 2,
+          "clock": "2:46"
+        },
+        {
+          "t": "2026-03-18T00:27:18.147Z",
+          "spread": -8.5,
+          "score": "62-61",
+          "period": 2,
+          "clock": "2:24"
+        },
+        {
+          "t": "2026-03-18T00:28:27.200Z",
+          "spread": -10.5,
+          "score": "62-61",
+          "period": 2,
+          "clock": "2:24"
+        },
+        {
+          "t": "2026-03-18T00:29:35.197Z",
+          "spread": -10.5,
+          "score": "62-63",
+          "period": 2,
+          "clock": "1:56"
+        },
+        {
+          "t": "2026-03-18T00:30:43.046Z",
+          "spread": -10.5,
+          "score": "62-66",
+          "period": 2,
+          "clock": "1:13"
+        },
+        {
+          "t": "2026-03-18T00:31:48.778Z",
+          "spread": -12.5,
+          "score": "64-69",
+          "period": 2,
+          "clock": "31.5"
+        },
+        {
+          "t": "2026-03-18T00:32:57.772Z",
+          "spread": -14.5,
+          "score": "64-72",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-18T00:34:05.981Z",
+          "spread": -14.5,
+          "score": "64-72",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-18T00:35:15.048Z",
+          "spread": -14.5,
+          "score": "64-72",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-18T00:36:23.776Z",
+          "spread": -14.5,
+          "score": "64-72",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-18T00:37:32.592Z",
+          "spread": -14.5,
+          "score": "64-72",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-18T00:38:37.920Z",
+          "spread": -14.5,
+          "score": "64-72",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-18T00:39:44.749Z",
+          "spread": -14.5,
+          "score": "64-72",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-18T00:40:51.868Z",
+          "spread": -14.5,
+          "score": "64-72",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-18T00:42:03.888Z",
+          "spread": -14.5,
+          "score": "64-72",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-18T00:43:14.518Z",
+          "spread": -14.5,
+          "score": "64-72",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-18T00:44:25.207Z",
+          "spread": -14.5,
+          "score": "64-72",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-18T00:45:33.358Z",
+          "spread": -14.5,
+          "score": "64-72",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-18T00:46:46.149Z",
+          "spread": -14.5,
+          "score": "64-72",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-18T00:48:00.232Z",
+          "spread": -14.5,
+          "score": "64-75",
+          "period": 3,
+          "clock": "11:40"
+        },
+        {
+          "t": "2026-03-18T00:49:13.632Z",
+          "spread": -14.5,
+          "score": "69-75",
+          "period": 3,
+          "clock": "10:57"
+        },
+        {
+          "t": "2026-03-18T00:50:22.166Z",
+          "spread": -12.5,
+          "score": "69-75",
+          "period": 3,
+          "clock": "10:57"
+        },
+        {
+          "t": "2026-03-18T00:51:32.497Z",
+          "spread": -12.5,
+          "score": "69-75",
+          "period": 3,
+          "clock": "10:57"
+        },
+        {
+          "t": "2026-03-18T00:52:41.629Z",
+          "spread": -12.5,
+          "score": "69-80",
+          "period": 3,
+          "clock": "10:03"
+        },
+        {
+          "t": "2026-03-18T00:53:50.362Z",
+          "spread": -15.5,
+          "score": "71-80",
+          "period": 3,
+          "clock": "9:48"
+        },
+        {
+          "t": "2026-03-18T00:55:00.783Z",
+          "spread": -15.5,
+          "score": "71-85",
+          "period": 3,
+          "clock": "9:11"
+        },
+        {
+          "t": "2026-03-18T00:56:09.782Z",
+          "spread": -17.5,
+          "score": "71-85",
+          "period": 3,
+          "clock": "9:11"
+        },
+        {
+          "t": "2026-03-18T00:57:19.604Z",
+          "spread": -17.5,
+          "score": "71-85",
+          "period": 3,
+          "clock": "9:11"
+        },
+        {
+          "t": "2026-03-18T00:58:28.292Z",
+          "spread": -17.5,
+          "score": "73-89",
+          "period": 3,
+          "clock": "8:04"
+        },
+        {
+          "t": "2026-03-18T00:59:37.703Z",
+          "spread": -17.5,
+          "score": "77-91",
+          "period": 3,
+          "clock": "7:18"
+        },
+        {
+          "t": "2026-03-18T01:00:46.784Z",
+          "spread": -17.5,
+          "score": "77-91",
+          "period": 3,
+          "clock": "7:18"
+        },
+        {
+          "t": "2026-03-18T01:01:58.510Z",
+          "spread": -17.5,
+          "score": "77-94",
+          "period": 3,
+          "clock": "6:29"
+        },
+        {
+          "t": "2026-03-18T01:03:07.840Z",
+          "spread": -19.5,
+          "score": "77-94",
+          "period": 3,
+          "clock": "6:07"
+        },
+        {
+          "t": "2026-03-18T01:04:16.498Z",
+          "spread": -19.5,
+          "score": "79-94",
+          "period": 3,
+          "clock": "5:13"
+        },
+        {
+          "t": "2026-03-18T01:05:25.129Z",
+          "spread": -18.5,
+          "score": "81-94",
+          "period": 3,
+          "clock": "4:30"
+        },
+        {
+          "t": "2026-03-18T01:06:33.558Z",
+          "spread": -16.5,
+          "score": "81-94",
+          "period": 3,
+          "clock": "4:30"
+        },
+        {
+          "t": "2026-03-18T01:07:42.790Z",
+          "spread": -16.5,
+          "score": "84-96",
+          "period": 3,
+          "clock": "3:55"
+        },
+        {
+          "t": "2026-03-18T01:08:52.117Z",
+          "spread": -14.5,
+          "score": "84-98",
+          "period": 3,
+          "clock": "3:45"
+        },
+        {
+          "t": "2026-03-18T01:09:59.494Z",
+          "spread": -16.5,
+          "score": "87-99",
+          "period": 3,
+          "clock": "3:25"
+        },
+        {
+          "t": "2026-03-18T01:11:08.068Z",
+          "spread": -12.5,
+          "score": "89-99",
+          "period": 3,
+          "clock": "2:32"
+        },
+        {
+          "t": "2026-03-18T01:12:14.973Z",
+          "spread": -14.5,
+          "score": "89-101",
+          "period": 3,
+          "clock": "2:15"
+        },
+        {
+          "t": "2026-03-18T01:13:22.224Z",
+          "spread": -14.5,
+          "score": "89-101",
+          "period": 3,
+          "clock": "1:34"
+        },
+        {
+          "t": "2026-03-18T01:14:29.702Z",
+          "spread": -15.5,
+          "score": "89-103",
+          "period": 3,
+          "clock": "59.8"
+        },
+        {
+          "t": "2026-03-18T01:15:37.077Z",
+          "spread": -16.5,
+          "score": "89-104",
+          "period": 3,
+          "clock": "44.6"
+        },
+        {
+          "t": "2026-03-18T01:16:47.166Z",
+          "spread": -16.5,
+          "score": "91-105",
+          "period": 3,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-18T01:17:53.353Z",
+          "spread": -16.5,
+          "score": "91-105",
+          "period": 3,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-18T01:19:00.543Z",
+          "spread": -16.5,
+          "score": "91-105",
+          "period": 3,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-18T01:20:08.333Z",
+          "spread": -16.5,
+          "score": "91-105",
+          "period": 4,
+          "clock": "11:44"
+        },
+        {
+          "t": "2026-03-18T01:21:15.388Z",
+          "spread": -16.5,
+          "score": "94-107",
+          "period": 4,
+          "clock": "10:53"
+        },
+        {
+          "t": "2026-03-18T01:22:23.338Z",
+          "spread": -14.5,
+          "score": "94-107",
+          "period": 4,
+          "clock": "10:24"
+        },
+        {
+          "t": "2026-03-18T01:23:30.137Z",
+          "spread": -14.5,
+          "score": "94-109",
+          "period": 4,
+          "clock": "9:52"
+        },
+        {
+          "t": "2026-03-18T01:24:35.033Z",
+          "spread": -16.5,
+          "score": "95-111",
+          "period": 4,
+          "clock": "9:14"
+        },
+        {
+          "t": "2026-03-18T01:25:40.601Z",
+          "spread": -16.5,
+          "score": "96-111",
+          "period": 4,
+          "clock": "9:14"
+        },
+        {
+          "t": "2026-03-18T01:26:46.352Z",
+          "spread": -18.5,
+          "score": "98-115",
+          "period": 4,
+          "clock": "7:56"
+        },
+        {
+          "t": "2026-03-18T01:27:54.779Z",
+          "spread": -19.5,
+          "score": "98-117",
+          "period": 4,
+          "clock": "7:37"
+        },
+        {
+          "t": "2026-03-18T01:29:02.955Z",
+          "spread": -19.5,
+          "score": "98-117",
+          "period": 4,
+          "clock": "7:07"
+        },
+        {
+          "t": "2026-03-18T01:30:12.461Z",
+          "spread": -19.5,
+          "score": "98-120",
+          "period": 4,
+          "clock": "6:06"
+        },
+        {
+          "t": "2026-03-18T01:31:18.068Z",
+          "spread": -22.5,
+          "score": "98-120",
+          "period": 4,
+          "clock": "5:45"
+        },
+        {
+          "t": "2026-03-18T01:32:25.078Z",
+          "spread": -22.5,
+          "score": "98-120",
+          "period": 4,
+          "clock": "5:45"
+        },
+        {
+          "t": "2026-03-18T01:33:29.887Z",
+          "spread": -22.5,
+          "score": "98-120",
+          "period": 4,
+          "clock": "5:45"
+        },
+        {
+          "t": "2026-03-18T01:34:35.688Z",
+          "spread": -25.5,
+          "score": "98-124",
+          "period": 4,
+          "clock": "4:59"
+        },
+        {
+          "t": "2026-03-18T01:35:40.287Z",
+          "spread": -24.5,
+          "score": "100-124",
+          "period": 4,
+          "clock": "4:46"
+        },
+        {
+          "t": "2026-03-18T01:36:45.380Z",
+          "spread": -24.5,
+          "score": "102-127",
+          "period": 4,
+          "clock": "4:06"
+        },
+        {
+          "t": "2026-03-18T01:37:51.059Z",
+          "spread": -25.5,
+          "score": "102-129",
+          "period": 4,
+          "clock": "3:21"
+        },
+        {
+          "t": "2026-03-18T01:38:58.119Z",
+          "spread": -26.5,
+          "score": "105-132",
+          "period": 4,
+          "clock": "2:54"
+        },
+        {
+          "t": "2026-03-18T01:40:03.788Z",
+          "spread": -26.5,
+          "score": "105-132",
+          "period": 4,
+          "clock": "2:54"
+        },
+        {
+          "t": "2026-03-18T01:41:08.561Z",
+          "spread": -26.5,
+          "score": "105-132",
+          "period": 4,
+          "clock": "2:54"
+        },
+        {
+          "t": "2026-03-18T01:42:13.546Z",
+          "spread": -25.5,
+          "score": "107-132",
+          "period": 4,
+          "clock": "2:23"
+        },
+        {
+          "t": "2026-03-18T01:43:20.305Z",
+          "spread": -24.5,
+          "score": "110-134",
+          "period": 4,
+          "clock": "1:16"
+        },
+        {
+          "t": "2026-03-18T01:44:25.652Z",
+          "spread": -25.5,
+          "score": "110-136",
+          "period": 4,
+          "clock": "19.5"
+        }
+      ],
+      "resolvedAt": "2026-03-18T01:45:34.004Z",
+      "finalScore": "IND 110 - 136 NY",
+      "closingSpread": -25.5,
+      "clv": 12
     }
   ],
   "meta": {
-    "brierScore": 0.2561,
+    "brierScore": 0.2557,
     "brierBaseline": 0.25,
-    "brierSkill": -0.0244,
-    "brierN": 125,
-    "winRate": 46.4,
-    "totalPL": -8797.33
+    "brierSkill": -0.0228,
+    "brierN": 126,
+    "winRate": 46.8,
+    "totalPL": -8287.33
   }
 }
