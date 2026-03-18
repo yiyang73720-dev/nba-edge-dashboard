@@ -506,6 +506,20 @@
           "score": "59-52",
           "period": 2,
           "clock": "10:52"
+        },
+        {
+          "t": "2026-03-18T02:38:12.681Z",
+          "spread": 3.5,
+          "score": "59-52",
+          "period": 2,
+          "clock": "10:20"
+        },
+        {
+          "t": "2026-03-18T02:39:19.061Z",
+          "spread": 5.5,
+          "score": "61-52",
+          "period": 2,
+          "clock": "9:45"
         }
       ]
     },
@@ -626,8 +640,122 @@
           "score": "46-22",
           "period": 2,
           "clock": "10:46"
+        },
+        {
+          "t": "2026-03-18T02:38:10.060Z",
+          "spread": -23.5,
+          "score": "46-22",
+          "period": 2,
+          "clock": "10:46"
+        },
+        {
+          "t": "2026-03-18T02:39:16.703Z",
+          "spread": -26.5,
+          "score": "46-22",
+          "period": 2,
+          "clock": "10:46"
         }
       ]
+    },
+    {
+      "id": 1773801560081,
+      "key": "401858193_sust_USA",
+      "gameId": "401858193",
+      "team": "USA",
+      "opponent": "AUB",
+      "matchup": "USA @ AUB",
+      "side": "SPREAD",
+      "spread": 8.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -114,
+      "impliedP": 53.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-18T02:39:20.081Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "USA",
+      "homeTeam": "AUB",
+      "awayName": "South Alabama Jaguars",
+      "homeName": "Auburn Tigers",
+      "awayScore": 32,
+      "homeScore": 25,
+      "period": 1,
+      "clock": "3:45",
+      "periodLabel": "H1",
+      "sustLeader": "USA",
+      "sustMargin": 7,
+      "betOnLeader": true,
+      "currentMargin": 7,
+      "cushion": 15.5,
+      "sustScore": 28.7,
+      "fragScore": -17.2,
+      "sustGap": 45.9,
+      "sustSignals": [],
+      "fragSignals": [
+        "3PT heavy (60% of pts)",
+        "Star erupting (199% pace)"
+      ],
+      "sustStats": {
+        "fg": "52",
+        "efg": "62",
+        "threePt": "56",
+        "twoPt": "50",
+        "proc": 6.6,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "29",
+        "efg": "38",
+        "threePt": "24",
+        "twoPt": "24",
+        "proc": 5,
+        "star": 199,
+        "scq": 0
+      },
+      "sustDetail": "USA +28.7 vs AUB -17.2 (gap:45.9) | USA 32-25 AUB | H1 3:45 | FanDuel +8.5 (-114)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 42,
+        "v2_f1low": 47.8,
+        "v3_f1high": 46.1,
+        "v4_f3boost": 52.3,
+        "v5_noStar": 35.9
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 28.7,
+        "hScore": -17.2,
+        "gap": 45.9,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 92.4,
+        "v7_marginWeighted": 32.1,
+        "v8_procDiffOnly": 16,
+        "v10_timeDecay": 45.9
+      },
+      "alertSent": true
     }
   ],
   "resolved": [
