@@ -1,5 +1,103 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1773875570176,
+      "key": "401856437_sust_LEH",
+      "gameId": "401856437",
+      "team": "LEH",
+      "opponent": "PV",
+      "matchup": "PV @ LEH",
+      "side": "SPREAD",
+      "spread": -6.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -106,
+      "impliedP": 51.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-18T23:12:50.176Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "PV",
+      "homeTeam": "LEH",
+      "awayName": "Prairie View A&M Panthers",
+      "homeName": "Lehigh Mountain Hawks",
+      "awayScore": 21,
+      "homeScore": 25,
+      "period": 1,
+      "clock": "3:58",
+      "periodLabel": "H1",
+      "sustLeader": "LEH",
+      "sustMargin": 4,
+      "betOnLeader": true,
+      "currentMargin": 4,
+      "cushion": -2.5,
+      "sustScore": 36,
+      "fragScore": -18.1,
+      "sustGap": 54.1,
+      "sustSignals": [],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "35",
+        "efg": "40",
+        "threePt": "25",
+        "twoPt": "48",
+        "proc": 6.8,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "38",
+        "efg": "45",
+        "threePt": "60",
+        "twoPt": "48",
+        "proc": 4.2,
+        "star": 86,
+        "scq": 0
+      },
+      "sustDetail": "LEH +36 vs PV -18.1 (gap:54.1) | PV 21-25 LEH | H1 3:58 | FanDuel -6.5 (-106)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 52,
+        "v2_f1low": 58.6,
+        "v3_f1high": 47.1,
+        "v4_f3boost": 64.5,
+        "v5_noStar": 54.1
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -18.1,
+        "hScore": 36,
+        "gap": 54.1,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 54.1,
+        "v7_marginWeighted": 21.6,
+        "v8_procDiffOnly": 26,
+        "v10_timeDecay": 54.1
+      },
+      "alertSent": true
+    }
+  ],
   "resolved": [
     {
       "id": 1773360760011,
