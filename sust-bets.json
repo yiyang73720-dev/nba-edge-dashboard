@@ -569,6 +569,20 @@
           "score": "70-61",
           "period": 2,
           "clock": "6:40"
+        },
+        {
+          "t": "2026-03-18T02:48:05.015Z",
+          "spread": 7.5,
+          "score": "70-61",
+          "period": 2,
+          "clock": "5:40"
+        },
+        {
+          "t": "2026-03-18T02:49:12.152Z",
+          "spread": 6.5,
+          "score": "70-61",
+          "period": 2,
+          "clock": "5:06"
         }
       ]
     },
@@ -752,6 +766,20 @@
           "score": "55-27",
           "period": 2,
           "clock": "7:41"
+        },
+        {
+          "t": "2026-03-18T02:48:01.497Z",
+          "spread": -29.5,
+          "score": "60-27",
+          "period": 2,
+          "clock": "6:42"
+        },
+        {
+          "t": "2026-03-18T02:49:08.723Z",
+          "spread": -31.5,
+          "score": "60-27",
+          "period": 2,
+          "clock": "6:18"
         }
       ]
     },
@@ -903,8 +931,147 @@
           "score": "36-29",
           "period": 1,
           "clock": "1:26"
+        },
+        {
+          "t": "2026-03-18T02:48:05.015Z",
+          "spread": 7.5,
+          "score": "36-30",
+          "period": 1,
+          "clock": "0:45"
+        },
+        {
+          "t": "2026-03-18T02:49:12.152Z",
+          "spread": 7.5,
+          "score": "36-30",
+          "period": 1,
+          "clock": "0:33"
         }
       ]
+    },
+    {
+      "id": 1773802016244,
+      "key": "401810852_sust_DEN",
+      "gameId": "401810852",
+      "team": "DEN",
+      "opponent": "PHI",
+      "matchup": "PHI @ DEN",
+      "side": "SPREAD",
+      "spread": -24.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -130,
+      "impliedP": 56.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-18T02:46:56.244Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "PHI",
+      "homeTeam": "DEN",
+      "awayName": "Philadelphia 76ers",
+      "homeName": "Denver Nuggets",
+      "awayScore": 24,
+      "homeScore": 45,
+      "period": 2,
+      "clock": "9:55",
+      "periodLabel": "Q2",
+      "sustLeader": "DEN",
+      "sustMargin": 21,
+      "betOnLeader": true,
+      "currentMargin": 21,
+      "cushion": -3.5,
+      "sustScore": 38.8,
+      "fragScore": 3.3,
+      "sustGap": 35.5,
+      "sustSignals": [],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "62",
+        "efg": "75",
+        "threePt": "70",
+        "twoPt": "40",
+        "proc": 6.6,
+        "star": 0,
+        "scq": 19
+      },
+      "fragStats": {
+        "fg": "31",
+        "efg": "34",
+        "threePt": "15",
+        "twoPt": "67",
+        "proc": 5,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "DEN +28.8 vs PHI 3.3 (gap:25.5) | PHI 24-45 DEN | Q2 9:55 | FanDuel -24.5 (-130)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 32,
+        "v2_f1low": 30.9,
+        "v3_f1high": 8.3,
+        "v4_f3boost": 31.9,
+        "v5_noStar": 25.5
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 19.2,
+        "aScore": 3.3,
+        "hScore": 36.5,
+        "gap": 33.2,
+        "f5contrib": 7.7
+      },
+      "altStructural": {
+        "v6_cushionBoost": 25.5,
+        "v7_marginWeighted": 53.6,
+        "v8_procDiffOnly": 16,
+        "v10_timeDecay": 25.5
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -15.5,
+        "detail": "DEN -15.5",
+        "awaySpread": "+15.5",
+        "homeSpread": "-15.5",
+        "awaySpreadOdds": "-115",
+        "homeSpreadOdds": "-105",
+        "awayML": "+750",
+        "homeML": "-1200",
+        "openSpread": "+15.5"
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-18T02:48:01.497Z",
+          "spread": -24.5,
+          "score": "24-45",
+          "period": 2,
+          "clock": "9:55"
+        },
+        {
+          "t": "2026-03-18T02:49:08.723Z",
+          "spread": -24.5,
+          "score": "24-45",
+          "period": 2,
+          "clock": "9:55"
+        }
+      ],
+      "alertSent": true
     }
   ],
   "resolved": [
