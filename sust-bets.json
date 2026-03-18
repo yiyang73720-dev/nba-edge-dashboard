@@ -334,6 +334,13 @@
           "score": "29-30",
           "period": 2,
           "clock": "18:46"
+        },
+        {
+          "t": "2026-03-18T23:50:25.892Z",
+          "spread": -2.5,
+          "score": "31-30",
+          "period": 2,
+          "clock": "18:22"
         }
       ]
     },
@@ -482,6 +489,121 @@
           "score": "32-44",
           "period": 2,
           "clock": "6:35"
+        },
+        {
+          "t": "2026-03-18T23:50:23.067Z",
+          "spread": 15.5,
+          "score": "32-44",
+          "period": 2,
+          "clock": "6:35"
+        }
+      ],
+      "alertSent": true
+    },
+    {
+      "id": 1773877759835,
+      "key": "401858344_sust_WAKE",
+      "gameId": "401858344",
+      "team": "WAKE",
+      "opponent": "NAVY",
+      "matchup": "NAVY @ WAKE",
+      "side": "SPREAD",
+      "spread": -10.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -122,
+      "impliedP": 55,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-18T23:49:19.835Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "NAVY",
+      "homeTeam": "WAKE",
+      "awayName": "Navy Midshipmen",
+      "homeName": "Wake Forest Demon Deacons",
+      "awayScore": 31,
+      "homeScore": 38,
+      "period": 1,
+      "clock": "1:45",
+      "periodLabel": "H1",
+      "sustLeader": "WAKE",
+      "sustMargin": 5,
+      "betOnLeader": true,
+      "currentMargin": 5,
+      "cushion": -3.5,
+      "sustScore": 36.1,
+      "fragScore": 1,
+      "sustGap": 35.1,
+      "sustSignals": [
+        "Low 3PT reliance (17%)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "40",
+        "efg": "44",
+        "threePt": "14",
+        "twoPt": "44",
+        "proc": 6.2,
+        "star": 123,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "46",
+        "efg": "50",
+        "threePt": "22",
+        "twoPt": "71",
+        "proc": 4.9,
+        "star": 122,
+        "scq": 0
+      },
+      "sustDetail": "WAKE +29.8 vs NAVY 3 (gap:26.8) | NAVY 31-36 WAKE | H1 1:45 | FanDuel -9.5 (-122)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 26,
+        "v2_f1low": 29.1,
+        "v3_f1high": 23,
+        "v4_f3boost": 32,
+        "v5_noStar": 26.8
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 3,
+        "hScore": 29.8,
+        "gap": 26.8,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 26.8,
+        "v7_marginWeighted": 13.4,
+        "v8_procDiffOnly": 13,
+        "v10_timeDecay": 26.8
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-18T23:50:25.893Z",
+          "spread": -10.5,
+          "score": "31-38",
+          "period": 1,
+          "clock": "1:45"
         }
       ],
       "alertSent": true
