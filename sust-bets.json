@@ -1039,6 +1039,27 @@
           "score": "37-56",
           "period": 2,
           "clock": "11:56"
+        },
+        {
+          "t": "2026-03-19T18:10:00.225Z",
+          "spread": -21.5,
+          "score": "37-56",
+          "period": 2,
+          "clock": "11:41"
+        },
+        {
+          "t": "2026-03-19T18:11:04.176Z",
+          "spread": -21.5,
+          "score": "37-56",
+          "period": 2,
+          "clock": "11:41"
+        },
+        {
+          "t": "2026-03-19T18:12:07.999Z",
+          "spread": -21.5,
+          "score": "37-56",
+          "period": 2,
+          "clock": "11:41"
         }
       ]
     },
@@ -1141,6 +1162,129 @@
         "v7_marginWeighted": 52.5,
         "v8_procDiffOnly": 13,
         "v10_timeDecay": 52.5
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-19T18:10:00.225Z",
+          "spread": 8.5,
+          "score": "20-30",
+          "period": 1,
+          "clock": "4:00"
+        },
+        {
+          "t": "2026-03-19T18:11:04.176Z",
+          "spread": 8.5,
+          "score": "20-30",
+          "period": 1,
+          "clock": "4:00"
+        },
+        {
+          "t": "2026-03-19T18:12:07.999Z",
+          "spread": 8.5,
+          "score": "20-30",
+          "period": 1,
+          "clock": "3:50"
+        }
+      ]
+    },
+    {
+      "id": 1773943928888,
+      "key": "401856480_sust_HPU",
+      "gameId": "401856480",
+      "team": "HPU",
+      "opponent": "WIS",
+      "matchup": "HPU @ WIS",
+      "side": "SPREAD",
+      "spread": 13.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -108,
+      "impliedP": 51.9,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-19T18:12:08.888Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "HPU",
+      "homeTeam": "WIS",
+      "awayName": "High Point Panthers",
+      "homeName": "Wisconsin Badgers",
+      "awayScore": 21,
+      "homeScore": 25,
+      "period": 1,
+      "clock": "9:19",
+      "periodLabel": "H1",
+      "sustLeader": "WIS",
+      "sustMargin": 4,
+      "betOnLeader": false,
+      "currentMargin": -4,
+      "cushion": 9.5,
+      "sustScore": 24.8,
+      "fragScore": -11.6,
+      "sustGap": 36.4,
+      "sustSignals": [],
+      "fragSignals": [
+        "3PT heavy (48% of pts)",
+        "Star erupting (197% pace)"
+      ],
+      "sustStats": {
+        "fg": "36",
+        "efg": "41",
+        "threePt": "15",
+        "twoPt": "67",
+        "proc": 6.2,
+        "star": 93,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "47",
+        "efg": "58",
+        "threePt": "44",
+        "twoPt": "40",
+        "proc": 5.1,
+        "star": 197,
+        "scq": 0
+      },
+      "sustDetail": "HPU +24.8 vs WIS -11.6 (gap:36.4) | HPU 21-25 WIS | H1 9:19 | FanDuel +13.5 (-108)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 32,
+        "v2_f1low": 37.1,
+        "v3_f1high": 39.3,
+        "v4_f3boost": 40.8,
+        "v5_noStar": 26.4
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 24.8,
+        "hScore": -11.6,
+        "gap": 36.4,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 64.9,
+        "v7_marginWeighted": 14.6,
+        "v8_procDiffOnly": 11,
+        "v10_timeDecay": 36.4
       },
       "alertSent": true
     }
