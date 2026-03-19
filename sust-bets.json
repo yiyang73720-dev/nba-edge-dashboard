@@ -600,6 +600,20 @@
           "score": "78-97",
           "period": 4,
           "clock": "9:16"
+        },
+        {
+          "t": "2026-03-19T01:03:47.971Z",
+          "spread": 18.5,
+          "score": "78-97",
+          "period": 4,
+          "clock": "9:16"
+        },
+        {
+          "t": "2026-03-19T01:04:58.665Z",
+          "spread": 18.5,
+          "score": "78-95",
+          "period": 4,
+          "clock": "9:16"
         }
       ],
       "alertSent": true
@@ -1000,6 +1014,20 @@
           "score": "89-72",
           "period": 3,
           "clock": "7:40"
+        },
+        {
+          "t": "2026-03-19T01:03:47.971Z",
+          "spread": -18.5,
+          "score": "91-72",
+          "period": 3,
+          "clock": "7:25"
+        },
+        {
+          "t": "2026-03-19T01:04:58.665Z",
+          "spread": -18.5,
+          "score": "91-73",
+          "period": 3,
+          "clock": "7:05"
         }
       ],
       "alertSent": true
@@ -1293,6 +1321,20 @@
           "score": "47-34",
           "period": 2,
           "clock": "18:43"
+        },
+        {
+          "t": "2026-03-19T01:03:56.645Z",
+          "spread": -11.5,
+          "score": "50-34",
+          "period": 2,
+          "clock": "18:16"
+        },
+        {
+          "t": "2026-03-19T01:05:06.389Z",
+          "spread": -11.5,
+          "score": "52-36",
+          "period": 2,
+          "clock": "17:37"
         }
       ]
     },
@@ -1568,6 +1610,20 @@
           "score": "73-39",
           "period": 3,
           "clock": "7:10"
+        },
+        {
+          "t": "2026-03-19T01:03:47.971Z",
+          "spread": -39.5,
+          "score": "75-39",
+          "period": 3,
+          "clock": "6:40"
+        },
+        {
+          "t": "2026-03-19T01:04:58.665Z",
+          "spread": -39.5,
+          "score": "75-39",
+          "period": 3,
+          "clock": "6:40"
         }
       ]
     },
@@ -1823,6 +1879,20 @@
           "score": "25-45",
           "period": 2,
           "clock": "20:00"
+        },
+        {
+          "t": "2026-03-19T01:03:56.646Z",
+          "spread": -15.5,
+          "score": "28-45",
+          "period": 2,
+          "clock": "18:38"
+        },
+        {
+          "t": "2026-03-19T01:05:06.390Z",
+          "spread": -14.5,
+          "score": "29-45",
+          "period": 2,
+          "clock": "17:54"
         }
       ]
     },
@@ -2086,6 +2156,20 @@
           "score": "54-69",
           "period": 2,
           "clock": "53.9"
+        },
+        {
+          "t": "2026-03-19T01:03:47.971Z",
+          "spread": -20.5,
+          "score": "56-72",
+          "period": 2,
+          "clock": "9.9"
+        },
+        {
+          "t": "2026-03-19T01:04:58.665Z",
+          "spread": -20.5,
+          "score": "58-72",
+          "period": 2,
+          "clock": "0.0"
         }
       ]
     },
@@ -2334,8 +2418,133 @@
           "score": "62-41",
           "period": 2,
           "clock": "3:11"
+        },
+        {
+          "t": "2026-03-19T01:03:47.971Z",
+          "spread": -15.5,
+          "score": "64-43",
+          "period": 2,
+          "clock": "2:28"
+        },
+        {
+          "t": "2026-03-19T01:04:58.665Z",
+          "spread": -15.5,
+          "score": "65-43",
+          "period": 2,
+          "clock": "1:49"
         }
       ]
+    },
+    {
+      "id": 1773882304351,
+      "key": "401810861_sust_ATL",
+      "gameId": "401810861",
+      "team": "ATL",
+      "opponent": "DAL",
+      "matchup": "ATL @ DAL",
+      "side": "SPREAD",
+      "spread": -11.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": 106,
+      "impliedP": 48.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-19T01:05:04.351Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "ATL",
+      "homeTeam": "DAL",
+      "awayName": "Atlanta Hawks",
+      "homeName": "Dallas Mavericks",
+      "awayScore": 42,
+      "homeScore": 30,
+      "period": 2,
+      "clock": "11:16",
+      "periodLabel": "Q2",
+      "sustLeader": "ATL",
+      "sustMargin": 12,
+      "betOnLeader": true,
+      "currentMargin": 12,
+      "cushion": 0.5,
+      "sustScore": 41.3,
+      "fragScore": -6.2,
+      "sustGap": 47.5,
+      "sustSignals": [
+        "Strong process (7.2/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "59",
+        "efg": "69",
+        "threePt": "43",
+        "twoPt": "55",
+        "proc": 7.2,
+        "star": 0,
+        "scq": 17
+      },
+      "fragStats": {
+        "fg": "46",
+        "efg": "52",
+        "threePt": "27",
+        "twoPt": "67",
+        "proc": 4.6,
+        "star": 0,
+        "scq": 4
+      },
+      "sustDetail": "ATL +41.3 vs DAL -6.2 (gap:47.5) | ATL 42-30 DAL | Q2 11:16 | FanDuel -11.5 (+106)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": false,
+        "g10_ncaa": false,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 52,
+        "v2_f1low": 54.2,
+        "v3_f1high": 29.6,
+        "v4_f3boost": 57.9,
+        "v5_noStar": 47.5
+      },
+      "v7": {
+        "aScq": 16.7,
+        "hScq": 3.6,
+        "aScore": 48,
+        "hScore": -4.8,
+        "gap": 52.7,
+        "f5contrib": 5.2
+      },
+      "altStructural": {
+        "v6_cushionBoost": 49,
+        "v7_marginWeighted": 57,
+        "v8_procDiffOnly": 26,
+        "v10_timeDecay": 47.5
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": 8.5,
+        "detail": "ATL -8.5",
+        "awaySpread": "-8.5",
+        "homeSpread": "+8.5",
+        "awaySpreadOdds": "-102",
+        "homeSpreadOdds": "-118",
+        "awayML": "-325",
+        "homeML": "+260",
+        "openSpread": "-9.5"
+      },
+      "alertSent": true
     }
   ],
   "resolved": [
