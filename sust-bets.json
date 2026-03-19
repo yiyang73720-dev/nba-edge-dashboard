@@ -1,5 +1,105 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1773950152009,
+      "key": "401856488_sust_VAN",
+      "gameId": "401856488",
+      "team": "VAN",
+      "opponent": "MCN",
+      "matchup": "MCN @ VAN",
+      "side": "SPREAD",
+      "spread": -7.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -108,
+      "impliedP": 51.9,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-19T19:55:52.009Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "MCN",
+      "homeTeam": "VAN",
+      "awayName": "McNeese Cowboys",
+      "homeName": "Vanderbilt Commodores",
+      "awayScore": 30,
+      "homeScore": 30,
+      "period": 1,
+      "clock": "3:24",
+      "periodLabel": "H1",
+      "sustLeader": "TIE",
+      "sustMargin": 0,
+      "betOnLeader": false,
+      "currentMargin": 0,
+      "cushion": -7.5,
+      "sustScore": 34.8,
+      "fragScore": -5.2,
+      "sustGap": 40,
+      "sustSignals": [
+        "Star cold (29% pace)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "50",
+        "efg": "58",
+        "threePt": "36",
+        "twoPt": "53",
+        "proc": 6.3,
+        "star": 29,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "42",
+        "efg": "48",
+        "threePt": "44",
+        "twoPt": "60",
+        "proc": 4.8,
+        "star": 96,
+        "scq": 0
+      },
+      "sustDetail": "VAN +34.8 vs MCN -5.2 (gap:40) | MCN 30-30 VAN | H1 3:24 | FanDuel -7.5 (-108)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 40,
+        "v2_f1low": 43,
+        "v3_f1high": 34,
+        "v4_f3boost": 46,
+        "v5_noStar": 30
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -5.2,
+        "hScore": 34.8,
+        "gap": 40,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 40,
+        "v7_marginWeighted": 4,
+        "v8_procDiffOnly": 15,
+        "v10_timeDecay": 40
+      },
+      "alertSent": true
+    }
+  ],
   "resolved": [
     {
       "id": 1773360760011,
