@@ -1,5 +1,106 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1773962702529,
+      "key": "401856490_sust_UNC",
+      "gameId": "401856490",
+      "team": "UNC",
+      "opponent": "VCU",
+      "matchup": "VCU @ UNC",
+      "side": "SPREAD",
+      "spread": -4.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -118,
+      "impliedP": 54.1,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-19T23:25:02.529Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "VCU",
+      "homeTeam": "UNC",
+      "awayName": "VCU Rams",
+      "homeName": "North Carolina Tar Heels",
+      "awayScore": 20,
+      "homeScore": 26,
+      "period": 1,
+      "clock": "6:21",
+      "periodLabel": "H1",
+      "sustLeader": "UNC",
+      "sustMargin": 6,
+      "betOnLeader": true,
+      "currentMargin": 6,
+      "cushion": 1.5,
+      "sustScore": 69.9,
+      "fragScore": -27.2,
+      "sustGap": 97.10000000000001,
+      "sustSignals": [
+        "Low 3PT reliance (23%)",
+        "Strong process (8.3/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "43",
+        "efg": "48",
+        "threePt": "22",
+        "twoPt": "62",
+        "proc": 8.3,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "30",
+        "efg": "35",
+        "threePt": "22",
+        "twoPt": "56",
+        "proc": 3.6,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "UNC +69.9 vs VCU -27.2 (gap:97.10000000000001) | VCU 20-26 UNC | H1 6:21 | FanDuel -4.5 (-118)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 94,
+        "v2_f1low": 105.5,
+        "v3_f1high": 83.4,
+        "v4_f3boost": 115.9,
+        "v5_noStar": 97.1
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -27.2,
+        "hScore": 69.9,
+        "gap": 97.1,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 101.6,
+        "v7_marginWeighted": 58.3,
+        "v8_procDiffOnly": 47,
+        "v10_timeDecay": 97.1
+      },
+      "alertSent": true
+    }
+  ],
   "resolved": [
     {
       "id": 1773360760011,
