@@ -642,6 +642,20 @@
           "score": "64-53",
           "period": 2,
           "clock": "0:38"
+        },
+        {
+          "t": "2026-03-19T00:39:19.970Z",
+          "spread": 10.5,
+          "score": "64-53",
+          "period": 2,
+          "clock": "0:20"
+        },
+        {
+          "t": "2026-03-19T00:40:31.360Z",
+          "spread": 10.5,
+          "score": "66-53",
+          "period": 2,
+          "clock": "0:19"
         }
       ]
     },
@@ -1098,6 +1112,20 @@
           "score": "60-72",
           "period": 3,
           "clock": "6:38"
+        },
+        {
+          "t": "2026-03-19T00:39:14.048Z",
+          "spread": 12.5,
+          "score": "62-74",
+          "period": 3,
+          "clock": "5:49"
+        },
+        {
+          "t": "2026-03-19T00:40:23.499Z",
+          "spread": 12.5,
+          "score": "64-76",
+          "period": 3,
+          "clock": "5:30"
         }
       ],
       "alertSent": true
@@ -1507,6 +1535,20 @@
           "score": "54-63",
           "period": 2,
           "clock": "8:35"
+        },
+        {
+          "t": "2026-03-19T00:39:19.971Z",
+          "spread": -11.5,
+          "score": "54-63",
+          "period": 2,
+          "clock": "8:12"
+        },
+        {
+          "t": "2026-03-19T00:40:31.360Z",
+          "spread": -11.5,
+          "score": "54-63",
+          "period": 2,
+          "clock": "8:12"
         }
       ],
       "alertSent": true
@@ -1760,6 +1802,20 @@
           "score": "79-62",
           "period": 2,
           "clock": "0.0"
+        },
+        {
+          "t": "2026-03-19T00:39:14.048Z",
+          "spread": -20.5,
+          "score": "79-62",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-19T00:40:23.499Z",
+          "spread": -20.5,
+          "score": "79-62",
+          "period": 2,
+          "clock": "0.0"
         }
       ],
       "alertSent": true
@@ -1906,6 +1962,20 @@
           "score": "34-21",
           "period": 1,
           "clock": "3:26"
+        },
+        {
+          "t": "2026-03-19T00:39:19.971Z",
+          "spread": -6.5,
+          "score": "34-26",
+          "period": 1,
+          "clock": "2:35"
+        },
+        {
+          "t": "2026-03-19T00:40:31.360Z",
+          "spread": -6.5,
+          "score": "37-27",
+          "period": 1,
+          "clock": "2:10"
         }
       ]
     },
@@ -2034,6 +2104,20 @@
           "score": "59-22",
           "period": 2,
           "clock": "55.3"
+        },
+        {
+          "t": "2026-03-19T00:39:14.048Z",
+          "spread": -42.5,
+          "score": "59-24",
+          "period": 2,
+          "clock": "34.3"
+        },
+        {
+          "t": "2026-03-19T00:40:23.499Z",
+          "spread": -42.5,
+          "score": "60-24",
+          "period": 2,
+          "clock": "0.0"
         }
       ]
     },
@@ -2138,6 +2222,20 @@
       "spreadHistory": [
         {
           "t": "2026-03-19T00:38:10.514Z",
+          "spread": -14.5,
+          "score": "21-38",
+          "period": 1,
+          "clock": "3:52"
+        },
+        {
+          "t": "2026-03-19T00:39:19.971Z",
+          "spread": -14.5,
+          "score": "21-38",
+          "period": 1,
+          "clock": "3:52"
+        },
+        {
+          "t": "2026-03-19T00:40:31.360Z",
           "spread": -14.5,
           "score": "21-38",
           "period": 1,
@@ -2256,6 +2354,135 @@
         "awayML": "+550",
         "homeML": "-800",
         "openSpread": "+12.5"
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-19T00:39:14.048Z",
+          "spread": -16.5,
+          "score": "34-43",
+          "period": 2,
+          "clock": "11:23"
+        },
+        {
+          "t": "2026-03-19T00:40:23.499Z",
+          "spread": -14.5,
+          "score": "37-43",
+          "period": 2,
+          "clock": "10:25"
+        }
+      ]
+    },
+    {
+      "id": 1773880827070,
+      "key": "401810857_sust_TOR",
+      "gameId": "401810857",
+      "team": "TOR",
+      "opponent": "CHI",
+      "matchup": "TOR @ CHI",
+      "side": "SPREAD",
+      "spread": -12.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": 104,
+      "impliedP": 49,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-19T00:40:27.070Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "TOR",
+      "homeTeam": "CHI",
+      "awayName": "Toronto Raptors",
+      "homeName": "Chicago Bulls",
+      "awayScore": 32,
+      "homeScore": 21,
+      "period": 2,
+      "clock": "11:28",
+      "periodLabel": "Q2",
+      "sustLeader": "TOR",
+      "sustMargin": 11,
+      "betOnLeader": true,
+      "currentMargin": 11,
+      "cushion": -1.5,
+      "sustScore": 49.6,
+      "fragScore": -22.7,
+      "sustGap": 72.3,
+      "sustSignals": [
+        "Strong process (7.5/10)"
+      ],
+      "fragSignals": [
+        "3PT heavy (45% of pts)"
+      ],
+      "sustStats": {
+        "fg": "54",
+        "efg": "63",
+        "threePt": "44",
+        "twoPt": "56",
+        "proc": 7.5,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "37",
+        "efg": "45",
+        "threePt": "38",
+        "twoPt": "40",
+        "proc": 4,
+        "star": 0,
+        "scq": 26
+      },
+      "sustDetail": "TOR +49.6 vs CHI -22.7 (gap:72.3) | TOR 32-21 CHI | Q2 11:28 | FanDuel -12.5 (+104)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": false,
+        "g10_ncaa": false,
+        "g11_bigMargin": true,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 70,
+        "v2_f1low": 78.5,
+        "v3_f1high": 62,
+        "v4_f3boost": 86.3,
+        "v5_noStar": 72.3
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 26.3,
+        "aScore": 49.6,
+        "hScore": -12.2,
+        "gap": 61.8,
+        "f5contrib": 10.5
+      },
+      "altStructural": {
+        "v6_cushionBoost": 72.3,
+        "v7_marginWeighted": 79.5,
+        "v8_procDiffOnly": 35,
+        "v10_timeDecay": 72.3
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": 7.5,
+        "detail": "TOR -7.5",
+        "awaySpread": "-7.5",
+        "homeSpread": "+7.5",
+        "awaySpreadOdds": "-108",
+        "homeSpreadOdds": "-112",
+        "awayML": "-290",
+        "homeML": "+235",
+        "openSpread": "-7.5"
       },
       "alertSent": true
     }
