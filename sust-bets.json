@@ -635,6 +635,13 @@
           "score": "64-53",
           "period": 2,
           "clock": "0:46"
+        },
+        {
+          "t": "2026-03-19T00:38:10.513Z",
+          "spread": 10.5,
+          "score": "64-53",
+          "period": 2,
+          "clock": "0:38"
         }
       ]
     },
@@ -1084,6 +1091,13 @@
           "score": "60-72",
           "period": 3,
           "clock": "7:01"
+        },
+        {
+          "t": "2026-03-19T00:38:04.737Z",
+          "spread": 12.5,
+          "score": "60-72",
+          "period": 3,
+          "clock": "6:38"
         }
       ],
       "alertSent": true
@@ -1486,6 +1500,13 @@
           "score": "52-58",
           "period": 2,
           "clock": "9:11"
+        },
+        {
+          "t": "2026-03-19T00:38:10.514Z",
+          "spread": -10.5,
+          "score": "54-63",
+          "period": 2,
+          "clock": "8:35"
         }
       ],
       "alertSent": true
@@ -1732,6 +1753,13 @@
           "score": "79-60",
           "period": 2,
           "clock": "27.9"
+        },
+        {
+          "t": "2026-03-19T00:38:04.737Z",
+          "spread": -20.5,
+          "score": "79-62",
+          "period": 2,
+          "clock": "0.0"
         }
       ],
       "alertSent": true
@@ -1871,6 +1899,13 @@
           "score": "34-21",
           "period": 1,
           "clock": "3:54"
+        },
+        {
+          "t": "2026-03-19T00:38:10.514Z",
+          "spread": -8.5,
+          "score": "34-21",
+          "period": 1,
+          "clock": "3:26"
         }
       ]
     },
@@ -1992,6 +2027,13 @@
           "score": "57-22",
           "period": 2,
           "clock": "55.3"
+        },
+        {
+          "t": "2026-03-19T00:38:04.737Z",
+          "spread": -42.5,
+          "score": "59-22",
+          "period": 2,
+          "clock": "55.3"
         }
       ]
     },
@@ -2091,6 +2133,129 @@
         "v7_marginWeighted": 82.9,
         "v8_procDiffOnly": 38,
         "v10_timeDecay": 59.2
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-19T00:38:10.514Z",
+          "spread": -14.5,
+          "score": "21-38",
+          "period": 1,
+          "clock": "3:52"
+        }
+      ]
+    },
+    {
+      "id": 1773880688742,
+      "key": "401810859_sust_MIN",
+      "gameId": "401810859",
+      "team": "MIN",
+      "opponent": "UTAH",
+      "matchup": "UTAH @ MIN",
+      "side": "SPREAD",
+      "spread": -16.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -146,
+      "impliedP": 59.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-19T00:38:08.742Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "UTAH",
+      "homeTeam": "MIN",
+      "awayName": "Utah Jazz",
+      "homeName": "Minnesota Timberwolves",
+      "awayScore": 31,
+      "homeScore": 43,
+      "period": 2,
+      "clock": "12:00",
+      "periodLabel": "Q2",
+      "sustLeader": "MIN",
+      "sustMargin": 12,
+      "betOnLeader": true,
+      "currentMargin": 12,
+      "cushion": -4.5,
+      "sustScore": 66.5,
+      "fragScore": -25.7,
+      "sustGap": 92.2,
+      "sustSignals": [
+        "Low 3PT reliance (21%)",
+        "Strong process (8.6/10)"
+      ],
+      "fragSignals": [
+        "3PT heavy (48% of pts)"
+      ],
+      "sustStats": {
+        "fg": "69",
+        "efg": "75",
+        "threePt": "43",
+        "twoPt": "70",
+        "proc": 8.6,
+        "star": 239,
+        "scq": 12
+      },
+      "fragStats": {
+        "fg": "41",
+        "efg": "50",
+        "threePt": "36",
+        "twoPt": "39",
+        "proc": 3.9,
+        "star": 0,
+        "scq": 25
+      },
+      "sustDetail": "MIN +66.5 vs UTAH -25.7 (gap:92.2) | UTAH 31-43 MIN | Q2 12:00 | FanDuel -16.5 (-146)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": true,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 84,
+        "v2_f1low": 98.9,
+        "v3_f1high": 87.2,
+        "v4_f3boost": 111,
+        "v5_noStar": 102.2
+      },
+      "v7": {
+        "aScq": 25,
+        "hScq": 11.5,
+        "aScore": -15.7,
+        "hScore": 71.1,
+        "gap": 86.8,
+        "f5contrib": 5.4
+      },
+      "altStructural": {
+        "v6_cushionBoost": 92.2,
+        "v7_marginWeighted": 110.6,
+        "v8_procDiffOnly": 47,
+        "v10_timeDecay": 92.2
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -12.5,
+        "detail": "MIN -12.5",
+        "awaySpread": "+12.5",
+        "homeSpread": "-12.5",
+        "awaySpreadOdds": "-105",
+        "homeSpreadOdds": "-115",
+        "awayML": "+550",
+        "homeML": "-800",
+        "openSpread": "+12.5"
       },
       "alertSent": true
     }
