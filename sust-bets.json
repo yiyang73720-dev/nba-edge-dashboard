@@ -197,8 +197,156 @@
           "score": "28-39",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-19T23:41:20.215Z",
+          "spread": -8.5,
+          "score": "28-39",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-19T23:42:24.194Z",
+          "spread": -8.5,
+          "score": "28-39",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-19T23:43:30.041Z",
+          "spread": -8.5,
+          "score": "28-39",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-19T23:44:35.538Z",
+          "spread": -8.5,
+          "score": "28-39",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-19T23:45:41.884Z",
+          "spread": -8.5,
+          "score": "28-39",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
+    },
+    {
+      "id": 1773963941090,
+      "key": "401810864_sust_DET",
+      "gameId": "401810864",
+      "team": "DET",
+      "opponent": "WSH",
+      "matchup": "DET @ WSH",
+      "side": "SPREAD",
+      "spread": -26.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -122,
+      "impliedP": 55,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-19T23:45:41.090Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "DET",
+      "homeTeam": "WSH",
+      "awayName": "Detroit Pistons",
+      "homeName": "Washington Wizards",
+      "awayScore": 42,
+      "homeScore": 21,
+      "period": 2,
+      "clock": "9:31",
+      "periodLabel": "Q2",
+      "sustLeader": "DET",
+      "sustMargin": 21,
+      "betOnLeader": true,
+      "currentMargin": 21,
+      "cushion": -5.5,
+      "sustScore": 78.1,
+      "fragScore": -68.7,
+      "sustGap": 146.8,
+      "sustSignals": [
+        "Strong process (8.9/10)"
+      ],
+      "fragSignals": [
+        "Weak process (1.5/10)"
+      ],
+      "sustStats": {
+        "fg": "58",
+        "efg": "67",
+        "threePt": "56",
+        "twoPt": "48",
+        "proc": 8.9,
+        "star": 0,
+        "scq": 12
+      },
+      "fragStats": {
+        "fg": "32",
+        "efg": "36",
+        "threePt": "18",
+        "twoPt": "53",
+        "proc": 1.5,
+        "star": 0,
+        "scq": -35
+      },
+      "sustDetail": "DET +78.1 vs WSH -68.7 (gap:146.8) | DET 42-21 WSH | Q2 9:31 | FanDuel -26.5 (-122)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": false,
+        "g10_ncaa": false,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 148,
+        "v2_f1low": 162,
+        "v3_f1high": 115.1,
+        "v4_f3boost": 176.4,
+        "v5_noStar": 146.8
+      },
+      "v7": {
+        "aScq": 11.5,
+        "hScq": -34.8,
+        "aScore": 82.7,
+        "hScore": -82.6,
+        "gap": 165.3,
+        "f5contrib": 18.5
+      },
+      "altStructural": {
+        "v6_cushionBoost": 146.8,
+        "v7_marginWeighted": 308.3,
+        "v8_procDiffOnly": 74,
+        "v10_timeDecay": 146.8
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": 14.5,
+        "detail": "DET -14.5",
+        "awaySpread": "-14.5",
+        "homeSpread": "+14.5",
+        "awaySpreadOdds": "-108",
+        "homeSpreadOdds": "-112",
+        "awayML": "-1200",
+        "homeML": "+750",
+        "openSpread": "-16.5"
+      },
+      "alertSent": true
     }
   ],
   "resolved": [
