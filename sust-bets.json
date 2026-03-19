@@ -628,6 +628,13 @@
           "score": "64-53",
           "period": 2,
           "clock": "0:45"
+        },
+        {
+          "t": "2026-03-19T00:37:01.068Z",
+          "spread": 10.5,
+          "score": "64-53",
+          "period": 2,
+          "clock": "0:46"
         }
       ]
     },
@@ -1070,6 +1077,13 @@
           "score": "58-69",
           "period": 3,
           "clock": "8:13"
+        },
+        {
+          "t": "2026-03-19T00:36:54.219Z",
+          "spread": 13.5,
+          "score": "60-72",
+          "period": 3,
+          "clock": "7:01"
         }
       ],
       "alertSent": true
@@ -1465,6 +1479,259 @@
           "score": "52-58",
           "period": 2,
           "clock": "9:50"
+        },
+        {
+          "t": "2026-03-19T00:37:01.068Z",
+          "spread": -7.5,
+          "score": "52-58",
+          "period": 2,
+          "clock": "9:11"
+        }
+      ],
+      "alertSent": true
+    },
+    {
+      "id": 1773879332082,
+      "key": "401810856_sust_POR",
+      "gameId": "401810856",
+      "team": "POR",
+      "opponent": "IND",
+      "matchup": "POR @ IND",
+      "side": "SPREAD",
+      "spread": -20.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -125,
+      "impliedP": 55.6,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-19T00:15:32.082Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "POR",
+      "homeTeam": "IND",
+      "awayName": "Portland Trail Blazers",
+      "homeName": "Indiana Pacers",
+      "awayScore": 79,
+      "homeScore": 60,
+      "period": 2,
+      "clock": "27.9",
+      "periodLabel": "Q2",
+      "sustLeader": "POR",
+      "sustMargin": 7,
+      "betOnLeader": true,
+      "currentMargin": 7,
+      "cushion": -1.5,
+      "sustScore": 38.5,
+      "fragScore": -3.2,
+      "sustGap": 41.7,
+      "sustSignals": [
+        "Low 3PT reliance (20%)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "50",
+        "efg": "55",
+        "threePt": "30",
+        "twoPt": "58",
+        "proc": 6.2,
+        "star": 0,
+        "scq": 9
+      },
+      "fragStats": {
+        "fg": "52",
+        "efg": "58",
+        "threePt": "40",
+        "twoPt": "63",
+        "proc": 5,
+        "star": 0,
+        "scq": 16
+      },
+      "sustDetail": "POR +28.8 vs IND 1.3 (gap:27.5) | POR 47-40 IND | Q2 9:25 | FanDuel -14.5 (-125)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 24,
+        "v2_f1low": 28.7,
+        "v3_f1high": 28.5,
+        "v4_f3boost": 32.3,
+        "v5_noStar": 27.5
+      },
+      "v7": {
+        "aScq": 9.1,
+        "hScq": 15.6,
+        "aScore": 32.4,
+        "hScore": 7.6,
+        "gap": 24.9,
+        "f5contrib": 2.6
+      },
+      "altStructural": {
+        "v6_cushionBoost": 27.5,
+        "v7_marginWeighted": 19.3,
+        "v8_procDiffOnly": 12,
+        "v10_timeDecay": 27.5
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": 11.5,
+        "detail": "POR -11.5",
+        "awaySpread": "-11.5",
+        "homeSpread": "+11.5",
+        "awaySpreadOdds": "-112",
+        "homeSpreadOdds": "-108",
+        "awayML": "-675",
+        "homeML": "+490",
+        "openSpread": "-10.5"
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-19T00:16:38.942Z",
+          "spread": -14.5,
+          "score": "48-41",
+          "period": 2,
+          "clock": "9:08"
+        },
+        {
+          "t": "2026-03-19T00:17:46.933Z",
+          "spread": -14.5,
+          "score": "54-44",
+          "period": 2,
+          "clock": "8:17"
+        },
+        {
+          "t": "2026-03-19T00:18:54.224Z",
+          "spread": -16.5,
+          "score": "54-46",
+          "period": 2,
+          "clock": "7:22"
+        },
+        {
+          "t": "2026-03-19T00:19:59.552Z",
+          "spread": -16.5,
+          "score": "54-48",
+          "period": 2,
+          "clock": "6:49"
+        },
+        {
+          "t": "2026-03-19T00:21:05.308Z",
+          "spread": -16.5,
+          "score": "60-48",
+          "period": 2,
+          "clock": "5:47"
+        },
+        {
+          "t": "2026-03-19T00:22:11.358Z",
+          "spread": -16.5,
+          "score": "60-48",
+          "period": 2,
+          "clock": "5:47"
+        },
+        {
+          "t": "2026-03-19T00:23:16.960Z",
+          "spread": -16.5,
+          "score": "60-48",
+          "period": 2,
+          "clock": "5:47"
+        },
+        {
+          "t": "2026-03-19T00:24:23.993Z",
+          "spread": -16.5,
+          "score": "60-48",
+          "period": 2,
+          "clock": "5:38"
+        },
+        {
+          "t": "2026-03-19T00:25:33.118Z",
+          "spread": -16.5,
+          "score": "60-50",
+          "period": 2,
+          "clock": "5:01"
+        },
+        {
+          "t": "2026-03-19T00:26:40.692Z",
+          "spread": -16.5,
+          "score": "61-51",
+          "period": 2,
+          "clock": "4:52"
+        },
+        {
+          "t": "2026-03-19T00:27:47.398Z",
+          "spread": -16.5,
+          "score": "62-54",
+          "period": 2,
+          "clock": "4:43"
+        },
+        {
+          "t": "2026-03-19T00:28:54.021Z",
+          "spread": -16.5,
+          "score": "64-56",
+          "period": 2,
+          "clock": "4:21"
+        },
+        {
+          "t": "2026-03-19T00:30:01.214Z",
+          "spread": -14.5,
+          "score": "69-56",
+          "period": 2,
+          "clock": "3:23"
+        },
+        {
+          "t": "2026-03-19T00:31:11.179Z",
+          "spread": -16.5,
+          "score": "72-58",
+          "period": 2,
+          "clock": "2:29"
+        },
+        {
+          "t": "2026-03-19T00:32:20.147Z",
+          "spread": -18.5,
+          "score": "72-58",
+          "period": 2,
+          "clock": "2:29"
+        },
+        {
+          "t": "2026-03-19T00:33:28.779Z",
+          "spread": -18.5,
+          "score": "72-58",
+          "period": 2,
+          "clock": "2:29"
+        },
+        {
+          "t": "2026-03-19T00:34:35.618Z",
+          "spread": -18.5,
+          "score": "74-58",
+          "period": 2,
+          "clock": "2:08"
+        },
+        {
+          "t": "2026-03-19T00:35:42.744Z",
+          "spread": -20.5,
+          "score": "76-60",
+          "period": 2,
+          "clock": "1:04"
+        },
+        {
+          "t": "2026-03-19T00:36:54.219Z",
+          "spread": -20.5,
+          "score": "79-60",
+          "period": 2,
+          "clock": "27.9"
         }
       ],
       "alertSent": true
@@ -1597,6 +1864,13 @@
           "score": "33-21",
           "period": 1,
           "clock": "3:54"
+        },
+        {
+          "t": "2026-03-19T00:37:01.069Z",
+          "spread": -7.5,
+          "score": "34-21",
+          "period": 1,
+          "clock": "3:54"
         }
       ]
     },
@@ -1709,6 +1983,114 @@
         "awayML": "-2400",
         "homeML": "+1200",
         "openSpread": "-19.5"
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-19T00:36:54.219Z",
+          "spread": -39.5,
+          "score": "57-22",
+          "period": 2,
+          "clock": "55.3"
+        }
+      ]
+    },
+    {
+      "id": 1773880621336,
+      "key": "401858345_sust_ILST",
+      "gameId": "401858345",
+      "team": "ILST",
+      "opponent": "KENT",
+      "matchup": "KENT @ ILST",
+      "side": "SPREAD",
+      "spread": -12.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -114,
+      "impliedP": 53.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-19T00:37:01.336Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "KENT",
+      "homeTeam": "ILST",
+      "awayName": "Kent State Golden Flashes",
+      "homeName": "Illinois State Redbirds",
+      "awayScore": 21,
+      "homeScore": 35,
+      "period": 1,
+      "clock": "4:14",
+      "periodLabel": "H1",
+      "sustLeader": "ILST",
+      "sustMargin": 14,
+      "betOnLeader": true,
+      "currentMargin": 14,
+      "cushion": 1.5,
+      "sustScore": 55.4,
+      "fragScore": -3.8,
+      "sustGap": 59.199999999999996,
+      "sustSignals": [
+        "Strong process (8.0/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "50",
+        "efg": "63",
+        "threePt": "46",
+        "twoPt": "34",
+        "proc": 8,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "30",
+        "efg": "33",
+        "threePt": "17",
+        "twoPt": "57",
+        "proc": 4.2,
+        "star": 28,
+        "scq": 0
+      },
+      "sustDetail": "ILST +55.4 vs KENT -3.8 (gap:59.199999999999996) | KENT 21-35 ILST | H1 4:14 | FanDuel -12.5 (-114)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 66,
+        "v2_f1low": 69,
+        "v3_f1high": 32.5,
+        "v4_f3boost": 74.3,
+        "v5_noStar": 69.1
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -3.8,
+        "hScore": 55.4,
+        "gap": 59.2,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 63.7,
+        "v7_marginWeighted": 82.9,
+        "v8_procDiffOnly": 38,
+        "v10_timeDecay": 59.2
       },
       "alertSent": true
     }
