@@ -316,6 +316,13 @@
           "score": "28-39",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-19T23:59:57.909Z",
+          "spread": -8.5,
+          "score": "28-39",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
     },
@@ -547,6 +554,13 @@
           "score": "41-56",
           "period": 2,
           "clock": "5:40"
+        },
+        {
+          "t": "2026-03-19T23:59:52.395Z",
+          "spread": -11.5,
+          "score": "41-56",
+          "period": 2,
+          "clock": "5:14"
         }
       ],
       "alertSent": true
@@ -747,8 +761,116 @@
           "score": "48-40",
           "period": 2,
           "clock": "5:02"
+        },
+        {
+          "t": "2026-03-19T23:59:52.395Z",
+          "spread": -15.5,
+          "score": "48-42",
+          "period": 2,
+          "clock": "4:25"
         }
       ]
+    },
+    {
+      "id": 1773964798667,
+      "key": "401856484_sust_BYU",
+      "gameId": "401856484",
+      "team": "BYU",
+      "opponent": "TEX",
+      "matchup": "TEX @ BYU",
+      "side": "SPREAD",
+      "spread": 2.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -114,
+      "impliedP": 53.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-19T23:59:58.667Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "TEX",
+      "homeTeam": "BYU",
+      "awayName": "Texas Longhorns",
+      "homeName": "BYU Cougars",
+      "awayScore": 27,
+      "homeScore": 21,
+      "period": 1,
+      "clock": "9:41",
+      "periodLabel": "H1",
+      "sustLeader": "TEX",
+      "sustMargin": 6,
+      "betOnLeader": false,
+      "currentMargin": -6,
+      "cushion": -3.5,
+      "sustScore": 26.8,
+      "fragScore": -12.5,
+      "sustGap": 39.3,
+      "sustSignals": [
+        "Low 3PT reliance (0%)"
+      ],
+      "fragSignals": [
+        "3PT heavy (44% of pts)"
+      ],
+      "sustStats": {
+        "fg": "53",
+        "efg": "53",
+        "threePt": "0",
+        "twoPt": "86",
+        "proc": 6.3,
+        "star": 153,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "61",
+        "efg": "72",
+        "threePt": "50",
+        "twoPt": "52",
+        "proc": 4.5,
+        "star": 110,
+        "scq": 0
+      },
+      "sustDetail": "BYU +26.8 vs TEX -12.5 (gap:39.3) | TEX 27-21 BYU | H1 9:41 | FanDuel +2.5 (-114)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 26,
+        "v2_f1low": 38.5,
+        "v3_f1high": 54.4,
+        "v4_f3boost": 46.5,
+        "v5_noStar": 49.3
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -12.5,
+        "hScore": 26.8,
+        "gap": 39.3,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 39.3,
+        "v7_marginWeighted": 23.6,
+        "v8_procDiffOnly": 18,
+        "v10_timeDecay": 39.3
+      },
+      "alertSent": true
     }
   ],
   "resolved": [
