@@ -525,6 +525,41 @@
           "score": "57-63",
           "period": 2,
           "clock": "6:33"
+        },
+        {
+          "t": "2026-03-19T21:00:54.015Z",
+          "spread": -6.5,
+          "score": "57-63",
+          "period": 2,
+          "clock": "6:33"
+        },
+        {
+          "t": "2026-03-19T21:01:55.685Z",
+          "spread": -6.5,
+          "score": "57-63",
+          "period": 2,
+          "clock": "6:33"
+        },
+        {
+          "t": "2026-03-19T21:02:57.422Z",
+          "spread": -6.5,
+          "score": "58-63",
+          "period": 2,
+          "clock": "6:33"
+        },
+        {
+          "t": "2026-03-19T21:04:01.144Z",
+          "spread": -5.5,
+          "score": "60-65",
+          "period": 2,
+          "clock": "6:05"
+        },
+        {
+          "t": "2026-03-19T21:05:05.195Z",
+          "spread": -7.5,
+          "score": "60-65",
+          "period": 2,
+          "clock": "5:04"
         }
       ]
     },
@@ -625,6 +660,142 @@
         "v7_marginWeighted": 100.1,
         "v8_procDiffOnly": 44,
         "v10_timeDecay": 83.4
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-19T21:00:54.015Z",
+          "spread": -19.5,
+          "score": "26-38",
+          "period": 1,
+          "clock": "5:29"
+        },
+        {
+          "t": "2026-03-19T21:01:55.686Z",
+          "spread": -19.5,
+          "score": "26-38",
+          "period": 1,
+          "clock": "5:29"
+        },
+        {
+          "t": "2026-03-19T21:02:57.422Z",
+          "spread": -19.5,
+          "score": "27-38",
+          "period": 1,
+          "clock": "5:29"
+        },
+        {
+          "t": "2026-03-19T21:04:01.144Z",
+          "spread": -19.5,
+          "score": "27-39",
+          "period": 1,
+          "clock": "5:29"
+        },
+        {
+          "t": "2026-03-19T21:05:05.195Z",
+          "spread": -19.5,
+          "score": "27-40",
+          "period": 1,
+          "clock": "5:07"
+        }
+      ]
+    },
+    {
+      "id": 1773954305471,
+      "key": "401856483_sust_MSU",
+      "gameId": "401856483",
+      "team": "MSU",
+      "opponent": "NDSU",
+      "matchup": "NDSU @ MSU",
+      "side": "SPREAD",
+      "spread": -22.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -106,
+      "impliedP": 51.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-19T21:05:05.471Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "NDSU",
+      "homeTeam": "MSU",
+      "awayName": "North Dakota State Bison",
+      "homeName": "Michigan State Spartans",
+      "awayScore": 20,
+      "homeScore": 35,
+      "period": 1,
+      "clock": "4:12",
+      "periodLabel": "H1",
+      "sustLeader": "MSU",
+      "sustMargin": 15,
+      "betOnLeader": true,
+      "currentMargin": 15,
+      "cushion": -7.5,
+      "sustScore": 62.5,
+      "fragScore": -20.2,
+      "sustGap": 82.7,
+      "sustSignals": [
+        "Strong process (8.1/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "54",
+        "efg": "63",
+        "threePt": "44",
+        "twoPt": "51",
+        "proc": 8.1,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "36",
+        "efg": "41",
+        "threePt": "18",
+        "twoPt": "60",
+        "proc": 3.9,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "MSU +62.5 vs NDSU -20.2 (gap:82.7) | NDSU 20-35 MSU | H1 4:12 | FanDuel -22.5 (-106)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 84,
+        "v2_f1low": 91.5,
+        "v3_f1high": 63.8,
+        "v4_f3boost": 99.5,
+        "v5_noStar": 82.7
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -20.2,
+        "hScore": 62.5,
+        "gap": 82.7,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 82.7,
+        "v7_marginWeighted": 124.1,
+        "v8_procDiffOnly": 42,
+        "v10_timeDecay": 82.7
       },
       "alertSent": true
     }
@@ -104017,11 +104188,11 @@
     }
   ],
   "meta": {
-    "brierScore": 0.2563,
+    "brierScore": 0.256,
     "brierBaseline": 0.25,
-    "brierSkill": -0.0252,
-    "brierN": 158,
-    "winRate": 46.2,
-    "totalPL": -11237.27
+    "brierSkill": -0.024,
+    "brierN": 159,
+    "winRate": 46.5,
+    "totalPL": -10798.67
   }
 }
