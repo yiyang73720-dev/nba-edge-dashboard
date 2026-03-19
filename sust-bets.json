@@ -600,6 +600,34 @@
           "score": "59-49",
           "period": 2,
           "clock": "2:20"
+        },
+        {
+          "t": "2026-03-19T00:32:26.887Z",
+          "spread": 8.5,
+          "score": "63-51",
+          "period": 2,
+          "clock": "1:09"
+        },
+        {
+          "t": "2026-03-19T00:33:32.079Z",
+          "spread": 8.5,
+          "score": "64-51",
+          "period": 2,
+          "clock": "0:51"
+        },
+        {
+          "t": "2026-03-19T00:34:39.486Z",
+          "spread": 12.5,
+          "score": "64-51",
+          "period": 2,
+          "clock": "0:51"
+        },
+        {
+          "t": "2026-03-19T00:35:49.726Z",
+          "spread": 12.5,
+          "score": "64-53",
+          "period": 2,
+          "clock": "0:45"
         }
       ]
     },
@@ -1014,6 +1042,34 @@
           "score": "56-69",
           "period": 3,
           "clock": "8:43"
+        },
+        {
+          "t": "2026-03-19T00:32:20.147Z",
+          "spread": 13.5,
+          "score": "56-69",
+          "period": 3,
+          "clock": "8:31"
+        },
+        {
+          "t": "2026-03-19T00:33:28.779Z",
+          "spread": 13.5,
+          "score": "56-69",
+          "period": 3,
+          "clock": "8:31"
+        },
+        {
+          "t": "2026-03-19T00:34:35.618Z",
+          "spread": 13.5,
+          "score": "56-69",
+          "period": 3,
+          "clock": "8:31"
+        },
+        {
+          "t": "2026-03-19T00:35:42.744Z",
+          "spread": 13.5,
+          "score": "58-69",
+          "period": 3,
+          "clock": "8:13"
         }
       ],
       "alertSent": true
@@ -1381,6 +1437,34 @@
           "score": "52-58",
           "period": 2,
           "clock": "10:21"
+        },
+        {
+          "t": "2026-03-19T00:32:26.887Z",
+          "spread": -9.5,
+          "score": "52-58",
+          "period": 2,
+          "clock": "10:11"
+        },
+        {
+          "t": "2026-03-19T00:33:32.079Z",
+          "spread": -9.5,
+          "score": "52-58",
+          "period": 2,
+          "clock": "10:11"
+        },
+        {
+          "t": "2026-03-19T00:34:39.486Z",
+          "spread": -8.5,
+          "score": "52-58",
+          "period": 2,
+          "clock": "10:11"
+        },
+        {
+          "t": "2026-03-19T00:35:49.726Z",
+          "spread": -9.5,
+          "score": "52-58",
+          "period": 2,
+          "clock": "9:50"
         }
       ],
       "alertSent": true
@@ -1483,6 +1567,148 @@
         "v7_marginWeighted": 71,
         "v8_procDiffOnly": 42,
         "v10_timeDecay": 88.7
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-19T00:32:26.889Z",
+          "spread": -5.5,
+          "score": "32-21",
+          "period": 1,
+          "clock": "4:10"
+        },
+        {
+          "t": "2026-03-19T00:33:32.080Z",
+          "spread": -5.5,
+          "score": "32-21",
+          "period": 1,
+          "clock": "4:08"
+        },
+        {
+          "t": "2026-03-19T00:34:39.487Z",
+          "spread": -6.5,
+          "score": "32-21",
+          "period": 1,
+          "clock": "4:08"
+        },
+        {
+          "t": "2026-03-19T00:35:49.727Z",
+          "spread": -7.5,
+          "score": "33-21",
+          "period": 1,
+          "clock": "3:54"
+        }
+      ]
+    },
+    {
+      "id": 1773880544999,
+      "key": "401810855_sust_OKC",
+      "gameId": "401810855",
+      "team": "OKC",
+      "opponent": "BKN",
+      "matchup": "OKC @ BKN",
+      "side": "SPREAD",
+      "spread": -37.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -118,
+      "impliedP": 54.1,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-19T00:35:44.999Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "OKC",
+      "homeTeam": "BKN",
+      "awayName": "Oklahoma City Thunder",
+      "homeName": "Brooklyn Nets",
+      "awayScore": 53,
+      "homeScore": 22,
+      "period": 2,
+      "clock": "2:09",
+      "periodLabel": "Q2",
+      "sustLeader": "OKC",
+      "sustMargin": 31,
+      "betOnLeader": true,
+      "currentMargin": 31,
+      "cushion": -6.5,
+      "sustScore": 85.6,
+      "fragScore": -51.3,
+      "sustGap": 136.89999999999998,
+      "sustSignals": [
+        "Low 3PT reliance (17%)",
+        "Strong process (9.0/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "50",
+        "efg": "54",
+        "threePt": "23",
+        "twoPt": "62",
+        "proc": 9,
+        "star": 81,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "23",
+        "efg": "24",
+        "threePt": "7",
+        "twoPt": "64",
+        "proc": 2.1,
+        "star": 0,
+        "scq": 11
+      },
+      "sustDetail": "OKC +85.6 vs BKN -51.3 (gap:136.89999999999998) | OKC 53-22 BKN | Q2 2:09 | FanDuel -37.5 (-118)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": false,
+        "g10_ncaa": false,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 138,
+        "v2_f1low": 151.1,
+        "v3_f1high": 107.5,
+        "v4_f3boost": 164.5,
+        "v5_noStar": 136.9
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 11.4,
+        "aScore": 85.6,
+        "hScore": -46.7,
+        "gap": 132.3,
+        "f5contrib": 4.6
+      },
+      "altStructural": {
+        "v6_cushionBoost": 136.9,
+        "v7_marginWeighted": 424.4,
+        "v8_procDiffOnly": 69,
+        "v10_timeDecay": 136.9
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": 19.5,
+        "detail": "OKC -19.5",
+        "awaySpread": "-19.5",
+        "homeSpread": "+19.5",
+        "awaySpreadOdds": "-105",
+        "homeSpreadOdds": "-115",
+        "awayML": "-2400",
+        "homeML": "+1200",
+        "openSpread": "-19.5"
       },
       "alertSent": true
     }
