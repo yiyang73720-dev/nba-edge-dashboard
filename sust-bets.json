@@ -1,5 +1,140 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1774049473765,
+      "key": "401856522_sust_IOWA",
+      "gameId": "401856522",
+      "team": "IOWA",
+      "opponent": "CLEM",
+      "matchup": "IOWA @ CLEM",
+      "side": "SPREAD",
+      "spread": -5.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -120,
+      "impliedP": 54.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-20T23:31:13.765Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "IOWA",
+      "homeTeam": "CLEM",
+      "awayName": "Iowa Hawkeyes",
+      "homeName": "Clemson Tigers",
+      "awayScore": 32,
+      "homeScore": 25,
+      "period": 1,
+      "clock": "0:00",
+      "periodLabel": "H1",
+      "sustLeader": "IOWA",
+      "sustMargin": 7,
+      "betOnLeader": true,
+      "currentMargin": 7,
+      "cushion": 1.5,
+      "sustScore": 18.7,
+      "fragScore": -17.6,
+      "sustGap": 36.3,
+      "sustSignals": [],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "45",
+        "efg": "57",
+        "threePt": "38",
+        "twoPt": "34",
+        "proc": 5.9,
+        "star": 71,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "33",
+        "efg": "38",
+        "threePt": "25",
+        "twoPt": "63",
+        "proc": 4.2,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "IOWA +13.3 vs CLEM -14.7 (gap:28) | IOWA 29-22 CLEM | H1 3:08 | FanDuel -5.5 (-120)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": false,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 34,
+        "v2_f1low": 33.4,
+        "v3_f1high": 11.1,
+        "v4_f3boost": 34.8,
+        "v5_noStar": 28
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": 13.3,
+        "hScore": -14.7,
+        "gap": 28,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 32.5,
+        "v7_marginWeighted": 19.6,
+        "v8_procDiffOnly": 17,
+        "v10_timeDecay": 28
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-20T23:32:16.620Z",
+          "spread": -5.5,
+          "score": "29-22",
+          "period": 1,
+          "clock": "1:56"
+        },
+        {
+          "t": "2026-03-20T23:33:18.747Z",
+          "spread": -6.5,
+          "score": "31-22",
+          "period": 1,
+          "clock": "1:35"
+        },
+        {
+          "t": "2026-03-20T23:34:21.576Z",
+          "spread": -6.5,
+          "score": "31-22",
+          "period": 1,
+          "clock": "1:07"
+        },
+        {
+          "t": "2026-03-20T23:35:24.885Z",
+          "spread": -7.5,
+          "score": "32-25",
+          "period": 1,
+          "clock": "0:50"
+        },
+        {
+          "t": "2026-03-20T23:36:27.048Z",
+          "spread": -5.5,
+          "score": "32-25",
+          "period": 1,
+          "clock": "0:00"
+        }
+      ],
+      "alertSent": true
+    }
+  ],
   "resolved": [
     {
       "id": 1773360760011,
