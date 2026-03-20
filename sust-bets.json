@@ -1,5 +1,108 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1774033562302,
+      "key": "401856529_sust_ARIZ",
+      "gameId": "401856529",
+      "team": "ARIZ",
+      "opponent": "LIU",
+      "matchup": "LIU @ ARIZ",
+      "side": "SPREAD",
+      "spread": -35.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -114,
+      "impliedP": 53.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-20T19:06:02.302Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "LIU",
+      "homeTeam": "ARIZ",
+      "awayName": "Long Island University Sharks",
+      "homeName": "Arizona Wildcats",
+      "awayScore": 37,
+      "homeScore": 65,
+      "period": 2,
+      "clock": "13:21",
+      "periodLabel": "H2",
+      "sustLeader": "ARIZ",
+      "sustMargin": 28,
+      "betOnLeader": true,
+      "currentMargin": 28,
+      "cushion": -7.5,
+      "sustScore": 56.5,
+      "fragScore": -19.8,
+      "sustGap": 76.3,
+      "sustSignals": [
+        "Low 3PT reliance (28%)",
+        "Strong process (7.7/10)"
+      ],
+      "fragSignals": [
+        "3PT heavy (49% of pts)"
+      ],
+      "sustStats": {
+        "fg": "57",
+        "efg": "64",
+        "threePt": "60",
+        "twoPt": "55",
+        "proc": 7.7,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "31",
+        "efg": "38",
+        "threePt": "33",
+        "twoPt": "43",
+        "proc": 3.7,
+        "star": 55,
+        "scq": 0
+      },
+      "sustDetail": "ARIZ +56.5 vs LIU -19.8 (gap:76.3) | LIU 37-65 ARIZ | H2 13:21 | FanDuel -35.5 (-114)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": false,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 70,
+        "v2_f1low": 82.2,
+        "v3_f1high": 70.8,
+        "v4_f3boost": 92.3,
+        "v5_noStar": 86.3
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -19.8,
+        "hScore": 56.5,
+        "gap": 76.3,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 76.3,
+        "v7_marginWeighted": 213.6,
+        "v8_procDiffOnly": 40,
+        "v10_timeDecay": 76.3
+      },
+      "alertSent": true
+    }
+  ],
   "resolved": [
     {
       "id": 1773360760011,
