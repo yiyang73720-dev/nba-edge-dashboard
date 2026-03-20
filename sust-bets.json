@@ -1,5 +1,103 @@
 {
-  "bets": [],
+  "bets": [
+    {
+      "id": 1774025279849,
+      "key": "401856525_sust_UK",
+      "gameId": "401856525",
+      "team": "UK",
+      "opponent": "SCU",
+      "matchup": "SCU @ UK",
+      "side": "SPREAD",
+      "spread": -4.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -114,
+      "impliedP": 53.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-20T16:47:59.849Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "SCU",
+      "homeTeam": "UK",
+      "awayName": "Santa Clara Broncos",
+      "homeName": "Kentucky Wildcats",
+      "awayScore": 23,
+      "homeScore": 26,
+      "period": 1,
+      "clock": "5:09",
+      "periodLabel": "H1",
+      "sustLeader": "UK",
+      "sustMargin": 3,
+      "betOnLeader": true,
+      "currentMargin": 3,
+      "cushion": -1.5,
+      "sustScore": 38.4,
+      "fragScore": -4.9,
+      "sustGap": 43.3,
+      "sustSignals": [],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "48",
+        "efg": "54",
+        "threePt": "27",
+        "twoPt": "62",
+        "proc": 6.9,
+        "star": 104,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "42",
+        "efg": "48",
+        "threePt": "25",
+        "twoPt": "61",
+        "proc": 4.8,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "UK +38.4 vs SCU -4.9 (gap:43.3) | SCU 23-26 UK | H1 5:09 | FanDuel -4.5 (-114)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": false,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 42,
+        "v2_f1low": 47.1,
+        "v3_f1high": 37.2,
+        "v4_f3boost": 51.8,
+        "v5_noStar": 43.4
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -4.9,
+        "hScore": 38.4,
+        "gap": 43.3,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 43.3,
+        "v7_marginWeighted": 13,
+        "v8_procDiffOnly": 21,
+        "v10_timeDecay": 43.3
+      },
+      "alertSent": true
+    }
+  ],
   "resolved": [
     {
       "id": 1773360760011,
