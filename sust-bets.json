@@ -618,6 +618,20 @@
           "score": "60-95",
           "period": 2,
           "clock": "3:33"
+        },
+        {
+          "t": "2026-03-20T03:42:11.081Z",
+          "spread": 39.5,
+          "score": "60-99",
+          "period": 2,
+          "clock": "2:49"
+        },
+        {
+          "t": "2026-03-20T03:43:18.067Z",
+          "spread": 39.5,
+          "score": "62-102",
+          "period": 2,
+          "clock": "2:09"
         }
       ]
     },
@@ -1137,6 +1151,20 @@
           "score": "90-82",
           "period": 3,
           "clock": "5:07"
+        },
+        {
+          "t": "2026-03-20T03:42:08.748Z",
+          "spread": -8.5,
+          "score": "95-84",
+          "period": 3,
+          "clock": "4:16"
+        },
+        {
+          "t": "2026-03-20T03:43:15.856Z",
+          "spread": -8.5,
+          "score": "95-86",
+          "period": 3,
+          "clock": "3:53"
         }
       ]
     },
@@ -1567,6 +1595,20 @@
           "score": "74-44",
           "period": 2,
           "clock": "12:34"
+        },
+        {
+          "t": "2026-03-20T03:42:11.081Z",
+          "spread": -21.5,
+          "score": "74-47",
+          "period": 2,
+          "clock": "11:45"
+        },
+        {
+          "t": "2026-03-20T03:43:18.067Z",
+          "spread": -23.5,
+          "score": "74-47",
+          "period": 2,
+          "clock": "11:44"
         }
       ]
     },
@@ -1666,6 +1708,121 @@
         "v7_marginWeighted": 46.7,
         "v8_procDiffOnly": 24,
         "v10_timeDecay": 51.9
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-20T03:42:11.081Z",
+          "spread": -17.5,
+          "score": "31-42",
+          "period": 2,
+          "clock": "17:35"
+        },
+        {
+          "t": "2026-03-20T03:43:18.068Z",
+          "spread": -19.5,
+          "score": "31-42",
+          "period": 2,
+          "clock": "16:42"
+        }
+      ]
+    },
+    {
+      "id": 1773978198328,
+      "key": "401856493_sust_HOU",
+      "gameId": "401856493",
+      "team": "HOU",
+      "opponent": "IDHO",
+      "matchup": "IDHO @ HOU",
+      "side": "SPREAD",
+      "spread": -27.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -104,
+      "impliedP": 51,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-20T03:43:18.328Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "IDHO",
+      "homeTeam": "HOU",
+      "awayName": "Idaho Vandals",
+      "homeName": "Houston Cougars",
+      "awayScore": 33,
+      "homeScore": 57,
+      "period": 2,
+      "clock": "12:23",
+      "periodLabel": "H2",
+      "sustLeader": "HOU",
+      "sustMargin": 24,
+      "betOnLeader": true,
+      "currentMargin": 24,
+      "cushion": -3.5,
+      "sustScore": 32.9,
+      "fragScore": -6.1,
+      "sustGap": 39,
+      "sustSignals": [
+        "Low 3PT reliance (26%)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "50",
+        "efg": "56",
+        "threePt": "50",
+        "twoPt": "60",
+        "proc": 6.5,
+        "star": 124,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "26",
+        "efg": "31",
+        "threePt": "19",
+        "twoPt": "36",
+        "proc": 4.7,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "HOU +32.9 vs IDHO -6.1 (gap:39) | IDHO 33-57 HOU | H2 12:23 | FanDuel -27.5 (-104)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": false,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 36,
+        "v2_f1low": 41.6,
+        "v3_f1high": 36.8,
+        "v4_f3boost": 46.2,
+        "v5_noStar": 39
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -6.1,
+        "hScore": 32.9,
+        "gap": 39,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 39,
+        "v7_marginWeighted": 93.6,
+        "v8_procDiffOnly": 18,
+        "v10_timeDecay": 39
       },
       "alertSent": true
     }
