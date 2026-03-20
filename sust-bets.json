@@ -568,6 +568,20 @@
           "score": "59-70",
           "period": 2,
           "clock": "5:26"
+        },
+        {
+          "t": "2026-03-20T00:40:30.137Z",
+          "spread": -9.5,
+          "score": "59-70",
+          "period": 2,
+          "clock": "5:20"
+        },
+        {
+          "t": "2026-03-20T00:41:39.935Z",
+          "spread": -9.5,
+          "score": "62-70",
+          "period": 2,
+          "clock": "4:50"
         }
       ]
     },
@@ -1051,6 +1065,20 @@
           "score": "53-72",
           "period": 2,
           "clock": "0.0"
+        },
+        {
+          "t": "2026-03-20T00:40:21.985Z",
+          "spread": -17.5,
+          "score": "53-72",
+          "period": 2,
+          "clock": "0.0"
+        },
+        {
+          "t": "2026-03-20T00:41:33.555Z",
+          "spread": -17.5,
+          "score": "53-72",
+          "period": 2,
+          "clock": "0.0"
         }
       ],
       "alertSent": true
@@ -1503,6 +1531,20 @@
           "score": "75-66",
           "period": 3,
           "clock": "6:49"
+        },
+        {
+          "t": "2026-03-20T00:40:21.985Z",
+          "spread": -14.5,
+          "score": "75-66",
+          "period": 3,
+          "clock": "6:49"
+        },
+        {
+          "t": "2026-03-20T00:41:33.555Z",
+          "spread": -14.5,
+          "score": "77-66",
+          "period": 3,
+          "clock": "5:53"
         }
       ]
     },
@@ -1851,6 +1893,20 @@
           "score": "46-37",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-20T00:40:30.137Z",
+          "spread": 4.5,
+          "score": "46-37",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-20T00:41:39.935Z",
+          "spread": 4.5,
+          "score": "46-37",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
     },
@@ -2123,6 +2179,20 @@
           "score": "37-26",
           "period": 1,
           "clock": "0:00"
+        },
+        {
+          "t": "2026-03-20T00:40:30.138Z",
+          "spread": -7.5,
+          "score": "37-26",
+          "period": 1,
+          "clock": "0:00"
+        },
+        {
+          "t": "2026-03-20T00:41:39.936Z",
+          "spread": -7.5,
+          "score": "37-26",
+          "period": 1,
+          "clock": "0:00"
         }
       ]
     },
@@ -2232,6 +2302,134 @@
         "awayML": "+140",
         "homeML": "-166",
         "openSpread": "+1.5"
+      },
+      "alertSent": true,
+      "spreadHistory": [
+        {
+          "t": "2026-03-20T00:40:21.985Z",
+          "spread": 4.5,
+          "score": "31-28",
+          "period": 2,
+          "clock": "10:53"
+        },
+        {
+          "t": "2026-03-20T00:41:33.555Z",
+          "spread": 2.5,
+          "score": "34-31",
+          "period": 2,
+          "clock": "10:18"
+        }
+      ]
+    },
+    {
+      "id": 1773967296436,
+      "key": "401810865_sust_MIA",
+      "gameId": "401810865",
+      "team": "MIA",
+      "opponent": "LAL",
+      "matchup": "LAL @ MIA",
+      "side": "SPREAD",
+      "spread": -9.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -130,
+      "impliedP": 56.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-20T00:41:36.436Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "LAL",
+      "homeTeam": "MIA",
+      "awayName": "Los Angeles Lakers",
+      "homeName": "Miami Heat",
+      "awayScore": 33,
+      "homeScore": 46,
+      "period": 2,
+      "clock": "11:01",
+      "periodLabel": "Q2",
+      "sustLeader": "MIA",
+      "sustMargin": 13,
+      "betOnLeader": true,
+      "currentMargin": 13,
+      "cushion": 3.5,
+      "sustScore": 51,
+      "fragScore": 2.1,
+      "sustGap": 48.9,
+      "sustSignals": [
+        "Low 3PT reliance (26%)",
+        "Strong process (7.4/10)"
+      ],
+      "fragSignals": [],
+      "sustStats": {
+        "fg": "66",
+        "efg": "72",
+        "threePt": "44",
+        "twoPt": "65",
+        "proc": 7.4,
+        "star": 0,
+        "scq": 10
+      },
+      "fragStats": {
+        "fg": "43",
+        "efg": "50",
+        "threePt": "27",
+        "twoPt": "45",
+        "proc": 4.5,
+        "star": 58,
+        "scq": -17
+      },
+      "sustDetail": "MIA +51 vs LAL 2.1 (gap:48.9) | LAL 33-46 MIA | Q2 11:01 | FanDuel -9.5 (-130)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": true,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": true,
+        "g7_earlyGame": true,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": true,
+        "g12_oppCold3": true
+      },
+      "altGaps": {
+        "v1_pureProc": 48,
+        "v2_f1low": 54.4,
+        "v3_f1high": 38.8,
+        "v4_f3boost": 60.5,
+        "v5_noStar": 58.9
+      },
+      "v7": {
+        "aScq": -16.7,
+        "hScq": 10.3,
+        "aScore": -4.6,
+        "hScore": 55.1,
+        "gap": 59.7,
+        "f5contrib": 10.8
+      },
+      "altStructural": {
+        "v6_cushionBoost": 59.4,
+        "v7_marginWeighted": 63.6,
+        "v8_procDiffOnly": 29,
+        "v10_timeDecay": 48.9
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -3.5,
+        "detail": "MIA -3.5",
+        "awaySpread": "+3.5",
+        "homeSpread": "-3.5",
+        "awaySpreadOdds": "-115",
+        "homeSpreadOdds": "-105",
+        "awayML": "+124",
+        "homeML": "-148",
+        "openSpread": "+2.5"
       },
       "alertSent": true
     }
