@@ -592,6 +592,13 @@
           "score": "59-53",
           "period": 2,
           "clock": "2:49"
+        },
+        {
+          "t": "2026-03-21T00:50:46.548Z",
+          "spread": -6.5,
+          "score": "59-53",
+          "period": 2,
+          "clock": "2:17"
         }
       ],
       "alertSent": true
@@ -951,6 +958,13 @@
           "score": "36-49",
           "period": 2,
           "clock": "15:43"
+        },
+        {
+          "t": "2026-03-21T00:50:46.548Z",
+          "spread": -17.5,
+          "score": "36-49",
+          "period": 2,
+          "clock": "15:27"
         }
       ]
     },
@@ -1275,6 +1289,13 @@
           "score": "50-57",
           "period": 2,
           "clock": "0.0"
+        },
+        {
+          "t": "2026-03-21T00:50:40.602Z",
+          "spread": -7.5,
+          "score": "50-57",
+          "period": 2,
+          "clock": "0.0"
         }
       ],
       "alertSent": true
@@ -1579,6 +1600,13 @@
           "score": "32-46",
           "period": 2,
           "clock": "16:10"
+        },
+        {
+          "t": "2026-03-21T00:50:46.549Z",
+          "spread": -11.5,
+          "score": "34-46",
+          "period": 2,
+          "clock": "15:57"
         }
       ],
       "alertSent": true
@@ -1750,6 +1778,13 @@
           "score": "48-40",
           "period": 2,
           "clock": "6:47"
+        },
+        {
+          "t": "2026-03-21T00:50:40.602Z",
+          "spread": -6.5,
+          "score": "48-40",
+          "period": 2,
+          "clock": "6:47"
         }
       ]
     },
@@ -1887,8 +1922,116 @@
           "score": "30-42",
           "period": 2,
           "clock": "10:05"
+        },
+        {
+          "t": "2026-03-21T00:50:40.602Z",
+          "spread": -8.5,
+          "score": "33-42",
+          "period": 2,
+          "clock": "9:18"
         }
       ]
+    },
+    {
+      "id": 1774054246787,
+      "key": "401856519_sust_PUR",
+      "gameId": "401856519",
+      "team": "PUR",
+      "opponent": "QUC",
+      "matchup": "QUC @ PUR",
+      "side": "SPREAD",
+      "spread": -26.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -120,
+      "impliedP": 54.5,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-21T00:50:46.787Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "ncaab",
+      "awayTeam": "QUC",
+      "homeTeam": "PUR",
+      "awayName": "Queens University Royals",
+      "homeName": "Purdue Boilermakers",
+      "awayScore": 36,
+      "homeScore": 56,
+      "period": 2,
+      "clock": "17:15",
+      "periodLabel": "H2",
+      "sustLeader": "PUR",
+      "sustMargin": 20,
+      "betOnLeader": true,
+      "currentMargin": 20,
+      "cushion": -6.5,
+      "sustScore": 69.2,
+      "fragScore": -38.2,
+      "sustGap": 107.4,
+      "sustSignals": [
+        "Strong process (8.4/10)"
+      ],
+      "fragSignals": [
+        "3PT heavy (50% of pts)"
+      ],
+      "sustStats": {
+        "fg": "58",
+        "efg": "67",
+        "threePt": "60",
+        "twoPt": "54",
+        "proc": 8.4,
+        "star": 0,
+        "scq": 0
+      },
+      "fragStats": {
+        "fg": "42",
+        "efg": "50",
+        "threePt": "38",
+        "twoPt": "50",
+        "proc": 3.3,
+        "star": 0,
+        "scq": 0
+      },
+      "sustDetail": "PUR +69.2 vs QUC -38.2 (gap:107.4) | QUC 36-56 PUR | H2 17:15 | FanDuel -26.5 (-120)",
+      "strategies": {
+        "g1_bigGap": true,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": true,
+        "g6_hasCushion": false,
+        "g7_earlyGame": false,
+        "g8_highProc": true,
+        "g9_homeTeam": true,
+        "g10_ncaa": true,
+        "g11_bigMargin": true,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 102,
+        "v2_f1low": 115.8,
+        "v3_f1high": 95.9,
+        "v4_f3boost": 127.8,
+        "v5_noStar": 107.4
+      },
+      "v7": {
+        "aScq": 0,
+        "hScq": 0,
+        "aScore": -38.2,
+        "hScore": 69.2,
+        "gap": 107.4,
+        "f5contrib": 0
+      },
+      "altStructural": {
+        "v6_cushionBoost": 107.4,
+        "v7_marginWeighted": 214.8,
+        "v8_procDiffOnly": 51,
+        "v10_timeDecay": 107.4
+      },
+      "alertSent": true
     }
   ],
   "resolved": [
