@@ -389,6 +389,13 @@
           "score": "42-33",
           "period": 2,
           "clock": "12:06"
+        },
+        {
+          "t": "2026-03-21T00:17:49.320Z",
+          "spread": -8.5,
+          "score": "42-33",
+          "period": 2,
+          "clock": "11:57"
         }
       ],
       "alertSent": true
@@ -545,8 +552,144 @@
           "score": "24-42",
           "period": 1,
           "clock": "2:02"
+        },
+        {
+          "t": "2026-03-21T00:17:49.320Z",
+          "spread": -22.5,
+          "score": "24-45",
+          "period": 1,
+          "clock": "1:18"
         }
       ]
+    },
+    {
+      "id": 1774052126539,
+      "key": "401810872_sust_DET",
+      "gameId": "401810872",
+      "team": "DET",
+      "opponent": "GS",
+      "matchup": "GS @ DET",
+      "side": "SPREAD",
+      "spread": -1.5,
+      "signals": [
+        "sust"
+      ],
+      "marketOdds": -114,
+      "impliedP": 53.3,
+      "estimatedP": 55,
+      "kellyPct": 2.5,
+      "kellyBet": 500,
+      "book": "FanDuel",
+      "timestamp": "2026-03-21T00:15:26.539Z",
+      "outcome": null,
+      "payout": null,
+      "mode": "nba",
+      "awayTeam": "GS",
+      "homeTeam": "DET",
+      "awayName": "Golden State Warriors",
+      "homeName": "Detroit Pistons",
+      "awayScore": 32,
+      "homeScore": 27,
+      "period": 2,
+      "clock": "10:18",
+      "periodLabel": "Q2",
+      "sustLeader": "GS",
+      "sustMargin": 6,
+      "betOnLeader": false,
+      "currentMargin": -6,
+      "cushion": -6.5,
+      "sustScore": 35.3,
+      "fragScore": -5.3,
+      "sustGap": 40.599999999999994,
+      "sustSignals": [
+        "Low 3PT reliance (14%)"
+      ],
+      "fragSignals": [
+        "3PT heavy (44% of pts)"
+      ],
+      "sustStats": {
+        "fg": "40",
+        "efg": "43",
+        "threePt": "20",
+        "twoPt": "67",
+        "proc": 6.3,
+        "star": 0,
+        "scq": 25
+      },
+      "fragStats": {
+        "fg": "44",
+        "efg": "56",
+        "threePt": "44",
+        "twoPt": "30",
+        "proc": 5.5,
+        "star": 0,
+        "scq": 28
+      },
+      "sustDetail": "DET +32.5 vs GS 7.5 (gap:25) | GS 27-21 DET | Q2 11:32 | FanDuel -1.5 (-114)",
+      "strategies": {
+        "g1_bigGap": false,
+        "g2_procDriven": true,
+        "g3_threePtDriven": false,
+        "g4_starInvolved": false,
+        "g5_betOnLeader": false,
+        "g6_hasCushion": false,
+        "g7_earlyGame": true,
+        "g8_highProc": false,
+        "g9_homeTeam": true,
+        "g10_ncaa": false,
+        "g11_bigMargin": false,
+        "g12_oppCold3": false
+      },
+      "altGaps": {
+        "v1_pureProc": 16,
+        "v2_f1low": 23.6,
+        "v3_f1high": 36.9,
+        "v4_f3boost": 28.2,
+        "v5_noStar": 25
+      },
+      "v7": {
+        "aScq": 27.8,
+        "hScq": 25,
+        "aScore": 18.6,
+        "hScore": 42.5,
+        "gap": 23.9,
+        "f5contrib": 1.1
+      },
+      "altStructural": {
+        "v6_cushionBoost": 25,
+        "v7_marginWeighted": 15,
+        "v8_procDiffOnly": 8,
+        "v10_timeDecay": 25
+      },
+      "espnOdds": {
+        "provider": "Draft Kings",
+        "spread": -6.5,
+        "detail": "DET -6.5",
+        "awaySpread": "+6.5",
+        "homeSpread": "-6.5",
+        "awaySpreadOdds": "-112",
+        "homeSpreadOdds": "-108",
+        "awayML": "+195",
+        "homeML": "-238",
+        "openSpread": "+6.5"
+      },
+      "spreadHistory": [
+        {
+          "t": "2026-03-21T00:16:32.111Z",
+          "spread": -1.5,
+          "score": "29-25",
+          "period": 2,
+          "clock": "10:42"
+        },
+        {
+          "t": "2026-03-21T00:17:45.734Z",
+          "spread": -1.5,
+          "score": "32-27",
+          "period": 2,
+          "clock": "10:18"
+        }
+      ],
+      "alertSent": true
     }
   ],
   "resolved": [
